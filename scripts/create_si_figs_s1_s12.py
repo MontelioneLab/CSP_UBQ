@@ -134,7 +134,7 @@ CLASS_SPECS: List[ClassSpec] = [
         "st_id": "ST10",
         "sf_id": "SF9",
         "display_title": "CBP Domain Receptors",
-        "targets_csv": Path("targets_CBP.csv"),
+        "targets_csv": Path("data/targets_CBP.csv"),
     },
     {
         "column": None,
@@ -143,7 +143,7 @@ CLASS_SPECS: List[ClassSpec] = [
         "st_id": "ST11",
         "sf_id": "SF10",
         "display_title": "BET-ET Domain Receptors",
-        "targets_csv": Path("targets_BET_ET.csv"),
+        "targets_csv": Path("data/targets_BET_ET.csv"),
     },
     {
         "column": None,
@@ -152,7 +152,7 @@ CLASS_SPECS: List[ClassSpec] = [
         "st_id": "ST12",
         "sf_id": "SF11",
         "display_title": "TFIIH Domain Receptors",
-        "targets_csv": Path("targets_TFIIH.csv"),
+        "targets_csv": Path("data/targets_TFIIH.csv"),
     },
     {
         "column": None,
@@ -161,14 +161,14 @@ CLASS_SPECS: List[ClassSpec] = [
         "st_id": "ST13",
         "sf_id": "SF12",
         "display_title": "Ubiquitin Domain Receptors",
-        "targets_csv": Path("targets_ubiquitin.csv"),
+        "targets_csv": Path("data/targets_ubiquitin.csv"),
     },
 ]
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate supplementary stacked histograms by class.")
-    parser.add_argument("--csv", type=Path, default=Path("CSP_UBQ.csv"))
+    parser.add_argument("--csv", type=Path, default=Path("data/CSP_UBQ.csv"))
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
     parser.add_argument("--figures-dir", type=Path, default=Path("figures"))
     parser.add_argument("--aux-dir", type=Path, default=Path("outputs") / "si_figs_s1_s12_aux")

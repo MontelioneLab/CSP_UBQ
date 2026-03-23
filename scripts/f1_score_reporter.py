@@ -58,7 +58,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--csprank-csv",
         type=Path,
-        default=Path("CSP_UBQ.csv"),
+        default=Path("data/CSP_UBQ.csv"),
         help="Path to CSP_UBQ.csv file (default: %(default)s).",
     )
     return parser.parse_args(argv)

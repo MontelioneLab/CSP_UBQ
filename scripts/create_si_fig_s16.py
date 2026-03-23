@@ -302,8 +302,8 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
     parser.add_argument(
         "--targets-csv",
         type=Path,
-        default=Path("CSP_UBQ_ph0.5_temp5C.csv"),
-        help="CSV with 'holo_pdb' column (default: CSP_UBQ_ph0.5_temp5C.csv).",
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
+        help="CSV with 'holo_pdb' column (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
     parser.add_argument("--targets", type=str, help="Optional comma-separated holo_pdb list.")
     parser.add_argument("--bin-width", type=float, default=1.0)

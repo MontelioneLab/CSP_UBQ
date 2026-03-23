@@ -186,7 +186,7 @@ def main() -> int:
     parser.add_argument(
         "--input",
         default=paths.input_csv,
-        help="Path to CSV file (default: CSP_UBQ.csv in workspace root).",
+        help="Path to CSV file (default: data/CSP_UBQ.csv).",
     )
     parser.add_argument(
         "--quiet",

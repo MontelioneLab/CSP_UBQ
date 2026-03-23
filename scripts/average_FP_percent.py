@@ -71,10 +71,10 @@ def main() -> int:
     parser.add_argument(
         "--targets-csv",
         type=Path,
-        default=Path("CSP_UBQ_ph0.5_temp5C.csv"),
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
         help=(
             "CSV with holo_pdb column; only matching output subdirectories are used "
-            "(default: CSP_UBQ_ph0.5_temp5C.csv). Ignored with --all-targets."
+            "(default: data/CSP_UBQ_ph0.5_temp5C.csv). Ignored with --all-targets."
         ),
     )
     parser.add_argument(

@@ -62,8 +62,8 @@ def main() -> int:
     parser.add_argument(
         "--csv",
         type=Path,
-        default=Path("CSP_UBQ.csv"),
-        help="CSP_UBQ.csv path (default: CSP_UBQ.csv).",
+        default=Path("data/CSP_UBQ.csv"),
+        help="CSP_UBQ.csv path (default: data/CSP_UBQ.csv).",
     )
     parser.add_argument(
         "--include-placeholders",
@@ -89,7 +89,7 @@ def main() -> int:
             "create_si_table_s1.py",
             [
                 "--csp-csv",
-                "CSP_UBQ_ph0.5_temp5C.csv",
+                "data/CSP_UBQ_ph0.5_temp5C.csv",
                 "--output",
                 str(Path(figures) / "ST1_all_receptors.tex"),
             ],

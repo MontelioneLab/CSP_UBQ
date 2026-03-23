@@ -16,7 +16,11 @@ from typing import Optional, Tuple
 @dataclass(frozen=True)
 class Paths:
     workspace_root: str = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    input_csv: str = os.path.join(workspace_root, "CSP_UBQ.csv")
+    data_dir: str = os.path.join(workspace_root, "data")
+    input_csv: str = os.path.join(data_dir, "CSP_UBQ.csv")
+    filtered_input_csv: str = os.path.join(data_dir, "CSP_UBQ_ph0.5_temp5C.csv")
+    exp_conditions_csv: str = os.path.join(data_dir, "apo_holo_exp_conditions.csv")
+    receptor_chain_csv: str = os.path.join(data_dir, "receptor_chain_id.csv")
     cs_cache_dir: str = os.path.join(workspace_root, "CS_Lists")
     pdb_cache_dir: str = os.path.join(workspace_root, "PDB_FILES")
     outputs_dir: str = os.path.join(workspace_root, "outputs")
@@ -154,6 +158,7 @@ def ensure_directories(base_output: Optional[str] = None) -> None:
     base_output: Optional[str]
         If provided, overrides the default outputs directory for this run.
     """
+    os.makedirs(paths.data_dir, exist_ok=True)
     os.makedirs(paths.cs_cache_dir, exist_ok=True)
     os.makedirs(paths.pdb_cache_dir, exist_ok=True)
     os.makedirs(paths.pymol_views_dir, exist_ok=True)

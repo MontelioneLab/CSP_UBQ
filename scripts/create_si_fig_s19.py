@@ -78,7 +78,7 @@ def main() -> int:
     )
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
     parser.add_argument("--figures-dir", type=Path, default=Path("figures"))
-    parser.add_argument("--targets-csv", type=Path, default=Path("targets_PDB.csv"))
+    parser.add_argument("--targets-csv", type=Path, default=Path("data/targets_PDB.csv"))
     parser.add_argument("--aux-dir", type=Path, default=Path("outputs") / "si_figs_s1_s12_aux")
     parser.add_argument("--python", default=sys.executable)
     args = parser.parse_args()

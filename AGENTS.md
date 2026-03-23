@@ -16,7 +16,7 @@ For the public overview, methods summary, and how to run the main scripts, see [
 | [outputs/](outputs/) | Generated per-target data under `outputs/<holo_pdb>/`. Treat as build artifacts unless the task is to regenerate outputs or fix pipeline behavior. |
 | [CS_Lists/](CS_Lists/) | NMR-STAR / chemical shift list inputs. |
 | [figures/](figures/) | Publication and supplementary figures (often built with `scripts/create_*` helpers). |
-| Root CSVs (e.g. `CSP_UBQ.csv`) | Pipeline inputs; column definitions are in [docs/pipeline_reference.md](docs/pipeline_reference.md). |
+| `data/` CSVs (e.g. `data/CSP_UBQ.csv`) | Pipeline inputs; column definitions are in [docs/pipeline_reference.md](docs/pipeline_reference.md). |
 
 ## Environment and how to run
 
@@ -31,7 +31,7 @@ Alternatively use [environment.yml](environment.yml) with conda/mamba (`conda en
 Typical pipeline run:
 
 ```bash
-python scripts/pipeline.py --input CSP_UBQ.csv --out outputs
+python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs
 ```
 
 Additional flags (`--ids`, `--workers`, `--no-case-study`, metadata annotation, etc.) and verbose logging (`CSP_VERBOSE=1`) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).

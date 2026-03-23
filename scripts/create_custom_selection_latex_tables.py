@@ -78,28 +78,28 @@ SELECTIONS = [
         "st_id": "ST10",
         "title": "CBP Domain Receptors",
         "selection_name": "CBP",
-        "targets_csv": Path("targets_CBP.csv"),
+        "targets_csv": Path("data/targets_CBP.csv"),
         "output_tex": "ST10_cbp_domain_receptors.tex",
     },
     {
         "st_id": "ST11",
         "title": "BET-ET Domain Receptors",
         "selection_name": "BET_ET",
-        "targets_csv": Path("targets_BET_ET.csv"),
+        "targets_csv": Path("data/targets_BET_ET.csv"),
         "output_tex": "ST11_bet_et_domain_receptors.tex",
     },
     {
         "st_id": "ST12",
         "title": "TFIIH Domain Receptors",
         "selection_name": "TFIIH",
-        "targets_csv": Path("targets_TFIIH.csv"),
+        "targets_csv": Path("data/targets_TFIIH.csv"),
         "output_tex": "ST12_tfiih_domain_receptors.tex",
     },
     {
         "st_id": "ST13",
         "title": "Ubiquitin Domain Receptors",
         "selection_name": "ubiquitin",
-        "targets_csv": Path("targets_ubiquitin.csv"),
+        "targets_csv": Path("data/targets_ubiquitin.csv"),
         "output_tex": "ST13_ubiquitin_domain_receptors.tex",
     },
 ]
@@ -112,8 +112,8 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--csp-csv",
         type=Path,
-        default=Path("CSP_UBQ.csv"),
-        help="Path to CSP_UBQ.csv (default: CSP_UBQ.csv).",
+        default=Path("data/CSP_UBQ.csv"),
+        help="Path to CSP_UBQ.csv (default: data/CSP_UBQ.csv).",
     )
     parser.add_argument(
         "--confusion-csv",

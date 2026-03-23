@@ -6,7 +6,7 @@ holo_bmrb, holo_pdb, and receptor chain for each target. Outputs a table with
 5 columns: apo_pdb, holo_pdb, apo_bmrb, holo_bmrb, receptor_chain_id.
 
 Usage:
-  python scripts/create_receptor_chain_table.py [--output receptor_chain_id.csv] [--outputs-dir outputs]
+  python scripts/create_receptor_chain_table.py [--output data/receptor_chain_id.csv] [--outputs-dir outputs]
 """
 
 from __future__ import annotations
@@ -86,8 +86,8 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("receptor_chain_id.csv"),
-        help="Output CSV path (default: receptor_chain_id.csv in project root)",
+        default=Path("data/receptor_chain_id.csv"),
+        help="Output CSV path (default: data/receptor_chain_id.csv)",
     )
     parser.add_argument(
         "--outputs-dir",
@@ -98,8 +98,8 @@ def main() -> None:
     parser.add_argument(
         "--input-csv",
         type=Path,
-        default=Path("CSP_UBQ.csv"),
-        help="Input CSV for apo_pdb lookup (default: CSP_UBQ.csv)",
+        default=Path("data/CSP_UBQ.csv"),
+        help="Input CSV for apo_pdb lookup (default: data/CSP_UBQ.csv)",
     )
     args = parser.parse_args()
 

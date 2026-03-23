@@ -14,13 +14,13 @@ from __future__ import annotations
 
 import argparse
 import csv
-import os
 import sys
 from pathlib import Path
 
 # Default workspace root (parent of scripts/)
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent
+DATA_DIR = WORKSPACE_ROOT / "data"
 
 
 def load_csp_ubq(csv_path: Path) -> list[dict]:
@@ -91,14 +91,14 @@ def main() -> int:
     parser.add_argument(
         "--csp-ubq",
         type=Path,
-        default=WORKSPACE_ROOT / "CSP_UBQ.csv",
+        default=WORKSPACE_ROOT / "data/CSP_UBQ.csv",
         help="Path to CSP_UBQ.csv (default: %(default)s)",
     )
     parser.add_argument(
-        "--workspace",
+        "--targets-dir",
         type=Path,
-        default=WORKSPACE_ROOT,
-        help="Workspace root directory (default: %(default)s)",
+        default=DATA_DIR,
+        help="Directory for targets_*.csv files (default: %(default)s)",
     )
     args = parser.parse_args()
 
@@ -112,7 +112,7 @@ def main() -> int:
         return 1
 
     for filename, (filter_type, keyword) in TARGET_CONFIG.items():
-        target_path = args.workspace / filename
+        target_path = args.targets_dir / filename
         holo_pdbs = extract_holo_pdbs(rows, filter_type, keyword)
 
         if args.dry_run:
@@ -123,6 +123,7 @@ def main() -> int:
                 print(f"  ... and {len(holo_pdbs) - 5} more")
             continue
 
+        target_path.parent.mkdir(parents=True, exist_ok=True)
         with open(target_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(["holo_pdb"])

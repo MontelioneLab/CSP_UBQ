@@ -36,7 +36,7 @@ from scripts import rcsb_io
 
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INPUT_CSV = os.path.join(ROOT_DIR, "CSP_UBQ.csv")
+INPUT_CSV = os.path.join(ROOT_DIR, "data/CSP_UBQ.csv")
 OUTPUT_CSV = os.path.join(ROOT_DIR, "apo_bmrb_17769_alignments.csv")
 REF_APO_BMRB_ID = "17769"
 
@@ -303,7 +303,7 @@ def main() -> None:
             "and report overlap and approximate E-values."
         )
     )
-    parser.add_argument("--input", default=INPUT_CSV, help="Input CSV path (default: CSP_UBQ.csv)")
+    parser.add_argument("--input", default=INPUT_CSV, help="Input CSV path (default: data/CSP_UBQ.csv)")
     parser.add_argument(
         "--output",
         default=OUTPUT_CSV,

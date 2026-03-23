@@ -236,7 +236,7 @@ def _run_same_author_analysis(summary_root: Path, outputs_dir: Path) -> None:
             "--outputs-dir",
             str(outputs_dir),
             "--csprank-csv",
-            "CSP_UBQ.csv",
+            "data/CSP_UBQ.csv",
             "--output-image",
             str(summary_root / "f1_heatmap_same_author.png"),
             "--histogram-image",

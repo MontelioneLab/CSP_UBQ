@@ -10,6 +10,8 @@ import csv
 import sys
 from pathlib import Path
 
+_REPO = Path(__file__).resolve().parent.parent
+
 
 def load_csp_ubq_holo_pdbs(csp_ubq_path: Path) -> set[str]:
     """Load all holo_pdb values from CSP_UBQ.csv (normalized to lowercase)."""
@@ -27,12 +29,13 @@ def load_csp_ubq_holo_pdbs(csp_ubq_path: Path) -> set[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Remove targets not in CSP_UBQ.csv from targets_*.csv")
-    parser.add_argument("--csp-ubq", type=Path, default=Path("CSP_UBQ.csv"))
-    parser.add_argument("--targets-dir", type=Path, default=Path("."))
+    parser.add_argument("--csp-ubq", type=Path, default=Path("data/CSP_UBQ.csv"))
+    parser.add_argument("--targets-dir", type=Path, default=Path("data"))
     parser.add_argument("--dry-run", action="store_true", help="Report changes without writing")
     args = parser.parse_args()
 
-    csp_path = args.csp_ubq if args.csp_ubq.is_absolute() else (args.targets_dir / args.csp_ubq)
+    targets_dir = args.targets_dir if args.targets_dir.is_absolute() else (_REPO / args.targets_dir)
+    csp_path = args.csp_ubq if args.csp_ubq.is_absolute() else (_REPO / args.csp_ubq)
     if not csp_path.exists():
         print(f"Error: {csp_path} not found", file=sys.stderr)
         return 1
@@ -40,7 +43,7 @@ def main() -> int:
     valid_pdbs = load_csp_ubq_holo_pdbs(csp_path)
     print(f"Loaded {len(valid_pdbs)} holo_pdb values from {csp_path}")
 
-    targets_files = sorted(args.targets_dir.glob("targets_*.csv"))
+    targets_files = sorted(targets_dir.glob("targets_*.csv"))
     if not targets_files:
         print("No targets_*.csv files found", file=sys.stderr)
         return 0
