@@ -1,0 +1,1316 @@
+data_18556
+
+#######################
+#  Entry information  #
+#######################
+
+save_entry_information
+   _Saveframe_category      entry_information
+
+   _Entry_title            
+;
+The complex between Ca-Calmodulin and skeletal muscle myosin light chain kinase from combination of NMR and aqueous and contrast-matched SAXS data
+;
+   _BMRB_accession_number   18556
+   _BMRB_flat_file_name     bmr18556.str
+   _Entry_type              original
+   _Submission_date         2012-06-29
+   _Accession_date          2012-06-29
+   _Entry_origination       author
+   _NMR_STAR_version        2.1.1
+   _Experimental_method     NMR
+   _Details                
+;
+This entry contains the coordinates of the complex between Ca-bound human
+calmodulin and skeletal muscle myosin light chain kinase determined by
+refinement against backbone HN-N residual dipolar couplings from solution NMR
+and solution X-ray scattering intensity data. The latter include both SAXS data
+in H2O recorded on a Ca-CAM/MLCK sample and data in 65% aqueous sucrose buffer
+recorded on the Pb-CaM/MLCK sample in which Ca ions in calmodulin were replaced
+by Pb ions.    
+The position of the C-terminal relative to the N-terminal domain of calmodulin
+was optimized via an exhaustive rigid-body translational/orientational grid
+search with a step size of  1A/2deg while fitting RDCs and the two types of SAXS
+data. Subsequently, the coordinates of the linker connecting the two domain of
+calmodulin (residues 76-81) and the interfacial side chains were optimized via
+molecular dynamics/simulated annealing refinement while keeping the coordinates
+of the backbone atoms fixed.
+;
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+      1 Grishaev  Alexander  V. . 
+      2 Anthis    Nicholas   J. . 
+      3 Clore    'G. Marius' .  . 
+
+   stop_
+
+   loop_
+      _Saveframe_category_type
+      _Saveframe_category_type_count
+
+      assigned_chemical_shifts 1 
+
+   stop_
+
+   loop_
+      _Data_type
+      _Data_type_count
+
+      "1H chemical shifts"  144 
+      "15N chemical shifts" 144 
+
+   stop_
+
+   loop_
+      _Revision_date
+      _Revision_keyword
+      _Revision_author
+      _Revision_detail
+
+      2013-02-20 update   BMRB   'update entry citation' 
+      2013-02-01 original author 'original release'      
+
+   stop_
+
+save_
+
+
+#############################
+#  Citation for this entry  #
+#############################
+
+save_entry_citation
+   _Saveframe_category           entry_citation
+
+   _Citation_full                .
+   _Citation_title              'Contrast-matched small-angle X-ray scattering from a heavy-atom-labeled protein in structure determination: application to a lead-substituted calmodulin-peptide complex.'
+   _Citation_status              published
+   _Citation_type                journal
+   _CAS_abstract_code            .
+   _MEDLINE_UI_code              .
+   _PubMed_ID                    22908850
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+      1 Grishaev  Alexander  .  . 
+      2 Anthis    Nicholas   J. . 
+      3 Clore    'G. Marius' .  . 
+
+   stop_
+
+   _Journal_abbreviation        'J. Am. Chem. Soc.'
+   _Journal_name_full           'Journal of the American Chemical Society'
+   _Journal_volume               134
+   _Journal_issue                36
+   _Journal_CSD                  .
+   _Book_chapter_title           .
+   _Book_volume                  .
+   _Book_series                  .
+   _Book_ISBN                    .
+   _Conference_state_province    .
+   _Conference_abstract_number   .
+   _Page_first                   14686
+   _Page_last                    14689
+   _Year                         2012
+   _Details                      .
+
+save_
+
+
+##################################
+#  Molecular system description  #
+##################################
+
+save_assembly
+   _Saveframe_category         molecular_system
+
+   _Mol_system_name           'complex between Ca-Calmodulin and skeletal muscle myosin light chain kinase'
+   _Enzyme_commission_number   .
+
+   loop_
+      _Mol_system_component_name
+      _Mol_label
+
+       Calmodulin     $Calmodulin 
+       ssMLCK         $ssMLCK     
+      'CALCIUM ION_1' $entity_CA  
+      'CALCIUM ION_2' $entity_CA  
+      'CALCIUM ION_3' $entity_CA  
+      'CALCIUM ION_4' $entity_CA  
+
+   stop_
+
+   _System_molecular_weight    .
+   _System_physical_state      native
+   _System_oligomer_state      ?
+   _System_paramagnetic        no
+   _System_thiol_state         .
+   _Database_query_date        .
+   _Details                    .
+
+save_
+
+
+    ########################
+    #  Monomeric polymers  #
+    ########################
+
+save_Calmodulin
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                 Calmodulin
+   _Molecular_mass                              16678.439
+   _Mol_thiol_state                            'not present'
+   _Details                                     .
+
+   	##############################
+   	#  Polymer residue sequence  #
+   	##############################
+   
+      _Residue_count                               148
+   _Mol_residue_sequence                       
+;
+ADQLTEEQIAEFKEAFSLFD
+KDGDGTITTKELGTVMRSLG
+QNPTEAELQDMINEVDADGN
+GTIDFPEFLTMMARKMKDTD
+SEEEIREAFRVFDKDGNGFI
+SAAELRHVMTNLGEKLTDEE
+VDEMIREADIDGDGQVNYEE
+FVTMMTAK
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+
+        1 ALA    2 ASP    3 GLN    4 LEU    5 THR 
+        6 GLU    7 GLU    8 GLN    9 ILE   10 ALA 
+       11 GLU   12 PHE   13 LYS   14 GLU   15 ALA 
+       16 PHE   17 SER   18 LEU   19 PHE   20 ASP 
+       21 LYS   22 ASP   23 GLY   24 ASP   25 GLY 
+       26 THR   27 ILE   28 THR   29 THR   30 LYS 
+       31 GLU   32 LEU   33 GLY   34 THR   35 VAL 
+       36 MET   37 ARG   38 SER   39 LEU   40 GLY 
+       41 GLN   42 ASN   43 PRO   44 THR   45 GLU 
+       46 ALA   47 GLU   48 LEU   49 GLN   50 ASP 
+       51 MET   52 ILE   53 ASN   54 GLU   55 VAL 
+       56 ASP   57 ALA   58 ASP   59 GLY   60 ASN 
+       61 GLY   62 THR   63 ILE   64 ASP   65 PHE 
+       66 PRO   67 GLU   68 PHE   69 LEU   70 THR 
+       71 MET   72 MET   73 ALA   74 ARG   75 LYS 
+       76 MET   77 LYS   78 ASP   79 THR   80 ASP 
+       81 SER   82 GLU   83 GLU   84 GLU   85 ILE 
+       86 ARG   87 GLU   88 ALA   89 PHE   90 ARG 
+       91 VAL   92 PHE   93 ASP   94 LYS   95 ASP 
+       96 GLY   97 ASN   98 GLY   99 PHE  100 ILE 
+      101 SER  102 ALA  103 ALA  104 GLU  105 LEU 
+      106 ARG  107 HIS  108 VAL  109 MET  110 THR 
+      111 ASN  112 LEU  113 GLY  114 GLU  115 LYS 
+      116 LEU  117 THR  118 ASP  119 GLU  120 GLU 
+      121 VAL  122 ASP  123 GLU  124 MET  125 ILE 
+      126 ARG  127 GLU  128 ALA  129 ASP  130 ILE 
+      131 ASP  132 GLY  133 ASP  134 GLY  135 GLN 
+      136 VAL  137 ASN  138 TYR  139 GLU  140 GLU 
+      141 PHE  142 VAL  143 THR  144 MET  145 MET 
+      146 THR  147 ALA  148 LYS 
+
+   stop_
+
+   _Sequence_homology_query_date                .
+   _Sequence_homology_query_revised_last_date   2015-10-14
+
+   loop_
+      _Database_name
+      _Database_accession_code
+      _Database_entry_mol_name
+      _Sequence_query_to_submitted_percentage
+      _Sequence_subject_length
+      _Sequence_identity
+      _Sequence_positive
+      _Sequence_homology_expectation_value
+
+      BMRB        15184  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        15185  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        15186  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        15187  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        15188  calmodulin                                                                                                                       100.00 148  97.97  99.32 5.14e-98 
+      BMRB        15191  Calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        15470  calmodulin                                                                                                                       100.00 148  97.97  99.32 8.88e-98 
+      BMRB        15624  Calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        15650  calmodulin                                                                                                                       100.00 148  97.97  99.32 1.65e-97 
+      BMRB        15852  calmodulin                                                                                                                       100.00 148  97.97  99.32 1.65e-97 
+      BMRB         1634  calmodulin                                                                                                                       100.00 148  98.65 100.00 1.58e-98 
+      BMRB        16418  apoCaM                                                                                                                           100.00 148  98.65  99.32 2.53e-98 
+      BMRB        16465  entity_1                                                                                                                         100.00 148  98.65  99.32 2.53e-98 
+      BMRB         1648  calmodulin                                                                                                                       100.00 148  98.65 100.00 1.58e-98 
+      BMRB        16764  CALMODULIN                                                                                                                       100.00 150  98.65  99.32 2.70e-98 
+      BMRB        17264  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        17360  entity_1                                                                                                                         100.00 148  98.65  99.32 2.53e-98 
+      BMRB        17771  Calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        17807  Calmodulin                                                                                                                        99.32 147  98.64  99.32 1.45e-97 
+      BMRB        18027  CaM                                                                                                                              100.00 148  98.65  99.32 2.53e-98 
+      BMRB        18028  CaM                                                                                                                              100.00 148  98.65  99.32 2.53e-98 
+      BMRB        19036  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        19238  Calmodulin_prototypical_calcium_sensor                                                                                           100.00 148  98.65  99.32 2.53e-98 
+      BMRB        19586  entity_1                                                                                                                         100.00 148  98.65  99.32 2.53e-98 
+      BMRB        19604  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        25253  CaM                                                                                                                              100.00 148  97.97  98.65 2.77e-96 
+      BMRB        25257  CaM                                                                                                                              100.00 148  97.97  98.65 2.77e-96 
+      BMRB        26503  Calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB        26626  CaM                                                                                                                              100.00 148  98.65  99.32 2.53e-98 
+      BMRB        26627  CaM                                                                                                                              100.00 148  98.65  99.32 2.53e-98 
+      BMRB         4056  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB         4270  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB         4284  Calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      BMRB         4310  calmodulin                                                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      PDB  1A29          "Calmodulin Complexed With Trifluoperazine (1:2 Complex)"                                                                         100.00 148  98.65  99.32 2.53e-98 
+      PDB  1AHR          "Calmodulin Mutant With A Two Residue Deletion In The Central Helix"                                                              100.00 146  97.97  98.65 1.47e-95 
+      PDB  1CFC          "Calcium-Free Calmodulin"                                                                                                         100.00 148  98.65  99.32 2.53e-98 
+      PDB  1CFD          "Calcium-Free Calmodulin"                                                                                                         100.00 148  98.65  99.32 2.53e-98 
+      PDB  1CFF          "Nmr Solution Structure Of A Complex Of Calmodulin With A Binding Peptide Of The Ca2+-Pump"                                       100.00 148  98.65  99.32 2.53e-98 
+      PDB  1CKK          "CalmodulinRAT CA2+CALMODULIN DEPENDENT PROTEIN KINASE Fragment"                                                                  100.00 148  98.65  99.32 2.53e-98 
+      PDB  1CLL          "Calmodulin Structure Refined At 1.7 Angstroms Resolution"                                                                        100.00 148  98.65  99.32 2.53e-98 
+      PDB  1CM1          "Motions Of Calmodulin-Single-Conformer Refinement"                                                                               100.00 148  98.65  99.32 2.53e-98 
+      PDB  1CM4          "Motions Of Calmodulin-four-conformer Refinement"                                                                                 100.00 148  98.65  99.32 2.53e-98 
+      PDB  1CTR          "Drug Binding By Calmodulin: Crystal Structure Of A Calmodulin-Trifluoperazine Complex"                                           100.00 148  98.65  99.32 2.53e-98 
+      PDB  1DMO          "Calmodulin, Nmr, 30 Structures"                                                                                                  100.00 148  97.97  99.32 8.88e-98 
+      PDB  1G4Y          "1.60 A Crystal Structure Of The Gating Domain From Small Conductance Potassium Channel Complexed With Calcium-Calmodulin"        100.00 148  98.65  99.32 2.53e-98 
+      PDB  1IQ5          "CalmodulinNEMATODE CA2+CALMODULIN DEPENDENT KINASE KINASE Fragment"                                                              100.00 149  98.65  99.32 2.10e-98 
+      PDB  1IWQ          "Crystal Structure Of Marcks Calmodulin Binding Domain Peptide Complexed With Ca2+CALMODULIN"                                     100.00 148  98.65  99.32 2.53e-98 
+      PDB  1K90          "Crystal Structure Of The Adenylyl Cyclase Domain Of Anthrax Edema Factor (Ef) In Complex With Calmodulin And 3' Deoxy-Atp"       100.00 148  98.65  99.32 2.53e-98 
+      PDB  1K93          "Crystal Structure Of The Adenylyl Cyclase Domain Of Anthrax Edema Factor (Ef) In Complex With Calmodulin"                         97.30 144  98.61  99.31 2.74e-95 
+      PDB  1L7Z          "Crystal Structure Of Ca2+/calmodulin Complexed With Myristoylated Cap-23/nap-22 Peptide"                                         100.00 148  98.65  99.32 2.53e-98 
+      PDB  1LIN          "Calmodulin Complexed With Trifluoperazine (1:4 Complex)"                                                                         100.00 148  98.65  99.32 2.53e-98 
+      PDB  1LVC          "Crystal Structure Of The Adenylyl Cyclase Domain Of Anthrax Edema Factor (Ef) In Complex With Calmodulin And 2' Deoxy, 3' Anthr" 100.00 149  98.65  99.32 2.10e-98 
+      PDB  1MUX          "Solution Nmr Structure Of CalmodulinW-7 Complex: The Basis Of Diversity In Molecular Recognition, 30 Structures"                 100.00 148  98.65  99.32 2.53e-98 
+      PDB  1MXE          "Structure Of The Complex Of Calmodulin With The Target Sequence Of Camki"                                                        100.00 148  99.32 100.00 5.72e-99 
+      PDB  1NWD          "Solution Structure Of Ca2+CALMODULIN BOUND TO THE C- Terminal Domain Of Petunia Glutamate Decarboxylase"                         100.00 148  98.65  99.32 2.53e-98 
+      PDB  1OOJ          "Structural Genomics Of Caenorhabditis Elegans : Calmodulin"                                                                      100.00 149  99.32  99.32 1.16e-98 
+      PDB  1PRW          "Crystal Structure Of Bovine Brain Ca++ Calmodulin In A Compact Form"                                                             100.00 149  97.97  98.65 2.62e-97 
+      PDB  1QIV          "Calmodulin Complexed With N-(3,3,-Diphenylpropyl)-N'-[1-R-( 3,4-Bis-Butoxyphenyl)-Ethyl]-Propylenediamine (Dpd), 1:2 Complex"    100.00 148  98.65  99.32 2.53e-98 
+      PDB  1QIW          "Calmodulin Complexed With N-(3,3,-Diphenylpropyl)-N'-[1-R-( 3,4-Bis-Butoxyphenyl)-Ethyl]-Propylenediamine (Dpd)"                 100.00 148  98.65  99.32 2.53e-98 
+      PDB  1QX5          "Crystal Structure Of Apocalmodulin"                                                                                              100.00 148  98.65  99.32 2.53e-98 
+      PDB  1S26          "Structure Of Anthrax Edema Factor-calmodulin-alpha,beta- Methyleneadenosine 5'-triphosphate Complex Reveals An Alternative Mode" 100.00 148  98.65  99.32 2.53e-98 
+      PDB  1SK6          "Crystal Structure Of The Adenylyl Cyclase Domain Of Anthrax Edema Factor (Ef) In Complex With Calmodulin, 3',5' Cyclic Amp (Cam" 100.00 148  98.65  99.32 2.53e-98 
+      PDB  1SY9          "Structure Of Calmodulin Complexed With A Fragment Of The Olfactory Cng Channel"                                                  100.00 148  98.65  99.32 2.53e-98 
+      PDB  1UP5          "Chicken Calmodulin"                                                                                                              100.00 148  97.97  98.65 2.53e-97 
+      PDB  1WRZ          "Calmodulin Complexed With A Peptide From A Human Death-Associated Protein Kinase"                                                100.00 149  98.65  99.32 2.10e-98 
+      PDB  1X02          "Solution Structure Of Stereo Array Isotope Labeled (Sail) Calmodulin"                                                            100.00 148  98.65  99.32 2.53e-98 
+      PDB  1XA5          "Structure Of Calmodulin In Complex With Kar-2, A Bis-Indol Alkaloid"                                                             100.00 148  98.65  99.32 2.53e-98 
+      PDB  1XFU          "Crystal Structure Of Anthrax Edema Factor (ef) Truncation Mutant, Ef-delta 64 In Complex With Calmodulin"                        100.00 149  97.97  99.32 7.06e-98 
+      PDB  1XFV          "Crystal Structure Of Anthrax Edema Factor (Ef) In Complex With Calmodulin And 3' Deoxy-Atp"                                      100.00 149  97.97  99.32 7.06e-98 
+      PDB  1XFW          "Crystal Structure Of Anthrax Edema Factor (Ef) In Complex With Calmodulin And 3'5' Cyclic Amp (Camp)"                            100.00 149  97.97  99.32 7.06e-98 
+      PDB  1XFY          "Crystal Structure Of Anthrax Edema Factor (Ef) In Complex With Calmodulin"                                                       100.00 149  97.97  99.32 7.06e-98 
+      PDB  1XFZ          "Crystal Structure Of Anthrax Edema Factor (ef) In Complex With Calmodulin In The Presence Of 1 Millimolar Exogenously Added Cal" 100.00 149  97.97  99.32 7.06e-98 
+      PDB  1Y0V          "Crystal Structure Of Anthrax Edema Factor (Ef) In Complex With Calmodulin And Pyrophosphate"                                      97.30 146  98.61  99.31 2.20e-95 
+      PDB  1YR5          "1.7-A Structure Of Calmodulin Bound To A Peptide From Dap Kinase"                                                                100.00 148  98.65  99.32 2.53e-98 
+      PDB  2BBM          "Solution Structure Of A Calmodulin-Target Peptide Complex By Multidimensional Nmr"                                               100.00 148  99.32 100.00 5.72e-99 
+      PDB  2BBN          "Solution Structure Of A Calmodulin-Target Peptide Complex By Multidimensional Nmr"                                               100.00 148  99.32 100.00 5.72e-99 
+      PDB  2BCX          "Crystal Structure Of Calmodulin In Complex With A Ryanodine Receptor Peptide"                                                    100.00 148  98.65  99.32 2.53e-98 
+      PDB  2BKH          "Myosin Vi Nucleotide-Free (Mdinsert2) Crystal Structure"                                                                         100.00 149  99.32 100.00 5.25e-99 
+      PDB  2BKI          "Myosin Vi Nucleotide-free (mdinsert2-iq) Crystal Structure"                                                                      100.00 149  98.65  99.32 2.10e-98 
+      PDB  2DFS          "3-D Structure Of Myosin-V Inhibited State"                                                                                       100.00 148  98.65  99.32 2.53e-98 
+      PDB  2F2O          "Structure Of Calmodulin Bound To A Calcineurin Peptide: A New Way Of Making An Old Binding Mode"                                 100.00 179  98.65  99.32 5.00e-98 
+      PDB  2F2P          "Structure Of Calmodulin Bound To A Calcineurin Peptide: A New Way Of Making An Old Binding Mode"                                 100.00 179  98.65  99.32 5.00e-98 
+      PDB  2F3Y          "CalmodulinIQ DOMAIN COMPLEX"                                                                                                     100.00 148  98.65  99.32 2.53e-98 
+      PDB  2F3Z          "CalmodulinIQ-Aa Domain Complex"                                                                                                  100.00 148  98.65  99.32 2.53e-98 
+      PDB  2FOT          "Crystal Structure Of The Complex Between Calmodulin And Alphaii-Spectrin"                                                        100.00 148  98.65  99.32 2.53e-98 
+      PDB  2HQW          "Crystal Structure Of Ca2+CALMODULIN BOUND TO NMDA RECEPTOR NR1C1 Peptide"                                                        100.00 148  98.65  99.32 2.53e-98 
+      PDB  2JZI          "Structure Of Calmodulin Complexed With The Calmodulin Binding Domain Of Calcineurin"                                             100.00 148  98.65  99.32 2.53e-98 
+      PDB  2K0E          "A Coupled Equilibrium Shift Mechanism In Calmodulin- Mediated Signal Transduction"                                               100.00 148  98.65  99.32 2.53e-98 
+      PDB  2K0F          "Calmodulin Complexed With Calmodulin-Binding Peptide From Smooth Muscle Myosin Light Chain Kinase"                               100.00 148  98.65  99.32 2.53e-98 
+      PDB  2K0J          "Solution Structure Of Cam Complexed To Drp1p"                                                                                    100.00 148  97.97  99.32 1.65e-97 
+      PDB  2K61          "Solution Structure Of Cam Complexed To Dapk Peptide"                                                                             100.00 148  97.97  99.32 1.65e-97 
+      PDB  2KDU          "Structural Basis Of The Munc13-1CA2+-Calmodulin Interaction: A Novel 1-26 Calmodulin Binding Motif With A Bipartite Binding Mod" 100.00 148  98.65  99.32 2.53e-98 
+      PDB  2KNE          "Calmodulin Wraps Around Its Binding Domain In The Plasma Membrane Ca2+ Pump Anchored By A Novel 18-1 Motif"                      100.00 148  98.65  99.32 2.53e-98 
+      PDB  2L53          "Solution Nmr Structure Of Apo-Calmodulin In Complex With The Iq Motif Of Human Cardiac Sodium Channel Nav1.5"                    100.00 148  98.65  99.32 2.53e-98 
+      PDB  2L7L          "Solution Structure Of Ca2+CALMODULIN COMPLEXED WITH A PEPTIDE Representing The Calmodulin-Binding Domain Of Calmodulin Kinase I" 100.00 148  98.65  99.32 2.53e-98 
+      PDB  2LGF          "Solution Structure Of Ca2+CALMODULIN COMPLEXED WITH A PEPTIDE Representing The Calmodulin-Binding Domain Of L-Selectin"           98.65 146  98.63  99.32 6.76e-97 
+      PDB  2LL6          "Solution Nmr Structure Of Cam Bound To Inos Cam Binding Domain Peptide"                                                          100.00 148  98.65  99.32 2.53e-98 
+      PDB  2LL7          "Solution Nmr Structure Of Cam Bound To The Enos Cam Binding Domain Peptide"                                                      100.00 148  98.65  99.32 2.53e-98 
+      PDB  2LV6          "The Complex Between Ca-calmodulin And Skeletal Muscle Myosin Light Chain Kinase From Combination Of Nmr And Aqueous And Contras" 100.00 148 100.00 100.00 2.36e-99 
+      PDB  2M0J          "3d Structure Of Calmodulin And Calmodulin Binding Domain Of Olfactory Cyclic Nucleotide-gated Ion Channel Complex"               100.00 148  98.65  99.32 2.53e-98 
+      PDB  2M0K          "3d Structure Of Calmodulin And Calmodulin Binding Domain Of Rat Olfactory Cyclic Nucleotide-gated Ion Channel"                   100.00 148  98.65  99.32 2.53e-98 
+      PDB  2M55          "Nmr Structure Of The Complex Of An N-terminally Acetylated Alpha- Synuclein Peptide With Calmodulin"                             100.00 148  98.65  99.32 2.53e-98 
+      PDB  2MG5          "Solution Structure Of Calmodulin Bound To The Target Peptide Of Endothelial Nitrogen Oxide Synthase Phosphorylated At Thr495"    100.00 148  98.65  99.32 2.53e-98 
+      PDB  2MGU          "Structure Of The Complex Between Calmodulin And The Binding Domain Of Hiv-1 Matrix Protein"                                      100.00 148  98.65  99.32 2.53e-98 
+      PDB  2O5G          "Calmodulin-Smooth Muscle Light Chain Kinase Peptide Complex"                                                                     100.00 148  98.65  99.32 2.53e-98 
+      PDB  2O60          "Calmodulin Bound To Peptide From Neuronal Nitric Oxide Synthase"                                                                 100.00 148  98.65  99.32 2.53e-98 
+      PDB  2R28          "The Complex Structure Of Calmodulin Bound To A Calcineurin Peptide"                                                              100.00 149  98.65  99.32 2.10e-98 
+      PDB  2V01          "Recombinant Vertebrate Calmodulin Complexed With Pb"                                                                             100.00 149  98.65  99.32 2.10e-98 
+      PDB  2V02          "Recombinant Vertebrate Calmodulin Complexed With Ba"                                                                             100.00 149  98.65  99.32 2.10e-98 
+      PDB  2VAS          "Myosin Vi (Md-Insert2-Cam, Delta-Insert1) Post-Rigor State"                                                                      100.00 149  99.32 100.00 5.25e-99 
+      PDB  2VAY          "Calmodulin Complexed With Cav1.1 Iq Peptide"                                                                                      98.65 146  98.63  99.32 6.76e-97 
+      PDB  2VB6          "Myosin Vi (Md-Insert2-Cam, Delta Insert1) Post-Rigor State ( Crystal Form 2)"                                                    100.00 149  98.65 100.00 1.04e-98 
+      PDB  2W73          "High-Resolution Structure Of The Complex Between Calmodulin And A Peptide From Calcineurin A"                                    100.00 149  98.65  99.32 2.10e-98 
+      PDB  2WEL          "Crystal Structure Of Su6656-Bound CalciumCALMODULIN- Dependent Protein Kinase Ii Delta In Complex With Calmodulin"               100.00 150  98.65  99.32 1.93e-98 
+      PDB  2X0G          "X-ray Structure Of A Dap-kinase Calmodulin Complex"                                                                              100.00 148  98.65  99.32 2.53e-98 
+      PDB  2X51          "M6 Delta Insert1"                                                                                                                100.00 149  99.32 100.00 5.25e-99 
+      PDB  2Y4V          "Crystal Structure Of Human Calmodulin In Complex With A Dap Kinase-1 Mutant (W305y) Peptide"                                     100.00 149  98.65  99.32 2.10e-98 
+      PDB  2YGG          "Complex Of Cambr And Cam"                                                                                                        100.00 150  98.65  99.32 2.08e-98 
+      PDB  3BXK          "Crystal Structure Of The PQ-Type Calcium Channel (Cav2.1) Iq Domain And Ca2+calmodulin Complex"                                  100.00 148  98.65  99.32 2.53e-98 
+      PDB  3BXL          "Crystal Structure Of The R-Type Calcium Channel (Cav2.3) Iq Domain And Ca2+calmodulin Complex"                                   100.00 148  98.65  99.32 2.53e-98 
+      PDB  3BYA          "Structure Of A Calmodulin Complex"                                                                                               100.00 148  98.65  99.32 2.53e-98 
+      PDB  3CLN          "Structure Of Calmodulin Refined At 2.2 Angstroms Resolution"                                                                     100.00 148  97.97  99.32 8.88e-98 
+      PDB  3DVE          "Crystal Structure Of Ca2+CAM-Cav2.2 Iq Domain Complex"                                                                           100.00 148  98.65  99.32 2.53e-98 
+      PDB  3DVJ          "Crystal Structure Of Ca2+CAM-Cav2.2 Iq Domain (Without Cloning Artifact, Hm To Tv) Complex"                                      100.00 148  98.65  99.32 2.53e-98 
+      PDB  3DVK          "Crystal Structure Of Ca2+CAM-Cav2.3 Iq Domain Complex"                                                                           100.00 148  98.65  99.32 2.53e-98 
+      PDB  3DVM          "Crystal Structure Of Ca2+CAM-Cav2.1 Iq Domain Complex"                                                                           100.00 148  98.65  99.32 2.53e-98 
+      PDB  3EK4          "Calcium-saturated Gcamp2 Monomer"                                                                                                 99.32 449  98.64  99.32 3.65e-94 
+      PDB  3EK7          "Calcium-Saturated Gcamp2 Dimer"                                                                                                   99.32 449  98.64  99.32 3.65e-94 
+      PDB  3EK8          "Calcium-Saturated Gcamp2 T116vG87R MUTANT MONOMER"                                                                                99.32 449  98.64  99.32 3.65e-94 
+      PDB  3EKH          "Calcium-Saturated Gcamp2 T116vK378W MUTANT MONOMER"                                                                               99.32 449  97.96  98.64 3.61e-93 
+      PDB  3EVU          "Crystal Structure Of Calcium Bound Dimeric Gcamp2, (#1)"                                                                          99.32 449  98.64  99.32 3.65e-94 
+      PDB  3EVV          "Crystal Structure Of Calcium Bound Dimeric Gcamp2 (#2)"                                                                           99.32 449  98.64  99.32 3.65e-94 
+      PDB  3EWT          "Crystal Structure Of Calmodulin Complexed With A Peptide"                                                                        100.00 154  98.65  99.32 8.90e-99 
+      PDB  3EWV          "Crystal Structure Of Calmodulin Complexed With A Peptide"                                                                        100.00 154  98.65  99.32 8.90e-99 
+      PDB  3G43          "Crystal Structure Of The Calmodulin-Bound Cav1.2 C-Terminal Regulatory Domain Dimer"                                             100.00 148  98.65  99.32 2.53e-98 
+      PDB  3GN4          "Myosin Lever Arm"                                                                                                                100.00 149  99.32 100.00 5.25e-99 
+      PDB  3GOF          "Calmodulin Bound To Peptide From Macrophage Nitric Oxide Synthase"                                                               100.00 148  98.65  99.32 2.53e-98 
+      PDB  3HR4          "Human Inos Reductase And Calmodulin Complex"                                                                                     100.00 149  98.65  99.32 2.10e-98 
+      PDB  3IF7          "Structure Of Calmodulin Complexed With Its First Endogenous Inhibitor, Sphingosylphosphorylcholine"                              100.00 148  98.65  99.32 2.53e-98 
+      PDB  3J41          "Pseudo-atomic Model Of The Aquaporin-0/calmodulin Complex Derived From Electron Microscopy"                                      100.00 149  98.65  99.32 2.10e-98 
+      PDB  3L9I          "Myosin Vi Nucleotide-Free (Mdinsert2) L310g Mutant Crystal Structure"                                                            100.00 149  99.32 100.00 5.25e-99 
+      PDB  3O77          "The Structure Of Ca2+ Sensor (Case-16)"                                                                                           99.32 415  98.64  99.32 1.88e-94 
+      PDB  3O78          "The Structure Of Ca2+ Sensor (Case-12)"                                                                                           99.32 415  98.64  99.32 2.16e-94 
+      PDB  3OXQ          "Crystal Structure Of Ca2+CAM-Cav1.2 Pre-IqIQ DOMAIN COMPLEX"                                                                     100.00 149  98.65  99.32 2.10e-98 
+      PDB  3SG2          "Crystal Structure Of Gcamp2-t116v,d381y"                                                                                          99.32 449  97.96  98.64 4.73e-93 
+      PDB  3SG3          "Crystal Structure Of Gcamp3-d380y"                                                                                                99.32 449  97.28  98.64 3.03e-92 
+      PDB  3SG6          "Crystal Structure Of Dimeric Gcamp2-lia(linker 1)"                                                                                99.32 450  98.64  99.32 3.76e-94 
+      PDB  3SG7          "Crystal Structure Of Gcamp3-kf(linker 1)"                                                                                         99.32 448  97.96  99.32 3.12e-93 
+      PDB  3SJQ          "Crystal Structure Of A Small Conductance Potassium Channel Splice Variant Complexed With Calcium-Calmodulin"                     100.00 149  98.65  99.32 2.10e-98 
+      PDB  3SUI          "Crystal Structure Of Ca2+-Calmodulin In Complex With A Trpv1 C- Terminal Peptide"                                                100.00 149  98.65  99.32 2.10e-98 
+      PDB  3U0K          "Crystal Structure Of The Genetically Encoded Calcium Indicator Rcamp"                                                             99.32 440  97.28  98.64 9.70e-93 
+      PDB  3WFN          "Crystal Structure Of Nav1.6 Iq Motif In Complex With Apo-cam"                                                                    100.00 182  98.65  99.32 3.17e-98 
+      PDB  4ANJ          "Myosin Vi (Mdinsert2-Gfp Fusion) Pre-Powerstroke State (Mg.Adp.Alf4)"                                                            100.00 149  99.32 100.00 5.25e-99 
+      PDB  4BW7          "Calmodulin In Complex With Strontium"                                                                                            100.00 149  98.65  99.32 2.10e-98 
+      PDB  4BW8          "Calmodulin With Small Bend In Central Helix"                                                                                     100.00 149  98.65  99.32 2.10e-98 
+      PDB  4BYF          "Crystal Structure Of Human Myosin 1c In Complex With Calmodulin In The Pre-power Stroke State"                                   100.00 149  98.65  99.32 2.10e-98 
+      PDB  4CLN          "Structure Of A Recombinant Calmodulin From Drosophila Melanogaster Refined At 2.2-Angstroms Resolution"                          100.00 148  99.32 100.00 5.72e-99 
+      PDB  4DBP          "Myosin Vi Nucleotide-free (mdinsert2) D179y Crystal Structure"                                                                   100.00 149  99.32 100.00 5.25e-99 
+      PDB  4DBQ          "Myosin Vi D179y (md-insert2-cam, Delta-insert1) Post-rigor State"                                                                100.00 149  99.32 100.00 5.25e-99 
+      PDB  4DCK          "Crystal Structure Of The C-Terminus Of Voltage-Gated Sodium Channel In Complex With Fgf13 And Cam"                               100.00 149  98.65  99.32 2.10e-98 
+      PDB  4DJC          "1.35 A Crystal Structure Of The Nav1.5 Diii-Iv-CaCAM COMPLEX"                                                                    100.00 152  98.65  99.32 2.30e-98 
+      PDB  4E50          "Calmodulin And Ng Peptide Complex"                                                                                               100.00 185  98.65  99.32 1.33e-98 
+      PDB  4EHQ          "Crystal Structure Of Calmodulin Binding Domain Of Orai1 In Complex With Ca2+CALMODULIN DISPLAYS A UNIQUE BINDING MODE"           100.00 148  98.65  99.32 2.53e-98 
+      PDB  4G27          "Calcium-Calmodulin Complexed With The Calmodulin Binding Domain From A Small Conductance Potassium Channel Splice Variant And P" 100.00 149  98.65  99.32 2.10e-98 
+      PDB  4G28          "Calcium-Calmodulin Complexed With The Calmodulin Binding Domain From A Small Conductance Potassium Channel Splice Variant And E" 100.00 149  98.65  99.32 2.10e-98 
+      PDB  4HEX          "A Novel Conformation Of Calmodulin"                                                                                              100.00 156  98.65  99.32 1.08e-98 
+      PDB  4IK1          "High Resolution Structure Of Gcampj At Ph 8.5"                                                                                    99.32 448  97.28  98.64 3.01e-92 
+      PDB  4IK3          "High Resolution Structure Of Gcamp3 At Ph 8.5"                                                                                    99.32 448  97.96  99.32 2.57e-93 
+      PDB  4IK4          "High Resolution Structure Of Gcamp3 At Ph 5.0"                                                                                    99.32 448  97.96  99.32 2.57e-93 
+      PDB  4IK5          "High Resolution Structure Of Delta-rest-gcamp3"                                                                                   99.32 414  97.96  99.32 1.14e-93 
+      PDB  4IK8          "High Resolution Structure Of Gcamp3 Dimer Form 1 At Ph 7.5"                                                                       99.32 448  97.96  99.32 2.57e-93 
+      PDB  4IK9          "High Resolution Structure Of Gcamp3 Dimer Form 2 At Ph 7.5"                                                                       99.32 448  97.96  99.32 2.57e-93 
+      PDB  4J9Y          "Calcium-calmodulin Complexed With The Calmodulin Binding Domain From A Small Conductance Potassium Channel Splice Variant"       100.00 149  98.65  99.32 2.10e-98 
+      PDB  4J9Z          "Calcium-calmodulin Complexed With The Calmodulin Binding Domain From A Small Conductance Potassium Channel Splice Variant And N" 100.00 149  98.65  99.32 2.10e-98 
+      PDB  4JPZ          "Voltage-gated Sodium Channel 1.2 C-terminal Domain In Complex With Fgf13u And Ca2+/calmodulin"                                   100.00 149  98.65  99.32 2.10e-98 
+      PDB  4JQ0          "Voltage-gated Sodium Channel 1.5 C-terminal Domain In Complex With Fgf12b And Ca2+/calmodulin"                                   100.00 149  98.65  99.32 2.10e-98 
+      PDB  4L79          "Crystal Structure Of Nucleotide-free Myosin 1b Residues 1-728 With Bound Calmodulin"                                             100.00 149  98.65  99.32 2.10e-98 
+      PDB  4LZX          "Complex Of Iqcg And Ca2+-free Cam"                                                                                               100.00 148  98.65  99.32 2.53e-98 
+      PDB  4M1L          "Complex Of Iqcg And Ca2+-bound Cam"                                                                                              100.00 148  98.65  99.32 2.53e-98 
+      PDB  4PJJ          "Myosin Vi (md-insert2-cam, Delta-insert1) Post-rigor State - Long Soaking With Po4"                                              100.00 149  98.65 100.00 1.04e-98 
+      PDB  4Q5U          "Structure Of Calmodulin Bound To Its Recognition Site From Calcineurin"                                                          100.00 149  98.65  99.32 2.10e-98 
+      PDB  4QNH          "Calcium-calmodulin (t79d) Complexed With The Calmodulin Binding Domain From A Small Conductance Potassium Channel Sk2-a"         100.00 149  97.97  98.65 3.44e-97 
+      PDB  4R8G          "Crystal Structure Of Myosin-1c Tail In Complex With Calmodulin"                                                                  100.00 148  98.65  99.32 2.53e-98 
+      PDB  4UMO          "Crystal Structure Of The Kv7.1 Proximal C-terminal Domain In Complex With Calmodulin"                                            100.00 149  98.65  99.32 2.10e-98 
+      PDB  4UPU          "Crystal Structure Of Ip3 3-k Calmodulin Binding Region In Complex With Calmodulin"                                               100.00 148  98.65  99.32 2.53e-98 
+      PDB  4V0C          "Crystal Structure Of The Kv7.1 Proximal C-terminal Domain In Complex With Calmodulin"                                            100.00 149  98.65  99.32 2.10e-98 
+      DBJ  BAA08302      "calmodulin [Homo sapiens]"                                                                                                       100.00 149  98.65  99.32 2.10e-98 
+      DBJ  BAA11896      "calmodulin [Anas platyrhynchos]"                                                                                                 100.00 149  98.65  99.32 2.10e-98 
+      DBJ  BAA19786      "calmodulin [Branchiostoma lanceolatum]"                                                                                          100.00 149  99.32 100.00 5.25e-99 
+      DBJ  BAA19787      "calmodulin [Branchiostoma floridae]"                                                                                             100.00 149  99.32 100.00 5.25e-99 
+      DBJ  BAA19788      "calmodulin [Halocynthia roretzi]"                                                                                                100.00 149  99.32 100.00 5.25e-99 
+      EMBL CAA10601      "calmodulin [Caenorhabditis elegans]"                                                                                             100.00 149  99.32  99.32 1.16e-98 
+      EMBL CAA32050      "calmodulin [Rattus norvegicus]"                                                                                                  100.00 149  98.65  99.32 2.10e-98 
+      EMBL CAA32062      "calmodulin II [Rattus norvegicus]"                                                                                               100.00 149  98.65  99.32 2.10e-98 
+      EMBL CAA32119      "calmodulin [Rattus norvegicus]"                                                                                                  100.00 149  98.65  99.32 2.10e-98 
+      EMBL CAA32120      "calmodulin [Rattus norvegicus]"                                                                                                  100.00 149  98.65  99.32 2.10e-98 
+      GB   AAA35635      "calmodulin [Homo sapiens]"                                                                                                       100.00 149  98.65  99.32 2.10e-98 
+      GB   AAA35641      "calmodulin [Homo sapiens]"                                                                                                       100.00 149  98.65  99.32 2.10e-98 
+      GB   AAA37365      "calmodulin synthesis [Mus musculus]"                                                                                             100.00 149  98.65  99.32 2.10e-98 
+      GB   AAA40862      "calmodulin [Rattus norvegicus]"                                                                                                  100.00 149  98.65  99.32 2.10e-98 
+      GB   AAA40863      "calmodulin [Rattus norvegicus]"                                                                                                  100.00 149  98.65  99.32 2.10e-98 
+      PIR  JC1305        "calmodulin - Japanese medaka"                                                                                                    100.00 149  98.65  99.32 2.10e-98 
+      PIR  MCON          "calmodulin - salmon"                                                                                                             100.00 148  98.65  99.32 2.53e-98 
+      PRF  0711223A       calmodulin                                                                                                                       100.00 148  97.97 100.00 3.63e-97 
+      REF  NP_001008160  "calmodulin [Xenopus (Silurana) tropicalis]"                                                                                      100.00 149  98.65  99.32 2.10e-98 
+      REF  NP_001009759  "calmodulin [Ovis aries]"                                                                                                         100.00 149  98.65  99.32 2.10e-98 
+      REF  NP_001027633  "calmodulin [Ciona intestinalis]"                                                                                                 100.00 149  97.97  98.65 1.55e-97 
+      REF  NP_001039714  "calmodulin [Bos taurus]"                                                                                                         100.00 149  98.65  99.32 2.10e-98 
+      REF  NP_001040234  "calmodulin [Bombyx mori]"                                                                                                        100.00 149  99.32 100.00 5.25e-99 
+      SP   O02367        "RecName: Full=Calmodulin; Short=CaM; AltName: Full=Ci-CaM"                                                                       100.00 149  97.97  98.65 1.55e-97 
+      SP   O16305        "RecName: Full=Calmodulin; Short=CaM"                                                                                             100.00 149  99.32  99.32 1.16e-98 
+      SP   O96081        "RecName: Full=Calmodulin-B; Short=CaM B"                                                                                         100.00 149  98.65  99.32 3.05e-98 
+      SP   P02594        "RecName: Full=Calmodulin; Short=CaM"                                                                                             100.00 149  97.97  99.32 6.47e-98 
+      SP   P02595        "RecName: Full=Calmodulin; Short=CaM"                                                                                             100.00 149  97.97 100.00 3.63e-97 
+      TPG  DAA13808      "TPA: calmodulin 2-like [Bos taurus]"                                                                                             100.00 216  97.30  97.97 1.14e-96 
+      TPG  DAA18029      "TPA: calmodulin [Bos taurus]"                                                                                                    100.00 149  97.97  99.32 1.14e-97 
+      TPG  DAA19590      "TPA: calmodulin 3 [Bos taurus]"                                                                                                  100.00 149  98.65  99.32 2.10e-98 
+      TPG  DAA24777      "TPA: calmodulin 2-like [Bos taurus]"                                                                                             100.00 149  98.65  99.32 2.10e-98 
+      TPG  DAA24988      "TPA: calmodulin 2-like isoform 1 [Bos taurus]"                                                                                   100.00 149  98.65  99.32 2.10e-98 
+
+   stop_
+
+save_
+
+
+save_ssMLCK
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                 ssMLCK
+   _Molecular_mass                              2972.567
+   _Mol_thiol_state                            'not present'
+   _Details                                     .
+   _Residue_count                               26
+   _Mol_residue_sequence                       
+;
+KRRWKKNFIAVSAANRFKKI
+SSSGAL
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+
+       1 LYS   2 ARG   3 ARG   4 TRP   5 LYS 
+       6 LYS   7 ASN   8 PHE   9 ILE  10 ALA 
+      11 VAL  12 SER  13 ALA  14 ALA  15 ASN 
+      16 ARG  17 PHE  18 LYS  19 LYS  20 ILE 
+      21 SER  22 SER  23 SER  24 GLY  25 ALA 
+      26 LEU 
+
+   stop_
+
+   _Sequence_homology_query_date                .
+   _Sequence_homology_query_revised_last_date   2015-01-30
+
+   loop_
+      _Database_name
+      _Database_accession_code
+      _Database_entry_mol_name
+      _Sequence_query_to_submitted_percentage
+      _Sequence_subject_length
+      _Sequence_identity
+      _Sequence_positive
+      _Sequence_homology_expectation_value
+
+      BMRB         7028 "WFF peptide"                                                                                                                      69.23   18 100.00 100.00 6.00e-02 
+      PDB  2B8K          "12-Subunit Rna Polymerase Ii"                                                                                                    100.00  215 100.00 100.00 7.07e-08 
+      PDB  2BBM          "Solution Structure Of A Calmodulin-Target Peptide Complex By Multidimensional Nmr"                                               100.00   26 100.00 100.00 4.12e-07 
+      PDB  2BBN          "Solution Structure Of A Calmodulin-Target Peptide Complex By Multidimensional Nmr"                                               100.00   26 100.00 100.00 4.12e-07 
+      PDB  2LV6          "The Complex Between Ca-calmodulin And Skeletal Muscle Myosin Light Chain Kinase From Combination Of Nmr And Aqueous And Contras" 100.00   26 100.00 100.00 4.12e-07 
+      PDB  3KF9          "Crystal Structure Of The SdcenSKMLCK COMPLEX"                                                                                     84.62   22 100.00 100.00 2.74e-04 
+      PDB  3P9D          "The Crystal Structure Of Yeast Cct Reveals Intrinsic Asymmetry Of Eukaryotic Cytosolic Chaperonins"                              100.00  590 100.00 100.00 1.51e-07 
+      PDB  3P9E          "The Crystal Structure Of Yeast Cct Reveals Intrinsic Asymmetry Of Eukaryotic Cytosolic Chaperonins"                              100.00  590 100.00 100.00 1.51e-07 
+      PDB  4AOL          "The Crystal Structures Of The Eukaryotic Chaperonin Cct Reveal Its Functional Partitioning"                                      100.00  590 100.00 100.00 1.51e-07 
+      PDB  4APK          "The Crystal Structures Of The Eukaryotic Chaperonin Cct Reveal Its Functional Partitioning"                                      100.00  590 100.00 100.00 1.51e-07 
+      PDB  4D8Q          "Molecular Architecture Of The Eukaryotic Chaperonin TricCCT DERIVED By A Combination Of Chemical Crosslinking And Mass-Spectrom" 100.00  590 100.00 100.00 1.51e-07 
+      PDB  4D8R          "Molecular Architecture Of The Eukaryotic Chaperonin TricCCT DERIVED By A Combination Of Chemical Crosslinking And Mass-Spectrom" 100.00  590 100.00 100.00 1.51e-07 
+      PDB  4GWP          "Structure Of The Mediator Head Module From S. Cerevisiae"                                                                        100.00  407 100.00 100.00 4.09e-06 
+      PDB  4GWQ          "Structure Of The Mediator Head Module From S. Cerevisiae In Complex With The Carboxy-Terminal Domain (Ctd) Of Rna Polymerase Ii" 100.00  407 100.00 100.00 4.09e-06 
+      PDB  4I43          "Crystal Structure Of Prp8:aar2 Complex"                                                                                          100.00 1564 100.00 100.00 1.02e-06 
+      DBJ  BAD30083      "yellow cameleon 2.60 [synthetic construct]"                                                                                      100.00  653 100.00 100.00 6.76e-08 
+      DBJ  BAD30084      "yellow cameleon 3.60 [synthetic construct]"                                                                                      100.00  653 100.00 100.00 6.76e-08 
+      DBJ  BAD30085      "yellow cameleon 4.60 [synthetic construct]"                                                                                      100.00  653 100.00 100.00 6.76e-08 
+      DBJ  BAD30086      "yellow cameleon 3.60-pm [synthetic construct]"                                                                                   100.00  691 100.00 100.00 6.97e-08 
+      DBJ  BAI47180      "myosin light chain kinase 2 [synthetic construct]"                                                                               100.00  596 100.00 100.00 1.62e-07 
+      EMBL CAA46981      "51aa protein with 3 functional units; keptide unit,Factor X unit, calmodulin binding unit [synthetic construct]"                 100.00   52 100.00 100.00 2.27e-07 
+      EMBL CAC81354      "skeletal muscle-specific myosin light chain kinase [Homo sapiens]"                                                               100.00  596 100.00 100.00 1.62e-07 
+      GB   AAA31400      "myosin light chain kinase (EC 2.7.1.-) [Oryctolagus cuniculus]"                                                                  100.00  608 100.00 100.00 6.49e-08 
+      GB   AAC71016      "calmodulin-binding peptide-FLAG epitope fusion protein [Cloning vector pCALnFLAG]"                                               100.00   61 100.00 100.00 2.03e-07 
+      GB   AAH07753      "MYLK2 protein, partial [Homo sapiens]"                                                                                           100.00  242 100.00 100.00 1.07e-07 
+      GB   AAH19408      "Mylk2 protein, partial [Mus musculus]"                                                                                           100.00  240 100.00 100.00 8.82e-08 
+      GB   AAH69627      "Myosin light chain kinase 2 [Homo sapiens]"                                                                                      100.00  596 100.00 100.00 1.62e-07 
+      PRF  1507147A      "myosin L kinase"                                                                                                                 100.00  315 100.00 100.00 2.07e-07 
+      REF  NP_001074513  "myosin light chain kinase 2, skeletal/cardiac muscle [Mus musculus]"                                                             100.00  613 100.00 100.00 1.12e-07 
+      REF  NP_001075705  "myosin light chain kinase 2, skeletal/cardiac muscle [Oryctolagus cuniculus]"                                                    100.00  608 100.00 100.00 6.49e-08 
+      REF  NP_001077188  "myosin light chain kinase 2, skeletal/cardiac muscle [Bos taurus]"                                                               100.00  623 100.00 100.00 6.58e-08 
+      REF  NP_149109     "myosin light chain kinase 2, skeletal/cardiac muscle [Homo sapiens]"                                                             100.00  596 100.00 100.00 1.62e-07 
+      REF  XP_001499833  "PREDICTED: myosin light chain kinase 2, skeletal/cardiac muscle isoformX1 [Equus caballus]"                                      100.00  668 100.00 100.00 6.85e-08 
+      SP   A4IFM7        "RecName: Full=Myosin light chain kinase 2, skeletal/cardiac muscle; Short=MLCK2 [Bos taurus]"                                    100.00  623 100.00 100.00 6.58e-08 
+      SP   P07313        "RecName: Full=Myosin light chain kinase 2, skeletal/cardiac muscle; Short=MLCK2 [Oryctolagus cuniculus]"                         100.00  608 100.00 100.00 6.49e-08 
+      SP   P20689        "RecName: Full=Myosin light chain kinase 2, skeletal/cardiac muscle; Short=MLCK2 [Rattus norvegicus]"                             100.00  610 100.00 100.00 6.50e-08 
+      SP   Q8VCR8        "RecName: Full=Myosin light chain kinase 2, skeletal/cardiac muscle; Short=MLCK2 [Mus musculus]"                                  100.00  613 100.00 100.00 1.12e-07 
+      SP   Q9H1R3        "RecName: Full=Myosin light chain kinase 2, skeletal/cardiac muscle; Short=MLCK2 [Homo sapiens]"                                  100.00  596 100.00 100.00 1.62e-07 
+      TPG  DAA23271      "TPA: myosin light chain kinase 2, skeletal/cardiac muscle [Bos taurus]"                                                          100.00  623 100.00 100.00 6.58e-08 
+
+   stop_
+
+save_
+
+
+    #############
+    #  Ligands  #
+    #############
+
+save_CA
+   _Saveframe_category             ligand
+
+   _Mol_type                      "non-polymer (NON-POLYMER)"
+   _Name_common                   "entity_CA (CALCIUM ION)"
+   _BMRB_code                      CA
+   _PDB_code                       CA
+   _Molecular_mass                 40.078
+   _Mol_charge                     2
+   _Mol_paramagnetic               .
+   _Mol_aromatic                   no
+   _Details                        .
+
+   loop_
+      _Atom_name
+      _PDB_atom_name
+      _Atom_type
+      _Atom_chirality
+      _Atom_charge
+      _Atom_oxidation_number
+      _Atom_unpaired_electrons
+
+      CA CA CA . 2 . ? 
+
+   stop_
+
+   _Mol_thiol_state                .
+   _Sequence_homology_query_date   .
+
+save_
+
+
+    ####################
+    #  Natural source  #
+    ####################
+
+save_natural_source
+   _Saveframe_category   natural_source
+
+
+   loop_
+      _Mol_label
+      _Organism_name_common
+      _NCBI_taxonomy_ID
+      _Superkingdom
+      _Kingdom
+      _Genus
+      _Species
+
+      $Calmodulin Human 9606 Eukaryota Metazoa Homo sapiens 
+      $ssMLCK     Human 9606 Eukaryota Metazoa Homo sapiens 
+
+   stop_
+
+save_
+
+
+    #########################
+    #  Experimental source  #
+    #########################
+
+save_experimental_source
+   _Saveframe_category   experimental_source
+
+
+   loop_
+      _Mol_label
+      _Production_method
+      _Host_organism_name_common
+      _Genus
+      _Species
+      _Strain
+      _Variant
+      _Vector_name
+
+      $Calmodulin 'recombinant technology' . . . BL21 'codon-plus (DE3) RIPL' pET21a 
+      $ssMLCK     'chemical synthesis'     . . . .     .                      .      
+      $entity_CA  'obtained from a vendor' . . . .     .                      .      
+
+   stop_
+
+save_
+
+
+#####################################
+#  Sample contents and methodology  #
+#####################################
+	 
+    ########################
+    #  Sample description  #
+    ########################
+
+save_sample_1
+   _Saveframe_category   sample
+
+   _Sample_type          solution
+   _Details              .
+
+   loop_
+      _Mol_label
+      _Concentration_value
+      _Concentration_value_units
+      _Isotopic_labeling
+
+      $Calmodulin 0.3 mM '[U-13C; U-15N; U-2H]' 
+      $ssMLCK     0.3 mM 'natural abundance'    
+      $entity_CA  3   mM 'natural abundance'    
+
+   stop_
+
+save_
+
+
+save_sample_2
+   _Saveframe_category   sample
+
+   _Sample_type          solution
+   _Details              .
+
+   loop_
+      _Mol_label
+      _Concentration_value
+      _Concentration_value_units
+      _Concentration_min_value
+      _Concentration_max_value
+      _Isotopic_labeling
+
+      $Calmodulin  . mM 0.06 0.25 '[U-13C; U-15N; U-2H]' 
+      $ssMLCK      . mM 0.06 0.25 'natural abundance'    
+      $entity_CA  3 mM  .    .   'natural abundance'    
+
+   stop_
+
+save_
+
+
+############################
+#  Computer software used  #
+############################
+
+save_NMRPipe
+   _Saveframe_category   software
+
+   _Name                 NMRPipe
+   _Version              .
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      'Delaglio, Grzesiek, Vuister, Zhu, Pfeifer and Bax' . . 
+
+   stop_
+
+   loop_
+      _Task
+
+      processing 
+
+   stop_
+
+   _Details              .
+
+save_
+
+
+save_SPARKY
+   _Saveframe_category   software
+
+   _Name                 SPARKY
+   _Version              .
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      Goddard . . 
+
+   stop_
+
+   loop_
+      _Task
+
+      'data analysis' 
+
+   stop_
+
+   _Details              .
+
+save_
+
+
+save_Custom
+   _Saveframe_category   software
+
+   _Name                 Custom
+   _Version              .
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      Grishaev . . 
+
+   stop_
+
+   loop_
+      _Task
+
+      'structure solution' 
+
+   stop_
+
+   _Details             'Grid search procedure for rigid-body optimization of the relative domain positions against RDC and SAXS data'
+
+save_
+
+
+save_CNS
+   _Saveframe_category   software
+
+   _Name                 CNS
+   _Version              1.0
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      'Brunger, Adams, Clore, Gros, Nilges and Read' . . 
+
+   stop_
+
+   loop_
+      _Task
+
+      refinement 
+
+   stop_
+
+   _Details             'used for optimization of the linker ends connecting N- and C-terminal domains of calmodulin int he complex with MLCK'
+
+save_
+
+
+#########################
+#  Experimental detail  #
+#########################
+
+    ##################################
+    #  NMR Spectrometer definitions  #
+    ##################################
+
+save_spectrometer_1
+   _Saveframe_category   NMR_spectrometer
+
+   _Manufacturer         Bruker
+   _Model                DRX
+   _Field_strength       600
+   _Details              .
+
+save_
+
+
+    #############################
+    #  NMR applied experiments  #
+    #############################
+
+save_2D_1H-15N_HSQC_1
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '2D 1H-15N HSQC'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_2D_1H-15N_HSQC_2
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '2D 1H-15N HSQC'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_NMR_spectrometer_expt
+   _Saveframe_category                     NMR_applied_experiment
+
+   _Experiment_name                        .
+   _BMRB_pulse_sequence_accession_number   .
+   _Details                                .
+
+save_
+
+
+#######################
+#  Sample conditions  #
+#######################
+
+save_sample_conditions_1
+   _Saveframe_category   sample_conditions
+
+   _Details             
+;
+CaM/MLCK in aqueous buffer  
+with 3mM CaCl2
+;
+
+   loop_
+      _Variable_type
+      _Variable_value
+      _Variable_value_error
+      _Variable_value_units
+
+       temperature     273   . K   
+       pH                6.5 . pH  
+       pressure          1   . atm 
+      'ionic strength'   0.1 . M   
+
+   stop_
+
+save_
+
+
+save_sample_conditions_2
+   _Saveframe_category   sample_conditions
+
+   _Details             'CaM/MLCK in 65% sucrose buffer with 3uM PbCl2'
+
+   loop_
+      _Variable_type
+      _Variable_value
+      _Variable_value_error
+      _Variable_value_units
+
+       temperature     273    . K   
+       pH                6.5  . pH  
+       pressure          1    . atm 
+      'ionic strength'   0.15 . M   
+
+   stop_
+
+save_
+
+
+####################
+#  NMR parameters  #
+####################
+
+    ##############################
+    #  Assigned chemical shifts  #
+    ##############################
+
+	################################
+	#  Chemical shift referencing  #
+	################################
+
+save_chemical_shift_reference_1
+   _Saveframe_category   chemical_shift_reference
+
+   _Details              .
+
+   loop_
+      _Mol_common_name
+      _Atom_type
+      _Atom_isotope_number
+      _Atom_group
+      _Chem_shift_units
+      _Chem_shift_value
+      _Reference_method
+      _Reference_type
+      _External_reference_sample_geometry
+      _External_reference_location
+      _External_reference_axis
+      _Indirect_shift_ratio
+
+       water                    H  1 protons  ppm 4.754 internal direct   . . . 1.0         
+      'protein backbone amides' N 15 nitrogen ppm 0.0   internal indirect . . . 0.101329118 
+
+   stop_
+
+save_
+
+
+	###################################
+	#  Assigned chemical shift lists  #
+	###################################
+
+###################################################################
+#       Chemical Shift Ambiguity Index Value Definitions          #
+#                                                                 #
+# The values other than 1 are used for those atoms with different #
+# chemical shifts that cannot be assigned to stereospecific atoms #
+# or to specific residues or chains.                              #
+#                                                                 #
+#   Index Value            Definition                             #
+#                                                                 #
+#      1             Unique (including isolated methyl protons,   #
+#                         geminal atoms, and geminal methyl       #
+#                         groups with identical chemical shifts)  #
+#                         (e.g. ILE HD11, HD12, HD13 protons)     #
+#      2             Ambiguity of geminal atoms or geminal methyl #
+#                         proton groups (e.g. ASP HB2 and HB3     #
+#                         protons, LEU CD1 and CD2 carbons, or    #
+#                         LEU HD11, HD12, HD13 and HD21, HD22,    #
+#                         HD23 methyl protons)                    #
+#      3             Aromatic atoms on opposite sides of          #
+#                         symmetrical rings (e.g. TYR HE1 and HE2 #
+#                         protons)                                #
+#      4             Intraresidue ambiguities (e.g. LYS HG and    #
+#                         HD protons or TRP HZ2 and HZ3 protons)  #
+#      5             Interresidue ambiguities (LYS 12 vs. LYS 27) #
+#      6             Intermolecular ambiguities (e.g. ASP 31 CA   #
+#                         in monomer 1 and ASP 31 CA in monomer 2 #
+#                         of an asymmetrical homodimer, duplex    #
+#                         DNA assignments, or other assignments   #
+#                         that may apply to atoms in one or more  #
+#                         molecule in the molecular assembly)     #
+#      9             Ambiguous, specific ambiguity not defined    #
+#                                                                 #
+###################################################################
+save_assigned_chem_shift_list_1
+   _Saveframe_category               assigned_chemical_shifts
+
+   _Details                          .
+
+   loop_
+      _Experiment_label
+
+      '2D 1H-15N HSQC' 
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label         $sample_conditions_1
+   _Chem_shift_reference_set_label  $chemical_shift_reference_1
+   _Mol_system_component_name        Calmodulin
+   _Text_data_format                 .
+   _Text_data                        .
+
+   loop_
+      _Atom_shift_assign_ID
+      _Residue_author_seq_code
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _Atom_type
+      _Chem_shift_value
+      _Chem_shift_value_error
+      _Chem_shift_ambiguity_code
+
+        1   3   3 GLN H H   8.347 . 1 
+        2   3   3 GLN N N 120.996 . 1 
+        3   4   4 LEU H H   8.254 . 1 
+        4   4   4 LEU N N 124.429 . 1 
+        5   5   5 THR H H   8.768 . 1 
+        6   5   5 THR N N 113.937 . 1 
+        7   6   6 GLU H H   8.929 . 1 
+        8   6   6 GLU N N 120.853 . 1 
+        9   7   7 GLU H H   8.473 . 1 
+       10   7   7 GLU N N 120.555 . 1 
+       11   8   8 GLN H H   7.717 . 1 
+       12   8   8 GLN N N 119.379 . 1 
+       13   9   9 ILE H H   8.485 . 1 
+       14   9   9 ILE N N 120.599 . 1 
+       15  10  10 ALA H H   7.981 . 1 
+       16  10  10 ALA N N 122.315 . 1 
+       17  11  11 GLU H H   7.834 . 1 
+       18  11  11 GLU N N 119.078 . 1 
+       19  12  12 PHE H H   8.238 . 1 
+       20  12  12 PHE N N 117.646 . 1 
+       21  13  13 LYS H H   9.164 . 1 
+       22  13  13 LYS N N 123.393 . 1 
+       23  14  14 GLU H H   8.188 . 1 
+       24  14  14 GLU N N 120.423 . 1 
+       25  15  15 ALA H H   8.144 . 1 
+       26  15  15 ALA N N 123.615 . 1 
+       27  16  16 PHE H H   8.843 . 1 
+       28  16  16 PHE N N 119.734 . 1 
+       29  17  17 SER H H   8.009 . 1 
+       30  17  17 SER N N 114.963 . 1 
+       31  18  18 LEU H H   7.410 . 1 
+       32  18  18 LEU N N 120.314 . 1 
+       33  19  19 PHE H H   7.226 . 1 
+       34  19  19 PHE N N 115.206 . 1 
+       35  20  20 ASP H H   7.644 . 1 
+       36  20  20 ASP N N 117.467 . 1 
+       37  21  21 LYS H H   7.485 . 1 
+       38  21  21 LYS N N 123.678 . 1 
+       39  22  22 ASP H H   8.013 . 1 
+       40  22  22 ASP N N 114.531 . 1 
+       41  23  23 GLY H H   7.637 . 1 
+       42  23  23 GLY N N 110.174 . 1 
+       43  24  24 ASP H H   8.452 . 1 
+       44  24  24 ASP N N 121.917 . 1 
+       45  25  25 GLY H H  10.557 . 1 
+       46  25  25 GLY N N 113.602 . 1 
+       47  26  26 THR H H   8.128 . 1 
+       48  26  26 THR N N 112.486 . 1 
+       49  27  27 ILE H H   9.975 . 1 
+       50  27  27 ILE N N 127.198 . 1 
+       51  28  28 THR H H   8.382 . 1 
+       52  28  28 THR N N 116.943 . 1 
+       53  29  29 THR H H   9.065 . 1 
+       54  29  29 THR N N 113.249 . 1 
+       55  30  30 LYS H H   7.520 . 1 
+       56  30  30 LYS N N 121.355 . 1 
+       57  31  31 GLU H H   7.654 . 1 
+       58  31  31 GLU N N 122.574 . 1 
+       59  32  32 LEU H H   8.669 . 1 
+       60  32  32 LEU N N 121.075 . 1 
+       61  33  33 GLY H H   8.647 . 1 
+       62  33  33 GLY N N 106.479 . 1 
+       63  34  34 THR H H   7.845 . 1 
+       64  34  34 THR N N 118.569 . 1 
+       65  35  35 VAL H H   7.550 . 1 
+       66  35  35 VAL N N 123.149 . 1 
+       67  36  36 MET H H   8.476 . 1 
+       68  36  36 MET N N 117.276 . 1 
+       69  37  37 ARG H H   8.539 . 1 
+       70  37  37 ARG N N 118.981 . 1 
+       71  38  38 SER H H   7.972 . 1 
+       72  38  38 SER N N 120.097 . 1 
+       73  39  39 LEU H H   7.298 . 1 
+       74  39  39 LEU N N 119.469 . 1 
+       75  40  40 GLY H H   7.775 . 1 
+       76  40  40 GLY N N 107.845 . 1 
+       77  41  41 GLN H H   7.945 . 1 
+       78  41  41 GLN N N 119.289 . 1 
+       79  42  42 ASN H H   8.652 . 1 
+       80  42  42 ASN N N 116.758 . 1 
+       81  44  44 THR H H   8.821 . 1 
+       82  44  44 THR N N 113.911 . 1 
+       83  45  45 GLU H H   8.744 . 1 
+       84  45  45 GLU N N 120.879 . 1 
+       85  46  46 ALA H H   8.214 . 1 
+       86  46  46 ALA N N 121.605 . 1 
+       87  47  47 GLU H H   7.659 . 1 
+       88  47  47 GLU N N 119.501 . 1 
+       89  48  48 LEU H H   8.177 . 1 
+       90  48  48 LEU N N 120.480 . 1 
+       91  49  49 GLN H H   7.997 . 1 
+       92  49  49 GLN N N 118.369 . 1 
+       93  50  50 ASP H H   7.900 . 1 
+       94  50  50 ASP N N 120.856 . 1 
+       95  51  51 MET H H   8.038 . 1 
+       96  51  51 MET N N 119.982 . 1 
+       97  52  52 ILE H H   7.478 . 1 
+       98  52  52 ILE N N 116.643 . 1 
+       99  53  53 ASN H H   8.646 . 1 
+      100  53  53 ASN N N 117.435 . 1 
+      101  54  54 GLU H H   7.555 . 1 
+      102  54  54 GLU N N 116.901 . 1 
+      103  55  55 VAL H H   7.074 . 1 
+      104  55  55 VAL N N 112.988 . 1 
+      105  56  56 ASP H H   7.763 . 1 
+      106  56  56 ASP N N 122.343 . 1 
+      107  57  57 ALA H H   7.967 . 1 
+      108  57  57 ALA N N 131.834 . 1 
+      109  58  58 ASP H H   8.177 . 1 
+      110  58  58 ASP N N 114.591 . 1 
+      111  59  59 GLY H H   7.547 . 1 
+      112  59  59 GLY N N 109.453 . 1 
+      113  60  60 ASN H H   8.146 . 1 
+      114  60  60 ASN N N 119.709 . 1 
+      115  61  61 GLY H H  10.568 . 1 
+      116  61  61 GLY N N 114.187 . 1 
+      117  62  62 THR H H   7.565 . 1 
+      118  62  62 THR N N 108.935 . 1 
+      119  63  63 ILE H H   8.702 . 1 
+      120  63  63 ILE N N 124.173 . 1 
+      121  64  64 ASP H H   9.023 . 1 
+      122  64  64 ASP N N 129.411 . 1 
+      123  65  65 PHE H H   8.854 . 1 
+      124  65  65 PHE N N 118.894 . 1 
+      125  67  67 GLU H H   8.328 . 1 
+      126  67  67 GLU N N 118.803 . 1 
+      127  68  68 PHE H H   8.561 . 1 
+      128  68  68 PHE N N 125.025 . 1 
+      129  69  69 LEU H H   8.675 . 1 
+      130  69  69 LEU N N 120.532 . 1 
+      131  70  70 THR H H   7.889 . 1 
+      132  70  70 THR N N 116.007 . 1 
+      133  71  71 MET H H   7.395 . 1 
+      134  71  71 MET N N 121.214 . 1 
+      135  72  72 MET H H   7.435 . 1 
+      136  72  72 MET N N 115.320 . 1 
+      137  73  73 ALA H H   7.816 . 1 
+      138  73  73 ALA N N 122.137 . 1 
+      139  74  74 ARG H H   6.984 . 1 
+      140  74  74 ARG N N 119.503 . 1 
+      141  75  75 LYS H H   8.492 . 1 
+      142  75  75 LYS N N 125.011 . 1 
+      143  76  76 MET H H   8.622 . 1 
+      144  76  76 MET N N 124.810 . 1 
+      145  77  77 LYS H H   8.651 . 1 
+      146  77  77 LYS N N 123.044 . 1 
+      147  78  78 ASP H H   8.583 . 1 
+      148  78  78 ASP N N 121.067 . 1 
+      149  79  79 THR H H   7.708 . 1 
+      150  79  79 THR N N 113.719 . 1 
+      151  80  80 ASP H H   8.135 . 1 
+      152  80  80 ASP N N 124.596 . 1 
+      153  81  81 SER H H   8.500 . 1 
+      154  81  81 SER N N 117.936 . 1 
+      155  82  82 GLU H H   8.290 . 1 
+      156  82  82 GLU N N 122.349 . 1 
+      157  83  83 GLU H H   7.924 . 1 
+      158  83  83 GLU N N 120.441 . 1 
+      159  84  84 GLU H H   8.045 . 1 
+      160  84  84 GLU N N 118.776 . 1 
+      161  85  85 ILE H H   8.112 . 1 
+      162  85  85 ILE N N 122.610 . 1 
+      163  86  86 ARG H H   8.366 . 1 
+      164  86  86 ARG N N 123.293 . 1 
+      165  87  87 GLU H H   8.587 . 1 
+      166  87  87 GLU N N 118.855 . 1 
+      167  88  88 ALA H H   8.017 . 1 
+      168  88  88 ALA N N 122.022 . 1 
+      169  89  89 PHE H H   8.902 . 1 
+      170  89  89 PHE N N 120.927 . 1 
+      171  90  90 ARG H H   7.937 . 1 
+      172  90  90 ARG N N 115.931 . 1 
+      173  91  91 VAL H H   7.236 . 1 
+      174  91  91 VAL N N 118.340 . 1 
+      175  92  92 PHE H H   7.051 . 1 
+      176  92  92 PHE N N 115.491 . 1 
+      177  93  93 ASP H H   7.970 . 1 
+      178  93  93 ASP N N 116.797 . 1 
+      179  94  94 LYS H H   7.384 . 1 
+      180  94  94 LYS N N 125.790 . 1 
+      181  95  95 ASP H H   8.262 . 1 
+      182  95  95 ASP N N 114.644 . 1 
+      183  96  96 GLY H H   7.812 . 1 
+      184  96  96 GLY N N 110.192 . 1 
+      185  97  97 ASN H H   8.343 . 1 
+      186  97  97 ASN N N 120.536 . 1 
+      187  98  98 GLY H H  10.642 . 1 
+      188  98  98 GLY N N 113.490 . 1 
+      189  99  99 PHE H H   7.634 . 1 
+      190  99  99 PHE N N 117.067 . 1 
+      191 100 100 ILE H H  10.178 . 1 
+      192 100 100 ILE N N 127.928 . 1 
+      193 101 101 SER H H   8.909 . 1 
+      194 101 101 SER N N 124.410 . 1 
+      195 102 102 ALA H H   9.250 . 1 
+      196 102 102 ALA N N 123.613 . 1 
+      197 103 103 ALA H H   8.248 . 1 
+      198 103 103 ALA N N 118.961 . 1 
+      199 104 104 GLU H H   7.909 . 1 
+      200 104 104 GLU N N 121.176 . 1 
+      201 105 105 LEU H H   8.528 . 1 
+      202 105 105 LEU N N 122.109 . 1 
+      203 106 106 ARG H H   8.668 . 1 
+      204 106 106 ARG N N 118.097 . 1 
+      205 107 107 HIS H H   8.052 . 1 
+      206 107 107 HIS N N 120.650 . 1 
+      207 108 108 VAL H H   7.857 . 1 
+      208 108 108 VAL N N 119.062 . 1 
+      209 109 109 MET H H   8.031 . 1 
+      210 109 109 MET N N 116.585 . 1 
+      211 110 110 THR H H   8.427 . 1 
+      212 110 110 THR N N 115.483 . 1 
+      213 111 111 ASN H H   7.929 . 1 
+      214 111 111 ASN N N 124.320 . 1 
+      215 112 112 LEU H H   7.675 . 1 
+      216 112 112 LEU N N 119.170 . 1 
+      217 113 113 GLY H H   7.498 . 1 
+      218 113 113 GLY N N 104.913 . 1 
+      219 114 114 GLU H H   8.044 . 1 
+      220 114 114 GLU N N 121.948 . 1 
+      221 115 115 LYS H H   8.437 . 1 
+      222 115 115 LYS N N 125.351 . 1 
+      223 116 116 LEU H H   8.099 . 1 
+      224 116 116 LEU N N 126.107 . 1 
+      225 117 117 THR H H   8.737 . 1 
+      226 117 117 THR N N 113.725 . 1 
+      227 118 118 ASP H H   8.844 . 1 
+      228 118 118 ASP N N 121.675 . 1 
+      229 119 119 GLU H H   8.638 . 1 
+      230 119 119 GLU N N 120.054 . 1 
+      231 120 120 GLU H H   7.631 . 1 
+      232 120 120 GLU N N 120.904 . 1 
+      233 121 121 VAL H H   7.821 . 1 
+      234 121 121 VAL N N 121.716 . 1 
+      235 122 122 ASP H H   7.995 . 1 
+      236 122 122 ASP N N 120.410 . 1 
+      237 123 123 GLU H H   8.050 . 1 
+      238 123 123 GLU N N 119.960 . 1 
+      239 124 124 MET H H   7.611 . 1 
+      240 124 124 MET N N 120.154 . 1 
+      241 125 125 ILE H H   8.108 . 1 
+      242 125 125 ILE N N 121.465 . 1 
+      243 126 126 ARG H H   8.385 . 1 
+      244 126 126 ARG N N 118.324 . 1 
+      245 127 127 GLU H H   7.969 . 1 
+      246 127 127 GLU N N 117.616 . 1 
+      247 128 128 ALA H H   7.112 . 1 
+      248 128 128 ALA N N 117.785 . 1 
+      249 129 129 ASP H H   7.924 . 1 
+      250 129 129 ASP N N 118.689 . 1 
+      251 130 130 ILE H H   8.171 . 1 
+      252 130 130 ILE N N 128.653 . 1 
+      253 131 131 ASP H H   8.315 . 1 
+      254 131 131 ASP N N 117.198 . 1 
+      255 132 132 GLY H H   7.572 . 1 
+      256 132 132 GLY N N 109.424 . 1 
+      257 133 133 ASP H H   8.327 . 1 
+      258 133 133 ASP N N 121.692 . 1 
+      259 134 134 GLY H H  10.239 . 1 
+      260 134 134 GLY N N 113.412 . 1 
+      261 135 135 GLN H H   7.914 . 1 
+      262 135 135 GLN N N 115.680 . 1 
+      263 136 136 VAL H H   9.104 . 1 
+      264 136 136 VAL N N 126.116 . 1 
+      265 137 137 ASN H H   9.520 . 1 
+      266 137 137 ASN N N 129.845 . 1 
+      267 138 138 TYR H H   8.239 . 1 
+      268 138 138 TYR N N 119.110 . 1 
+      269 139 139 GLU H H   8.002 . 1 
+      270 139 139 GLU N N 119.239 . 1 
+      271 140 140 GLU H H   8.661 . 1 
+      272 140 140 GLU N N 120.537 . 1 
+      273 141 141 PHE H H   8.390 . 1 
+      274 141 141 PHE N N 124.460 . 1 
+      275 142 142 VAL H H   8.631 . 1 
+      276 142 142 VAL N N 119.726 . 1 
+      277 143 143 THR H H   7.741 . 1 
+      278 143 143 THR N N 120.005 . 1 
+      279 144 144 MET H H   7.251 . 1 
+      280 144 144 MET N N 117.270 . 1 
+      281 145 145 MET H H   7.345 . 1 
+      282 145 145 MET N N 113.128 . 1 
+      283 146 146 THR H H   7.425 . 1 
+      284 146 146 THR N N 109.194 . 1 
+      285 147 147 ALA H H   7.454 . 1 
+      286 147 147 ALA N N 127.217 . 1 
+      287 148 148 LYS H H   7.980 . 1 
+      288 148 148 LYS N N 127.522 . 1 
+
+   stop_
+
+save_
+

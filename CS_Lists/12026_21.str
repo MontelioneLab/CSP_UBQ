@@ -1,0 +1,959 @@
+data_12026
+
+#######################
+#  Entry information  #
+#######################
+
+save_entry_information
+   _Saveframe_category      entry_information
+
+   _Entry_title
+;
+NMR resonance assignments of the NZF domain of mouse HOIL-1L in free form and linear di-ubiquitin-bound form
+;
+   _BMRB_accession_number   12026
+   _BMRB_flat_file_name     bmr12026.str
+   _Entry_type              original
+   _Submission_date         2018-10-19
+   _Accession_date          2018-10-31
+   _Entry_origination       author
+   _NMR_STAR_version        2.1.1
+   _Experimental_method     NMR
+   _Details                 .
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+      1 Ishii     Naoki    . .
+      2 Walinda   Erik     . .
+      3 Iwakawa   Naoto    . .
+      4 Morimoto  Daichi   . .
+      5 Iwai      Kazuhiro . .
+      6 Sugase    Kenji    . .
+      7 Shirakawa Masahiro . .
+
+   stop_
+
+   loop_
+      _Saveframe_category_type
+      _Saveframe_category_type_count
+
+      assigned_chemical_shifts 1
+
+   stop_
+
+   loop_
+      _Data_type
+      _Data_type_count
+
+      "1H chemical shifts"   55
+      "13C chemical shifts" 166
+      "15N chemical shifts"  55
+
+   stop_
+
+   loop_
+      _Revision_date
+      _Revision_keyword
+      _Revision_author
+      _Revision_detail
+
+      2018-11-09 original BMRB .
+
+   stop_
+
+   _Original_release_date   2018-10-31
+
+save_
+
+
+#############################
+#  Citation for this entry  #
+#############################
+
+save_entry_citation
+   _Saveframe_category           entry_citation
+
+   _Citation_full                .
+   _Citation_title
+;
+NMR resonance assignments of the NZF domain of mouse HOIL-1L in free form and linear di-ubiquitin-bound form
+;
+   _Citation_status             'in preparation'
+   _Citation_type                journal
+   _CAS_abstract_code            .
+   _MEDLINE_UI_code              .
+   _PubMed_ID                    ?
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+      1 Ishii     Naoki    . .
+      2 Walinda   Erik     . .
+      3 Iwakawa   Naoto    . .
+      4 Morimoto  Daichi   . .
+      5 Iwai      Kazuhiro . .
+      6 Sugase    Kenji    . .
+      7 Shirakawa Masahiro . .
+
+   stop_
+
+   _Journal_abbreviation        'Biomol. NMR Assignments'
+   _Journal_volume               .
+   _Journal_issue                .
+   _Journal_CSD                  .
+   _Book_chapter_title           .
+   _Book_volume                  .
+   _Book_series                  .
+   _Book_ISBN                    .
+   _Conference_state_province    .
+   _Conference_abstract_number   .
+   _Page_first                   .
+   _Page_last                    .
+   _Year                         .
+   _Details                      .
+
+save_
+
+
+##################################
+#  Molecular system description  #
+##################################
+
+save_assembly
+   _Saveframe_category         molecular_system
+
+   _Mol_system_name           'NZF domain in linear di-ubiquitin-bound form'
+   _Enzyme_commission_number   .
+
+   loop_
+      _Mol_system_component_name
+      _Mol_label
+
+       HOIL-1L              $NZF_domain
+       ZN                   $entity_ZN
+      'linear di-ubiquitin' $linear_di-ubiquitin
+
+   stop_
+
+   _System_molecular_weight    .
+   _System_physical_state      native
+   _System_oligomer_state      ?
+   _System_paramagnetic        no
+   _System_thiol_state         .
+   _Database_query_date        .
+   _Details                    .
+
+save_
+
+
+    ########################
+    #  Monomeric polymers  #
+    ########################
+
+save_NZF_domain
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                 NZF_domain
+   _Molecular_mass                              .
+   _Mol_thiol_state                            'free and other bound'
+   _Details                                    'One out of five cysteines is free and the others coordinate a zinc ion.'
+
+   	##############################
+   	#  Polymer residue sequence  #
+   	##############################
+
+      _Residue_count                               66
+   _Mol_residue_sequence
+;
+GPLGSPEPVGWQCPGCTFIN
+KPTRPGCEMCCRARPETYQI
+PASYQPDEEERARLAGEEEA
+LRQYQQ
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_author_seq_code
+      _Residue_label
+
+       1  1 GLY   2  2 PRO   3  3 LEU   4  4 GLY   5  5 SER
+       6  6 PRO   7  7 GLU   8  8 PRO   9  9 VAL  10 10 GLY
+      11 11 TRP  12 12 GLN  13 13 CYS  14 14 PRO  15 15 GLY
+      16 16 CYS  17 17 THR  18 18 PHE  19 19 ILE  20 20 ASN
+      21 21 LYS  22 22 PRO  23 23 THR  24 24 ARG  25 25 PRO
+      26 26 GLY  27 27 CYS  28 28 GLU  29 29 MET  30 30 CYS
+      31 31 CYS  32 32 ARG  33 33 ALA  34 34 ARG  35 35 PRO
+      36 36 GLU  37 37 THR  38 38 TYR  39 39 GLN  40 40 ILE
+      41 41 PRO  42 42 ALA  43 43 SER  44 44 TYR  45 45 GLN
+      46 46 PRO  47 47 ASP  48 48 GLU  49 49 GLU  50 50 GLU
+      51 51 ARG  52 52 ALA  53 53 ARG  54 54 LEU  55 55 ALA
+      56 56 GLY  57 57 GLU  58 58 GLU  59 59 GLU  60 60 ALA
+      61 61 LEU  62 62 ARG  63 63 GLN  64 64 TYR  65 65 GLN
+      66 66 GLN
+
+   stop_
+
+   _Sequence_homology_query_date                .
+   _Sequence_homology_query_revised_last_date   .
+
+save_
+
+
+save_linear_di-ubiquitin
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                'linear di-ubiquitin'
+   _Molecular_mass                              .
+   _Mol_thiol_state                            'not present'
+   _Details                                    'Retrieved from PDB 3B08, then verified by the author'
+   _Residue_count                               156
+   _Mol_residue_sequence
+;
+GPLGMQIFVKTLTGKTITLE
+VEPSDTIENVKAKIQDKEGI
+PPDQQRLIFAGKQLEDGRTL
+SDYNIQKESTLHLVLRLRGG
+MQIFVKTLTGKTITLEVEPS
+DTIENVKAKIQDKEGIPPDQ
+QRLIFAGKQLEDGRTLSDYN
+IQKESTLHLVLRLRAA
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_author_seq_code
+      _Residue_label
+
+        1   1 GLY    2   2 PRO    3   3 LEU    4   4 GLY    5   5 MET
+        6   6 GLN    7   7 ILE    8   8 PHE    9   9 VAL   10   1 LYS
+       11   1 THR   12   1 LEU   13   1 THR   14  14 GLY   15  15 LYS
+       16  16 THR   17  17 ILE   18  18 THR   19  19 LEU   20  20 GLU
+       21  21 VAL   22  22 GLU   23  23 PRO   24  24 SER   25  25 ASP
+       26  26 THR   27  27 ILE   28  28 GLU   29  29 ASN   30  30 VAL
+       31  31 LYS   32  32 ALA   33  33 LYS   34  34 ILE   35  35 GLN
+       36  36 ASP   37  37 LYS   38  38 GLU   39  39 GLY   40  40 ILE
+       41  41 PRO   42  42 PRO   43  43 ASP   44  44 GLN   45  45 GLN
+       46  46 ARG   47  47 LEU   48  48 ILE   49  49 PHE   50  50 ALA
+       51  51 GLY   52  52 LYS   53  53 GLN   54  54 LEU   55  55 GLU
+       56  56 ASP   57  57 GLY   58  58 ARG   59  59 THR   60  60 LEU
+       61  61 SER   62  62 ASP   63  63 TYR   64  64 ASN   65  65 ILE
+       66  66 GLN   67  67 LYS   68  68 GLU   69  69 SER   70  70 THR
+       71  71 LEU   72  72 HIS   73  73 LEU   74  74 VAL   75  75 LEU
+       76  76 ARG   77  77 LEU   78  78 ARG   79  79 GLY   80  80 GLY
+       81  81 MET   82  82 GLN   83  83 ILE   84  84 PHE   85  85 VAL
+       86  86 LYS   87  87 THR   88  88 LEU   89  89 THR   90  90 GLY
+       91  91 LYS   92  92 THR   93  93 ILE   94  94 THR   95  95 LEU
+       96  96 GLU   97  97 VAL   98  98 GLU   99  99 PRO  100  10 SER
+      101  10 ASP  102  10 THR  103  10 ILE  104 104 GLU  105 105 ASN
+      106 106 VAL  107 107 LYS  108 108 ALA  109 109 LYS  110 110 ILE
+      111 111 GLN  112 112 ASP  113 113 LYS  114 114 GLU  115 115 GLY
+      116 116 ILE  117 117 PRO  118 118 PRO  119 119 ASP  120 120 GLN
+      121 121 GLN  122 122 ARG  123 123 LEU  124 124 ILE  125 125 PHE
+      126 126 ALA  127 127 GLY  128 128 LYS  129 129 GLN  130 130 LEU
+      131 131 GLU  132 132 ASP  133 133 GLY  134 134 ARG  135 135 THR
+      136 136 LEU  137 137 SER  138 138 ASP  139 139 TYR  140 140 ASN
+      141 141 ILE  142 142 GLN  143 143 LYS  144 144 GLU  145 145 SER
+      146 146 THR  147 147 LEU  148 148 HIS  149 149 LEU  150 150 VAL
+      151 151 LEU  152 152 ARG  153 153 LEU  154 154 ARG  155 155 ALA
+      156 156 ALA
+
+   stop_
+
+   _Sequence_homology_query_date                .
+   _Sequence_homology_query_revised_last_date   .
+
+save_
+
+
+    #############
+    #  Ligands  #
+    #############
+
+save_ZN
+   _Saveframe_category             ligand
+
+   _Mol_type                      "non-polymer (NON-POLYMER)"
+   _Name_common                   'ZINC ION'
+   _BMRB_code                      ZN
+   _PDB_code                       ZN
+   _Molecular_mass                 65.409
+   _Mol_charge                     2
+   _Mol_paramagnetic               .
+   _Mol_aromatic                   no
+   _Details                        .
+
+   loop_
+      _Atom_name
+      _PDB_atom_name
+      _Atom_type
+      _Atom_chirality
+      _Atom_charge
+      _Atom_oxidation_number
+      _Atom_unpaired_electrons
+
+      ZN ZN ZN . 2 . ?
+
+   stop_
+
+   _Mol_thiol_state                .
+   _Sequence_homology_query_date   .
+
+save_
+
+
+    ####################
+    #  Natural source  #
+    ####################
+
+save_natural_source
+   _Saveframe_category   natural_source
+
+
+   loop_
+      _Mol_label
+      _Organism_name_common
+      _NCBI_taxonomy_ID
+      _Superkingdom
+      _Kingdom
+      _Genus
+      _Species
+
+      $NZF_domain          Mouse 10090 Eukaryota Metazoa Mus  musculus
+      $linear_di-ubiquitin Human  9606 Eukaryota Metazoa Homo sapiens
+
+   stop_
+
+save_
+
+
+    #########################
+    #  Experimental source  #
+    #########################
+
+save_experimental_source
+   _Saveframe_category   experimental_source
+
+
+   loop_
+      _Mol_label
+      _Production_method
+      _Host_organism_name_common
+      _Genus
+      _Species
+      _Strain
+      _Vector_name
+
+      $NZF_domain 'recombinant technology' . Escherichia coli . pGEX-6P-1
+
+   stop_
+
+save_
+
+
+#####################################
+#  Sample contents and methodology  #
+#####################################
+
+    ########################
+    #  Sample description  #
+    ########################
+
+save_sample_1
+   _Saveframe_category   sample
+
+   _Sample_type          solution
+   _Details              .
+
+   loop_
+      _Mol_label
+      _Concentration_value
+      _Concentration_value_units
+      _Isotopic_labeling
+
+      $NZF_domain           0.5 mM '[U-100% 13C; U-100% 15N]'
+      $linear_di-ubiquitin  2.0 mM 'natural abundance'
+       DTT                  1   mM 'natural abundance'
+       HEPES               20   mM 'natural abundance'
+      'sodium chloride'    50   mM 'natural abundance'
+       H2O                 95   %  'natural abundance'
+       D2O                  5   %  '[U-100% 2H]'
+
+   stop_
+
+save_
+
+
+############################
+#  Computer software used  #
+############################
+
+save_NMRView
+   _Saveframe_category   software
+
+   _Name                 NMRView
+   _Version              .
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      'Johnson, One Moon Scientific' . .
+
+   stop_
+
+   loop_
+      _Task
+
+      'chemical shift assignment'
+
+   stop_
+
+   _Details              .
+
+save_
+
+
+#########################
+#  Experimental detail  #
+#########################
+
+    ##################################
+    #  NMR Spectrometer definitions  #
+    ##################################
+
+save_NMR_spectrometer_1
+   _Saveframe_category   NMR_spectrometer
+
+   _Manufacturer         Bruker
+   _Model                Avance
+   _Field_strength       700
+   _Details              .
+
+save_
+
+
+    #############################
+    #  NMR applied experiments  #
+    #############################
+
+save_2D_1H-15N_HSQC_1
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '2D 1H-15N HSQC'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_HNCO_2
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D HNCO'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_HN(CA)CO_3
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D HN(CA)CO'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_CBCA(CO)NH_4
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D CBCA(CO)NH'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_HNCACB_5
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D HNCACB'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_HNCA_6
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D HNCA'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_HN(CO)CA_7
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D HN(CO)CA'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_(H)CC(CO)NH_8
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D (H)CC(CO)NH'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_15N_NOESY-HSQC_9
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D 15N NOESY-HSQC'
+   _Sample_label        $sample_1
+
+save_
+
+
+#######################
+#  Sample conditions  #
+#######################
+
+save_sample_conditions_1
+   _Saveframe_category   sample_conditions
+
+   _Details              .
+
+   loop_
+      _Variable_type
+      _Variable_value
+      _Variable_value_error
+      _Variable_value_units
+
+      pH            7.0 . pH
+      pressure      1   . atm
+      temperature 298   . K
+
+   stop_
+
+save_
+
+
+####################
+#  NMR parameters  #
+####################
+
+    ##############################
+    #  Assigned chemical shifts  #
+    ##############################
+
+	################################
+	#  Chemical shift referencing  #
+	################################
+
+save_chemical_shift_reference_1
+   _Saveframe_category   chemical_shift_reference
+
+   _Details              .
+
+   loop_
+      _Mol_common_name
+      _Atom_type
+      _Atom_isotope_number
+      _Atom_group
+      _Chem_shift_units
+      _Chem_shift_value
+      _Reference_method
+      _Reference_type
+      _External_reference_sample_geometry
+      _External_reference_location
+      _External_reference_axis
+      _Indirect_shift_ratio
+
+      DSS C 13 'methyl protons' ppm 0.00 na       indirect . . . 0.251449530
+      DSS H  1 'methyl protons' ppm 0.00 internal direct   . . . 1.000000000
+      DSS N 15 'methyl protons' ppm 0.00 na       indirect . . . 0.101329118
+
+   stop_
+
+save_
+
+
+	###################################
+	#  Assigned chemical shift lists  #
+	###################################
+
+###################################################################
+#       Chemical Shift Ambiguity Index Value Definitions          #
+#                                                                 #
+# The values other than 1 are used for those atoms with different #
+# chemical shifts that cannot be assigned to stereospecific atoms #
+# or to specific residues or chains.                              #
+#                                                                 #
+#   Index Value            Definition                             #
+#                                                                 #
+#      1             Unique (including isolated methyl protons,   #
+#                         geminal atoms, and geminal methyl       #
+#                         groups with identical chemical shifts)  #
+#                         (e.g. ILE HD11, HD12, HD13 protons)     #
+#      2             Ambiguity of geminal atoms or geminal methyl #
+#                         proton groups (e.g. ASP HB2 and HB3     #
+#                         protons, LEU CD1 and CD2 carbons, or    #
+#                         LEU HD11, HD12, HD13 and HD21, HD22,    #
+#                         HD23 methyl protons)                    #
+#      3             Aromatic atoms on opposite sides of          #
+#                         symmetrical rings (e.g. TYR HE1 and HE2 #
+#                         protons)                                #
+#      4             Intraresidue ambiguities (e.g. LYS HG and    #
+#                         HD protons or TRP HZ2 and HZ3 protons)  #
+#      5             Interresidue ambiguities (LYS 12 vs. LYS 27) #
+#      6             Intermolecular ambiguities (e.g. ASP 31 CA   #
+#                         in monomer 1 and ASP 31 CA in monomer 2 #
+#                         of an asymmetrical homodimer, duplex    #
+#                         DNA assignments, or other assignments   #
+#                         that may apply to atoms in one or more  #
+#                         molecule in the molecular assembly)     #
+#      9             Ambiguous, specific ambiguity not defined    #
+#                                                                 #
+###################################################################
+save_assigned_chem_shift_list_1
+   _Saveframe_category               assigned_chemical_shifts
+
+   _Details                          .
+
+   loop_
+      _Experiment_label
+
+      '2D 1H-15N HSQC'
+      '3D HNCO'
+      '3D HN(CA)CO'
+      '3D CBCA(CO)NH'
+      '3D HNCACB'
+      '3D HNCA'
+      '3D HN(CO)CA'
+      '3D (H)CC(CO)NH'
+      '3D 15N NOESY-HSQC'
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1
+
+   stop_
+
+   _Sample_conditions_label         $sample_conditions_1
+   _Chem_shift_reference_set_label  $chemical_shift_reference_1
+   _Mol_system_component_name        HOIL-1L
+   _Text_data_format                 .
+   _Text_data                        .
+
+   loop_
+      _Atom_shift_assign_ID
+      _Residue_author_seq_code
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _Atom_type
+      _Chem_shift_value
+      _Chem_shift_value_error
+      _Chem_shift_ambiguity_code
+
+        1  1  1 GLY H  H   8.259 0.030 1
+        2  1  1 GLY C  C 172.859 0.300 1
+        3  1  1 GLY CA C  45.103 0.300 1
+        4  1  1 GLY N  N 109.241 0.300 1
+        5  2  2 PRO C  C 177.060 0.300 1
+        6  2  2 PRO CA C  63.209 0.300 1
+        7  2  2 PRO CB C  32.229 0.300 1
+        8  3  3 LEU H  H   8.543 0.030 1
+        9  3  3 LEU C  C 177.967 0.300 1
+       10  3  3 LEU CA C  55.468 0.300 1
+       11  3  3 LEU CB C  42.188 0.300 1
+       12  3  3 LEU N  N 122.450 0.300 1
+       13  4  4 GLY H  H   8.416 0.030 1
+       14  4  4 GLY C  C 173.912 0.300 1
+       15  4  4 GLY CA C  45.104 0.300 1
+       16  4  4 GLY N  N 109.784 0.300 1
+       17  5  5 SER H  H   8.134 0.030 1
+       18  5  5 SER C  C 172.652 0.300 1
+       19  5  5 SER CA C  56.574 0.300 1
+       20  5  5 SER CB C  63.199 0.300 1
+       21  5  5 SER N  N 116.952 0.300 1
+       22  6  6 PRO C  C 176.766 0.300 1
+       23  6  6 PRO CA C  63.080 0.300 1
+       24  6  6 PRO CB C  31.931 0.300 1
+       25  7  7 GLU H  H   8.447 0.030 1
+       26  7  7 GLU C  C 174.668 0.300 1
+       27  7  7 GLU CA C  54.409 0.300 1
+       28  7  7 GLU CB C  29.817 0.300 1
+       29  7  7 GLU N  N 122.963 0.300 1
+       30  8  8 PRO C  C 176.343 0.300 1
+       31  8  8 PRO CA C  62.980 0.300 1
+       32  8  8 PRO CB C  31.931 0.300 1
+       33  9  9 VAL H  H   8.209 0.030 1
+       34  9  9 VAL C  C 175.629 0.300 1
+       35  9  9 VAL CA C  62.195 0.300 1
+       36  9  9 VAL CB C  32.773 0.300 1
+       37  9  9 VAL N  N 121.087 0.300 1
+       38 10 10 GLY H  H   7.941 0.030 1
+       39 10 10 GLY C  C 172.096 0.300 1
+       40 10 10 GLY CA C  44.759 0.300 1
+       41 10 10 GLY N  N 111.703 0.300 1
+       42 11 11 TRP H  H   7.612 0.030 1
+       43 11 11 TRP C  C 174.892 0.300 1
+       44 11 11 TRP CA C  52.462 0.300 1
+       45 11 11 TRP CB C  28.508 0.300 1
+       46 11 11 TRP N  N 115.125 0.300 1
+       47 12 12 GLN H  H   8.885 0.030 1
+       48 12 12 GLN C  C 175.322 0.300 1
+       49 12 12 GLN CA C  55.126 0.300 1
+       50 12 12 GLN CB C  28.923 0.300 1
+       51 12 12 GLN N  N 125.028 0.300 1
+       52 13 13 CYS H  H   9.020 0.030 1
+       53 13 13 CYS CA C  57.608 0.300 1
+       54 13 13 CYS N  N 133.700 0.300 1
+       55 14 14 PRO C  C 176.852 0.300 1
+       56 14 14 PRO CA C  63.960 0.300 1
+       57 14 14 PRO CB C  32.229 0.300 1
+       58 15 15 GLY H  H   9.659 0.030 1
+       59 15 15 GLY C  C 173.716 0.300 1
+       60 15 15 GLY CA C  46.189 0.300 1
+       61 15 15 GLY N  N 111.038 0.300 1
+       62 16 16 CYS H  H   8.517 0.030 1
+       63 16 16 CYS C  C 176.566 0.300 1
+       64 16 16 CYS CA C  58.913 0.300 1
+       65 16 16 CYS N  N 121.547 0.300 1
+       66 17 17 THR H  H   7.515 0.030 1
+       67 17 17 THR C  C 172.426 0.300 1
+       68 17 17 THR CA C  65.721 0.300 1
+       69 17 17 THR CB C  69.066 0.300 1
+       70 17 17 THR N  N 113.878 0.300 1
+       71 18 18 PHE H  H   9.037 0.030 1
+       72 18 18 PHE C  C 174.464 0.300 1
+       73 18 18 PHE CA C  60.294 0.300 1
+       74 18 18 PHE CB C  41.591 0.300 1
+       75 18 18 PHE N  N 126.472 0.300 1
+       76 19 19 ILE H  H   7.189 0.030 1
+       77 19 19 ILE CA C  60.774 0.300 1
+       78 19 19 ILE N  N 125.904 0.300 1
+       79 22 22 PRO C  C 175.933 0.300 1
+       80 22 22 PRO CA C  66.532 0.300 1
+       81 23 23 THR H  H   6.844 0.030 1
+       82 23 23 THR C  C 175.248 0.300 1
+       83 23 23 THR CA C  61.291 0.300 1
+       84 23 23 THR CB C  68.602 0.300 1
+       85 23 23 THR N  N  96.548 0.300 1
+       86 24 24 ARG H  H   8.240 0.030 1
+       87 24 24 ARG CA C  54.376 0.300 1
+       88 24 24 ARG N  N 127.541 0.300 1
+       89 25 25 PRO C  C 176.672 0.300 1
+       90 25 25 PRO CA C  64.353 0.300 1
+       91 26 26 GLY H  H   7.317 0.030 1
+       92 26 26 GLY C  C 172.535 0.300 1
+       93 26 26 GLY CA C  44.199 0.300 1
+       94 26 26 GLY N  N 109.712 0.300 1
+       95 27 27 CYS H  H   9.727 0.030 1
+       96 27 27 CYS C  C 177.932 0.300 1
+       97 27 27 CYS CA C  59.461 0.300 1
+       98 27 27 CYS N  N 125.692 0.300 1
+       99 28 28 GLU H  H   9.266 0.030 1
+      100 28 28 GLU C  C 175.514 0.300 1
+      101 28 28 GLU CA C  59.156 0.300 1
+      102 28 28 GLU N  N 132.679 0.300 1
+      103 29 29 MET H  H   9.118 0.030 1
+      104 29 29 MET C  C 177.664 0.300 1
+      105 29 29 MET CA C  55.111 0.300 1
+      106 29 29 MET CB C  31.965 0.300 1
+      107 29 29 MET N  N 116.372 0.300 1
+      108 30 30 CYS H  H   8.259 0.030 1
+      109 30 30 CYS C  C 176.713 0.300 1
+      110 30 30 CYS CA C  59.530 0.300 1
+      111 30 30 CYS N  N 118.078 0.300 1
+      112 31 31 CYS H  H   7.851 0.030 1
+      113 31 31 CYS C  C 172.296 0.300 1
+      114 31 31 CYS CA C  62.487 0.300 1
+      115 31 31 CYS N  N 113.428 0.300 1
+      116 32 32 ARG H  H   8.572 0.030 1
+      117 32 32 ARG C  C 175.950 0.300 1
+      118 32 32 ARG CA C  57.597 0.300 1
+      119 32 32 ARG CB C  31.312 0.300 1
+      120 32 32 ARG N  N 124.813 0.300 1
+      121 33 33 ALA H  H   8.685 0.030 1
+      122 33 33 ALA C  C 176.304 0.300 1
+      123 33 33 ALA CA C  53.128 0.300 1
+      124 33 33 ALA CB C  19.388 0.300 1
+      125 33 33 ALA N  N 126.771 0.300 1
+      126 34 34 ARG H  H   6.953 0.030 1
+      127 34 34 ARG CA C  53.213 0.300 1
+      128 34 34 ARG N  N 122.968 0.300 1
+      129 35 35 PRO C  C 178.412 0.300 1
+      130 35 35 PRO CA C  63.437 0.300 1
+      131 36 36 GLU H  H   9.235 0.030 1
+      132 36 36 GLU C  C 176.634 0.300 1
+      133 36 36 GLU CA C  58.978 0.300 1
+      134 36 36 GLU CB C  29.255 0.300 1
+      135 36 36 GLU N  N 125.476 0.300 1
+      136 37 37 THR H  H   7.261 0.030 1
+      137 37 37 THR C  C 174.899 0.300 1
+      138 37 37 THR CA C  61.383 0.300 1
+      139 37 37 THR CB C  68.796 0.300 1
+      140 37 37 THR N  N 104.221 0.300 1
+      141 38 38 TYR H  H   7.171 0.030 1
+      142 38 38 TYR C  C 174.254 0.300 1
+      143 38 38 TYR CA C  59.108 0.300 1
+      144 38 38 TYR CB C  37.994 0.300 1
+      145 38 38 TYR N  N 122.890 0.300 1
+      146 39 39 GLN H  H   7.694 0.030 1
+      147 39 39 GLN C  C 173.750 0.300 1
+      148 39 39 GLN CA C  53.340 0.300 1
+      149 39 39 GLN CB C  29.722 0.300 1
+      150 39 39 GLN N  N 128.801 0.300 1
+      151 40 40 ILE H  H   8.276 0.030 1
+      152 40 40 ILE C  C 174.973 0.300 1
+      153 40 40 ILE CA C  59.902 0.300 1
+      154 40 40 ILE N  N 126.532 0.300 1
+      155 41 41 PRO C  C 177.848 0.300 1
+      156 41 41 PRO CA C  63.110 0.300 1
+      157 41 41 PRO CB C  32.154 0.300 1
+      158 42 42 ALA H  H   8.766 0.030 1
+      159 42 42 ALA C  C 178.647 0.300 1
+      160 42 42 ALA CA C  54.607 0.300 1
+      161 42 42 ALA CB C  18.390 0.300 1
+      162 42 42 ALA N  N 127.195 0.300 1
+      163 43 43 SER H  H   8.055 0.030 1
+      164 43 43 SER C  C 174.727 0.300 1
+      165 43 43 SER CA C  58.279 0.300 1
+      166 43 43 SER CB C  63.139 0.300 1
+      167 43 43 SER N  N 108.847 0.300 1
+      168 44 44 TYR H  H   7.627 0.030 1
+      169 44 44 TYR C  C 174.593 0.300 1
+      170 44 44 TYR CA C  59.075 0.300 1
+      171 44 44 TYR CB C  38.764 0.300 1
+      172 44 44 TYR N  N 122.097 0.300 1
+      173 45 45 GLN H  H   7.814 0.030 1
+      174 45 45 GLN C  C 180.540 0.300 1
+      175 45 45 GLN CA C  51.953 0.300 1
+      176 45 45 GLN CB C  29.285 0.300 1
+      177 45 45 GLN N  N 127.990 0.300 1
+      178 46 46 PRO C  C 176.388 0.300 1
+      179 46 46 PRO CA C  62.522 0.300 1
+      180 46 46 PRO CB C  32.127 0.300 1
+      181 47 47 ASP H  H   7.968 0.030 1
+      182 47 47 ASP C  C 175.520 0.300 1
+      183 47 47 ASP CA C  53.193 0.300 1
+      184 47 47 ASP CB C  41.001 0.300 1
+      185 47 47 ASP N  N 120.744 0.300 1
+      186 48 48 GLU H  H   8.719 0.030 1
+      187 48 48 GLU C  C 178.963 0.300 1
+      188 48 48 GLU CA C  60.277 0.300 1
+      189 48 48 GLU CB C  29.572 0.300 1
+      190 48 48 GLU N  N 118.489 0.300 1
+      191 49 49 GLU H  H   8.365 0.030 1
+      192 49 49 GLU C  C 179.488 0.300 1
+      193 49 49 GLU CA C  59.752 0.300 1
+      194 49 49 GLU CB C  29.668 0.300 1
+      195 49 49 GLU N  N 120.369 0.300 1
+      196 50 50 GLU H  H   8.451 0.030 1
+      197 50 50 GLU C  C 178.628 0.300 1
+      198 50 50 GLU CA C  58.456 0.300 1
+      199 50 50 GLU N  N 123.199 0.300 1
+      200 51 51 ARG H  H   9.054 0.030 1
+      201 51 51 ARG C  C 179.434 0.300 1
+      202 51 51 ARG CA C  60.076 0.300 1
+      203 51 51 ARG N  N 119.812 0.300 1
+      204 52 52 ALA H  H   7.948 0.030 1
+      205 52 52 ALA C  C 180.497 0.300 1
+      206 52 52 ALA CA C  55.003 0.300 1
+      207 52 52 ALA CB C  17.881 0.300 1
+      208 52 52 ALA N  N 121.957 0.300 1
+      209 53 53 ARG H  H   8.060 0.030 1
+      210 53 53 ARG C  C 180.083 0.300 1
+      211 53 53 ARG CA C  59.644 0.300 1
+      212 53 53 ARG N  N 122.064 0.300 1
+      213 54 54 LEU H  H   8.652 0.030 1
+      214 54 54 LEU C  C 179.622 0.300 1
+      215 54 54 LEU CA C  57.807 0.300 1
+      216 54 54 LEU CB C  41.894 0.300 1
+      217 54 54 LEU N  N 121.090 0.300 1
+      218 55 55 ALA H  H   8.178 0.030 1
+      219 55 55 ALA C  C 180.703 0.300 1
+      220 55 55 ALA CA C  54.818 0.300 1
+      221 55 55 ALA CB C  17.949 0.300 1
+      222 55 55 ALA N  N 122.325 0.300 1
+      223 56 56 GLY H  H   8.139 0.030 1
+      224 56 56 GLY C  C 176.462 0.300 1
+      225 56 56 GLY CA C  46.624 0.300 1
+      226 56 56 GLY N  N 106.471 0.300 1
+      227 57 57 GLU H  H   8.014 0.030 1
+      228 57 57 GLU C  C 177.958 0.300 1
+      229 57 57 GLU CA C  58.884 0.300 1
+      230 57 57 GLU CB C  30.120 0.300 1
+      231 57 57 GLU N  N 122.895 0.300 1
+      232 58 58 GLU H  H   8.031 0.030 1
+      233 58 58 GLU C  C 178.667 0.300 1
+      234 58 58 GLU CA C  58.750 0.300 1
+      235 58 58 GLU CB C  29.610 0.300 1
+      236 58 58 GLU N  N 119.445 0.300 1
+      237 59 59 GLU H  H   8.125 0.030 1
+      238 59 59 GLU C  C 178.056 0.300 1
+      239 59 59 GLU CA C  58.363 0.300 1
+      240 59 59 GLU CB C  29.732 0.300 1
+      241 59 59 GLU N  N 120.022 0.300 1
+      242 60 60 ALA H  H   7.948 0.030 1
+      243 60 60 ALA C  C 179.457 0.300 1
+      244 60 60 ALA CA C  54.184 0.300 1
+      245 60 60 ALA CB C  18.662 0.300 1
+      246 60 60 ALA N  N 121.964 0.300 1
+      247 61 61 LEU H  H   7.828 0.030 1
+      248 61 61 LEU C  C 178.358 0.300 1
+      249 61 61 LEU CA C  56.242 0.300 1
+      250 61 61 LEU CB C  41.642 0.300 1
+      251 61 61 LEU N  N 118.147 0.300 1
+      252 62 62 ARG H  H   7.785 0.030 1
+      253 62 62 ARG C  C 177.473 0.300 1
+      254 62 62 ARG CA C  57.896 0.300 1
+      255 62 62 ARG CB C  30.220 0.300 1
+      256 62 62 ARG N  N 119.447 0.300 1
+      257 63 63 GLN H  H   7.918 0.030 1
+      258 63 63 GLN C  C 176.049 0.300 1
+      259 63 63 GLN CA C  56.568 0.300 1
+      260 63 63 GLN CB C  29.112 0.300 1
+      261 63 63 GLN N  N 117.578 0.300 1
+      262 64 64 TYR H  H   7.793 0.030 1
+      263 64 64 TYR C  C 175.241 0.300 1
+      264 64 64 TYR CA C  58.108 0.300 1
+      265 64 64 TYR CB C  38.748 0.300 1
+      266 64 64 TYR N  N 119.499 0.300 1
+      267 65 65 GLN H  H   7.969 0.030 1
+      268 65 65 GLN C  C 174.648 0.300 1
+      269 65 65 GLN CA C  55.842 0.300 1
+      270 65 65 GLN CB C  29.684 0.300 1
+      271 65 65 GLN N  N 121.647 0.300 1
+      272 66 66 GLN H  H   7.806 0.030 1
+      273 66 66 GLN C  C 180.573 0.300 1
+      274 66 66 GLN CA C  57.478 0.300 1
+      275 66 66 GLN CB C  30.413 0.300 1
+      276 66 66 GLN N  N 126.235 0.300 1
+
+   stop_
+
+save_
+

@@ -1,0 +1,38 @@
+reinitialize
+load ./outputs/2LVO_2/2LVO_csp.pdb, 2LVO_structure
+hide everything, 2LVO_structure
+show cartoon, 2LVO_structure
+color cyan, 2LVO_structure and chain C
+color gray30, 2LVO_structure and chain A
+color red, 2LVO_structure and chain A and resi 4
+color red, 2LVO_structure and chain A and resi 7
+color red, 2LVO_structure and chain A and resi 12
+color red, 2LVO_structure and chain A and resi 14
+color red, 2LVO_structure and chain A and resi 20
+color red, 2LVO_structure and chain A and resi 22
+color red, 2LVO_structure and chain A and resi 25
+color red, 2LVO_structure and chain A and resi 27
+color red, 2LVO_structure and chain A and resi 32
+color red, 2LVO_structure and chain A and resi 35
+color red, 2LVO_structure and chain A and resi 39
+color red, 2LVO_structure and chain A and resi 41
+color red, 2LVO_structure and chain A and resi 47
+color red, 2LVO_structure and chain A and resi 52
+color red, 2LVO_structure and chain A and resi 54
+color red, 2LVO_structure and chain A and resi 57
+color red, 2LVO_structure and chain A and resi 62
+color red, 2LVO_structure and chain A and resi 63
+color red, 2LVO_structure and chain A and resi 64
+color red, 2LVO_structure and chain A and resi 65
+color red, 2LVO_structure and chain A and resi 66
+color red, 2LVO_structure and chain A and resi 68
+color red, 2LVO_structure and chain A and resi 70
+color red, 2LVO_structure and chain A and resi 71
+color red, 2LVO_structure and chain A and resi 73
+color red, 2LVO_structure and chain A and resi 74
+color red, 2LVO_structure and chain A and resi 76
+set cartoon_transparency, 0.2, 2LVO_structure
+# Color scheme:
+# Ligand chain (C): cyan
+# Receptor chain (A): gray30 (non-significant/no CSP), red (significant CSP via significant)
+# Significant residues: 27
