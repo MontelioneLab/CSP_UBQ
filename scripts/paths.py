@@ -1,0 +1,21 @@
+CSP_Rank_Scores = './CSP_Rank_Scores/'
+PDB_FILES = './PDB_FILES/'
+experimental_structures = PDB_FILES + 'experimental_structures/'
+computational_structures = PDB_FILES + 'computational_structures/'
+CS_Lists = './CS_Lists/'
+CS_Predictions = './CS_Predictions/'
+CLUSTERING_RESULTS = './CLUSTERING_RESULTS/'
+
+real_CSList_dir = f'{CS_Predictions}REAL_CSLists/'
+apo_NMR_shift_dir = f'{CS_Predictions}NMR_apo_shift_predictions/'
+holo_NMR_shift_dir = f'{CS_Predictions}NMR_holo_shift_predictions/'
+holo_AF2_shift_dir = f'{CS_Predictions}AF2_holo_shift_predictions/'
+apo_AF2_shift_dir = f'{CS_Predictions}AF2_apo_shift_predictions/'
+holo_AF2_top_rank_shift_dir = f'{CS_Predictions}AF2_holo_shift_predictions_top_rank/'
+holo_NMR_medoid_shift_dir = f'{CS_Predictions}NMR_holo_medoid_shift_predictions/'
+
+NMR_holo_structure_dir = f'{PDB_FILES}NMR_holo/'
+NMR_apo_structure_dir = f'{PDB_FILES}NMR_apo/'
+AF2_holo_structure_dir = f'{PDB_FILES}AF2_holo/'
+
+working_dir = '/Users/tiburon/Desktop/CSP_Rank'
