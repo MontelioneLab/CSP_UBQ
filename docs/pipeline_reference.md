@@ -35,25 +35,25 @@ Optional: **PyMOL** for running generated `.pml` scripts or `--case-study` mode 
 ### Basic usage
 
 ```bash
-python scripts/pipeline.py --input CSP_UBQ.csv --out outputs
+python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs
 ```
 
 Optional metadata columns (`ec_classes`, `scope_fold_type`):
 
 ```bash
-python scripts/pipeline.py --input CSP_UBQ.csv --out outputs --run-csv-metadata-annotation
+python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs --run-csv-metadata-annotation
 ```
 
 Subset of rows (BMRB IDs as in your CSV usage, if applicable):
 
 ```bash
-python scripts/pipeline.py --input CSP_UBQ.csv --ids 18251,4700 --out outputs
+python scripts/pipeline.py --input data/CSP_UBQ.csv --ids 18251,4700 --out outputs
 ```
 
 Single holo PDB (interactive PyMOL for case-study figures unless disabled):
 
 ```bash
-python scripts/pipeline.py --input CSP_UBQ.csv --holo-pdb 1H8B --out outputs
+python scripts/pipeline.py --input data/CSP_UBQ.csv --holo-pdb 1H8B --out outputs
 ```
 
 By default the pipeline attempts case-study figure generation per target. Use `--no-case-study` to skip. With PyMOL available, it writes `outputs/<target>/<pdb_id>_case_study.png`: open `color_csp_mask.pml`, set the view, press **F5** to save the camera, then the pipeline reuses it for ray-traced panels.
@@ -61,8 +61,8 @@ By default the pipeline attempts case-study figure generation per target. Use `-
 ### Verbose and parallel
 
 ```bash
-CSP_VERBOSE=1 python scripts/pipeline.py --input CSP_UBQ.csv --out outputs
-python scripts/pipeline.py --input CSP_UBQ.csv --out outputs --workers 4
+CSP_VERBOSE=1 python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs
+python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs --workers 4
 ```
 
 ### Apo BMRB 17769 sequence alignment (utility)
@@ -71,12 +71,12 @@ python scripts/pipeline.py --input CSP_UBQ.csv --out outputs --workers 4
 python scripts/align_apo_bmrb_sequences.py
 ```
 
-Reads `CSP_UBQ.csv`, aligns apo sequences to the `apo_bmrb == 17769` reference (`match_seq`), writes `apo_bmrb_17769_alignments.csv` with scores, overlap, identity, approximate E-value.
+Reads `data/CSP_UBQ.csv`, aligns apo sequences to the `apo_bmrb == 17769` reference (`match_seq`), writes `apo_bmrb_17769_alignments.csv` with scores, overlap, identity, approximate E-value.
 
 ### Example
 
 ```bash
-CSP_VERBOSE=1 python scripts/pipeline.py --input CSP_UBQ.csv --ids 18251,4700 --out outputs --workers 2
+CSP_VERBOSE=1 python scripts/pipeline.py --input data/CSP_UBQ.csv --ids 18251,4700 --out outputs --workers 2
 ```
 
 ## Referencing method (mean vs grid)
@@ -110,7 +110,7 @@ grid_params = {
 
 ## Input format
 
-The pipeline expects a CSV (e.g. `CSP_UBQ.csv`) with at least:
+The pipeline expects a CSV (e.g. `data/CSP_UBQ.csv`) with at least:
 
 - `apo_bmrb` — BMRB ID for apo  
 - `holo_bmrb` — BMRB ID for holo  
@@ -207,7 +207,7 @@ Scripts typically color the receptor chain, binding-site-related residues, and l
 4. **Memory / time** — reduce `--workers`  
 
 ```bash
-CSP_VERBOSE=1 python scripts/pipeline.py --input CSP_UBQ.csv --ids 18251 --out outputs
+CSP_VERBOSE=1 python scripts/pipeline.py --input data/CSP_UBQ.csv --ids 18251 --out outputs
 ```
 
 ## Tests
@@ -228,7 +228,7 @@ CSP_UBQ/
 ├── PDB_FILES/         # PDB cache
 ├── outputs/           # Pipeline outputs
 ├── figures/           # Generated or committed figures
-├── CSP_UBQ.csv        # Main input table
+├── data/              # Curated input CSV tables (CSP_UBQ.csv, targets_*.csv, etc.)
 ├── requirements.txt
 ├── environment.yml
 └── README.md

@@ -438,12 +438,12 @@ def main() -> None:
         "--input",
         type=Path,
         default=Path(Paths().input_csv),
-        help="Input CSV (default: CSP_UBQ.csv)",
+        help="Input CSV (default: data/CSP_UBQ.csv)",
     )
     ap.add_argument(
         "--output",
         type=Path,
-        default=_REPO_ROOT / "apo_holo_exp_conditions.csv",
+        default=Path(Paths().exp_conditions_csv),
         help="Output CSV path",
     )
     ap.add_argument(

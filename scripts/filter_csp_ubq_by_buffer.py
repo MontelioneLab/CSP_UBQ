@@ -42,13 +42,13 @@ def main() -> int:
         "--exp",
         type=Path,
         default=None,
-        help="apo_holo_exp_conditions.csv",
+        help="apo_holo_exp_conditions CSV (default: data/apo_holo_exp_conditions.csv)",
     )
     ap.add_argument(
         "--output",
         type=Path,
         default=None,
-        help="Output path (default: CSP_UBQ_ph{ph}_temp{C}.csv in repo root)",
+        help="Output path (default: data/CSP_UBQ_ph{ph}_temp{C}.csv)",
     )
     ap.add_argument("--ph-max-diff", type=float, default=0.5)
     ap.add_argument("--temp-max-diff-c", type=float, default=5.0)
@@ -56,13 +56,13 @@ def main() -> int:
 
     cfg = Paths()
     csp_path = args.csp or Path(cfg.input_csv)
-    exp_path = args.exp or (_REPO / "apo_holo_exp_conditions.csv")
+    exp_path = args.exp or Path(cfg.exp_conditions_csv)
     ph = float(args.ph_max_diff)
     tc = float(args.temp_max_diff_c)
     out = args.output
     if out is None:
         # Filename encodes tolerances (avoid ugly floats)
-        out = _REPO / f"CSP_UBQ_ph{ph:g}_temp{tc:g}C.csv"
+        out = Path(cfg.data_dir) / f"CSP_UBQ_ph{ph:g}_temp{tc:g}C.csv"
 
     if not csp_path.is_file() or not exp_path.is_file():
         print("Missing input CSV.", file=sys.stderr)

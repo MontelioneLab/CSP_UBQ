@@ -189,7 +189,7 @@ CSmethod = "UCBShift"
 while CSmethod not in ['SPARTA', 'UCBShift', 'ShiftX', 'consensus']:
     CSmethod = input("What CS prediciton method to use? [SPARTA, UCBShift, ShiftX, consensus]")
 
-data_source_file = './CSP_UBQ.csv'
+data_source_file = './data/CSP_UBQ.csv'
 
 images_directory = './images/'
 

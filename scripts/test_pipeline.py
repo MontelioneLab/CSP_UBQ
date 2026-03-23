@@ -84,7 +84,8 @@ def temp_dir():
 @pytest.fixture
 def sample_csv_path(temp_dir):
     """Create a sample CSP_UBQ.csv for lookup tests."""
-    csv_path = os.path.join(temp_dir, "CSP_UBQ.csv")
+    csv_path = os.path.join(temp_dir, "data/CSP_UBQ.csv")
+    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
     with open(csv_path, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["apo_bmrb", "holo_bmrb", "apo_pdb", "holo_pdb"])
@@ -527,7 +528,7 @@ class TestWritePymolScripts:
 
 @pytest.mark.integration
 @pytest.mark.skipif(
-    not os.path.exists(os.path.join(Path(__file__).resolve().parent.parent, "CSP_UBQ.csv")),
+    not os.path.exists(os.path.join(Path(__file__).resolve().parent.parent, "data/CSP_UBQ.csv")),
     reason="CSP_UBQ.csv not found",
 )
 class TestProcessRowIntegration:

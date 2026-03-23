@@ -98,8 +98,8 @@ def get_unique_holo_pdbs(csp_csv_path: Path) -> list[str]:
 
 
 def main() -> int:
-    csp_csv = Path(paths.workspace_root) / "CSP_UBQ.csv"
-    out_csv = Path(paths.workspace_root) / "outputs" / "holo_pdb_scope_fold_types.csv"
+    csp_csv = Path(paths.input_csv)
+    out_csv = Path(paths.outputs_dir) / "holo_pdb_scope_fold_types.csv"
 
     if not csp_csv.exists():
         print(f"Error: {csp_csv} not found.", file=sys.stderr)

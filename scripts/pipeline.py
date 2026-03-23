@@ -2,9 +2,9 @@
 CLI orchestrator for the CSP pipeline.
 
 Usage examples:
-  python scripts/pipeline.py --input CSP_UBQ.csv --out outputs --workers 4
-  python scripts/pipeline.py --input CSP_UBQ.csv --ids 18251,34688 --out outputs
-  python scripts/pipeline.py --input CSP_UBQ.csv --holo-pdb 1cf4 --out outputs
+  python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs --workers 4
+  python scripts/pipeline.py --input data/CSP_UBQ.csv --ids 18251,34688 --out outputs
+  python scripts/pipeline.py --input data/CSP_UBQ.csv --holo-pdb 1cf4 --out outputs
 """
 
 from __future__ import annotations

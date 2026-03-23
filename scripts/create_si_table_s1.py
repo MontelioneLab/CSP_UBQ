@@ -30,8 +30,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--csp-csv",
         type=Path,
-        default=Path("CSP_UBQ_ph0.5_temp5C.csv"),
-        help="Path to CSP table (default: CSP_UBQ_ph0.5_temp5C.csv).",
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
+        help="Path to CSP table (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
     parser.add_argument(
         "--confusion-csv",

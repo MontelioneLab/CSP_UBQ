@@ -114,14 +114,14 @@ def main() -> int:
     parser.add_argument(
         "--full-csp-csv",
         type=Path,
-        default=Path("CSP_UBQ.csv"),
-        help="Full study table (default: CSP_UBQ.csv).",
+        default=Path("data/CSP_UBQ.csv"),
+        help="Full study table (default: data/CSP_UBQ.csv).",
     )
     parser.add_argument(
         "--similar-csp-csv",
         type=Path,
-        default=Path("CSP_UBQ_ph0.5_temp5C.csv"),
-        help="Similar-conditions subset (default: CSP_UBQ_ph0.5_temp5C.csv).",
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
+        help="Similar-conditions subset (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
     parser.add_argument(
         "--confusion-csv",

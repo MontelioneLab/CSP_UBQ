@@ -61,8 +61,8 @@ def parse_args(argv=None):
     parser.add_argument(
         "--csp-csv",
         type=Path,
-        default=Path("CSP_UBQ.csv"),
-        help="Path to CSP_UBQ.csv (default: CSP_UBQ.csv).",
+        default=Path("data/CSP_UBQ.csv"),
+        help="Path to CSP_UBQ.csv (default: data/CSP_UBQ.csv).",
     )
     parser.add_argument(
         "--confusion-csv",

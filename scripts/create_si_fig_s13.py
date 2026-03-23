@@ -63,8 +63,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--targets-csv",
         type=Path,
-        default=Path("CSP_UBQ_ph0.5_temp5C.csv"),
-        help="CSV with holo_pdb target IDs (default: CSP_UBQ_ph0.5_temp5C.csv).",
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
+        help="CSV with holo_pdb target IDs (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
     parser.add_argument("--output-image", type=Path, default=Path("figures") / "SF14_ca_inclusive.png")
     return parser.parse_args()

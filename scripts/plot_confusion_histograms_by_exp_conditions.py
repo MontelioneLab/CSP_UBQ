@@ -207,7 +207,7 @@ def parse_args() -> argparse.Namespace:
         "--exp-conditions-csv",
         type=Path,
         default=None,
-        help="apo_holo_exp_conditions.csv (default: repo root apo_holo_exp_conditions.csv).",
+        help="apo_holo_exp_conditions.csv (default: data/apo_holo_exp_conditions.csv).",
     )
     p.add_argument(
         "--outputs-dir",
@@ -254,7 +254,7 @@ def main() -> int:
     args = parse_args()
     cfg = Paths()
     csp_path = args.csp_csv or Path(cfg.input_csv)
-    exp_path = args.exp_conditions_csv or (_REPO_ROOT / "apo_holo_exp_conditions.csv")
+    exp_path = args.exp_conditions_csv or (_REPO_ROOT / "data/apo_holo_exp_conditions.csv")
     outputs_root = args.outputs_dir or Path(cfg.outputs_dir)
     out_dir = args.output_dir or (Path(cfg.outputs_dir) / "summary_statistics")
 

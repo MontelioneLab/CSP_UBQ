@@ -81,8 +81,8 @@ def main() -> int:
     parser.add_argument(
         "--targets-csv",
         type=Path,
-        default=Path("CSP_UBQ_ph0.5_temp5C.csv"),
-        help="CSV with holo_pdb column (default: CSP_UBQ_ph0.5_temp5C.csv).",
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
+        help="CSV with holo_pdb column (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
     parser.add_argument("--output", type=Path, default=Path("figures") / "SF20_significance_threshold.png")
     parser.add_argument("--bin-width", type=float, default=0.02)
