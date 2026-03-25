@@ -12,8 +12,11 @@ from __future__ import annotations
 import argparse
 import csv
 import os
+import sys
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Dict, Optional
+from datetime import datetime
+from typing import List, Dict, Optional, Any, Callable, Iterator, TextIO
 from pathlib import Path
 
 # Support running as a script (python scripts/pipeline.py) or module (python -m scripts.pipeline)
@@ -54,6 +57,42 @@ except Exception:
 
 
 
+def _console_line(message: str) -> None:
+    """Write a concise progress line to real stdout."""
+    print(message, file=sys.__stdout__, flush=True)
+
+
+def _append_log(log_path: str, message: str) -> None:
+    """Append one line to a log file."""
+    with open(log_path, "a", encoding="utf-8") as lf:
+        lf.write(message + "\n")
+
+
+@contextmanager
+def _capture_to_log(log_path: str) -> Iterator[TextIO]:
+    """Capture stdout/stderr to a per-step log file."""
+    with open(log_path, "a", encoding="utf-8") as lf:
+        lf.write(f"\n[{datetime.now().isoformat(timespec='seconds')}] capture_start\n")
+        lf.flush()
+        with redirect_stdout(lf), redirect_stderr(lf):
+            yield lf
+        lf.write(f"[{datetime.now().isoformat(timespec='seconds')}] capture_end\n")
+        lf.flush()
+
+
+def _run_logged(log_path: str, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    """Run a callable while capturing stdout/stderr into log_path."""
+    with _capture_to_log(log_path):
+        return func(*args, **kwargs)
+
+
+def _emit_warning(message: str, log_path: Optional[str] = None) -> None:
+    """Emit warning/error text to stdout and optional log file."""
+    _console_line(message)
+    if log_path:
+        _append_log(log_path, message)
+
+
 def process_row(
     row: Dict[str, str],
     out_dir: str,
@@ -82,6 +121,22 @@ def process_row(
     else:
         tgt_dir = os.path.join(out_dir, holo_pdb)
     os.makedirs(tgt_dir, exist_ok=True)
+    logs_dir = os.path.join(tgt_dir, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+    log_files = {
+        "fetch_parse_bmrb": os.path.join(logs_dir, "01_fetch_parse_bmrb.txt"),
+        "compute_csp": os.path.join(logs_dir, "02_compute_csp.txt"),
+        "structure_pdb_alignment": os.path.join(logs_dir, "03_structure_pdb_alignment.txt"),
+        "sasa": os.path.join(logs_dir, "04_sasa_occlusion.txt"),
+        "interaction": os.path.join(logs_dir, "05_interaction_filter.txt"),
+        "ca_distance": os.path.join(logs_dir, "06_ca_distance_filter.txt"),
+        "nn_distance": os.path.join(logs_dir, "07_nn_distance_filter.txt"),
+        "any_atom_distance": os.path.join(logs_dir, "08_any_atom_distance_filter.txt"),
+        "tables_outputs": os.path.join(logs_dir, "09_tables_and_visualizations.txt"),
+        "master_csv": os.path.join(logs_dir, "10_master_csv.txt"),
+        "case_study": os.path.join(logs_dir, "11_case_study.txt"),
+    }
+    target_label = os.path.basename(tgt_dir)
     
     # Normalize tgt_dir to be relative to project root for PyMOL scripts (e.g., "./outputs/2mur_1/")
     # Convert to relative path if it's absolute, ensure it starts with ./ and ends with /
@@ -97,24 +152,28 @@ def process_row(
     if not tgt_dir_for_pymol.endswith('/'):
         tgt_dir_for_pymol += '/'
     
-    if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
-        print(f"[PIPE] Start {apo_bmrb=} {holo_bmrb=} {holo_pdb=}")
+    _console_line(f"[PIPE] [{target_label}] Start")
+    _append_log(
+        log_files["fetch_parse_bmrb"],
+        f"[PIPE] Start apo_bmrb={apo_bmrb} holo_bmrb={holo_bmrb} holo_pdb={holo_pdb}",
+    )
 
     # Fetch and parse BMRB entries
-    apo_star = fetch_bmrb(apo_bmrb)
-    holo_star = fetch_bmrb(holo_bmrb)
+    _console_line(f"[PIPE] [{target_label}] Step 1/5 Fetch+parse BMRB")
+    apo_star = _run_logged(log_files["fetch_parse_bmrb"], fetch_bmrb, apo_bmrb)
+    holo_star = _run_logged(log_files["fetch_parse_bmrb"], fetch_bmrb, holo_bmrb)
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
         print(f"[PIPE] Parsing BMRB apo={os.path.basename(apo_star)} holo={os.path.basename(holo_star)}")
     
     # Parse all sequences from multiple saveframes
-    apo_sequences = parse_sequence_and_shifts_from_saveframes(apo_star)
-    holo_sequences = parse_sequence_and_shifts_from_saveframes(holo_star)
+    apo_sequences = _run_logged(log_files["fetch_parse_bmrb"], parse_sequence_and_shifts_from_saveframes, apo_star)
+    holo_sequences = _run_logged(log_files["fetch_parse_bmrb"], parse_sequence_and_shifts_from_saveframes, holo_star)
     
     if not apo_sequences:
-        print(f"[PIPE] ERROR: No valid apo sequences found in {apo_bmrb}")
+        _emit_warning(f"[PIPE] ERROR: No valid apo sequences found in {apo_bmrb}", log_files["fetch_parse_bmrb"])
         return
     if not holo_sequences:
-        print(f"[PIPE] ERROR: No valid holo sequences found in {holo_bmrb}")
+        _emit_warning(f"[PIPE] ERROR: No valid holo sequences found in {holo_bmrb}", log_files["fetch_parse_bmrb"])
         return
 
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
@@ -129,7 +188,10 @@ def process_row(
         ref_method = _Referencing().method
     except Exception:
         ref_method = None
-    results = compute_csp_multiple_saveframes(
+    _console_line(f"[PIPE] [{target_label}] Step 2/5 Compute CSP")
+    results = _run_logged(
+        log_files["compute_csp"],
+        compute_csp_multiple_saveframes,
         apo_sequences,
         holo_sequences,
         apo_bmrb,
@@ -138,10 +200,11 @@ def process_row(
         csp_threshold_args,
         referencing_method=ref_method,
         grid_params=None,
+        target_id=target_label,
     )
     
     if not results:
-        print(f"[PIPE] ERROR: No valid CSPs computed for {apo_bmrb} vs {holo_bmrb}")
+        _emit_warning(f"[PIPE] ERROR: No valid CSPs computed for {apo_bmrb} vs {holo_bmrb}", log_files["compute_csp"])
         return
 
     # Check if CA shifts are available in both apo and holo
@@ -153,7 +216,9 @@ def process_row(
     if has_apo_ca and has_holo_ca:
         if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print("[PIPE] CA shifts found in both apo and holo, computing CA-inclusive CSPs")
-        results_ca = compute_csp_multiple_saveframes_ca(
+        results_ca = _run_logged(
+            log_files["compute_csp"],
+            compute_csp_multiple_saveframes_ca,
             apo_sequences,
             holo_sequences,
             apo_bmrb,
@@ -162,6 +227,7 @@ def process_row(
             csp_threshold_args,
             referencing_method=ref_method,
             grid_params=None,
+            target_id=target_label,
         )
     else:
         if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
@@ -173,10 +239,11 @@ def process_row(
                 print("[PIPE] No CA shifts found in holo, skipping CA-inclusive CSP analysis")
 
     # Download holo PDB (in parallel with above in future; simple now)
+    _console_line(f"[PIPE] [{target_label}] Step 3/5 Structure + interaction analyses")
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
         print(f"[PIPE] Fetching PDB {holo_pdb}")
-    pdb_path = fetch_pdb(holo_pdb)
-    chains = parse_pdb_sequences(pdb_path)
+    pdb_path = _run_logged(log_files["structure_pdb_alignment"], fetch_pdb, holo_pdb)
+    chains = _run_logged(log_files["structure_pdb_alignment"], parse_pdb_sequences, pdb_path)
 
     # Find the best apo-holo alignment to determine which holo sequence was used
     # This matches the logic in compute_csp_multiple_saveframes
@@ -246,7 +313,7 @@ def process_row(
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ Sequence alignment saved: {alignment_file_path}")
         except Exception as e:
-            print(f"[PIPE] ✗ Failed to save sequence alignment: {e}")
+            _emit_warning(f"[PIPE] ✗ Failed to save sequence alignment: {e}", log_files["structure_pdb_alignment"])
     
     # Identify receptor chain by aligning the apo sequence from best apo-holo alignment with each PDB chain.
     # The receptor is the chain that aligns most closely with the apo chemical shift list (user requirement).
@@ -300,8 +367,10 @@ def process_row(
         if other_chains:
             ligand_chain = other_chains[0]
         elif len(chains) == 1:
-            if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
-                print(f"[PIPE] WARNING: Only one chain found in PDB, cannot identify ligand chain")
+            _emit_warning(
+                "[PIPE] WARNING: Only one chain found in PDB, cannot identify ligand chain",
+                log_files["structure_pdb_alignment"],
+            )
 
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
         print(f"[PIPE] Selected receptor chain={receptor_chain} (score={best_score:.2f}, length_match={best_length_match}) based on apo sequence alignment")
@@ -321,8 +390,10 @@ def process_row(
             'threshold': sasa_analysis.sasa_threshold
         }
     
-    sasa_results = compute_sasa_occlusion(
-        pdb_path, 
+    sasa_results = _run_logged(
+        log_files["sasa"],
+        compute_sasa_occlusion,
+        pdb_path,
         sasa_threshold=sasa_args['threshold'],
         probe_radius=sasa_args['probe_radius'],
         nh_mode=sasa_args['nh_mode'],
@@ -336,7 +407,7 @@ def process_row(
     
     # Write occlusion analysis CSV
     occlusion_csv_path = os.path.join(tgt_dir, "occlusion_analysis.csv")
-    write_occlusion_analysis_csv(sasa_results['residue_info'], occlusion_csv_path)
+    _run_logged(log_files["sasa"], write_occlusion_analysis_csv, sasa_results['residue_info'], occlusion_csv_path)
 
     # Perform interaction analysis
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
@@ -351,7 +422,9 @@ def process_row(
     else:
         interaction_args.setdefault('pi_distance_threshold', 6.0)
     
-    interaction_results = compute_interaction_filter(
+    interaction_results = _run_logged(
+        log_files["interaction"],
+        compute_interaction_filter,
         pdb_path,
         distance_threshold=interaction_args['distance_threshold'],
         pi_distance_threshold=interaction_args['pi_distance_threshold'],
@@ -363,13 +436,15 @@ def process_row(
         print(get_interaction_summary(interaction_results))
     # Write interaction analysis CSV
     interaction_csv_path = os.path.join(tgt_dir, "interaction_filter.csv")
-    write_interaction_analysis_csv(interaction_results['residue_info'], interaction_csv_path)
+    _run_logged(log_files["interaction"], write_interaction_analysis_csv, interaction_results['residue_info'], interaction_csv_path)
 
     # Perform CA distance filter analysis
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
         print(f"[PIPE] Performing CA distance filter analysis")
     
-    ca_distance_results = compute_ca_distance_filter(
+    ca_distance_results = _run_logged(
+        log_files["ca_distance"],
+        compute_ca_distance_filter,
         pdb_path,
         distance_threshold=ca_distance_analysis.ca_distance_threshold,
         receptor_chain_id=receptor_chain,
@@ -382,12 +457,14 @@ def process_row(
 
     # Write CA distance filter CSV
     ca_distance_csv_path = os.path.join(tgt_dir, "ca_distance_filter.csv")
-    write_ca_distance_csv(ca_distance_results['residue_info'], ca_distance_csv_path)
+    _run_logged(log_files["ca_distance"], write_ca_distance_csv, ca_distance_results['residue_info'], ca_distance_csv_path)
 
     # Perform N-N distance filter analysis
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
         print(f"[PIPE] Performing N-N distance filter analysis")
-    nn_distance_results = compute_nn_distance_filter(
+    nn_distance_results = _run_logged(
+        log_files["nn_distance"],
+        compute_nn_distance_filter,
         pdb_path,
         distance_threshold=ca_distance_analysis.ca_distance_threshold,
         receptor_chain_id=receptor_chain,
@@ -396,12 +473,14 @@ def process_row(
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
         print(get_nn_distance_summary(nn_distance_results))
     nn_distance_csv_path = os.path.join(tgt_dir, "nn_distance_filter.csv")
-    write_nn_distance_csv(nn_distance_results['residue_info'], nn_distance_csv_path)
+    _run_logged(log_files["nn_distance"], write_nn_distance_csv, nn_distance_results['residue_info'], nn_distance_csv_path)
 
     # Perform any-atom distance filter analysis
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
         print(f"[PIPE] Performing any-atom distance filter analysis")
-    any_atom_results = compute_min_atom_distance_filter(
+    any_atom_results = _run_logged(
+        log_files["any_atom_distance"],
+        compute_min_atom_distance_filter,
         pdb_path,
         distance_threshold=ca_distance_analysis.ca_distance_threshold,
         receptor_chain_id=receptor_chain,
@@ -410,7 +489,7 @@ def process_row(
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
         print(get_any_atom_distance_summary(any_atom_results))
     any_atom_csv_path = os.path.join(tgt_dir, "any_atom_distance_filter.csv")
-    write_any_atom_distance_csv(any_atom_results['residue_info'], any_atom_csv_path)
+    _run_logged(log_files["any_atom_distance"], write_any_atom_distance_csv, any_atom_results['residue_info'], any_atom_csv_path)
 
     # Create mapping from residue numbers to occlusion data
     occlusion_map = {}
@@ -489,6 +568,8 @@ def process_row(
             "CA_offset": getattr(r, "CA_offset", None),
         }
 
+    _console_line(f"[PIPE] [{target_label}] Step 4/5 Write tables + visualizations")
+
     # Write outputs for H/N-only CSPs, now including CA columns (when available)
     table_path = os.path.join(tgt_dir, "csp_table.csv")
     with open(table_path, "w", newline="") as f:
@@ -507,7 +588,10 @@ def process_row(
             pdb_residue_number = sequential_to_pdb_map.get(r.holo_index)
             if pdb_residue_number is None:
                 if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
-                    print(f"[PIPE WARNING] No alignment found for sequential position {r.holo_index}")
+                    _emit_warning(
+                        f"[PIPE WARNING] No alignment found for sequential position {r.holo_index}",
+                        log_files["tables_outputs"],
+                    )
                 # Default to no occlusion data if no alignment found
                 occlusion_data = {'delta_sasa': '', 'is_occluded': False}
             else:
@@ -562,7 +646,10 @@ def process_row(
                 pdb_residue_number = sequential_to_pdb_map.get(r.holo_index)
                 if pdb_residue_number is None:
                     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
-                        print(f"[PIPE WARNING] (CA) No alignment found for sequential position {r.holo_index}")
+                        _emit_warning(
+                            f"[PIPE WARNING] (CA) No alignment found for sequential position {r.holo_index}",
+                            log_files["tables_outputs"],
+                        )
                     occlusion_data = {'delta_sasa': '', 'is_occluded': False}
                 else:
                     occlusion_data = occlusion_map.get(pdb_residue_number, {'delta_sasa': '', 'is_occluded': False})
@@ -594,14 +681,18 @@ def process_row(
                 ])
 
     # Visualizations (H/N CSPs)
-    plot_hsqc_variants(
+    _run_logged(
+        log_files["tables_outputs"],
+        plot_hsqc_variants,
         results,
         os.path.join(tgt_dir, "hsqc_scatter.png"),
         title=f"{holo_pdb} HSQC comparison",
     )
-    write_pymol_color_csp_mask_script(
-        results, 
-        holo_pdb, 
+    _run_logged(
+        log_files["tables_outputs"],
+        write_pymol_color_csp_mask_script,
+        results,
+        holo_pdb,
         os.path.join(tgt_dir, "color_csp_mask.pml"),
         sasa_results=sasa_results,
         receptor_chain=receptor_chain,
@@ -611,7 +702,9 @@ def process_row(
 
     # Visualizations (CA-inclusive CSPs) if available
     if results_ca:
-        plot_hsqc_variants(
+        _run_logged(
+            log_files["tables_outputs"],
+            plot_hsqc_variants,
             results_ca,
             os.path.join(tgt_dir, "hsqc_scatter_CA.png"),
             title=f"{holo_pdb} HSQC comparison (CA-inclusive CSPs)",
@@ -626,7 +719,9 @@ def process_row(
         ])
     
     # Generate occlusion visualizations
-    write_pymol_occlusion_script(
+    _run_logged(
+        log_files["tables_outputs"],
+        write_pymol_occlusion_script,
         sasa_results,
         holo_pdb,
         os.path.join(tgt_dir, "color_occlusion.pml"),
@@ -789,11 +884,13 @@ def process_row(
     
     # Generate bar plot (H/N)
     csp_classification_plot_path = os.path.join(tgt_dir, f"csp_classification_bars_{threshold_suffix}.png")
-    plot_csp_classification_bars(
+    _run_logged(
+        log_files["tables_outputs"],
+        plot_csp_classification_bars,
         results,
         interaction_results,
-        csp_classification_plot_path, 
-        title=f"{holo_pdb} CSP Classification ({threshold_suffix})", 
+        csp_classification_plot_path,
+        title=f"{holo_pdb} CSP Classification ({threshold_suffix})",
         significance_field=significance_field,
         include_numeric_residue_ticks=include_numeric_residue_ticks,
     )
@@ -801,7 +898,9 @@ def process_row(
     # Generate PyMOL script (H/N)
     try:
         csp_classification_script_path = os.path.join(tgt_dir, f"csp_classification_{threshold_suffix}.pml")
-        write_pymol_csp_classification_script(
+        _run_logged(
+            log_files["tables_outputs"],
+            write_pymol_csp_classification_script,
             results,
             interaction_results,
             holo_pdb,
@@ -814,12 +913,17 @@ def process_row(
         if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print(f"[PIPE] ✓ PyMOL CSP classification script saved: {csp_classification_script_path}")
     except Exception as e:
-        print(f"[PIPE] ✗ Failed to generate PyMOL CSP classification script for {threshold_suffix}: {e}")
+        _emit_warning(
+            f"[PIPE] ✗ Failed to generate PyMOL CSP classification script for {threshold_suffix}: {e}",
+            log_files["tables_outputs"],
+        )
     
     # Generate PyMOL session file (H/N)
     try:
         csp_classification_session_path = os.path.join(tgt_dir, f"csp_classification_{threshold_suffix}.pse")
-        success = write_pymol_csp_classification_session_file(
+        success = _run_logged(
+            log_files["tables_outputs"],
+            write_pymol_csp_classification_session_file,
             results,
             interaction_results,
             holo_pdb,
@@ -832,7 +936,10 @@ def process_row(
         if success and (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print(f"[PIPE] ✓ PyMOL CSP classification session saved: {csp_classification_session_path}")
     except Exception as e:
-        print(f"[PIPE] ✗ Failed to generate PyMOL CSP classification session for {threshold_suffix}: {e}")
+        _emit_warning(
+            f"[PIPE] ✗ Failed to generate PyMOL CSP classification session for {threshold_suffix}: {e}",
+            log_files["tables_outputs"],
+        )
     
     # Keep the loop for CA-inclusive CSP classification outputs (if available)
     for significance_field, threshold_suffix in significance_thresholds:
@@ -843,7 +950,9 @@ def process_row(
                 csp_classification_plot_ca_path = os.path.join(
                     tgt_dir, f"csp_classification_bars_{threshold_suffix}_CA.png"
                 )
-                plot_csp_classification_bars(
+                _run_logged(
+                    log_files["tables_outputs"],
+                    plot_csp_classification_bars,
                     results_ca,
                     interaction_results,
                     csp_classification_plot_ca_path,
@@ -852,13 +961,18 @@ def process_row(
                     include_numeric_residue_ticks=include_numeric_residue_ticks,
                 )
             except Exception as e:
-                print(f"[PIPE] ✗ Failed to generate CSP classification bar plot (CA) for {threshold_suffix}: {e}")
+                _emit_warning(
+                    f"[PIPE] ✗ Failed to generate CSP classification bar plot (CA) for {threshold_suffix}: {e}",
+                    log_files["tables_outputs"],
+                )
 
             try:
                 csp_classification_script_ca_path = os.path.join(
                     tgt_dir, f"csp_classification_{threshold_suffix}_CA.pml"
                 )
-                write_pymol_csp_classification_script(
+                _run_logged(
+                    log_files["tables_outputs"],
+                    write_pymol_csp_classification_script,
                     results_ca,
                     interaction_results,
                     holo_pdb,
@@ -871,13 +985,18 @@ def process_row(
                 if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                     print(f"[PIPE] ✓ PyMOL CSP classification script (CA) saved: {csp_classification_script_ca_path}")
             except Exception as e:
-                print(f"[PIPE] ✗ Failed to generate PyMOL CSP classification script (CA) for {threshold_suffix}: {e}")
+                _emit_warning(
+                    f"[PIPE] ✗ Failed to generate PyMOL CSP classification script (CA) for {threshold_suffix}: {e}",
+                    log_files["tables_outputs"],
+                )
 
             try:
                 csp_classification_session_ca_path = os.path.join(
                     tgt_dir, f"csp_classification_{threshold_suffix}_CA.pse"
                 )
-                success = write_pymol_csp_classification_session_file(
+                success = _run_logged(
+                    log_files["tables_outputs"],
+                    write_pymol_csp_classification_session_file,
                     results_ca,
                     interaction_results,
                     holo_pdb,
@@ -890,12 +1009,17 @@ def process_row(
                 if success and (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                     print(f"[PIPE] ✓ PyMOL CSP classification session (CA) saved: {csp_classification_session_ca_path}")
             except Exception as e:
-                print(f"[PIPE] ✗ Failed to generate PyMOL CSP classification session (CA) for {threshold_suffix}: {e}")
+                _emit_warning(
+                    f"[PIPE] ✗ Failed to generate PyMOL CSP classification session (CA) for {threshold_suffix}: {e}",
+                    log_files["tables_outputs"],
+                )
     
     # Per-atom (H, N, CA) perturbation classification panels
     try:
         per_atom_panels_path = os.path.join(tgt_dir, "per_atom_classification_panels.png")
-        plot_per_atom_classification_panels(
+        _run_logged(
+            log_files["tables_outputs"],
+            plot_per_atom_classification_panels,
             results_hn=results,
             results_ca=results_ca if results_ca else None,
             binding_results=interaction_results,
@@ -909,7 +1033,7 @@ def process_row(
         if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print(f"[PIPE] ✓ Per-atom classification panels saved: {per_atom_panels_path}")
     except Exception as e:
-        print(f"[PIPE] ✗ Failed to generate per-atom classification panels: {e}")
+        _emit_warning(f"[PIPE] ✗ Failed to generate per-atom classification panels: {e}", log_files["tables_outputs"])
     
     # Generate delta SASA heatmap visualizations (same as test_sasa.py)
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
@@ -918,20 +1042,34 @@ def process_row(
     try:
         # Generate PyMOL script with delta SASA heatmap
         delta_sasa_script_path = os.path.join(tgt_dir, "delta_sasa_coloring.pml")
-        write_pymol_delta_sasa_script(sasa_results, holo_pdb, delta_sasa_script_path, output_dir=tgt_dir_for_pymol)
+        _run_logged(
+            log_files["tables_outputs"],
+            write_pymol_delta_sasa_script,
+            sasa_results,
+            holo_pdb,
+            delta_sasa_script_path,
+            output_dir=tgt_dir_for_pymol,
+        )
         if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print(f"[PIPE] ✓ PyMOL delta SASA script saved: {delta_sasa_script_path}")
     except Exception as e:
-        print(f"[PIPE] ✗ Failed to generate PyMOL delta SASA script: {e}")
+        _emit_warning(f"[PIPE] ✗ Failed to generate PyMOL delta SASA script: {e}", log_files["tables_outputs"])
     
     try:
         # Generate PyMOL session file
         delta_sasa_session_path = os.path.join(tgt_dir, "delta_sasa_coloring.pse")
-        success = write_pymol_session_file(sasa_results, holo_pdb, delta_sasa_session_path, output_dir=tgt_dir_for_pymol)
+        success = _run_logged(
+            log_files["tables_outputs"],
+            write_pymol_session_file,
+            sasa_results,
+            holo_pdb,
+            delta_sasa_session_path,
+            output_dir=tgt_dir_for_pymol,
+        )
         if success and (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print(f"[PIPE] ✓ PyMOL delta SASA session saved: {delta_sasa_session_path}")
     except Exception as e:
-        print(f"[PIPE] ✗ Failed to generate PyMOL delta SASA session: {e}")
+        _emit_warning(f"[PIPE] ✗ Failed to generate PyMOL delta SASA session: {e}", log_files["tables_outputs"])
     
     if binary_mode:
         binary_dir = os.path.join(tgt_dir, "binary_pymol")
@@ -952,7 +1090,9 @@ def process_row(
 
         try:
             delta_sasa_binary_path = os.path.join(binary_dir, "delta_sasa_coloring_binary.pml")
-            write_pymol_delta_sasa_script(
+            _run_logged(
+                log_files["tables_outputs"],
+                write_pymol_delta_sasa_script,
                 sasa_results,
                 holo_pdb,
                 delta_sasa_binary_path,
@@ -962,11 +1102,13 @@ def process_row(
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ PyMOL binary delta SASA script saved: {delta_sasa_binary_path}")
         except Exception as e:
-            print(f"[PIPE] ✗ Failed to generate binary delta SASA script: {e}")
+            _emit_warning(f"[PIPE] ✗ Failed to generate binary delta SASA script: {e}", log_files["tables_outputs"])
 
         try:
             delta_sasa_binary_session = os.path.join(binary_dir, "delta_sasa_coloring_binary.pse")
-            success = write_pymol_session_file(
+            success = _run_logged(
+                log_files["tables_outputs"],
+                write_pymol_session_file,
                 sasa_results,
                 holo_pdb,
                 delta_sasa_binary_session,
@@ -976,11 +1118,13 @@ def process_row(
             if success and (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ PyMOL binary delta SASA session saved: {delta_sasa_binary_session}")
         except Exception as e:
-            print(f"[PIPE] ✗ Failed to generate binary delta SASA session: {e}")
+            _emit_warning(f"[PIPE] ✗ Failed to generate binary delta SASA session: {e}", log_files["tables_outputs"])
 
         try:
             csp_heatmap_binary_path = os.path.join(binary_dir, "csp_heatmap_binary.pml")
-            write_pymol_csp_heatmap_script(
+            _run_logged(
+                log_files["tables_outputs"],
+                write_pymol_csp_heatmap_script,
                 results,
                 sasa_results,
                 holo_pdb,
@@ -991,11 +1135,13 @@ def process_row(
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ PyMOL binary CSP heatmap script saved: {csp_heatmap_binary_path}")
         except Exception as e:
-            print(f"[PIPE] ✗ Failed to generate binary CSP heatmap script: {e}")
+            _emit_warning(f"[PIPE] ✗ Failed to generate binary CSP heatmap script: {e}", log_files["tables_outputs"])
 
         try:
             csp_binary_session_path = os.path.join(binary_dir, "csp_heatmap_binary.pse")
-            success = write_pymol_csp_session_file(
+            success = _run_logged(
+                log_files["tables_outputs"],
+                write_pymol_csp_session_file,
                 results,
                 sasa_results,
                 holo_pdb,
@@ -1005,11 +1151,13 @@ def process_row(
             if success and (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ PyMOL binary CSP heatmap session saved: {csp_binary_session_path}")
         except Exception as e:
-            print(f"[PIPE] ✗ Failed to generate binary CSP heatmap session: {e}")
+            _emit_warning(f"[PIPE] ✗ Failed to generate binary CSP heatmap session: {e}", log_files["tables_outputs"])
 
         try:
             combined_binary_path = os.path.join(binary_dir, "color_combined_binary.pml")
-            write_pymol_combined_script(
+            _run_logged(
+                log_files["tables_outputs"],
+                write_pymol_combined_script,
                 results,
                 interaction_results,
                 holo_pdb,
@@ -1023,27 +1171,28 @@ def process_row(
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ PyMOL binary combined script saved: {combined_binary_path}")
         except Exception as e:
-            print(f"[PIPE] ✗ Failed to generate binary combined PyMOL script: {e}")
+            _emit_warning(f"[PIPE] ✗ Failed to generate binary combined PyMOL script: {e}", log_files["tables_outputs"])
     
     # Generate 1D single-atom shift analysis for this target
     try:
-        compute_1d_metrics_for_target(Path(tgt_dir))
+        _run_logged(log_files["tables_outputs"], compute_1d_metrics_for_target, Path(tgt_dir))
         if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print(f"[PIPE] ✓ 1D single-atom analysis saved: {os.path.join(tgt_dir, '1d_analysis.csv')}")
     except Exception as e:
-        print(f"[PIPE] ✗ Failed to generate 1D single-atom analysis: {e}")
+        _emit_warning(f"[PIPE] ✗ Failed to generate 1D single-atom analysis: {e}", log_files["tables_outputs"])
 
+    _console_line(f"[PIPE] [{target_label}] Step 5/5 Master CSV + case study")
     # Generate master CSV file with alignment
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
         print(f"[PIPE] Generating master CSV with sequence alignment")
     
     try:
         master_csv_path = os.path.join(tgt_dir, "master_alignment.csv")
-        merge_all_csv_files(tgt_dir, master_csv_path)
+        _run_logged(log_files["master_csv"], merge_all_csv_files, tgt_dir, master_csv_path)
         if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print(f"[PIPE] ✓ Master CSV saved: {master_csv_path}")
     except Exception as e:
-        print(f"[PIPE] ✗ Failed to generate master CSV: {e}")
+        _emit_warning(f"[PIPE] ✗ Failed to generate master CSV: {e}", log_files["master_csv"])
 
     # Generate case-study figures (v1 and v2) for each target
     if generate_case_study:
@@ -1051,7 +1200,9 @@ def process_row(
         force_reset_for_case_study_1 = force_case_study_view_reset
         force_reset_for_case_study_2 = False if force_case_study_view_reset else force_case_study_view_reset
         try:
-            case_study_path = generate_case_study_figure(
+            case_study_path = _run_logged(
+                log_files["case_study"],
+                generate_case_study_figure,
                 target_dir=tgt_dir,
                 pdb_id=holo_pdb,
                 apo_bmrb=apo_bmrb,
@@ -1061,9 +1212,11 @@ def process_row(
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ Case-study figure saved: {case_study_path}")
         except Exception as e:
-            print(f"[PIPE] ✗ Failed to generate case-study figure: {e}")
+            _emit_warning(f"[PIPE] ✗ Failed to generate case-study figure: {e}", log_files["case_study"])
         try:
-            case_study_2_path = generate_case_study_2_figure(
+            case_study_2_path = _run_logged(
+                log_files["case_study"],
+                generate_case_study_2_figure,
                 target_dir=tgt_dir,
                 pdb_id=holo_pdb,
                 apo_bmrb=apo_bmrb,
@@ -1073,10 +1226,9 @@ def process_row(
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ Case-study v2 figure saved: {case_study_2_path}")
         except Exception as e:
-            print(f"[PIPE] ✗ Failed to generate case-study v2 figure: {e}")
+            _emit_warning(f"[PIPE] ✗ Failed to generate case-study v2 figure: {e}", log_files["case_study"])
     
-    if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
-        print(f"[PIPE] Wrote outputs to {tgt_dir}")
+    _console_line(f"[PIPE] [{target_label}] Complete -> {tgt_dir}")
 
 
 def lookup_all_rows_from_holo_pdb(csv_path: str, holo_pdb: str) -> List[Dict[str, str]]:
@@ -1397,7 +1549,16 @@ def main() -> None:
             )
 
     # Generate confusion_matrix_per_system.csv for downstream scripts (create_si_fig_s20, etc.)
-    generate_confusion_matrix_per_system(args.out, verbose=(os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")))
+    _console_line("[PIPE] Finalize: refresh confusion-matrix summary")
+    run_logs_dir = os.path.join(args.out, "logs")
+    os.makedirs(run_logs_dir, exist_ok=True)
+    run_summary_log = os.path.join(run_logs_dir, "confusion_matrix_summary.txt")
+    _run_logged(
+        run_summary_log,
+        generate_confusion_matrix_per_system,
+        args.out,
+        verbose=(os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")),
+    )
 
 
 if __name__ == "__main__":
