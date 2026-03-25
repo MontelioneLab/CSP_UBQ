@@ -36,6 +36,11 @@ AA_THREE_TO_ONE: Dict[str, str] = {
 }
 
 
+def _project_root() -> str:
+    """Repository root derived from this module location."""
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 def _three_letter_to_one(residue_name: str) -> str:
     return AA_THREE_TO_ONE.get(residue_name.upper(), 'X')
 
@@ -55,7 +60,7 @@ def _load_metrics_from_confusion_csv(out_png: str) -> Optional[Dict[str, float]]
     if not system_id:
         return None
 
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    project_root = _project_root()
     csv_path = os.path.join(project_root, "outputs", "confusion_matrix_per_system.csv")
     if not os.path.exists(csv_path):
         return None
@@ -642,7 +647,7 @@ def write_pymol_color_script(
                 current = os.path.dirname(current)
             else:
                 # Fallback: assume project root is 2 levels up from out_path
-                project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+                project_root = _project_root()
             pdb_path_abs = os.path.join(project_root, pdb_path[2:])
         else:
             pdb_path_abs = pdb_path
@@ -658,7 +663,7 @@ def write_pymol_color_script(
             current = os.path.dirname(current)
         else:
             # Fallback: assume project root is 2 levels up from out_path
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+            project_root = _project_root()
         pdb_path_abs = os.path.join(project_root, pdb_path[2:])
     
     # Create the PDB file if it doesn't exist
@@ -742,13 +747,13 @@ def write_pymol_color_csp_mask_script(
                 current = os.path.dirname(current)
             else:
                 # Fallback: assume project root is 2 levels up from out_path
-                project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+                project_root = _project_root()
             pdb_path_abs = os.path.join(project_root, pdb_path[2:])
         else:
             pdb_path_abs = pdb_path
     else:
         pdb_path = f"./outputs/{pdb_id}/{pdb_id}_csp.pdb"
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+        project_root = _project_root()
         pdb_path_abs = os.path.join(project_root, pdb_path[2:])
     
     # Create the PDB file if it doesn't exist
@@ -933,7 +938,7 @@ def write_pymol_delta_sasa_script(
     # For file operations, we need the actual directory path
     if output_dir and output_dir.startswith('./'):
         # Convert relative path to absolute for file operations
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+        project_root = _project_root()
         pdb_output_dir_abs = os.path.join(project_root, output_dir[2:].rstrip('/'))
     else:
         pdb_output_dir_abs = pdb_output_dir
@@ -1551,7 +1556,7 @@ def write_pymol_occlusion_script(
                 current = os.path.dirname(current)
             else:
                 # Fallback: assume project root is 2 levels up from out_path
-                project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+                project_root = _project_root()
             pdb_path_abs = os.path.join(project_root, pdb_path[2:])
         else:
             pdb_path_abs = pdb_path
@@ -1568,7 +1573,7 @@ def write_pymol_occlusion_script(
             current = os.path.dirname(current)
         else:
             # Fallback: assume project root is 2 levels up from out_path
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+            project_root = _project_root()
         pdb_path_abs = os.path.join(project_root, pdb_path[2:])
     
     # Create the delta_sasa.pdb file if it doesn't exist
@@ -1693,7 +1698,7 @@ def write_pymol_combined_script(
                 current = os.path.dirname(current)
             else:
                 # Fallback: assume project root is 2 levels up from out_path
-                project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+                project_root = _project_root()
             pdb_path_abs = os.path.join(project_root, pdb_path[2:])
         else:
             pdb_path_abs = pdb_path
@@ -1710,7 +1715,7 @@ def write_pymol_combined_script(
             current = os.path.dirname(current)
         else:
             # Fallback: assume project root is 2 levels up from out_path
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+            project_root = _project_root()
         pdb_path_abs = os.path.join(project_root, pdb_path[2:])
     
     # Create the delta_sasa.pdb file if it doesn't exist
@@ -2088,7 +2093,7 @@ def write_pymol_csp_classification_script(results: List[CSPResult], binding_resu
             current = os.path.dirname(current)
         else:
             # Fallback: assume project root is 2 levels up from out_path
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(out_path)))
+            project_root = _project_root()
         pdb_output_dir_abs = os.path.join(project_root, output_dir[2:].rstrip('/'))
     else:
         pdb_output_dir_abs = output_dir or script_output_dir

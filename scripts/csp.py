@@ -1066,6 +1066,7 @@ def compute_csp_multiple_saveframes(
     *,
     referencing_method: Optional[str] = None,
     grid_params: Optional[Dict] = None,
+    target_id: Optional[str] = None,
 ) -> List[CSPResult]:
     """Compute CSPs for all possible apo-holo sequence pairs from multiple saveframes.
     
@@ -1122,7 +1123,7 @@ def compute_csp_multiple_saveframes(
         enable_referencing=True,
         referencing_method=referencing_method,
         grid_params=grid_params,
-        target_id=holo_pdb,
+        target_id=(target_id or holo_pdb),
     )
     
     if _verbose:
@@ -1736,6 +1737,7 @@ def compute_csp_multiple_saveframes_ca(
     *,
     referencing_method: Optional[str] = None,
     grid_params: Optional[Dict] = None,
+    target_id: Optional[str] = None,
 ) -> List[CSPResult]:
     """Compute CA-inclusive CSPs for all possible apo-holo sequence pairs from multiple saveframes.
 
@@ -1815,7 +1817,7 @@ def compute_csp_multiple_saveframes_ca(
         enable_referencing=True,
         referencing_method=referencing_method,
         grid_params=grid_params,
-        target_id=holo_pdb,
+        target_id=(target_id or holo_pdb),
     )
 
     if _verbose:

@@ -9,7 +9,7 @@ set_color tp_color, [0.1804, 0.8000, 0.4431]
 set_color tn_color, [0.2039, 0.5961, 0.8588]
 set_color fp_color, [0.6078, 0.3490, 0.7137]
 set_color fn_color, [0.9529, 0.6118, 0.0706]
-# TP (Sig. CSP in Binding Site): 11 residues
+# TP (Sig. CSP in Binding Site): 10 residues
 color tp_color, structure and chain B and resi 1588
 color tp_color, structure and chain B and resi 1596
 color tp_color, structure and chain B and resi 1601
@@ -17,7 +17,6 @@ color tp_color, structure and chain B and resi 1605
 color tp_color, structure and chain B and resi 1606
 color tp_color, structure and chain B and resi 1609
 color tp_color, structure and chain B and resi 1612
-color tp_color, structure and chain B and resi 1616
 color tp_color, structure and chain B and resi 1617
 color tp_color, structure and chain B and resi 1618
 color tp_color, structure and chain B and resi 1620
@@ -55,7 +54,7 @@ color tn_color, structure and chain B and resi 1611
 color tn_color, structure and chain B and resi 1623
 color tn_color, structure and chain B and resi 1626
 color tn_color, structure and chain B and resi 1702
-# FN (low CSP in Binding Site): 13 residues
+# FN (low CSP in Binding Site): 14 residues
 color fn_color, structure and chain B and resi 1569
 color fn_color, structure and chain B and resi 1589
 color fn_color, structure and chain B and resi 1590
@@ -65,6 +64,7 @@ color fn_color, structure and chain B and resi 1602
 color fn_color, structure and chain B and resi 1604
 color fn_color, structure and chain B and resi 1608
 color fn_color, structure and chain B and resi 1615
+color fn_color, structure and chain B and resi 1616
 color fn_color, structure and chain B and resi 1619
 color fn_color, structure and chain B and resi 1621
 color fn_color, structure and chain B and resi 1624
@@ -82,10 +82,10 @@ set cartoon_ring_mode, 1
 # CSP Classification Analysis Summary:
 # Receptor chain: B
 # Ligand chain: A
-# TP (Sig. CSP in Union Site): 11
+# TP (Sig. CSP in Union Site): 10
 # FP (Sig. CSP -- Allosteric): 12
 # TN (low CSP -- Allosteric): 20
-# FN (low CSP in Union Site): 13
+# FN (low CSP in Union Site): 14
 # Residues without CSP data: 9
 # Structure colored by CSP classification (TP/FP/TN/FN)
-# Modified PDB file: /Users/tiburon/Desktop/CSP_UBQ/outputs/7ZEY_2/7ZEY_csp.pdb
+# Modified PDB file: /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/7ZEY_2/7ZEY_csp.pdb

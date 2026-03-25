@@ -181,8 +181,25 @@ def compute_classification(row: Dict[str, Any]) -> str:
     Returns:
         Classification string: 'TP', 'TN', 'FP', 'FN', or '' (empty if data insufficient)
     """
+    def _to_clean_str(value: Any) -> str:
+        """Convert mixed scalar values to a stripped string safely."""
+        if value is None:
+            return ''
+        if isinstance(value, str):
+            return value.strip()
+        return str(value).strip()
+
+    def _to_bool(value: Any) -> bool:
+        """Parse common bool-like values robustly (str/bool/numpy scalar)."""
+        if value is None:
+            return False
+        if isinstance(value, bool):
+            return value
+        value_str = _to_clean_str(value).lower()
+        return value_str in ('true', '1', 'yes', 'y', 't')
+
     # Extract significant value (prediction)
-    significant_str = row.get('significant', '').strip()
+    significant_str = _to_clean_str(row.get('significant', ''))
     try:
         significant = int(significant_str) == 1
     except (ValueError, TypeError):
@@ -191,29 +208,24 @@ def compute_classification(row: Dict[str, Any]) -> str:
     
     # Determine ground truth using occluded_or_ca_or_interaction strategy
     # Check occlusion status
-    is_occluded_str = row.get('is_occluded_occlusion', '').strip()
-    is_occluded = is_occluded_str.lower() == 'true' if is_occluded_str else False
+    is_occluded = _to_bool(row.get('is_occluded_occlusion', ''))
     
     # Check CA distance filter status
-    passes_ca_filter_str = row.get('passes_filter_distance', '').strip()
-    passes_ca_filter = passes_ca_filter_str.lower() == 'true' if passes_ca_filter_str else False
+    passes_ca_filter = _to_bool(row.get('passes_filter_distance', ''))
     
     # Check interaction status
-    has_hbond_str = row.get('has_hbond_interaction', '').strip()
-    has_charge_complement_str = row.get('has_charge_complement_interaction', '').strip()
-    has_pi_contact_str = row.get('has_pi_contact_interaction', '').strip()
-    
-    has_hbond = has_hbond_str.lower() == 'true' if has_hbond_str else False
-    has_charge_complement = has_charge_complement_str.lower() == 'true' if has_charge_complement_str else False
-    has_pi_contact = has_pi_contact_str.lower() == 'true' if has_pi_contact_str else False
+    has_hbond = _to_bool(row.get('has_hbond_interaction', ''))
+    has_charge_complement = _to_bool(row.get('has_charge_complement_interaction', ''))
+    has_pi_contact = _to_bool(row.get('has_pi_contact_interaction', ''))
     
     is_interacting = has_hbond or has_charge_complement or has_pi_contact
     
     # Check min_any_atom_distance < 2A (direct contact)
     is_sub_2A = False
-    passes_sub_2A_str = row.get('passes_sub_2A_filter_any_atom', '').strip()
+    passes_sub_2A_raw = row.get('passes_sub_2A_filter_any_atom', '')
+    passes_sub_2A_str = _to_clean_str(passes_sub_2A_raw)
     if passes_sub_2A_str:
-        is_sub_2A = passes_sub_2A_str.lower() == 'true'
+        is_sub_2A = _to_bool(passes_sub_2A_raw)
     else:
         min_any_str = row.get('min_any_atom_distance', '')
         if min_any_str not in ('', None):

@@ -1,0 +1,69 @@
+
+[2026-03-25T11:04:31] capture_start
+[DEBUG] Multi-model PDB detected, extracting models...
+[DEBUG] Extracted 10 models
+/Users/tiburon/miniconda3/envs/CSP_Rank/lib/python3.12/site-packages/mdtraj/formats/pdb/pdbfile.py:208: UserWarning: Unlikely unit cell vectors detected in PDB file likely resulting from a dummy CRYST1 record. Discarding unit cell vectors.
+  warnings.warn(
+[DEBUG] Calculating RMSD matrix for 10 models...
+[DEBUG] Selected medoid model 4 (sum RMSD: 2.077)
+[DEBUG] Using PDB file: /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmpg2047hkd/model_4.pdb
+[DEBUG] Loaded holo structure with 2171 atoms, 133 residues
+[DEBUG] Identified receptor chain: B, ligand chain: A
+[DEBUG] Receptor chain length: 76 residues
+[DEBUG] Ligand chain length: 57 residues
+[DEBUG] All chains in structure: {'B', 'A'}
+[DEBUG] Selected 1232 atoms for receptor chain B (index 1)
+[DEBUG] Created receptor-only trajectory with 1232 atoms, 76 residues
+[DEBUG] Computing per-residue SASA (probe_radius=0.0)...
+[DEBUG] Residue-level SASA arrays: holo shape (1, 133), receptor shape (1, 76)
+[DEBUG] holo_sasa values (per residue): [[1.2628971  1.018385   1.3855882  1.2150316  0.87220484 1.1648114
+  1.4378073  1.0366637  1.422233   1.0814083  0.7213179  1.0987635
+  1.1514324  0.9972563  0.91235787 1.1484659  1.146774   0.9844546
+  1.1422272  1.6594211  1.000741   0.55488443 1.0939062  1.319598
+  1.089247   1.5277225  1.0578454  0.9803676  1.5325586  1.605284
+  1.3001691  1.3481758  1.1088898  1.1748666  0.45314842 1.7314728
+  1.2149283  1.1387225  0.44930124 1.0621463  1.1134632  1.1247134
+  0.5382262  1.684145   1.682268   0.5039793  1.2977052  1.4187155
+  0.88707334 0.9427282  1.0058277  1.2937735  0.9317496  1.5082896
+  1.2430766  1.3088313  1.7272962  1.5118349  1.3491137  1.2601882
+  1.5239371  1.1157826  1.4736844  0.9304872  1.1715776  1.0139681
+  0.489264   1.5326277  1.0718505  1.2146046  0.99280375 1.2959901
+  1.3185323  1.0148774  1.1596528  0.9807233  0.88482875 0.8647907
+  0.8541947  1.1940552  1.1719003  0.888948   1.059091   1.4755113
+  0.6820681  1.4029787  1.1493187  1.2223017  1.0254148  1.4561698
+  1.1469915  0.5660597  1.2020953  0.92661613 0.92819226 1.0803509
+  1.3245807  1.154542   1.656864   1.3357149  1.2268633  1.4796467
+  0.7581353  0.48669022 1.4754925  1.2550972  1.3032833  1.2028469
+  1.0361849  0.5560583  1.7040833  0.92502356 1.2405515  0.8072408
+  0.9824628  1.5111258  1.0746801  1.2516171  1.3121226  1.5161031
+  1.2509544  0.7795746  1.0639657  1.3232147  1.3207948  1.2651473
+  1.0241122  1.3643265  1.6653962  1.3146797  1.6777458  0.6000244
+  0.73791945]]
+[DEBUG] receptor_sasa values (per residue): [[1.5118349  1.3491137  1.2601882  1.5239371  1.1157826  1.5289136
+  0.96660215 1.2760361  1.0139681  0.52752864 1.5341399  1.0807099
+  1.2146046  0.99280375 1.2959901  1.3185323  1.0148774  1.1596528
+  0.9807233  0.88482875 0.8647907  0.8541947  1.1940552  1.1719003
+  0.888948   1.059091   1.4755113  0.6820681  1.4029787  1.1493187
+  1.2223017  1.0254148  1.4561698  1.1469915  0.5660597  1.2020953
+  0.92661613 0.92819226 1.0803509  1.3245807  1.154542   1.7051833
+  1.3357149  1.2644211  1.4796467  0.78736126 0.54878455 1.5070368
+  1.2758257  1.3032833  1.2028469  1.0361849  0.5560583  1.7040833
+  0.92502356 1.2405515  0.8072408  0.9824628  1.5111258  1.0746801
+  1.2516171  1.3121226  1.5161031  1.2509544  0.7795746  1.0639657
+  1.3232147  1.353469   1.2651473  1.0467317  1.3701699  1.7131169
+  1.3472896  1.6921668  0.6042584  0.7603762 ]]
+[DEBUG] SASA computation took 0.04 seconds
+[DEBUG] SASA arrays: holo shape (1, 133), receptor shape (1, 76)
+[DEBUG] Processing residue-level SASA analysis...
+[DEBUG] Found 76 receptor residues
+[DEBUG] Processed 76 residues total
+[DEBUG] Found 20 occluded residues
+[DEBUG] Processed 76 residues total
+[DEBUG] Found 20 occluded residues
+[DEBUG] Performing contact validation for occluded residues...
+[DEBUG] Warning: Contact validation failed: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.
+[DEBUG] Cleaned up temporary files in /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmpg2047hkd
+[2026-03-25T11:04:32] capture_end
+
+[2026-03-25T11:04:32] capture_start
+[2026-03-25T11:04:32] capture_end

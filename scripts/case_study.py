@@ -32,6 +32,19 @@ def extract_hsqc_bottom_right_panel(hsqc_png_path: str):
     return image[row_start:height, col_start:width]
 
 
+def _run_pymol_command(cmd: List[str], context: str) -> None:
+    """
+    Run PyMOL and keep all subprocess output capturable by caller logging.
+    """
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.stdout:
+        print(f"[CASE_STUDY] {context} stdout:\n{result.stdout}")
+    if result.stderr:
+        print(f"[CASE_STUDY] {context} stderr:\n{result.stderr}")
+    if result.returncode != 0:
+        raise RuntimeError(f"PyMOL command failed for {context} (exit code {result.returncode})")
+
+
 def capture_user_view_interactive(
     color_csp_mask_pml_path: str,
     view_output_path: str,
@@ -66,9 +79,9 @@ print("[CASE_STUDY] ------------------------------------------------------------
         helper_path = tmp.name
 
     try:
-        subprocess.run(
+        _run_pymol_command(
             ["pymol", color_csp_mask_pml_path, "-r", helper_path],
-            check=True,
+            context=f"capture_user_view_interactive:{pdb_id}",
         )
     finally:
         if os.path.exists(helper_path):
@@ -101,7 +114,7 @@ def render_pymol_panel_with_view(
     """
     Render a PyMOL script using a fixed camera view.
     """
-    subprocess.run(
+    _run_pymol_command(
         [
             "pymol",
             "-c",
@@ -116,7 +129,7 @@ def render_pymol_panel_with_view(
             "-d",
             "quit",
         ],
-        check=True,
+        context=f"render_pymol_panel_with_view:{os.path.basename(output_png_path)}",
     )
 
     if not os.path.exists(output_png_path):

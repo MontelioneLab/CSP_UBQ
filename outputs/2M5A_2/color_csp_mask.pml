@@ -10,7 +10,9 @@ color red, 2M5A_structure and chain B and resi 108
 color red, 2M5A_structure and chain B and resi 109
 color red, 2M5A_structure and chain B and resi 110
 color red, 2M5A_structure and chain B and resi 111
+color red, 2M5A_structure and chain B and resi 112
 color red, 2M5A_structure and chain B and resi 113
+color red, 2M5A_structure and chain B and resi 114
 color red, 2M5A_structure and chain B and resi 116
 color red, 2M5A_structure and chain B and resi 118
 color red, 2M5A_structure and chain B and resi 119
@@ -28,4 +30,4 @@ set cartoon_transparency, 0.2, 2M5A_structure
 # Color scheme:
 # Ligand chain (A): cyan
 # Receptor chain (B): gray30 (non-significant/no CSP), red (significant CSP via significant)
-# Significant residues: 20
+# Significant residues: 22

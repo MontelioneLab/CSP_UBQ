@@ -24,9 +24,10 @@ color red, 2FIN_structure and chain B and resi 49
 color red, 2FIN_structure and chain B and resi 51
 color red, 2FIN_structure and chain B and resi 55
 color red, 2FIN_structure and chain B and resi 56
+color red, 2FIN_structure and chain B and resi 62
 color red, 2FIN_structure and chain B and resi 65
 set cartoon_transparency, 0.2, 2FIN_structure
 # Color scheme:
 # Ligand chain (A): cyan
 # Receptor chain (B): gray30 (non-significant/no CSP), red (significant CSP via significant)
-# Significant residues: 21
+# Significant residues: 22

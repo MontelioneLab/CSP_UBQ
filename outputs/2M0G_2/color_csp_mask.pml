@@ -6,7 +6,6 @@ color cyan, 2M0G_structure and chain A
 color gray30, 2M0G_structure and chain B
 color red, 2M0G_structure and chain B and resi 373
 color red, 2M0G_structure and chain B and resi 375
-color red, 2M0G_structure and chain B and resi 378
 color red, 2M0G_structure and chain B and resi 379
 color red, 2M0G_structure and chain B and resi 380
 color red, 2M0G_structure and chain B and resi 381
@@ -44,6 +43,7 @@ color red, 2M0G_structure and chain B and resi 457
 color red, 2M0G_structure and chain B and resi 458
 color red, 2M0G_structure and chain B and resi 459
 color red, 2M0G_structure and chain B and resi 460
+color red, 2M0G_structure and chain B and resi 462
 color red, 2M0G_structure and chain B and resi 473
 color red, 2M0G_structure and chain B and resi 474
 color red, 2M0G_structure and chain B and resi 475

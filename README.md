@@ -38,15 +38,13 @@ Targets were collected by manual scraping of the PDB, using advanced search filt
 
 ### Calculating CSPs
 
-CSPs are calculated by comparing chemical shifts between bound and free forms of the receptor. In each case, apo and holo chemical shifts were referenced by applying offsets to the holo shifts. The optimal offset was determined by a grid search over candidate \(^1\text{H}\) and \(^{15}\text{N}\) holo shifts, selecting the pair that **maximizes the count of aligned residues** whose offset-corrected amide CSP (same \(\sqrt{\tfrac{1}{2}(\Delta\delta_H^2 + (0.14\,\Delta\delta_N)^2)}\) form) is **below 0.05 ppm**; this cutoff is `Referencing.grid_cutoff` in `scripts/config.py`.
+CSPs are calculated by comparing chemical shifts between bound and free forms of the receptor. In each case, apo and holo chemical shifts were referenced by applying offsets to the holo shifts. The optimal offset was determined by a grid search over candidate 1H and 15N holo shifts, selecting the pair that **maximizes the count of aligned residues** whose offset-corrected amide CSP (same `sqrt(0.5 * (Δδ_H^2 + (0.14 * Δδ_N)^2))` form) is **below 0.05 ppm**; this cutoff is `Referencing.grid_cutoff` in `scripts/config.py`.
 
 Example grid-search heat maps for optimal N/H holo shift offsets can be written per target (e.g. the ET–TP system, PDB ID 7JQ8) as `offset_grid_*.png` under `outputs/<holo_pdb>/`. CSPs follow the weighted amide form used in prior work (citations in the publication). Offsets for processed targets are cached alongside those outputs.
 
 The amide CSP implemented in this codebase is:
 
 $$\text{CSP} = \sqrt{\tfrac{1}{2}\left(\Delta\delta_H^2 + (0.14\,\Delta\delta_N)^2\right)}$$
-
-![HN CSP equation as rendered for the manuscript](figures/SE1_nh_csp.png)
 
 ### Defining significant CSPs
 
@@ -75,8 +73,8 @@ Significant CSPs and binding-site membership define a 2×2 confusion matrix; **F
 
 |  | Residue in binding site | Residue not in binding site |
 |--|-------------------------|------------------------------|
-| **Significant CSP** | True Positive (TP) | False Positive (FP) |
-| **No significant CSP** | False Negative (FN) | True Negative (TN) |
+| **Significant CSP** | 🟩 True Positive (TP) | 🟪 False Positive (FP) |
+| **No significant CSP** | 🟧 False Negative (FN) | 🟦 True Negative (TN) |
 
 ---
 
@@ -107,7 +105,21 @@ Process all rows in the input CSV (downloads BMRB/PDB data as needed, writes per
 python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs
 ```
 
-**Input CSV:** column definitions and optional flags (`--ids`, `--workers`, `--case-study`, metadata annotation, verbose logging) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).
+Run one selected target by holo PDB ID:
+
+```bash
+python scripts/pipeline.py --input data/CSP_UBQ.csv --holo-pdb 1cf4 --out outputs
+```
+
+Run multiple selected holo targets by using a filtered input CSV (with only those rows), then run without filter flags:
+
+```bash
+python scripts/pipeline.py --input data/CSP_UBQ_selected_holo.csv --out outputs
+```
+
+By default, detailed runtime output is written to per-target logs in `outputs/<holo_pdb>/logs/*.txt` (or `outputs/<holo_pdb>_<n>/logs/*.txt` for duplicate entries), and stdout is kept concise with step progress plus warnings/errors.
+
+**Input CSV:** column definitions and optional flags (`--ids`, `--holo-pdb`, `--workers`, `--no-case-study`, metadata annotation, verbose logging) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).
 
 ---
 
@@ -134,3 +146,5 @@ Useful options:
 ## Further documentation
 
 - **[Pipeline CLI, outputs, configuration, and troubleshooting](docs/pipeline_reference.md)** — detailed usage moved from the legacy README for contributors and reproducibility.
+- **[Offset analysis script usage and outputs](docs/offset_analysis.md)** — how to run `scripts/analyze_offsets.py` and interpret its generated figures/CSV.
+- **[Target-level analysis script usage and outputs](docs/README_analyze_targets.md)** — how to run `scripts/analyze_targets.py`, target selection modes, and summary artifacts.

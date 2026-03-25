@@ -21,7 +21,6 @@ color red, 7ZEY_structure and chain B and resi 1609
 color red, 7ZEY_structure and chain B and resi 1610
 color red, 7ZEY_structure and chain B and resi 1612
 color red, 7ZEY_structure and chain B and resi 1613
-color red, 7ZEY_structure and chain B and resi 1616
 color red, 7ZEY_structure and chain B and resi 1617
 color red, 7ZEY_structure and chain B and resi 1618
 color red, 7ZEY_structure and chain B and resi 1620
@@ -31,4 +30,4 @@ set cartoon_transparency, 0.2, 7ZEY_structure
 # Color scheme:
 # Ligand chain (A): cyan
 # Receptor chain (B): gray30 (non-significant/no CSP), red (significant CSP via significant)
-# Significant residues: 23
+# Significant residues: 22
