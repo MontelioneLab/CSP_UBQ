@@ -112,6 +112,7 @@ def generate_case_study_2_figure(
     holo_bmrb: Optional[str] = None,
     force_view_reset: bool = False,
     panel_labels: Optional[Sequence[str]] = None,
+    view_key: Optional[str] = None,
 ) -> str:
     csp_bars_path = os.path.join(target_dir, "csp_classification_bars_original.png")
     color_csp_mask_pml = os.path.join(target_dir, "color_csp_mask.pml")
@@ -137,13 +138,14 @@ def generate_case_study_2_figure(
 
     pymol_views_dir = paths.pymol_views_dir
     os.makedirs(pymol_views_dir, exist_ok=True)
-    view_path = os.path.join(pymol_views_dir, f"{pdb_id}_case_study_view.json")
+    view_id = (view_key or os.path.basename(os.path.abspath(target_dir)) or pdb_id).strip()
+    view_path = os.path.join(pymol_views_dir, f"{view_id}_case_study_view.json")
 
     assets_dir = os.path.join(target_dir, "case_study_assets")
     os.makedirs(assets_dir, exist_ok=True)
     view: Optional[List[float]] = None
     if force_view_reset:
-        print(f"[CASE_STUDY_2] Forcing view recapture for {pdb_id}; ignoring saved view.")
+        print(f"[CASE_STUDY_2] Forcing view recapture for {view_id}; ignoring saved view.")
     elif os.path.exists(view_path):
         try:
             view = _load_view(view_path)
