@@ -10,7 +10,7 @@ where is_positive uses the 'occluded_or_ca_or_interaction' strategy:
 is_positive = is_occluded OR passes_ca_filter OR is_interacting
 
 Usage:
-    python scripts/visualize_csp_z_distance_fp.py [--outputs outputs/] [--output output.png]
+    python scripts/visualize_csp_z_distance_fp.py [--outputs outputs/] [--output outputs/csp_z_distance_heatmap_fp.png]
 """
 
 from __future__ import annotations
@@ -309,8 +309,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--output",
-        default="csp_z_distance_heatmap_fp.png",
-        help="Output path for the heatmap PNG (default: csp_z_distance_heatmap_fp.png)"
+        default=os.path.join(paths.outputs_dir if hasattr(paths, 'outputs_dir') else "outputs", "csp_z_distance_heatmap_fp.png"),
+        help="Output path for the heatmap PNG (default: outputs/csp_z_distance_heatmap_fp.png)"
     )
     
     args = parser.parse_args()

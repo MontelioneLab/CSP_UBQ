@@ -806,6 +806,7 @@ def compute_csp_A(
     referencing_method: Optional[str] = None,
     grid_params: Optional[Dict] = None,
     target_id: Optional[str] = None,
+    output_root: Optional[str] = None,
 ) -> List[CSPResult]:
     results: List[CSPResult] = []
     values: List[float] = []
@@ -925,7 +926,8 @@ def compute_csp_A(
                 # Determine cache paths
                 grid_result: Dict[str, object]
                 slug = _build_param_slug(h_min=h_min, h_max=h_max, h_step=h_step, n_min=n_min, n_max=n_max, n_step=n_step, cutoff=float(gs_cutoff))
-                out_dir = os.path.join(paths.outputs_dir, target_id) if target_id else None
+                output_base_dir = output_root or paths.outputs_dir
+                out_dir = os.path.join(output_base_dir, target_id) if target_id else None
                 csv_path = os.path.join(out_dir, f"offset_grid_{slug}.csv") if out_dir else None
                 png_path = os.path.join(out_dir, f"offset_grid_{slug}.png") if out_dir else None
                 use_cache = bool(getattr(cfg, 'cache_results', True) and target_id and out_dir)
@@ -1067,6 +1069,7 @@ def compute_csp_multiple_saveframes(
     referencing_method: Optional[str] = None,
     grid_params: Optional[Dict] = None,
     target_id: Optional[str] = None,
+    output_root: Optional[str] = None,
 ) -> List[CSPResult]:
     """Compute CSPs for all possible apo-holo sequence pairs from multiple saveframes.
     
@@ -1124,6 +1127,7 @@ def compute_csp_multiple_saveframes(
         referencing_method=referencing_method,
         grid_params=grid_params,
         target_id=(target_id or holo_pdb),
+        output_root=output_root,
     )
     
     if _verbose:
@@ -1145,6 +1149,7 @@ def compute_csp_from_aligned_sequences(
     referencing_method: Optional[str] = None,
     grid_params: Optional[Dict] = None,
     target_id: Optional[str] = None,
+    output_root: Optional[str] = None,
 ) -> List[CSPResult]:
     """Compute CSPs from aligned sequences, properly handling gaps.
     
@@ -1287,7 +1292,8 @@ def compute_csp_from_aligned_sequences(
                 # Determine cache paths
                 grid_result: Dict[str, object]
                 slug = _build_param_slug(h_min=h_min, h_max=h_max, h_step=h_step, n_min=n_min, n_max=n_max, n_step=n_step, cutoff=float(gs_cutoff))
-                out_dir = os.path.join(paths.outputs_dir, target_id) if target_id else None
+                output_base_dir = output_root or paths.outputs_dir
+                out_dir = os.path.join(output_base_dir, target_id) if target_id else None
                 csv_path = os.path.join(out_dir, f"offset_grid_{slug}.csv") if out_dir else None
                 png_path = os.path.join(out_dir, f"offset_grid_{slug}.png") if out_dir else None
                 use_cache = bool(getattr(cfg, 'cache_results', True) and target_id and out_dir)
@@ -1432,6 +1438,7 @@ def compute_csp_from_aligned_sequences_ca(
     referencing_method: Optional[str] = None,
     grid_params: Optional[Dict] = None,
     target_id: Optional[str] = None,
+    output_root: Optional[str] = None,
 ) -> List[CSPResult]:
     """Compute CA-inclusive CSPs from aligned sequences, handling gaps.
 
@@ -1738,6 +1745,7 @@ def compute_csp_multiple_saveframes_ca(
     referencing_method: Optional[str] = None,
     grid_params: Optional[Dict] = None,
     target_id: Optional[str] = None,
+    output_root: Optional[str] = None,
 ) -> List[CSPResult]:
     """Compute CA-inclusive CSPs for all possible apo-holo sequence pairs from multiple saveframes.
 
@@ -1818,6 +1826,7 @@ def compute_csp_multiple_saveframes_ca(
         referencing_method=referencing_method,
         grid_params=grid_params,
         target_id=(target_id or holo_pdb),
+        output_root=output_root,
     )
 
     if _verbose:

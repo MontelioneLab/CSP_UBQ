@@ -201,6 +201,7 @@ def process_row(
         referencing_method=ref_method,
         grid_params=None,
         target_id=target_label,
+        output_root=out_dir,
     )
     
     if not results:
@@ -228,6 +229,7 @@ def process_row(
             referencing_method=ref_method,
             grid_params=None,
             target_id=target_label,
+            output_root=out_dir,
         )
     else:
         if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
@@ -1208,6 +1210,7 @@ def process_row(
                 apo_bmrb=apo_bmrb,
                 holo_bmrb=holo_bmrb,
                 force_view_reset=force_reset_for_case_study_1,
+                view_key=target_label,
             )
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ Case-study figure saved: {case_study_path}")
@@ -1222,6 +1225,7 @@ def process_row(
                 apo_bmrb=apo_bmrb,
                 holo_bmrb=holo_bmrb,
                 force_view_reset=force_reset_for_case_study_2,
+                view_key=target_label,
             )
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ Case-study v2 figure saved: {case_study_2_path}")

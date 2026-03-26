@@ -54,14 +54,25 @@ def _get_classification_colors() -> Dict[str, str]:
     }
 
 
-def _load_metrics_from_confusion_csv(out_png: str) -> Optional[Dict[str, float]]:
-    """Load precision/recall/F1/MCC for this system from outputs/confusion_matrix_per_system.csv."""
+def _load_metrics_from_confusion_csv(
+    out_png: str,
+    confusion_csv_path: Optional[str] = None,
+) -> Optional[Dict[str, float]]:
+    """Load precision/recall/F1/MCC for this system from a confusion-matrix CSV."""
     system_id = os.path.basename(os.path.dirname(os.path.abspath(out_png))).strip()
     if not system_id:
         return None
 
-    project_root = _project_root()
-    csv_path = os.path.join(project_root, "outputs", "confusion_matrix_per_system.csv")
+    if confusion_csv_path:
+        csv_path = confusion_csv_path
+    else:
+        # For target plots saved under <outputs_root>/<system_id>/..., use that run's outputs root.
+        inferred_outputs_root = os.path.dirname(os.path.dirname(os.path.abspath(out_png)))
+        csv_path = os.path.join(inferred_outputs_root, "confusion_matrix_per_system.csv")
+        if not os.path.exists(csv_path):
+            # Backward-compatible fallback for legacy call sites.
+            project_root = _project_root()
+            csv_path = os.path.join(project_root, "outputs", "confusion_matrix_per_system.csv")
     if not os.path.exists(csv_path):
         return None
 

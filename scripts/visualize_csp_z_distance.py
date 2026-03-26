@@ -6,7 +6,7 @@ across csp_z (Y-axis, binned with range 1) and min_ca_distance_distance
 (X-axis, auto-determined bins) from all master_alignment.csv files.
 
 Usage:
-    python scripts/visualize_csp_z_distance.py [--outputs outputs/] [--output output.png]
+    python scripts/visualize_csp_z_distance.py [--outputs outputs/] [--output outputs/csp_z_distance_heatmap.png]
 """
 
 from __future__ import annotations
@@ -244,8 +244,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--output",
-        default="csp_z_distance_heatmap.png",
-        help="Output path for the heatmap PNG (default: csp_z_distance_heatmap.png)"
+        default=os.path.join(paths.outputs_dir if hasattr(paths, 'outputs_dir') else "outputs", "csp_z_distance_heatmap.png"),
+        help="Output path for the heatmap PNG (default: outputs/csp_z_distance_heatmap.png)"
     )
     
     args = parser.parse_args()

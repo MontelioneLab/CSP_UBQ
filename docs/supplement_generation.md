@@ -39,3 +39,7 @@ python scripts/create_all_supplement_figures_and_tables.py \
 
 - If a sub-script file is missing, the wrapper logs a skip for that script.
 - PyMOL is not required by the wrapper itself, but some upstream artifacts it depends on may require PyMOL during their own generation.
+- CSV-path behavior is mixed by design in the current wrapper:
+  - `create_si_table_s1.py` always uses `data/CSP_UBQ_ph0.5_temp5C.csv` (the wrapper does not forward `--csv` to this script).
+  - `create_si_fig_s22.py` is called with output-image only, so its confusion-matrix CSV path falls back to that script's own default.
+  - `create_custom_selection_latex_tables.py` is called with figures-dir only, so CSP/confusion CSV paths use that script's own defaults unless you run it directly with explicit flags.

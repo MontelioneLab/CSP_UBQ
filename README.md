@@ -122,6 +122,22 @@ By default, detailed runtime output is written to per-target logs in `outputs/<h
 
 **Input CSV:** column definitions and optional flags (`--ids`, `--holo-pdb`, `--workers`, `--no-case-study`, metadata annotation, verbose logging) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).
 
+## Repository layout (abbreviated)
+
+```
+CSP_UBQ/
+├── scripts/           # Python package and CLIs
+├── docs/              # Project documentation
+├── CS_Lists/          # BMRB cache
+├── PDB_FILES/         # PDB cache
+├── outputs/           # Pipeline outputs
+├── figures/           # Generated or committed figures
+├── data/              # Curated input CSV tables (CSP_UBQ.csv, targets_*.csv, etc.)
+├── requirements.txt
+├── environment.yml
+└── README.md
+```
+
 ## Further documentation
 
 - **[Pipeline CLI reference](docs/pipeline_reference.md)** — complete command options, execution modes, output layout, and troubleshooting for `scripts/pipeline.py`.
