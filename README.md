@@ -1,4 +1,4 @@
-# CSP UBQ — GitHub Repository for "Allosteric Protein Chemical Shift Perturbations are Ubiquitous"
+# CSPdb — GitHub Repository for "Allosteric Protein Chemical Shift Perturbations are Ubiquitous"
 
 This repository hosts analysis scripts and figures related to the publication:
 
