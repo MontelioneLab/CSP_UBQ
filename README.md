@@ -1,6 +1,6 @@
 # CSPdb — Chemical shift perturbations and binding-site classification
 
-**CSPdb** is a curated collection of protein-polypeptide systems for which paired apo and holo 15N-HSQC-derived assignments are available in the BMRB, together with holo coordinates in the PDB. This repository hosts a Python pipeline used to align sequences, reference and compare chemical shifts, define significant CSPs and binding-site residues, and document the prevalence of significant CSPs distant from the binding site through a [binary classification scheme](#binary-classification).
+**CSPdb** is a curated collection of protein-polypeptide systems for which paired apo and holo 15N-HSQC-derived assignments are available in the BMRB, together with holo coordinates in the PDB. This repository hosts a Python pipeline used to align sequences, reference and compare chemical shifts, define significant CSPs and binding-site residues, and document the prevalence of significant CSPs distant from the binding site through a binary classification scheme.
 
 ## Citation and data
 
