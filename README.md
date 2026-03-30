@@ -1,10 +1,13 @@
-# CSPdb — Chemical shift perturbations and binding-site classification
+# CSP UBQ — GitHub Repository for "Allosteric Protein Chemical Shift Perturbations are Ubiquitous"
+
+This repository hosts analysis scripts and figures related to the publication:
+
+- **Publication:** [Link TBD — add when available](https://example.com)
 
 **CSPdb** is a curated collection of protein-polypeptide systems for which paired apo and holo 15N-HSQC-derived assignments are available in the BMRB, together with holo coordinates in the PDB. This repository hosts a Python pipeline used to align sequences, reference and compare chemical shifts, define significant CSPs and binding-site residues, and document the prevalence of significant CSPs distant from the binding site through a [binary classification scheme](#binary-classification).
 
 ## Citation and data
 
-- **Publication:** [Link TBD — add when available](https://example.com)
 - **Dataset (Zenodo):** [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19334187.svg)](https://doi.org/10.5281/zenodo.19334187)
 - **GitHub Release (Zenodo):** [DOI TBD — add when available](https://doi.org/10.5281/zenodo.TBD)
 
@@ -122,7 +125,7 @@ By default, detailed runtime output is written to per-target logs in `outputs/<h
 
 **Input CSV:** column definitions and optional flags (`--ids`, `--holo-pdb`, `--workers`, `--no-case-study`, metadata annotation, verbose logging) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).
 
-## Repository layout (abbreviated)
+## Repository layout 
 
 ```
 CSP_UBQ/
@@ -133,6 +136,7 @@ CSP_UBQ/
 ├── outputs/           # Pipeline outputs
 ├── figures/           # Generated or committed figures
 ├── data/              # Curated input CSV tables (CSP_UBQ.csv, targets_*.csv, etc.)
+├── pymol_views/       # manually set pymol views for targets in CSP_UBQ.csv
 ├── requirements.txt
 ├── environment.yml
 └── README.md
