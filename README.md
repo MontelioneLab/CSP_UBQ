@@ -9,7 +9,7 @@ This repository hosts analysis scripts and figures related to the publication:
 ## Citation and data
 
 - **Dataset (Zenodo):** [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19334187.svg)](https://doi.org/10.5281/zenodo.19334187)
-- **GitHub Release (Zenodo):** [DOI TBD — add when available](https://doi.org/10.5281/zenodo.TBD)
+- **GitHub Release (Zenodo):** [![DOI](https://zenodo.org/badge/1189707002.svg)](https://doi.org/10.5281/zenodo.19334615)
 
 ---
 
