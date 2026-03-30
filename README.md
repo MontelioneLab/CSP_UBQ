@@ -5,7 +5,7 @@
 ## Citation and data
 
 - **Publication:** [Link TBD — add when available](https://example.com)
-- **Dataset (Zenodo):** [DOI TBD](https://doi.org/10.5281/zenodo.19334187)
+- **Dataset (Zenodo):** [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19334187.svg)](https://doi.org/10.5281/zenodo.19334187)
 - **GitHub Release (Zenodo):** [DOI TBD — add when available](https://doi.org/10.5281/zenodo.TBD)
 
 ---
