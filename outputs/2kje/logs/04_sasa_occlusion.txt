@@ -1,0 +1,75 @@
+
+[2026-03-30T08:55:44] capture_start
+[DEBUG] Multi-model PDB detected, extracting models...
+[DEBUG] Extracted 20 models
+/Users/tiburon/miniconda3/envs/CSP_Rank/lib/python3.12/site-packages/mdtraj/formats/pdb/pdbfile.py:208: UserWarning: Unlikely unit cell vectors detected in PDB file likely resulting from a dummy CRYST1 record. Discarding unit cell vectors.
+  warnings.warn(
+[DEBUG] Calculating RMSD matrix for 20 models...
+[DEBUG] Selected medoid model 17 (sum RMSD: 5.568)
+[DEBUG] Using PDB file: /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmpirxb406j/model_17.pdb
+[DEBUG] Loaded holo structure with 2072 atoms, 137 residues
+[DEBUG] Identified receptor chain: A, ligand chain: B
+[DEBUG] Receptor chain length: 92 residues
+[DEBUG] Ligand chain length: 42 residues
+[DEBUG] All chains in structure: {'A', 'B'}
+[DEBUG] Selected 1466 atoms for receptor chain A (index 0)
+[DEBUG] Created receptor-only trajectory with 1466 atoms, 92 residues
+[DEBUG] Computing per-residue SASA (probe_radius=0.0)...
+[DEBUG] Residue-level SASA arrays: holo shape (1, 137), receptor shape (1, 92)
+[DEBUG] holo_sasa values (per residue): [[0.983324   1.0099065  1.3101743  1.2735103  0.86021787 1.7325048
+  1.6793919  1.3204458  0.7532755  1.3639946  1.2875109  1.6825336
+  0.90849096 1.288065   1.2909756  0.8276766  1.3147758  1.143632
+  1.2702909  0.7772825  0.93812746 1.3595378  0.90518296 1.8334165
+  1.0730112  0.82244384 1.1088094  0.8619992  0.9143892  1.3230786
+  0.97867066 0.85596496 0.8814147  1.2448944  1.4967226  1.3317416
+  1.5237784  1.7066104  1.1544024  1.1357429  1.3563982  1.2421191
+  1.0562376  1.5822648  0.5627181  0.84693736 1.6490257  1.6491728
+  1.5187563  1.0705975  1.2063534  0.5749179  0.5751486  0.7869913
+  0.9995138  1.1715379  0.8318139  1.5082985  1.2425771  1.3021551
+  1.2709407  0.72903407 1.3765126  0.9038179  0.89664954 1.6574408
+  1.2424184  0.7564447  1.5823983  1.3841999  0.8845134  1.40624
+  1.1725119  1.140708   1.5935227  0.8760567  1.0323441  1.1595422
+  1.0471377  1.572005   0.82204604 1.3524806  1.1309861  1.2850411
+  1.4927084  1.3651125  1.5623503  1.3500233  1.7510988  1.3142179
+  1.35292    1.4964018  1.0296304  1.4246817  1.4550197  0.80081826
+  1.0180496  1.3347259  0.9566272  1.044221   1.0301307  1.196851
+  1.33653    0.7421414  1.0759587  0.8696709  1.3219522  1.3570628
+  1.5205438  1.0191776  1.0798761  0.9266683  1.1946998  1.3923255
+  1.3051205  0.7617583  1.168235   1.3675158  1.2311133  0.6007658
+  1.3299217  1.0197318  1.3531619  1.4055014  0.96970356 1.5590725
+  1.0376111  1.0596964  0.770301   1.0576421  0.59696376 0.8664561
+  1.048213   1.3755985  0.05993998 0.05766378 0.05867542]]
+[DEBUG] receptor_sasa values (per residue): [[0.983324   1.0099065  1.320982   1.2735103  0.86021787 1.7498465
+  1.8047414  1.3204458  0.7981301  1.3713459  1.2875109  1.753306
+  0.9265865  1.288065   1.293049   0.8527465  1.3147758  1.143632
+  1.3087859  0.7772825  0.93812746 1.3595378  0.9480186  1.8334165
+  1.0730112  0.82244384 1.1088094  0.90596974 0.9152965  1.3336344
+  0.9888599  0.8795269  0.92340213 1.2448944  1.5555489  1.3519368
+  1.5237784  1.7388431  1.169105   1.1357429  1.3563982  1.3020707
+  1.0562376  1.5822648  0.5627181  0.8889248  1.6490257  1.6491728
+  1.5187563  1.0705975  1.2063534  0.5749179  0.5751486  0.8306751
+  1.0042263  1.1730459  0.87464947 1.5082985  1.3598344  1.3021551
+  1.2709407  0.72997653 1.3787787  0.9038179  0.89664954 1.6574408
+  1.2812918  0.7564447  1.5823983  1.3841999  0.92819726 1.40624
+  1.1725119  1.140708   1.5935227  0.91889226 1.0323441  1.1595422
+  1.0471377  1.572005   0.8661541  1.3524806  1.1309861  1.2850411
+  1.4927084  1.3651125  1.5623503  1.3500233  1.7510988  1.3142179
+  1.35292    1.4964018 ]]
+[DEBUG] SASA computation took 0.04 seconds
+[DEBUG] SASA arrays: holo shape (1, 137), receptor shape (1, 92)
+[DEBUG] Processing residue-level SASA analysis...
+[DEBUG] Found 95 receptor residues
+[DEBUG] Warning: Could not find residue 500 in both structures
+[DEBUG] Warning: Could not find residue 501 in both structures
+[DEBUG] Warning: Could not find residue 502 in both structures
+[DEBUG] Processed 92 residues total
+[DEBUG] Found 34 occluded residues
+[DEBUG] Processed 92 residues total
+[DEBUG] Found 34 occluded residues
+[DEBUG] Performing contact validation for occluded residues...
+[DEBUG] Warning: Contact validation failed: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.
+[DEBUG] Cleaned up temporary files in /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmpirxb406j
+[2026-03-30T08:55:45] capture_end
+
+[2026-03-30T08:55:45] capture_start
+[2026-03-30T08:55:45] capture_end

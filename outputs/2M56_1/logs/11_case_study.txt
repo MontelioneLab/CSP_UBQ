@@ -448,3 +448,578 @@ PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_a
 PyMOL>quit
 
 [2026-03-25T11:03:30] capture_end
+
+[2026-03-30T10:01:38] capture_start
+[CASE_STUDY] capture_user_view_interactive:2M56 stdout:
+ PyMOL(TM) Molecular Graphics System, Version 3.1.0.
+ Copyright (c) Schrodinger, LLC.
+ All Rights Reserved.
+ 
+    Created by Warren L. DeLano, Ph.D. 
+ 
+    PyMOL is user-supported open-source software.  Although some versions
+    are freely available, PyMOL is not in the public domain.
+ 
+    If PyMOL is helpful in your work or study, then please volunteer 
+    support for our ongoing efforts to create open and affordable scientific
+    software by purchasing a PyMOL Maintenance and/or Support subscription.
+
+    More information can be found at "http://www.pymol.org".
+ 
+    Enter "help" for a list of commands.
+    Enter "help <command-name>" for information on a specific command.
+
+ Hit ESC anytime to toggle between text and graphics.
+
+ Detected OpenGL version 2.1. Shaders available.
+ Tessellation shaders not available
+ Detected GLSL version 1.20.
+ OpenGL graphics engine:
+  GL_VENDOR:   Apple
+  GL_RENDERER: Apple M3
+  GL_VERSION:  2.1 Metal - 89.4
+ Detected 8 CPU cores.  Enabled multithreaded rendering.
+PyMOL>reinitialize
+PyMOL>load ./outputs/2M56_1/2M56_csp.pdb, 2M56_structure
+HEADER    OXIDOREDUCTASE/METAL BINDING PROTEIN    14-FEB-13   2M56
+TITLE     THE STRUCTURE OF THE COMPLEX OF CYTOCHROME P450CAM AND ITS ELECTRON
+TITLE    2 DONOR PUTIDAREDOXIN DETERMINED BY PARAMAGNETIC NMR SPECTROSCOPY
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: CAMPHOR 5-MONOOXYGENASE;
+COMPND   3 CHAIN: A;
+COMPND   4 FRAGMENT: UNP RESIDUES 12-415;
+COMPND   5 SYNONYM: CYTOCHROME P450-CAM, CYTOCHROME P450CAM;
+COMPND   6 EC: 1.14.15.1;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: PUTIDAREDOXIN;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: PDX;
+COMPND  12 ENGINEERED: YES;
+COMPND  13 MUTATION: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "2M56_structure".
+PyMOL>hide everything, 2M56_structure
+PyMOL>show cartoon, 2M56_structure
+PyMOL>color cyan, 2M56_structure and chain A
+ Executive: Colored 6409 atoms.
+PyMOL>color gray30, 2M56_structure and chain B
+ Executive: Colored 1568 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 2
+ Executive: Colored 22 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 3
+ Executive: Colored 16 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 5
+ Executive: Colored 21 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 6
+ Executive: Colored 16 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 10
+ Executive: Colored 7 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 11
+ Executive: Colored 14 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 15
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 19
+ Executive: Colored 12 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 26
+ Executive: Colored 10 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 27
+ Executive: Colored 10 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 28
+ Executive: Colored 16 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 29
+ Executive: Colored 11 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 30
+ Executive: Colored 14 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 32
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 33
+ Executive: Colored 21 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 52
+ Executive: Colored 16 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 53
+ Executive: Colored 14 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 57
+ Executive: Colored 14 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 59
+ Executive: Colored 22 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 60
+ Executive: Colored 16 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 66
+ Executive: Colored 24 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 70
+ Executive: Colored 17 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 72
+ Executive: Colored 15 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 81
+ Executive: Colored 14 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 82
+ Executive: Colored 11 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 88
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 91
+ Executive: Colored 14 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 94
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 97
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2M56_structure and chain B and resi 99
+ Executive: Colored 16 atoms.
+PyMOL>set cartoon_transparency, 0.2, 2M56_structure
+ Setting: cartoon_transparency set to 0.20000 in object "2M56_structure".
+PyMOL>run /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmp3bqlu_1a_case_study_capture.py,main
+[CASE_STUDY] ------------------------------------------------------------
+[CASE_STUDY] Case-study view capture for 2M56
+[CASE_STUDY] 1) Set your desired model orientation.
+[CASE_STUDY] 2) Press F5 to save the view and close PyMOL.
+[CASE_STUDY] ------------------------------------------------------------
+[CASE_STUDY] Saved view to /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/pymol_views/2M56_1_case_study_view.json
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study_color_csp_mask.png stdout:
+HEADER    OXIDOREDUCTASE/METAL BINDING PROTEIN    14-FEB-13   2M56
+TITLE     THE STRUCTURE OF THE COMPLEX OF CYTOCHROME P450CAM AND ITS ELECTRON
+TITLE    2 DONOR PUTIDAREDOXIN DETERMINED BY PARAMAGNETIC NMR SPECTROSCOPY
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: CAMPHOR 5-MONOOXYGENASE;
+COMPND   3 CHAIN: A;
+COMPND   4 FRAGMENT: UNP RESIDUES 12-415;
+COMPND   5 SYNONYM: CYTOCHROME P450-CAM, CYTOCHROME P450CAM;
+COMPND   6 EC: 1.14.15.1;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: PUTIDAREDOXIN;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: PDX;
+COMPND  12 ENGINEERED: YES;
+COMPND  13 MUTATION: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "2M56_structure".
+ Executive: Colored 6409 atoms.
+ Executive: Colored 1568 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 16 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "2M56_structure".
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -220.363739014, 15.611915588, 5.285961151, -10.402069092, 173.736450195, 266.991027832, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 1.75 sec. = 2059.7 frames/hour (1.75 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study_color_csp_mask.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study_color_csp_mask.png".
+PyMOL>quit
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study_color_occlusion.png stdout:
+HEADER    OXIDOREDUCTASE/METAL BINDING PROTEIN    14-FEB-13   2M56
+TITLE     THE STRUCTURE OF THE COMPLEX OF CYTOCHROME P450CAM AND ITS ELECTRON
+TITLE    2 DONOR PUTIDAREDOXIN DETERMINED BY PARAMAGNETIC NMR SPECTROSCOPY
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: CAMPHOR 5-MONOOXYGENASE;
+COMPND   3 CHAIN: A;
+COMPND   4 FRAGMENT: UNP RESIDUES 12-415;
+COMPND   5 SYNONYM: CYTOCHROME P450-CAM, CYTOCHROME P450CAM;
+COMPND   6 EC: 1.14.15.1;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: PUTIDAREDOXIN;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: PDX;
+COMPND  12 ENGINEERED: YES;
+COMPND  13 MUTATION: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "structure".
+ Executive: Colored 1568 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 25 atoms.
+ Executive: Colored 6409 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "structure".
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -220.363739014, 15.611915588, 5.285961151, -10.402069092, 173.736450195, 266.991027832, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 1.82 sec. = 1978.1 frames/hour (1.82 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study_color_occlusion.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study_color_occlusion.png".
+PyMOL>quit
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study_csp_classification_original.png stdout:
+HEADER    OXIDOREDUCTASE/METAL BINDING PROTEIN    14-FEB-13   2M56
+TITLE     THE STRUCTURE OF THE COMPLEX OF CYTOCHROME P450CAM AND ITS ELECTRON
+TITLE    2 DONOR PUTIDAREDOXIN DETERMINED BY PARAMAGNETIC NMR SPECTROSCOPY
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: CAMPHOR 5-MONOOXYGENASE;
+COMPND   3 CHAIN: A;
+COMPND   4 FRAGMENT: UNP RESIDUES 12-415;
+COMPND   5 SYNONYM: CYTOCHROME P450-CAM, CYTOCHROME P450CAM;
+COMPND   6 EC: 1.14.15.1;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: PUTIDAREDOXIN;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: PDX;
+COMPND  12 ENGINEERED: YES;
+COMPND  13 MUTATION: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "structure".
+ Executive: Colored 6409 atoms.
+ Setting: cartoon_tube_radius set for 6409 atoms in object "structure".
+ Setting-Warning: 'cartoon_tube_radius' is a object-state-level setting
+ Executive: Colored 1568 atoms.
+ Color: "tp_color" defined as [ 0.180, 0.800, 0.443 ].
+ Color: "tn_color" defined as [ 0.204, 0.596, 0.859 ].
+ Color: "fp_color" defined as [ 0.608, 0.349, 0.714 ].
+ Color: "fn_color" defined as [ 0.953, 0.612, 0.071 ].
+ Executive: Colored 16 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 20 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 25 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "structure".
+ Setting: cartoon_fancy_helices set to on.
+ Setting: cartoon_ring_mode set to 1.
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -220.363739014, 15.611915588, 5.285961151, -10.402069092, 173.736450195, 266.991027832, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 2.31 sec. = 1559.9 frames/hour (2.31 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study_csp_classification_original.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study_csp_classification_original.png".
+PyMOL>quit
+
+[2026-03-30T10:01:50] capture_end
+
+[2026-03-30T10:01:50] capture_start
+[CASE_STUDY_2] Reusing saved view: /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/pymol_views/2M56_1_case_study_view.json
+[CASE_STUDY] render_pymol_panel_with_view:case_study2_color_csp_mask.png stdout:
+HEADER    OXIDOREDUCTASE/METAL BINDING PROTEIN    14-FEB-13   2M56
+TITLE     THE STRUCTURE OF THE COMPLEX OF CYTOCHROME P450CAM AND ITS ELECTRON
+TITLE    2 DONOR PUTIDAREDOXIN DETERMINED BY PARAMAGNETIC NMR SPECTROSCOPY
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: CAMPHOR 5-MONOOXYGENASE;
+COMPND   3 CHAIN: A;
+COMPND   4 FRAGMENT: UNP RESIDUES 12-415;
+COMPND   5 SYNONYM: CYTOCHROME P450-CAM, CYTOCHROME P450CAM;
+COMPND   6 EC: 1.14.15.1;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: PUTIDAREDOXIN;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: PDX;
+COMPND  12 ENGINEERED: YES;
+COMPND  13 MUTATION: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "2M56_structure".
+ Executive: Colored 6409 atoms.
+ Executive: Colored 1568 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 16 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "2M56_structure".
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -220.363739014, 15.611915588, 5.285961151, -10.402069092, 173.736450195, 266.991027832, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 1.75 sec. = 2063.0 frames/hour (1.75 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study2_color_csp_mask.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study2_color_csp_mask.png".
+PyMOL>quit
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study2_color_occlusion.png stdout:
+HEADER    OXIDOREDUCTASE/METAL BINDING PROTEIN    14-FEB-13   2M56
+TITLE     THE STRUCTURE OF THE COMPLEX OF CYTOCHROME P450CAM AND ITS ELECTRON
+TITLE    2 DONOR PUTIDAREDOXIN DETERMINED BY PARAMAGNETIC NMR SPECTROSCOPY
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: CAMPHOR 5-MONOOXYGENASE;
+COMPND   3 CHAIN: A;
+COMPND   4 FRAGMENT: UNP RESIDUES 12-415;
+COMPND   5 SYNONYM: CYTOCHROME P450-CAM, CYTOCHROME P450CAM;
+COMPND   6 EC: 1.14.15.1;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: PUTIDAREDOXIN;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: PDX;
+COMPND  12 ENGINEERED: YES;
+COMPND  13 MUTATION: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "structure".
+ Executive: Colored 1568 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 25 atoms.
+ Executive: Colored 6409 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "structure".
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -220.363739014, 15.611915588, 5.285961151, -10.402069092, 173.736450195, 266.991027832, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 1.72 sec. = 2092.5 frames/hour (1.72 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study2_color_occlusion.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study2_color_occlusion.png".
+PyMOL>quit
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study2_csp_classification_original.png stdout:
+HEADER    OXIDOREDUCTASE/METAL BINDING PROTEIN    14-FEB-13   2M56
+TITLE     THE STRUCTURE OF THE COMPLEX OF CYTOCHROME P450CAM AND ITS ELECTRON
+TITLE    2 DONOR PUTIDAREDOXIN DETERMINED BY PARAMAGNETIC NMR SPECTROSCOPY
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: CAMPHOR 5-MONOOXYGENASE;
+COMPND   3 CHAIN: A;
+COMPND   4 FRAGMENT: UNP RESIDUES 12-415;
+COMPND   5 SYNONYM: CYTOCHROME P450-CAM, CYTOCHROME P450CAM;
+COMPND   6 EC: 1.14.15.1;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: PUTIDAREDOXIN;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: PDX;
+COMPND  12 ENGINEERED: YES;
+COMPND  13 MUTATION: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "structure".
+ Executive: Colored 6409 atoms.
+ Setting: cartoon_tube_radius set for 6409 atoms in object "structure".
+ Setting-Warning: 'cartoon_tube_radius' is a object-state-level setting
+ Executive: Colored 1568 atoms.
+ Color: "tp_color" defined as [ 0.180, 0.800, 0.443 ].
+ Color: "tn_color" defined as [ 0.204, 0.596, 0.859 ].
+ Color: "fp_color" defined as [ 0.608, 0.349, 0.714 ].
+ Color: "fn_color" defined as [ 0.953, 0.612, 0.071 ].
+ Executive: Colored 16 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 20 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 25 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "structure".
+ Setting: cartoon_fancy_helices set to on.
+ Setting: cartoon_ring_mode set to 1.
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -220.363739014, 15.611915588, 5.285961151, -10.402069092, 173.736450195, 266.991027832, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 2.28 sec. = 1576.8 frames/hour (2.28 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study2_csp_classification_original.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2M56_1/case_study_assets/case_study2_csp_classification_original.png".
+PyMOL>quit
+
+[2026-03-30T10:01:58] capture_end

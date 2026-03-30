@@ -1,0 +1,66 @@
+
+[2026-03-30T09:18:03] capture_start
+[DEBUG] Multi-model PDB detected, extracting models...
+[DEBUG] Extracted 20 models
+/Users/tiburon/miniconda3/envs/CSP_Rank/lib/python3.12/site-packages/mdtraj/formats/pdb/pdbfile.py:208: UserWarning: Unlikely unit cell vectors detected in PDB file likely resulting from a dummy CRYST1 record. Discarding unit cell vectors.
+  warnings.warn(
+[DEBUG] Calculating RMSD matrix for 20 models...
+[DEBUG] Selected medoid model 17 (sum RMSD: 8.115)
+[DEBUG] Using PDB file: /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmp49i_4sho/model_17.pdb
+[DEBUG] Loaded holo structure with 1914 atoms, 120 residues
+[DEBUG] Identified receptor chain: A, ligand chain: B
+[DEBUG] Receptor chain length: 76 residues
+[DEBUG] Ligand chain length: 43 residues
+[DEBUG] All chains in structure: {'A', 'B'}
+[DEBUG] Selected 1231 atoms for receptor chain A (index 0)
+[DEBUG] Created receptor-only trajectory with 1231 atoms, 76 residues
+[DEBUG] Computing per-residue SASA (probe_radius=0.0)...
+[DEBUG] Residue-level SASA arrays: holo shape (1, 120), receptor shape (1, 76)
+[DEBUG] holo_sasa values (per residue): [[1.4483373  1.2983253  1.180629   1.4674903  1.052475   1.5588459
+  0.9774656  1.3008269  1.0429344  0.55006933 1.5425342  1.0966817
+  1.223867   1.0402448  1.2369225  1.2838097  1.0091002  1.1761732
+  0.9988723  0.90325963 0.9830724  0.9153541  1.1632059  1.2054735
+  1.0534925  1.0028203  1.3396057  0.7603792  1.5412389  1.2080272
+  1.2179186  1.065701   1.5477625  1.1457918  0.5407909  1.2241331
+  0.9722935  0.9493115  1.0187569  1.1934582  1.2039224  1.6594527
+  1.2634151  1.2568665  1.4408929  0.8053115  0.49265382 1.4879026
+  1.368257   1.224166   1.1245084  1.04137    0.5813105  1.6074822
+  0.9869869  1.2429368  0.83496356 1.0234993  1.4947035  1.1450312
+  1.3417917  1.3895061  1.5742127  1.2438804  0.8627156  1.0873697
+  1.2168628  1.3341422  1.1972181  1.0517727  1.331982   1.6961896
+  1.371254   1.7951328  0.60056865 0.7973324  1.4888096  1.1981317
+  1.0435764  1.544987   1.0127486  1.1048558  0.7594566  1.0277141
+  1.046557   0.8423372  0.5220524  1.0640074  1.1317095  1.1812778
+  0.87845457 1.1733805  0.8911876  1.2790029  1.1611623  1.162721
+  1.607468   1.1091509  1.2184737  1.040779   0.8089762  0.79689103
+  1.2748276  0.7980117  1.6655136  1.1974128  1.2591834  1.5255382
+  1.4934334  1.2610359  0.8629733  1.3181894  1.8090826  0.9000815
+  0.8896773  1.169812   1.4112083  1.6124179  1.978968   0.06297491]]
+[DEBUG] receptor_sasa values (per residue): [[1.4483373  1.2983253  1.180629   1.4674903  1.052475   1.5588459
+  0.9774656  1.3490816  1.0429344  0.55006933 1.5425342  1.0966817
+  1.223867   1.0402448  1.2369225  1.2838097  1.0091002  1.1761732
+  0.9988723  0.90325963 0.9830724  0.9153541  1.1632059  1.2054735
+  1.0534925  1.0028203  1.3396057  0.7603792  1.5412389  1.2080272
+  1.2179186  1.065701   1.5477625  1.1457918  0.5407909  1.2241331
+  0.9722935  0.9493115  1.0187569  1.1934582  1.2039224  1.6594527
+  1.2634151  1.2840582  1.4408929  0.8053115  0.5714065  1.5073178
+  1.3714657  1.224166   1.1245084  1.04137    0.5813105  1.6074822
+  0.9869869  1.2429368  0.83496356 1.0234993  1.4947035  1.1450312
+  1.3417917  1.3895061  1.5742127  1.2438804  0.8627156  1.0873697
+  1.2168628  1.3496525  1.1972181  1.0860959  1.331982   1.6961896
+  1.371254   1.7951328  0.60056865 0.7973324 ]]
+[DEBUG] SASA computation took 0.04 seconds
+[DEBUG] SASA arrays: holo shape (1, 120), receptor shape (1, 76)
+[DEBUG] Processing residue-level SASA analysis...
+[DEBUG] Found 76 receptor residues
+[DEBUG] Processed 76 residues total
+[DEBUG] Found 7 occluded residues
+[DEBUG] Processed 76 residues total
+[DEBUG] Found 7 occluded residues
+[DEBUG] Performing contact validation for occluded residues...
+[DEBUG] Warning: Contact validation failed: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.
+[DEBUG] Cleaned up temporary files in /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmp49i_4sho
+[2026-03-30T09:18:03] capture_end
+
+[2026-03-30T09:18:03] capture_start
+[2026-03-30T09:18:03] capture_end

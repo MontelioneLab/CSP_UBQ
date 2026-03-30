@@ -1,0 +1,1327 @@
+
+[2026-03-30T08:54:35] capture_start
+[DEBUG] Multi-model PDB detected, extracting models...
+[DEBUG] Extracted 20 models
+[DEBUG] Calculating RMSD matrix for 20 models...
+[DEBUG] Selected medoid model 16 (sum RMSD: 11.259)
+[DEBUG] Using PDB file: /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmpy4swk8po/model_16.pdb
+[DEBUG] Loaded holo structure with 2146 atoms, 140 residues
+[DEBUG] === CHAIN IDENTIFICATION ===
+[DEBUG] Identified receptor chain: A, ligand chain: B
+[DEBUG] Receptor chain length: 92 residues
+[DEBUG] Ligand chain length: 45 residues
+[DEBUG] All chains in structure:
+[DEBUG]   Chain A: 92 residues
+[DEBUG]   Chain B: 45 residues
+[DEBUG]   Chain A: 3 residues
+[DEBUG] All chains in structure: {'A', 'B'}
+[DEBUG] Detecting hydrogen bonds...
+[DEBUG] MDTraj baker_hubbard returned: <class 'numpy.ndarray'>
+[DEBUG] MDTraj baker_hubbard length: 119
+[DEBUG] First element type: <class 'numpy.ndarray'>
+[DEBUG] First element length: 3
+[DEBUG] First hbond type: <class 'numpy.int64'>
+[DEBUG] First hbond shape: ()
+[DEBUG] First hbond content: 42
+[DEBUG] MDTraj found 119 total hydrogen bonds
+[DEBUG] Processing hbond 0: donor=42, acceptor=49, hydrogen=51
+[DEBUG] Donor residue: index=42, name=N, element=N, chain=A, residue=4
+[DEBUG] Acceptor residue: index=49, name=OE1, element=O, chain=A, residue=4
+[DEBUG] Hydrogen residue: index=51, name=H, element=H, chain=A, residue=4
+[DEBUG] Processing hbond 1: donor=68, acceptor=28, hydrogen=79
+[DEBUG] Donor residue: index=68, name=N, element=N, chain=A, residue=6
+[DEBUG] Acceptor residue: index=28, name=O, element=O, chain=A, residue=3
+[DEBUG] Hydrogen residue: index=79, name=H, element=H, chain=A, residue=6
+[DEBUG] Processing hbond 2: donor=77, acceptor=1813, hydrogen=88
+[DEBUG] Donor residue: index=77, name=NH1, element=N, chain=A, residue=6
+[DEBUG] Acceptor residue: index=1813, name=O, element=O, chain=B, residue=729
+[DEBUG] Hydrogen residue: index=88, name=HH11, element=H, chain=A, residue=6
+[DEBUG]   Added H-bond: A6(NH1)-HH11 -> B729(O) - H-A dist: 1.98Å
+[DEBUG] Processing hbond 3: donor=77, acceptor=1817, hydrogen=89
+[DEBUG] Donor residue: index=77, name=NH1, element=N, chain=A, residue=6
+[DEBUG] Acceptor residue: index=1817, name=OE1, element=O, chain=B, residue=729
+[DEBUG] Hydrogen residue: index=89, name=HH12, element=H, chain=A, residue=6
+[DEBUG]   Added H-bond: A6(NH1)-HH12 -> B729(OE1) - H-A dist: 1.83Å
+[DEBUG] Processing hbond 4: donor=78, acceptor=1817, hydrogen=91
+[DEBUG] Donor residue: index=78, name=NH2, element=N, chain=A, residue=6
+[DEBUG] Acceptor residue: index=1817, name=OE1, element=O, chain=B, residue=729
+[DEBUG] Hydrogen residue: index=91, name=HH22, element=H, chain=A, residue=6
+[DEBUG]   Added H-bond: A6(NH2)-HH22 -> B729(OE1) - H-A dist: 1.96Å
+[DEBUG] Processing hbond 5: donor=92, acceptor=28, hydrogen=103
+[DEBUG] Donor residue: index=92, name=N, element=N, chain=A, residue=7
+[DEBUG] Acceptor residue: index=28, name=O, element=O, chain=A, residue=3
+[DEBUG] Hydrogen residue: index=103, name=H, element=H, chain=A, residue=7
+[DEBUG] Processing hbond 6: donor=99, acceptor=1880, hydrogen=111
+[DEBUG] Donor residue: index=99, name=NE, element=N, chain=A, residue=7
+[DEBUG] Acceptor residue: index=1880, name=OE2, element=O, chain=B, residue=733
+[DEBUG] Hydrogen residue: index=111, name=HE, element=H, chain=A, residue=7
+[DEBUG]   Added H-bond: A7(NE)-HE -> B733(OE2) - H-A dist: 1.82Å
+[DEBUG] Processing hbond 7: donor=101, acceptor=50, hydrogen=112
+[DEBUG] Donor residue: index=101, name=NH1, element=N, chain=A, residue=7
+[DEBUG] Acceptor residue: index=50, name=OE2, element=O, chain=A, residue=4
+[DEBUG] Hydrogen residue: index=112, name=HH11, element=H, chain=A, residue=7
+[DEBUG] Processing hbond 8: donor=102, acceptor=1880, hydrogen=114
+[DEBUG] Donor residue: index=102, name=NH2, element=N, chain=A, residue=7
+[DEBUG] Acceptor residue: index=1880, name=OE2, element=O, chain=B, residue=733
+[DEBUG] Hydrogen residue: index=114, name=HH21, element=H, chain=A, residue=7
+[DEBUG]   Added H-bond: A7(NH2)-HH21 -> B733(OE2) - H-A dist: 1.90Å
+[DEBUG] Processing hbond 9: donor=116, acceptor=45, hydrogen=124
+[DEBUG] Donor residue: index=116, name=N, element=N, chain=A, residue=8
+[DEBUG] Acceptor residue: index=45, name=O, element=O, chain=A, residue=4
+[DEBUG] Hydrogen residue: index=124, name=H, element=H, chain=A, residue=8
+[DEBUG] Processing hbond 10: donor=135, acceptor=60, hydrogen=141
+[DEBUG] Donor residue: index=135, name=N, element=N, chain=A, residue=9
+[DEBUG] Acceptor residue: index=60, name=O, element=O, chain=A, residue=5
+[DEBUG] Hydrogen residue: index=141, name=H, element=H, chain=A, residue=9
+[DEBUG] Processing hbond 11: donor=146, acceptor=71, hydrogen=154
+[DEBUG] Donor residue: index=146, name=N, element=N, chain=A, residue=10
+[DEBUG] Acceptor residue: index=71, name=O, element=O, chain=A, residue=6
+[DEBUG] Hydrogen residue: index=154, name=H, element=H, chain=A, residue=10
+[DEBUG] Processing hbond 12: donor=165, acceptor=95, hydrogen=174
+[DEBUG] Donor residue: index=165, name=N, element=N, chain=A, residue=11
+[DEBUG] Acceptor residue: index=95, name=O, element=O, chain=A, residue=7
+[DEBUG] Hydrogen residue: index=174, name=H, element=H, chain=A, residue=11
+[DEBUG] Processing hbond 13: donor=182, acceptor=119, hydrogen=193
+[DEBUG] Donor residue: index=182, name=N, element=N, chain=A, residue=12
+[DEBUG] Acceptor residue: index=119, name=O, element=O, chain=A, residue=8
+[DEBUG] Hydrogen residue: index=193, name=H, element=H, chain=A, residue=12
+[DEBUG] Processing hbond 14: donor=206, acceptor=138, hydrogen=212
+[DEBUG] Donor residue: index=206, name=N, element=N, chain=A, residue=13
+[DEBUG] Acceptor residue: index=138, name=O, element=O, chain=A, residue=9
+[DEBUG] Hydrogen residue: index=212, name=H, element=H, chain=A, residue=13
+[DEBUG] Processing hbond 15: donor=217, acceptor=149, hydrogen=225
+[DEBUG] Donor residue: index=217, name=N, element=N, chain=A, residue=14
+[DEBUG] Acceptor residue: index=149, name=O, element=O, chain=A, residue=10
+[DEBUG] Hydrogen residue: index=225, name=H, element=H, chain=A, residue=14
+[DEBUG] Processing hbond 16: donor=236, acceptor=168, hydrogen=245
+[DEBUG] Donor residue: index=236, name=N, element=N, chain=A, residue=15
+[DEBUG] Acceptor residue: index=168, name=O, element=O, chain=A, residue=11
+[DEBUG] Hydrogen residue: index=245, name=H, element=H, chain=A, residue=15
+[DEBUG] Processing hbond 17: donor=253, acceptor=185, hydrogen=259
+[DEBUG] Donor residue: index=253, name=N, element=N, chain=A, residue=16
+[DEBUG] Acceptor residue: index=185, name=O, element=O, chain=A, residue=12
+[DEBUG] Hydrogen residue: index=259, name=H, element=H, chain=A, residue=16
+[DEBUG] Processing hbond 18: donor=264, acceptor=209, hydrogen=272
+[DEBUG] Donor residue: index=264, name=N, element=N, chain=A, residue=17
+[DEBUG] Acceptor residue: index=209, name=O, element=O, chain=A, residue=13
+[DEBUG] Hydrogen residue: index=272, name=H, element=H, chain=A, residue=17
+[DEBUG] Processing hbond 19: donor=283, acceptor=220, hydrogen=290
+[DEBUG] Donor residue: index=283, name=N, element=N, chain=A, residue=18
+[DEBUG] Acceptor residue: index=220, name=O, element=O, chain=A, residue=14
+[DEBUG] Hydrogen residue: index=290, name=H, element=H, chain=A, residue=18
+[DEBUG] Processing hbond 20: donor=299, acceptor=239, hydrogen=309
+[DEBUG] Donor residue: index=299, name=N, element=N, chain=A, residue=19
+[DEBUG] Acceptor residue: index=239, name=O, element=O, chain=A, residue=15
+[DEBUG] Hydrogen residue: index=309, name=H, element=H, chain=A, residue=19
+[DEBUG] Processing hbond 21: donor=316, acceptor=256, hydrogen=321
+[DEBUG] Donor residue: index=316, name=N, element=N, chain=A, residue=20
+[DEBUG] Acceptor residue: index=256, name=O, element=O, chain=A, residue=16
+[DEBUG] Hydrogen residue: index=321, name=H, element=H, chain=A, residue=20
+[DEBUG] Processing hbond 22: donor=326, acceptor=267, hydrogen=332
+[DEBUG] Donor residue: index=326, name=N, element=N, chain=A, residue=21
+[DEBUG] Acceptor residue: index=267, name=O, element=O, chain=A, residue=17
+[DEBUG] Hydrogen residue: index=332, name=H, element=H, chain=A, residue=21
+[DEBUG] Processing hbond 23: donor=337, acceptor=302, hydrogen=346
+[DEBUG] Donor residue: index=337, name=N, element=N, chain=A, residue=22
+[DEBUG] Acceptor residue: index=302, name=O, element=O, chain=A, residue=19
+[DEBUG] Hydrogen residue: index=346, name=H, element=H, chain=A, residue=22
+[DEBUG] Processing hbond 24: donor=345, acceptor=286, hydrogen=352
+[DEBUG] Donor residue: index=345, name=NE2, element=N, chain=A, residue=22
+[DEBUG] Acceptor residue: index=286, name=O, element=O, chain=A, residue=18
+[DEBUG] Hydrogen residue: index=352, name=HE21, element=H, chain=A, residue=22
+[DEBUG] Processing hbond 25: donor=354, acceptor=302, hydrogen=360
+[DEBUG] Donor residue: index=354, name=N, element=N, chain=A, residue=23
+[DEBUG] Acceptor residue: index=302, name=O, element=O, chain=A, residue=19
+[DEBUG] Hydrogen residue: index=360, name=H, element=H, chain=A, residue=23
+[DEBUG] Processing hbond 26: donor=373, acceptor=340, hydrogen=384
+[DEBUG] Donor residue: index=373, name=NH1, element=N, chain=A, residue=24
+[DEBUG] Acceptor residue: index=340, name=O, element=O, chain=A, residue=22
+[DEBUG] Hydrogen residue: index=384, name=HH11, element=H, chain=A, residue=24
+[DEBUG] Processing hbond 27: donor=501, acceptor=450, hydrogen=510
+[DEBUG] Donor residue: index=501, name=N, element=N, chain=A, residue=34
+[DEBUG] Acceptor residue: index=450, name=O, element=O, chain=A, residue=30
+[DEBUG] Hydrogen residue: index=510, name=H, element=H, chain=A, residue=34
+[DEBUG] Processing hbond 28: donor=509, acceptor=429, hydrogen=516
+[DEBUG] Donor residue: index=509, name=NE2, element=N, chain=A, residue=34
+[DEBUG] Acceptor residue: index=429, name=O, element=O, chain=A, residue=28
+[DEBUG] Hydrogen residue: index=516, name=HE21, element=H, chain=A, residue=34
+[DEBUG] Processing hbond 29: donor=518, acceptor=483, hydrogen=527
+[DEBUG] Donor residue: index=518, name=N, element=N, chain=A, residue=35
+[DEBUG] Acceptor residue: index=483, name=O, element=O, chain=A, residue=32
+[DEBUG] Hydrogen residue: index=527, name=H, element=H, chain=A, residue=35
+[DEBUG] Processing hbond 30: donor=526, acceptor=1738, hydrogen=539
+[DEBUG] Donor residue: index=526, name=NZ, element=N, chain=A, residue=35
+[DEBUG] Acceptor residue: index=1738, name=O, element=O, chain=B, residue=724
+[DEBUG] Hydrogen residue: index=539, name=HZ3, element=H, chain=A, residue=35
+[DEBUG]   Added H-bond: A35(NZ)-HZ3 -> B724(O) - H-A dist: 2.01Å
+[DEBUG] Processing hbond 31: donor=540, acceptor=483, hydrogen=548
+[DEBUG] Donor residue: index=540, name=N, element=N, chain=A, residue=36
+[DEBUG] Acceptor residue: index=483, name=O, element=O, chain=A, residue=32
+[DEBUG] Hydrogen residue: index=548, name=H, element=H, chain=A, residue=36
+[DEBUG] Processing hbond 32: donor=557, acceptor=494, hydrogen=566
+[DEBUG] Donor residue: index=557, name=N, element=N, chain=A, residue=37
+[DEBUG] Acceptor residue: index=494, name=O, element=O, chain=A, residue=33
+[DEBUG] Hydrogen residue: index=566, name=H, element=H, chain=A, residue=37
+[DEBUG] Processing hbond 33: donor=565, acceptor=391, hydrogen=576
+[DEBUG] Donor residue: index=565, name=NZ, element=N, chain=A, residue=37
+[DEBUG] Acceptor residue: index=391, name=O, element=O, chain=A, residue=25
+[DEBUG] Hydrogen residue: index=576, name=HZ1, element=H, chain=A, residue=37
+[DEBUG] Processing hbond 34: donor=586, acceptor=504, hydrogen=598
+[DEBUG] Donor residue: index=586, name=NE, element=N, chain=A, residue=38
+[DEBUG] Acceptor residue: index=504, name=O, element=O, chain=A, residue=34
+[DEBUG] Hydrogen residue: index=598, name=HE, element=H, chain=A, residue=38
+[DEBUG] Processing hbond 35: donor=603, acceptor=521, hydrogen=610
+[DEBUG] Donor residue: index=603, name=N, element=N, chain=A, residue=39
+[DEBUG] Acceptor residue: index=521, name=O, element=O, chain=A, residue=35
+[DEBUG] Hydrogen residue: index=610, name=H, element=H, chain=A, residue=39
+[DEBUG] Processing hbond 36: donor=619, acceptor=543, hydrogen=626
+[DEBUG] Donor residue: index=619, name=N, element=N, chain=A, residue=40
+[DEBUG] Acceptor residue: index=543, name=O, element=O, chain=A, residue=36
+[DEBUG] Hydrogen residue: index=626, name=H, element=H, chain=A, residue=40
+[DEBUG] Processing hbond 37: donor=635, acceptor=560, hydrogen=644
+[DEBUG] Donor residue: index=635, name=N, element=N, chain=A, residue=41
+[DEBUG] Acceptor residue: index=560, name=O, element=O, chain=A, residue=37
+[DEBUG] Hydrogen residue: index=644, name=H, element=H, chain=A, residue=41
+[DEBUG] Processing hbond 38: donor=652, acceptor=582, hydrogen=662
+[DEBUG] Donor residue: index=652, name=N, element=N, chain=A, residue=42
+[DEBUG] Acceptor residue: index=582, name=O, element=O, chain=A, residue=38
+[DEBUG] Hydrogen residue: index=662, name=H, element=H, chain=A, residue=42
+[DEBUG] Processing hbond 39: donor=669, acceptor=606, hydrogen=676
+[DEBUG] Donor residue: index=669, name=N, element=N, chain=A, residue=43
+[DEBUG] Acceptor residue: index=606, name=O, element=O, chain=A, residue=39
+[DEBUG] Hydrogen residue: index=676, name=H, element=H, chain=A, residue=43
+[DEBUG] Processing hbond 40: donor=683, acceptor=622, hydrogen=692
+[DEBUG] Donor residue: index=683, name=N, element=N, chain=A, residue=44
+[DEBUG] Acceptor residue: index=622, name=O, element=O, chain=A, residue=40
+[DEBUG] Hydrogen residue: index=692, name=H, element=H, chain=A, residue=44
+[DEBUG] Processing hbond 41: donor=705, acceptor=655, hydrogen=709
+[DEBUG] Donor residue: index=705, name=N, element=N, chain=A, residue=45
+[DEBUG] Acceptor residue: index=655, name=O, element=O, chain=A, residue=42
+[DEBUG] Hydrogen residue: index=709, name=H, element=H, chain=A, residue=45
+[DEBUG] Processing hbond 42: donor=712, acceptor=655, hydrogen=718
+[DEBUG] Donor residue: index=712, name=N, element=N, chain=A, residue=46
+[DEBUG] Acceptor residue: index=655, name=O, element=O, chain=A, residue=42
+[DEBUG] Hydrogen residue: index=718, name=H, element=H, chain=A, residue=46
+[DEBUG] Processing hbond 43: donor=712, acceptor=672, hydrogen=718
+[DEBUG] Donor residue: index=712, name=N, element=N, chain=A, residue=46
+[DEBUG] Acceptor residue: index=672, name=O, element=O, chain=A, residue=43
+[DEBUG] Hydrogen residue: index=718, name=H, element=H, chain=A, residue=46
+[DEBUG] Processing hbond 44: donor=753, acceptor=1665, hydrogen=765
+[DEBUG] Donor residue: index=753, name=NH1, element=N, chain=A, residue=48
+[DEBUG] Acceptor residue: index=1665, name=O, element=O, chain=B, residue=719
+[DEBUG] Hydrogen residue: index=765, name=HH12, element=H, chain=A, residue=48
+[DEBUG]   Added H-bond: A48(NH1)-HH12 -> B719(O) - H-A dist: 2.44Å
+[DEBUG] Processing hbond 45: donor=753, acceptor=1681, hydrogen=765
+[DEBUG] Donor residue: index=753, name=NH1, element=N, chain=A, residue=48
+[DEBUG] Acceptor residue: index=1681, name=OG1, element=O, chain=B, residue=720
+[DEBUG] Hydrogen residue: index=765, name=HH12, element=H, chain=A, residue=48
+[DEBUG]   Added H-bond: A48(NH1)-HH12 -> B720(OG1) - H-A dist: 2.17Å
+[DEBUG] Processing hbond 46: donor=754, acceptor=1679, hydrogen=767
+[DEBUG] Donor residue: index=754, name=NH2, element=N, chain=A, residue=48
+[DEBUG] Acceptor residue: index=1679, name=O, element=O, chain=B, residue=720
+[DEBUG] Hydrogen residue: index=767, name=HH22, element=H, chain=A, residue=48
+[DEBUG]   Added H-bond: A48(NH2)-HH22 -> B720(O) - H-A dist: 1.83Å
+[DEBUG] Processing hbond 47: donor=776, acceptor=672, hydrogen=787
+[DEBUG] Donor residue: index=776, name=NZ, element=N, chain=A, residue=49
+[DEBUG] Acceptor residue: index=672, name=O, element=O, chain=A, residue=43
+[DEBUG] Hydrogen residue: index=787, name=HZ1, element=H, chain=A, residue=49
+[DEBUG] Processing hbond 48: donor=804, acceptor=811, hydrogen=812
+[DEBUG] Donor residue: index=804, name=N, element=N, chain=A, residue=51
+[DEBUG] Acceptor residue: index=811, name=ND2, element=N, chain=A, residue=51
+[DEBUG] Hydrogen residue: index=812, name=H, element=H, chain=A, residue=51
+[DEBUG] Processing hbond 49: donor=811, acceptor=2045, hydrogen=816
+[DEBUG] Donor residue: index=811, name=ND2, element=N, chain=A, residue=51
+[DEBUG] Acceptor residue: index=2045, name=O, element=O, chain=B, residue=744
+[DEBUG] Hydrogen residue: index=816, name=HD21, element=H, chain=A, residue=51
+[DEBUG]   Added H-bond: A51(ND2)-HD21 -> B744(O) - H-A dist: 1.94Å
+[DEBUG] Processing hbond 50: donor=818, acceptor=771, hydrogen=822
+[DEBUG] Donor residue: index=818, name=N, element=N, chain=A, residue=52
+[DEBUG] Acceptor residue: index=771, name=O, element=O, chain=A, residue=49
+[DEBUG] Hydrogen residue: index=822, name=H, element=H, chain=A, residue=52
+[DEBUG] Processing hbond 51: donor=825, acceptor=771, hydrogen=829
+[DEBUG] Donor residue: index=825, name=N, element=N, chain=A, residue=53
+[DEBUG] Acceptor residue: index=771, name=O, element=O, chain=A, residue=49
+[DEBUG] Hydrogen residue: index=829, name=H, element=H, chain=A, residue=53
+[DEBUG] Processing hbond 52: donor=832, acceptor=771, hydrogen=838
+[DEBUG] Donor residue: index=832, name=N, element=N, chain=A, residue=54
+[DEBUG] Acceptor residue: index=771, name=O, element=O, chain=A, residue=49
+[DEBUG] Hydrogen residue: index=838, name=H, element=H, chain=A, residue=54
+[DEBUG] Processing hbond 53: donor=904, acceptor=859, hydrogen=913
+[DEBUG] Donor residue: index=904, name=N, element=N, chain=A, residue=59
+[DEBUG] Acceptor residue: index=859, name=O, element=O, chain=A, residue=56
+[DEBUG] Hydrogen residue: index=913, name=H, element=H, chain=A, residue=59
+[DEBUG] Processing hbond 54: donor=912, acceptor=1771, hydrogen=919
+[DEBUG] Donor residue: index=912, name=NE2, element=N, chain=A, residue=59
+[DEBUG] Acceptor residue: index=1771, name=O, element=O, chain=B, residue=726
+[DEBUG] Hydrogen residue: index=919, name=HE21, element=H, chain=A, residue=59
+[DEBUG]   Added H-bond: A59(NE2)-HE21 -> B726(O) - H-A dist: 1.85Å
+[DEBUG] Processing hbond 55: donor=921, acceptor=859, hydrogen=929
+[DEBUG] Donor residue: index=921, name=N, element=N, chain=A, residue=60
+[DEBUG] Acceptor residue: index=859, name=O, element=O, chain=A, residue=56
+[DEBUG] Hydrogen residue: index=929, name=H, element=H, chain=A, residue=60
+[DEBUG] Processing hbond 56: donor=921, acceptor=875, hydrogen=929
+[DEBUG] Donor residue: index=921, name=N, element=N, chain=A, residue=60
+[DEBUG] Acceptor residue: index=875, name=O, element=O, chain=A, residue=57
+[DEBUG] Hydrogen residue: index=929, name=H, element=H, chain=A, residue=60
+[DEBUG] Processing hbond 57: donor=940, acceptor=875, hydrogen=948
+[DEBUG] Donor residue: index=940, name=N, element=N, chain=A, residue=61
+[DEBUG] Acceptor residue: index=875, name=O, element=O, chain=A, residue=57
+[DEBUG] Hydrogen residue: index=948, name=H, element=H, chain=A, residue=61
+[DEBUG] Processing hbond 58: donor=959, acceptor=885, hydrogen=964
+[DEBUG] Donor residue: index=959, name=N, element=N, chain=A, residue=62
+[DEBUG] Acceptor residue: index=885, name=O, element=O, chain=A, residue=58
+[DEBUG] Hydrogen residue: index=964, name=H, element=H, chain=A, residue=62
+[DEBUG] Processing hbond 59: donor=969, acceptor=907, hydrogen=977
+[DEBUG] Donor residue: index=969, name=N, element=N, chain=A, residue=63
+[DEBUG] Acceptor residue: index=907, name=O, element=O, chain=A, residue=59
+[DEBUG] Hydrogen residue: index=977, name=H, element=H, chain=A, residue=63
+[DEBUG] Processing hbond 60: donor=988, acceptor=924, hydrogen=994
+[DEBUG] Donor residue: index=988, name=N, element=N, chain=A, residue=64
+[DEBUG] Acceptor residue: index=924, name=O, element=O, chain=A, residue=60
+[DEBUG] Hydrogen residue: index=994, name=H, element=H, chain=A, residue=64
+[DEBUG] Processing hbond 61: donor=999, acceptor=943, hydrogen=1005
+[DEBUG] Donor residue: index=999, name=N, element=N, chain=A, residue=65
+[DEBUG] Acceptor residue: index=943, name=O, element=O, chain=A, residue=61
+[DEBUG] Hydrogen residue: index=1005, name=H, element=H, chain=A, residue=65
+[DEBUG] Processing hbond 62: donor=1010, acceptor=962, hydrogen=1022
+[DEBUG] Donor residue: index=1010, name=N, element=N, chain=A, residue=66
+[DEBUG] Acceptor residue: index=962, name=O, element=O, chain=A, residue=62
+[DEBUG] Hydrogen residue: index=1022, name=H, element=H, chain=A, residue=66
+[DEBUG] Processing hbond 63: donor=1031, acceptor=991, hydrogen=1041
+[DEBUG] Donor residue: index=1031, name=N, element=N, chain=A, residue=67
+[DEBUG] Acceptor residue: index=991, name=O, element=O, chain=A, residue=64
+[DEBUG] Hydrogen residue: index=1041, name=H, element=H, chain=A, residue=67
+[DEBUG] Processing hbond 64: donor=1048, acceptor=991, hydrogen=1053
+[DEBUG] Donor residue: index=1048, name=N, element=N, chain=A, residue=68
+[DEBUG] Acceptor residue: index=991, name=O, element=O, chain=A, residue=64
+[DEBUG] Hydrogen residue: index=1053, name=H, element=H, chain=A, residue=68
+[DEBUG] Processing hbond 65: donor=1058, acceptor=1002, hydrogen=1067
+[DEBUG] Donor residue: index=1058, name=N, element=N, chain=A, residue=69
+[DEBUG] Acceptor residue: index=1002, name=O, element=O, chain=A, residue=65
+[DEBUG] Hydrogen residue: index=1067, name=H, element=H, chain=A, residue=69
+[DEBUG] Processing hbond 66: donor=1086, acceptor=1013, hydrogen=1094
+[DEBUG] Donor residue: index=1086, name=ND1, element=N, chain=A, residue=70
+[DEBUG] Acceptor residue: index=1013, name=O, element=O, chain=A, residue=66
+[DEBUG] Hydrogen residue: index=1094, name=HD1, element=H, chain=A, residue=70
+[DEBUG] Processing hbond 67: donor=1097, acceptor=1034, hydrogen=1103
+[DEBUG] Donor residue: index=1097, name=N, element=N, chain=A, residue=71
+[DEBUG] Acceptor residue: index=1034, name=O, element=O, chain=A, residue=67
+[DEBUG] Hydrogen residue: index=1103, name=H, element=H, chain=A, residue=71
+[DEBUG] Processing hbond 68: donor=1097, acceptor=1051, hydrogen=1103
+[DEBUG] Donor residue: index=1097, name=N, element=N, chain=A, residue=71
+[DEBUG] Acceptor residue: index=1051, name=O, element=O, chain=A, residue=68
+[DEBUG] Hydrogen residue: index=1103, name=H, element=H, chain=A, residue=71
+[DEBUG] Processing hbond 69: donor=1139, acceptor=1131, hydrogen=1147
+[DEBUG] Donor residue: index=1139, name=N, element=N, chain=A, residue=74
+[DEBUG] Acceptor residue: index=1131, name=OE1, element=O, chain=A, residue=73
+[DEBUG] Hydrogen residue: index=1147, name=H, element=H, chain=A, residue=74
+[DEBUG] Processing hbond 70: donor=1161, acceptor=1131, hydrogen=1174
+[DEBUG] Donor residue: index=1161, name=NZ, element=N, chain=A, residue=75
+[DEBUG] Acceptor residue: index=1131, name=OE1, element=O, chain=A, residue=73
+[DEBUG] Hydrogen residue: index=1174, name=HZ3, element=H, chain=A, residue=75
+[DEBUG] Processing hbond 71: donor=1285, acceptor=1218, hydrogen=1290
+[DEBUG] Donor residue: index=1285, name=ND2, element=N, chain=A, residue=83
+[DEBUG] Acceptor residue: index=1218, name=O, element=O, chain=A, residue=79
+[DEBUG] Hydrogen residue: index=1290, name=HD21, element=H, chain=A, residue=83
+[DEBUG] Processing hbond 72: donor=1292, acceptor=1232, hydrogen=1300
+[DEBUG] Donor residue: index=1292, name=N, element=N, chain=A, residue=84
+[DEBUG] Acceptor residue: index=1232, name=O, element=O, chain=A, residue=80
+[DEBUG] Hydrogen residue: index=1300, name=H, element=H, chain=A, residue=84
+[DEBUG] Processing hbond 73: donor=1311, acceptor=1252, hydrogen=1320
+[DEBUG] Donor residue: index=1311, name=N, element=N, chain=A, residue=85
+[DEBUG] Acceptor residue: index=1252, name=O, element=O, chain=A, residue=81
+[DEBUG] Hydrogen residue: index=1320, name=H, element=H, chain=A, residue=85
+[DEBUG] Processing hbond 74: donor=1319, acceptor=1127, hydrogen=1330
+[DEBUG] Donor residue: index=1319, name=NZ, element=N, chain=A, residue=85
+[DEBUG] Acceptor residue: index=1127, name=O, element=O, chain=A, residue=73
+[DEBUG] Hydrogen residue: index=1330, name=HZ1, element=H, chain=A, residue=85
+[DEBUG] Processing hbond 75: donor=1333, acceptor=1262, hydrogen=1343
+[DEBUG] Donor residue: index=1333, name=N, element=N, chain=A, residue=86
+[DEBUG] Acceptor residue: index=1262, name=O, element=O, chain=A, residue=82
+[DEBUG] Hydrogen residue: index=1343, name=H, element=H, chain=A, residue=86
+[DEBUG] Processing hbond 76: donor=1350, acceptor=1281, hydrogen=1359
+[DEBUG] Donor residue: index=1350, name=N, element=N, chain=A, residue=87
+[DEBUG] Acceptor residue: index=1281, name=O, element=O, chain=A, residue=83
+[DEBUG] Hydrogen residue: index=1359, name=H, element=H, chain=A, residue=87
+[DEBUG] Processing hbond 77: donor=1358, acceptor=2059, hydrogen=1369
+[DEBUG] Donor residue: index=1358, name=NZ, element=N, chain=A, residue=87
+[DEBUG] Acceptor residue: index=2059, name=OG, element=O, chain=B, residue=745
+[DEBUG] Hydrogen residue: index=1369, name=HZ1, element=H, chain=A, residue=87
+[DEBUG]   Added H-bond: A87(NZ)-HZ1 -> B745(OG) - H-A dist: 2.45Å
+[DEBUG] Processing hbond 78: donor=1358, acceptor=2014, hydrogen=1370
+[DEBUG] Donor residue: index=1358, name=NZ, element=N, chain=A, residue=87
+[DEBUG] Acceptor residue: index=2014, name=OE1, element=O, chain=B, residue=742
+[DEBUG] Hydrogen residue: index=1370, name=HZ2, element=H, chain=A, residue=87
+[DEBUG]   Added H-bond: A87(NZ)-HZ2 -> B742(OE1) - H-A dist: 1.75Å
+[DEBUG] Processing hbond 79: donor=1358, acceptor=2130, hydrogen=1371
+[DEBUG] Donor residue: index=1358, name=NZ, element=N, chain=A, residue=87
+[DEBUG] Acceptor residue: index=2130, name=O, element=O, chain=B, residue=750
+[DEBUG] Hydrogen residue: index=1371, name=HZ3, element=H, chain=A, residue=87
+[DEBUG]   Added H-bond: A87(NZ)-HZ3 -> B750(O) - H-A dist: 1.82Å
+[DEBUG] Processing hbond 80: donor=1372, acceptor=1295, hydrogen=1380
+[DEBUG] Donor residue: index=1372, name=N, element=N, chain=A, residue=88
+[DEBUG] Acceptor residue: index=1295, name=O, element=O, chain=A, residue=84
+[DEBUG] Hydrogen residue: index=1380, name=H, element=H, chain=A, residue=88
+[DEBUG] Processing hbond 81: donor=1391, acceptor=1314, hydrogen=1402
+[DEBUG] Donor residue: index=1391, name=N, element=N, chain=A, residue=89
+[DEBUG] Acceptor residue: index=1314, name=O, element=O, chain=A, residue=85
+[DEBUG] Hydrogen residue: index=1402, name=H, element=H, chain=A, residue=89
+[DEBUG] Processing hbond 82: donor=1400, acceptor=1456, hydrogen=1411
+[DEBUG] Donor residue: index=1400, name=NH1, element=N, chain=A, residue=89
+[DEBUG] Acceptor residue: index=1456, name=OE1, element=O, chain=A, residue=92
+[DEBUG] Hydrogen residue: index=1411, name=HH11, element=H, chain=A, residue=89
+[DEBUG] Processing hbond 83: donor=1401, acceptor=1100, hydrogen=1413
+[DEBUG] Donor residue: index=1401, name=NH2, element=N, chain=A, residue=89
+[DEBUG] Acceptor residue: index=1100, name=O, element=O, chain=A, residue=71
+[DEBUG] Hydrogen residue: index=1413, name=HH21, element=H, chain=A, residue=89
+[DEBUG] Processing hbond 84: donor=1401, acceptor=1061, hydrogen=1414
+[DEBUG] Donor residue: index=1401, name=NH2, element=N, chain=A, residue=89
+[DEBUG] Acceptor residue: index=1061, name=O, element=O, chain=A, residue=69
+[DEBUG] Hydrogen residue: index=1414, name=HH22, element=H, chain=A, residue=89
+[DEBUG] Processing hbond 85: donor=1415, acceptor=1336, hydrogen=1424
+[DEBUG] Donor residue: index=1415, name=N, element=N, chain=A, residue=90
+[DEBUG] Acceptor residue: index=1336, name=O, element=O, chain=A, residue=86
+[DEBUG] Hydrogen residue: index=1424, name=H, element=H, chain=A, residue=90
+[DEBUG] Processing hbond 86: donor=1423, acceptor=1336, hydrogen=1430
+[DEBUG] Donor residue: index=1423, name=NE2, element=N, chain=A, residue=90
+[DEBUG] Acceptor residue: index=1336, name=O, element=O, chain=A, residue=86
+[DEBUG] Hydrogen residue: index=1430, name=HE21, element=H, chain=A, residue=90
+[DEBUG] Processing hbond 87: donor=1432, acceptor=1375, hydrogen=1441
+[DEBUG] Donor residue: index=1432, name=N, element=N, chain=A, residue=91
+[DEBUG] Acceptor residue: index=1375, name=O, element=O, chain=A, residue=88
+[DEBUG] Hydrogen residue: index=1441, name=H, element=H, chain=A, residue=91
+[DEBUG] Processing hbond 88: donor=1440, acceptor=2015, hydrogen=1447
+[DEBUG] Donor residue: index=1440, name=NE2, element=N, chain=A, residue=91
+[DEBUG] Acceptor residue: index=2015, name=OE2, element=O, chain=B, residue=742
+[DEBUG] Hydrogen residue: index=1447, name=HE21, element=H, chain=A, residue=91
+[DEBUG]   Added H-bond: A91(NE2)-HE21 -> B742(OE2) - H-A dist: 1.77Å
+[DEBUG] Processing hbond 89: donor=1449, acceptor=1375, hydrogen=1458
+[DEBUG] Donor residue: index=1449, name=N, element=N, chain=A, residue=92
+[DEBUG] Acceptor residue: index=1375, name=O, element=O, chain=A, residue=88
+[DEBUG] Hydrogen residue: index=1458, name=H, element=H, chain=A, residue=92
+[DEBUG] Processing hbond 90: donor=1490, acceptor=1478, hydrogen=1498
+[DEBUG] Donor residue: index=1490, name=ND1, element=N, chain=B, residue=708
+[DEBUG] Acceptor residue: index=1478, name=OG, element=O, chain=B, residue=707
+[DEBUG] Hydrogen residue: index=1498, name=HD1, element=H, chain=B, residue=708
+[DEBUG] Processing hbond 91: donor=1653, acceptor=1594, hydrogen=1660
+[DEBUG] Donor residue: index=1653, name=NE2, element=N, chain=B, residue=718
+[DEBUG] Acceptor residue: index=1594, name=O, element=O, chain=B, residue=715
+[DEBUG] Hydrogen residue: index=1660, name=HE21, element=H, chain=B, residue=718
+[DEBUG] Processing hbond 92: donor=1785, acceptor=1832, hydrogen=1791
+[DEBUG] Donor residue: index=1785, name=N, element=N, chain=B, residue=727
+[DEBUG] Acceptor residue: index=1832, name=OE1, element=O, chain=B, residue=730
+[DEBUG] Hydrogen residue: index=1791, name=H, element=H, chain=B, residue=727
+[DEBUG] Processing hbond 93: donor=1810, acceptor=1790, hydrogen=1819
+[DEBUG] Donor residue: index=1810, name=N, element=N, chain=B, residue=729
+[DEBUG] Acceptor residue: index=1790, name=OG, element=O, chain=B, residue=727
+[DEBUG] Hydrogen residue: index=1819, name=H, element=H, chain=B, residue=729
+[DEBUG] Processing hbond 94: donor=1825, acceptor=1788, hydrogen=1834
+[DEBUG] Donor residue: index=1825, name=N, element=N, chain=B, residue=730
+[DEBUG] Acceptor residue: index=1788, name=O, element=O, chain=B, residue=727
+[DEBUG] Hydrogen residue: index=1834, name=H, element=H, chain=B, residue=730
+[DEBUG] Processing hbond 95: donor=1840, acceptor=1788, hydrogen=1851
+[DEBUG] Donor residue: index=1840, name=N, element=N, chain=B, residue=731
+[DEBUG] Acceptor residue: index=1788, name=O, element=O, chain=B, residue=727
+[DEBUG] Hydrogen residue: index=1851, name=H, element=H, chain=B, residue=731
+[DEBUG] Processing hbond 96: donor=1860, acceptor=1799, hydrogen=1868
+[DEBUG] Donor residue: index=1860, name=N, element=N, chain=B, residue=732
+[DEBUG] Acceptor residue: index=1799, name=O, element=O, chain=B, residue=728
+[DEBUG] Hydrogen residue: index=1868, name=H, element=H, chain=B, residue=732
+[DEBUG] Processing hbond 97: donor=1872, acceptor=1813, hydrogen=1881
+[DEBUG] Donor residue: index=1872, name=N, element=N, chain=B, residue=733
+[DEBUG] Acceptor residue: index=1813, name=O, element=O, chain=B, residue=729
+[DEBUG] Hydrogen residue: index=1881, name=H, element=H, chain=B, residue=733
+[DEBUG] Processing hbond 98: donor=1887, acceptor=1828, hydrogen=1894
+[DEBUG] Donor residue: index=1887, name=N, element=N, chain=B, residue=734
+[DEBUG] Acceptor residue: index=1828, name=O, element=O, chain=B, residue=730
+[DEBUG] Hydrogen residue: index=1894, name=H, element=H, chain=B, residue=734
+[DEBUG] Processing hbond 99: donor=1903, acceptor=1843, hydrogen=1909
+[DEBUG] Donor residue: index=1903, name=N, element=N, chain=B, residue=735
+[DEBUG] Acceptor residue: index=1843, name=O, element=O, chain=B, residue=731
+[DEBUG] Hydrogen residue: index=1909, name=H, element=H, chain=B, residue=735
+[DEBUG] Processing hbond 100: donor=1914, acceptor=1863, hydrogen=1925
+[DEBUG] Donor residue: index=1914, name=N, element=N, chain=B, residue=736
+[DEBUG] Acceptor residue: index=1863, name=O, element=O, chain=B, residue=732
+[DEBUG] Hydrogen residue: index=1925, name=H, element=H, chain=B, residue=736
+[DEBUG] Processing hbond 101: donor=1921, acceptor=1867, hydrogen=1933
+[DEBUG] Donor residue: index=1921, name=NE, element=N, chain=B, residue=736
+[DEBUG] Acceptor residue: index=1867, name=OD2, element=O, chain=B, residue=732
+[DEBUG] Hydrogen residue: index=1933, name=HE, element=H, chain=B, residue=736
+[DEBUG] Processing hbond 102: donor=1923, acceptor=1879, hydrogen=1934
+[DEBUG] Donor residue: index=1923, name=NH1, element=N, chain=B, residue=736
+[DEBUG] Acceptor residue: index=1879, name=OE1, element=O, chain=B, residue=733
+[DEBUG] Hydrogen residue: index=1934, name=HH11, element=H, chain=B, residue=736
+[DEBUG] Processing hbond 103: donor=1923, acceptor=32, hydrogen=1935
+[DEBUG] Donor residue: index=1923, name=NH1, element=N, chain=B, residue=736
+[DEBUG] Acceptor residue: index=32, name=OE1, element=O, chain=A, residue=3
+[DEBUG] Hydrogen residue: index=1935, name=HH12, element=H, chain=B, residue=736
+[DEBUG]   Added H-bond: B736(NH1)-HH12 -> A3(OE1) - H-A dist: 1.85Å
+[DEBUG] Processing hbond 104: donor=1924, acceptor=1867, hydrogen=1936
+[DEBUG] Donor residue: index=1924, name=NH2, element=N, chain=B, residue=736
+[DEBUG] Acceptor residue: index=1867, name=OD2, element=O, chain=B, residue=732
+[DEBUG] Hydrogen residue: index=1936, name=HH21, element=H, chain=B, residue=736
+[DEBUG] Processing hbond 105: donor=1938, acceptor=1890, hydrogen=1946
+[DEBUG] Donor residue: index=1938, name=N, element=N, chain=B, residue=737
+[DEBUG] Acceptor residue: index=1890, name=O, element=O, chain=B, residue=734
+[DEBUG] Hydrogen residue: index=1946, name=H, element=H, chain=B, residue=737
+[DEBUG] Processing hbond 106: donor=1957, acceptor=1890, hydrogen=1964
+[DEBUG] Donor residue: index=1957, name=N, element=N, chain=B, residue=738
+[DEBUG] Acceptor residue: index=1890, name=O, element=O, chain=B, residue=734
+[DEBUG] Hydrogen residue: index=1964, name=H, element=H, chain=B, residue=738
+[DEBUG] Processing hbond 107: donor=1973, acceptor=1906, hydrogen=1977
+[DEBUG] Donor residue: index=1973, name=N, element=N, chain=B, residue=739
+[DEBUG] Acceptor residue: index=1906, name=O, element=O, chain=B, residue=735
+[DEBUG] Hydrogen residue: index=1977, name=H, element=H, chain=B, residue=739
+[DEBUG] Processing hbond 108: donor=2022, acceptor=1983, hydrogen=2033
+[DEBUG] Donor residue: index=2022, name=N, element=N, chain=B, residue=743
+[DEBUG] Acceptor residue: index=1983, name=O, element=O, chain=B, residue=740
+[DEBUG] Hydrogen residue: index=2033, name=H, element=H, chain=B, residue=743
+[DEBUG] Processing hbond 109: donor=2042, acceptor=2048, hydrogen=2050
+[DEBUG] Donor residue: index=2042, name=N, element=N, chain=B, residue=744
+[DEBUG] Acceptor residue: index=2048, name=OD1, element=O, chain=B, residue=744
+[DEBUG] Hydrogen residue: index=2050, name=H, element=H, chain=B, residue=744
+[DEBUG] Processing hbond 110: donor=2054, acceptor=2010, hydrogen=2060
+[DEBUG] Donor residue: index=2054, name=N, element=N, chain=B, residue=745
+[DEBUG] Acceptor residue: index=2010, name=O, element=O, chain=B, residue=742
+[DEBUG] Hydrogen residue: index=2060, name=H, element=H, chain=B, residue=745
+[DEBUG] Processing hbond 111: donor=2099, acceptor=2057, hydrogen=2107
+[DEBUG] Donor residue: index=2099, name=N, element=N, chain=B, residue=748
+[DEBUG] Acceptor residue: index=2057, name=O, element=O, chain=B, residue=745
+[DEBUG] Hydrogen residue: index=2107, name=H, element=H, chain=B, residue=748
+[DEBUG] Processing hbond 112: donor=2127, acceptor=2105, hydrogen=2134
+[DEBUG] Donor residue: index=2127, name=N, element=N, chain=B, residue=750
+[DEBUG] Acceptor residue: index=2105, name=OD1, element=O, chain=B, residue=748
+[DEBUG] Hydrogen residue: index=2134, name=H, element=H, chain=B, residue=750
+[DEBUG] Processing hbond 113: donor=140, acceptor=1833, hydrogen=145
+[DEBUG] Donor residue: index=140, name=OG, element=O, chain=A, residue=9
+[DEBUG] Acceptor residue: index=1833, name=OE2, element=O, chain=B, residue=730
+[DEBUG] Hydrogen residue: index=145, name=HG, element=H, chain=A, residue=9
+[DEBUG]   Added H-bond: A9(OG)-HG -> B730(OE2) - H-A dist: 1.68Å
+[DEBUG] Processing hbond 114: donor=258, acceptor=185, hydrogen=263
+[DEBUG] Donor residue: index=258, name=OG, element=O, chain=A, residue=16
+[DEBUG] Acceptor residue: index=185, name=O, element=O, chain=A, residue=12
+[DEBUG] Hydrogen residue: index=263, name=HG, element=H, chain=A, residue=16
+[DEBUG] Processing hbond 115: donor=485, acceptor=258, hydrogen=490
+[DEBUG] Donor residue: index=485, name=OG, element=O, chain=A, residue=32
+[DEBUG] Acceptor residue: index=258, name=OG, element=O, chain=A, residue=16
+[DEBUG] Hydrogen residue: index=490, name=HG, element=H, chain=A, residue=32
+[DEBUG] Processing hbond 116: donor=1667, acceptor=1696, hydrogen=1672
+[DEBUG] Donor residue: index=1667, name=OG1, element=O, chain=B, residue=719
+[DEBUG] Acceptor residue: index=1696, name=OD1, element=O, chain=B, residue=721
+[DEBUG] Hydrogen residue: index=1672, name=HG1, element=H, chain=B, residue=719
+[DEBUG] Processing hbond 117: donor=1908, acceptor=1843, hydrogen=1913
+[DEBUG] Donor residue: index=1908, name=OG, element=O, chain=B, residue=735
+[DEBUG] Acceptor residue: index=1843, name=O, element=O, chain=B, residue=731
+[DEBUG] Hydrogen residue: index=1913, name=HG, element=H, chain=B, residue=735
+[DEBUG] Processing hbond 118: donor=2118, acceptor=1284, hydrogen=2123
+[DEBUG] Donor residue: index=2118, name=OG1, element=O, chain=B, residue=749
+[DEBUG] Acceptor residue: index=1284, name=OD1, element=O, chain=A, residue=83
+[DEBUG] Hydrogen residue: index=2123, name=HG1, element=H, chain=B, residue=749
+[DEBUG]   Added H-bond: B749(OG1)-HG1 -> A83(OD1) - H-A dist: 1.91Å
+[DEBUG] Found 18 cross-chain hydrogen bonds
+[DEBUG] Found 18 hydrogen bonds
+[DEBUG] Detecting charge complementarity...
+[DEBUG] === DETECTING CHARGE COMPLEMENTARITY ===
+[DEBUG] Distance threshold: 4.5 Å
+[DEBUG]   Receptor charged residue: GLU4 (negative)
+[DEBUG]   Receptor charged residue: ARG6 (positive)
+[DEBUG]   Receptor charged residue: ARG7 (positive)
+[DEBUG]   Receptor charged residue: ARG12 (positive)
+[DEBUG]   Receptor charged residue: HIS19 (positive)
+[DEBUG]   Receptor charged residue: ARG24 (positive)
+[DEBUG]   Receptor charged residue: LYS35 (positive)
+[DEBUG]   Receptor charged residue: LYS37 (positive)
+[DEBUG]   Receptor charged residue: ARG38 (positive)
+[DEBUG]   Receptor charged residue: HIS42 (positive)
+[DEBUG]   Receptor charged residue: LYS44 (positive)
+[DEBUG]   Receptor charged residue: LYS47 (positive)
+[DEBUG]   Receptor charged residue: ARG48 (positive)
+[DEBUG]   Receptor charged residue: LYS49 (positive)
+[DEBUG]   Receptor charged residue: LYS58 (positive)
+[DEBUG]   Receptor charged residue: HIS67 (positive)
+[DEBUG]   Receptor charged residue: LYS69 (positive)
+[DEBUG]   Receptor charged residue: HIS70 (positive)
+[DEBUG]   Receptor charged residue: GLU73 (negative)
+[DEBUG]   Receptor charged residue: LYS75 (positive)
+[DEBUG]   Receptor charged residue: LYS85 (positive)
+[DEBUG]   Receptor charged residue: HIS86 (positive)
+[DEBUG]   Receptor charged residue: LYS87 (positive)
+[DEBUG]   Receptor charged residue: ARG89 (positive)
+[DEBUG]   Ligand charged residue: HIS708 (positive)
+[DEBUG]   Ligand charged residue: GLU711 (negative)
+[DEBUG]   Ligand charged residue: HIS713 (positive)
+[DEBUG]   Ligand charged residue: ARG716 (positive)
+[DEBUG]   Ligand charged residue: ASP721 (negative)
+[DEBUG]   Ligand charged residue: GLU729 (negative)
+[DEBUG]   Ligand charged residue: GLU730 (negative)
+[DEBUG]   Ligand charged residue: ASP732 (negative)
+[DEBUG]   Ligand charged residue: GLU733 (negative)
+[DEBUG]   Ligand charged residue: ARG736 (positive)
+[DEBUG]   Ligand charged residue: GLU742 (negative)
+[DEBUG]   Ligand charged residue: ASP744 (negative)
+[DEBUG] Found 24 charged receptor residues, 12 charged ligand residues
+[DEBUG]   Checking GLU4 (negative) <-> HIS708 (positive): 33.32 Å
+[DEBUG]     ✗ Too far: 33.32 Å > 4.5 Å
+[DEBUG]   Skipping same charge: GLU4 (negative) <-> GLU711 (negative)
+[DEBUG]   Checking GLU4 (negative) <-> HIS713 (positive): 39.53 Å
+[DEBUG]     ✗ Too far: 39.53 Å > 4.5 Å
+[DEBUG]   Checking GLU4 (negative) <-> ARG716 (positive): 41.54 Å
+[DEBUG]     ✗ Too far: 41.54 Å > 4.5 Å
+[DEBUG]   Skipping same charge: GLU4 (negative) <-> ASP721 (negative)
+[DEBUG]   Skipping same charge: GLU4 (negative) <-> GLU729 (negative)
+[DEBUG]   Skipping same charge: GLU4 (negative) <-> GLU730 (negative)
+[DEBUG]   Skipping same charge: GLU4 (negative) <-> ASP732 (negative)
+[DEBUG]   Skipping same charge: GLU4 (negative) <-> GLU733 (negative)
+[DEBUG]   Checking GLU4 (negative) <-> ARG736 (positive): 7.85 Å
+[DEBUG]     ✗ Too far: 7.85 Å > 4.5 Å
+[DEBUG]   Skipping same charge: GLU4 (negative) <-> GLU742 (negative)
+[DEBUG]   Skipping same charge: GLU4 (negative) <-> ASP744 (negative)
+[DEBUG]   Skipping same charge: ARG6 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking ARG6 (positive) <-> GLU711 (negative): 28.08 Å
+[DEBUG]     ✗ Too far: 28.08 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG6 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: ARG6 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking ARG6 (positive) <-> ASP721 (negative): 19.05 Å
+[DEBUG]     ✗ Too far: 19.05 Å > 4.5 Å
+[DEBUG]   Checking ARG6 (positive) <-> GLU729 (negative): 1.83 Å
+[DEBUG]     ✓ CHARGE PAIR ADDED: ARG6 <-> GLU729
+[DEBUG]   Checking ARG6 (positive) <-> GLU730 (negative): 2.57 Å
+[DEBUG]     ✓ CHARGE PAIR ADDED: ARG6 <-> GLU730
+[DEBUG]   Checking ARG6 (positive) <-> ASP732 (negative): 3.03 Å
+[DEBUG]     ✓ CHARGE PAIR ADDED: ARG6 <-> ASP732
+[DEBUG]   Checking ARG6 (positive) <-> GLU733 (negative): 2.41 Å
+[DEBUG]     ✓ CHARGE PAIR ADDED: ARG6 <-> GLU733
+[DEBUG]   Skipping same charge: ARG6 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking ARG6 (positive) <-> GLU742 (negative): 21.40 Å
+[DEBUG]     ✗ Too far: 21.40 Å > 4.5 Å
+[DEBUG]   Checking ARG6 (positive) <-> ASP744 (negative): 20.63 Å
+[DEBUG]     ✗ Too far: 20.63 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG7 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking ARG7 (positive) <-> GLU711 (negative): 30.75 Å
+[DEBUG]     ✗ Too far: 30.75 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG7 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: ARG7 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking ARG7 (positive) <-> ASP721 (negative): 22.39 Å
+[DEBUG]     ✗ Too far: 22.39 Å > 4.5 Å
+[DEBUG]   Checking ARG7 (positive) <-> GLU729 (negative): 9.27 Å
+[DEBUG]     ✗ Too far: 9.27 Å > 4.5 Å
+[DEBUG]   Checking ARG7 (positive) <-> GLU730 (negative): 6.11 Å
+[DEBUG]     ✗ Too far: 6.11 Å > 4.5 Å
+[DEBUG]   Checking ARG7 (positive) <-> ASP732 (negative): 8.49 Å
+[DEBUG]     ✗ Too far: 8.49 Å > 4.5 Å
+[DEBUG]   Checking ARG7 (positive) <-> GLU733 (negative): 1.82 Å
+[DEBUG]     ✓ CHARGE PAIR ADDED: ARG7 <-> GLU733
+[DEBUG]   Skipping same charge: ARG7 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking ARG7 (positive) <-> GLU742 (negative): 20.23 Å
+[DEBUG]     ✗ Too far: 20.23 Å > 4.5 Å
+[DEBUG]   Checking ARG7 (positive) <-> ASP744 (negative): 21.61 Å
+[DEBUG]     ✗ Too far: 21.61 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG12 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking ARG12 (positive) <-> GLU711 (negative): 23.84 Å
+[DEBUG]     ✗ Too far: 23.84 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG12 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: ARG12 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking ARG12 (positive) <-> ASP721 (negative): 20.27 Å
+[DEBUG]     ✗ Too far: 20.27 Å > 4.5 Å
+[DEBUG]   Checking ARG12 (positive) <-> GLU729 (negative): 10.84 Å
+[DEBUG]     ✗ Too far: 10.84 Å > 4.5 Å
+[DEBUG]   Checking ARG12 (positive) <-> GLU730 (negative): 5.54 Å
+[DEBUG]     ✗ Too far: 5.54 Å > 4.5 Å
+[DEBUG]   Checking ARG12 (positive) <-> ASP732 (negative): 14.49 Å
+[DEBUG]     ✗ Too far: 14.49 Å > 4.5 Å
+[DEBUG]   Checking ARG12 (positive) <-> GLU733 (negative): 10.71 Å
+[DEBUG]     ✗ Too far: 10.71 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG12 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking ARG12 (positive) <-> GLU742 (negative): 25.21 Å
+[DEBUG]     ✗ Too far: 25.21 Å > 4.5 Å
+[DEBUG]   Checking ARG12 (positive) <-> ASP744 (negative): 24.30 Å
+[DEBUG]     ✗ Too far: 24.30 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS19 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking HIS19 (positive) <-> GLU711 (negative): 19.83 Å
+[DEBUG]     ✗ Too far: 19.83 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS19 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: HIS19 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking HIS19 (positive) <-> ASP721 (negative): 21.00 Å
+[DEBUG]     ✗ Too far: 21.00 Å > 4.5 Å
+[DEBUG]   Checking HIS19 (positive) <-> GLU729 (negative): 21.11 Å
+[DEBUG]     ✗ Too far: 21.11 Å > 4.5 Å
+[DEBUG]   Checking HIS19 (positive) <-> GLU730 (negative): 15.01 Å
+[DEBUG]     ✗ Too far: 15.01 Å > 4.5 Å
+[DEBUG]   Checking HIS19 (positive) <-> ASP732 (negative): 22.85 Å
+[DEBUG]     ✗ Too far: 22.85 Å > 4.5 Å
+[DEBUG]   Checking HIS19 (positive) <-> GLU733 (negative): 19.74 Å
+[DEBUG]     ✗ Too far: 19.74 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS19 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking HIS19 (positive) <-> GLU742 (negative): 25.80 Å
+[DEBUG]     ✗ Too far: 25.80 Å > 4.5 Å
+[DEBUG]   Checking HIS19 (positive) <-> ASP744 (negative): 24.96 Å
+[DEBUG]     ✗ Too far: 24.96 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG24 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking ARG24 (positive) <-> GLU711 (negative): 19.20 Å
+[DEBUG]     ✗ Too far: 19.20 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG24 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: ARG24 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking ARG24 (positive) <-> ASP721 (negative): 22.89 Å
+[DEBUG]     ✗ Too far: 22.89 Å > 4.5 Å
+[DEBUG]   Checking ARG24 (positive) <-> GLU729 (negative): 29.28 Å
+[DEBUG]     ✗ Too far: 29.28 Å > 4.5 Å
+[DEBUG]   Checking ARG24 (positive) <-> GLU730 (negative): 23.63 Å
+[DEBUG]     ✗ Too far: 23.63 Å > 4.5 Å
+[DEBUG]   Checking ARG24 (positive) <-> ASP732 (negative): 30.54 Å
+[DEBUG]     ✗ Too far: 30.54 Å > 4.5 Å
+[DEBUG]   Checking ARG24 (positive) <-> GLU733 (negative): 28.59 Å
+[DEBUG]     ✗ Too far: 28.59 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG24 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking ARG24 (positive) <-> GLU742 (negative): 29.92 Å
+[DEBUG]     ✗ Too far: 29.92 Å > 4.5 Å
+[DEBUG]   Checking ARG24 (positive) <-> ASP744 (negative): 28.15 Å
+[DEBUG]     ✗ Too far: 28.15 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS35 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS35 (positive) <-> GLU711 (negative): 11.08 Å
+[DEBUG]     ✗ Too far: 11.08 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS35 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS35 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS35 (positive) <-> ASP721 (negative): 9.35 Å
+[DEBUG]     ✗ Too far: 9.35 Å > 4.5 Å
+[DEBUG]   Checking LYS35 (positive) <-> GLU729 (negative): 11.85 Å
+[DEBUG]     ✗ Too far: 11.85 Å > 4.5 Å
+[DEBUG]   Checking LYS35 (positive) <-> GLU730 (negative): 7.66 Å
+[DEBUG]     ✗ Too far: 7.66 Å > 4.5 Å
+[DEBUG]   Checking LYS35 (positive) <-> ASP732 (negative): 15.05 Å
+[DEBUG]     ✗ Too far: 15.05 Å > 4.5 Å
+[DEBUG]   Checking LYS35 (positive) <-> GLU733 (negative): 15.05 Å
+[DEBUG]     ✗ Too far: 15.05 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS35 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS35 (positive) <-> GLU742 (negative): 24.33 Å
+[DEBUG]     ✗ Too far: 24.33 Å > 4.5 Å
+[DEBUG]   Checking LYS35 (positive) <-> ASP744 (negative): 19.93 Å
+[DEBUG]     ✗ Too far: 19.93 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS37 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS37 (positive) <-> GLU711 (negative): 13.39 Å
+[DEBUG]     ✗ Too far: 13.39 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS37 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS37 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS37 (positive) <-> ASP721 (negative): 14.98 Å
+[DEBUG]     ✗ Too far: 14.98 Å > 4.5 Å
+[DEBUG]   Checking LYS37 (positive) <-> GLU729 (negative): 22.34 Å
+[DEBUG]     ✗ Too far: 22.34 Å > 4.5 Å
+[DEBUG]   Checking LYS37 (positive) <-> GLU730 (negative): 17.05 Å
+[DEBUG]     ✗ Too far: 17.05 Å > 4.5 Å
+[DEBUG]   Checking LYS37 (positive) <-> ASP732 (negative): 23.22 Å
+[DEBUG]     ✗ Too far: 23.22 Å > 4.5 Å
+[DEBUG]   Checking LYS37 (positive) <-> GLU733 (negative): 22.37 Å
+[DEBUG]     ✗ Too far: 22.37 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS37 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS37 (positive) <-> GLU742 (negative): 24.40 Å
+[DEBUG]     ✗ Too far: 24.40 Å > 4.5 Å
+[DEBUG]   Checking LYS37 (positive) <-> ASP744 (negative): 21.17 Å
+[DEBUG]     ✗ Too far: 21.17 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG38 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking ARG38 (positive) <-> GLU711 (negative): 4.97 Å
+[DEBUG]     ✗ Too far: 4.97 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG38 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: ARG38 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking ARG38 (positive) <-> ASP721 (negative): 10.30 Å
+[DEBUG]     ✗ Too far: 10.30 Å > 4.5 Å
+[DEBUG]   Checking ARG38 (positive) <-> GLU729 (negative): 19.89 Å
+[DEBUG]     ✗ Too far: 19.89 Å > 4.5 Å
+[DEBUG]   Checking ARG38 (positive) <-> GLU730 (negative): 15.34 Å
+[DEBUG]     ✗ Too far: 15.34 Å > 4.5 Å
+[DEBUG]   Checking ARG38 (positive) <-> ASP732 (negative): 21.80 Å
+[DEBUG]     ✗ Too far: 21.80 Å > 4.5 Å
+[DEBUG]   Checking ARG38 (positive) <-> GLU733 (negative): 21.67 Å
+[DEBUG]     ✗ Too far: 21.67 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG38 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking ARG38 (positive) <-> GLU742 (negative): 25.77 Å
+[DEBUG]     ✗ Too far: 25.77 Å > 4.5 Å
+[DEBUG]   Checking ARG38 (positive) <-> ASP744 (negative): 21.11 Å
+[DEBUG]     ✗ Too far: 21.11 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS42 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking HIS42 (positive) <-> GLU711 (negative): 13.76 Å
+[DEBUG]     ✗ Too far: 13.76 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS42 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: HIS42 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking HIS42 (positive) <-> ASP721 (negative): 6.74 Å
+[DEBUG]     ✗ Too far: 6.74 Å > 4.5 Å
+[DEBUG]   Checking HIS42 (positive) <-> GLU729 (negative): 19.91 Å
+[DEBUG]     ✗ Too far: 19.91 Å > 4.5 Å
+[DEBUG]   Checking HIS42 (positive) <-> GLU730 (negative): 16.43 Å
+[DEBUG]     ✗ Too far: 16.43 Å > 4.5 Å
+[DEBUG]   Checking HIS42 (positive) <-> ASP732 (negative): 18.79 Å
+[DEBUG]     ✗ Too far: 18.79 Å > 4.5 Å
+[DEBUG]   Checking HIS42 (positive) <-> GLU733 (negative): 20.55 Å
+[DEBUG]     ✗ Too far: 20.55 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS42 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking HIS42 (positive) <-> GLU742 (negative): 19.25 Å
+[DEBUG]     ✗ Too far: 19.25 Å > 4.5 Å
+[DEBUG]   Checking HIS42 (positive) <-> ASP744 (negative): 13.35 Å
+[DEBUG]     ✗ Too far: 13.35 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS44 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS44 (positive) <-> GLU711 (negative): 18.84 Å
+[DEBUG]     ✗ Too far: 18.84 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS44 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS44 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS44 (positive) <-> ASP721 (negative): 14.13 Å
+[DEBUG]     ✗ Too far: 14.13 Å > 4.5 Å
+[DEBUG]   Checking LYS44 (positive) <-> GLU729 (negative): 24.76 Å
+[DEBUG]     ✗ Too far: 24.76 Å > 4.5 Å
+[DEBUG]   Checking LYS44 (positive) <-> GLU730 (negative): 20.32 Å
+[DEBUG]     ✗ Too far: 20.32 Å > 4.5 Å
+[DEBUG]   Checking LYS44 (positive) <-> ASP732 (negative): 23.01 Å
+[DEBUG]     ✗ Too far: 23.01 Å > 4.5 Å
+[DEBUG]   Checking LYS44 (positive) <-> GLU733 (negative): 23.69 Å
+[DEBUG]     ✗ Too far: 23.69 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS44 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS44 (positive) <-> GLU742 (negative): 18.71 Å
+[DEBUG]     ✗ Too far: 18.71 Å > 4.5 Å
+[DEBUG]   Checking LYS44 (positive) <-> ASP744 (negative): 14.89 Å
+[DEBUG]     ✗ Too far: 14.89 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS47 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS47 (positive) <-> GLU711 (negative): 21.05 Å
+[DEBUG]     ✗ Too far: 21.05 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS47 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS47 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS47 (positive) <-> ASP721 (negative): 12.73 Å
+[DEBUG]     ✗ Too far: 12.73 Å > 4.5 Å
+[DEBUG]   Checking LYS47 (positive) <-> GLU729 (negative): 26.60 Å
+[DEBUG]     ✗ Too far: 26.60 Å > 4.5 Å
+[DEBUG]   Checking LYS47 (positive) <-> GLU730 (negative): 24.24 Å
+[DEBUG]     ✗ Too far: 24.24 Å > 4.5 Å
+[DEBUG]   Checking LYS47 (positive) <-> ASP732 (negative): 24.15 Å
+[DEBUG]     ✗ Too far: 24.15 Å > 4.5 Å
+[DEBUG]   Checking LYS47 (positive) <-> GLU733 (negative): 27.31 Å
+[DEBUG]     ✗ Too far: 27.31 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS47 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS47 (positive) <-> GLU742 (negative): 18.11 Å
+[DEBUG]     ✗ Too far: 18.11 Å > 4.5 Å
+[DEBUG]   Checking LYS47 (positive) <-> ASP744 (negative): 12.53 Å
+[DEBUG]     ✗ Too far: 12.53 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG48 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking ARG48 (positive) <-> GLU711 (negative): 15.54 Å
+[DEBUG]     ✗ Too far: 15.54 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG48 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: ARG48 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking ARG48 (positive) <-> ASP721 (negative): 3.98 Å
+[DEBUG]     ✓ CHARGE PAIR ADDED: ARG48 <-> ASP721
+[DEBUG]   Checking ARG48 (positive) <-> GLU729 (negative): 19.79 Å
+[DEBUG]     ✗ Too far: 19.79 Å > 4.5 Å
+[DEBUG]   Checking ARG48 (positive) <-> GLU730 (negative): 17.58 Å
+[DEBUG]     ✗ Too far: 17.58 Å > 4.5 Å
+[DEBUG]   Checking ARG48 (positive) <-> ASP732 (negative): 18.67 Å
+[DEBUG]     ✗ Too far: 18.67 Å > 4.5 Å
+[DEBUG]   Checking ARG48 (positive) <-> GLU733 (negative): 21.60 Å
+[DEBUG]     ✗ Too far: 21.60 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG48 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking ARG48 (positive) <-> GLU742 (negative): 17.35 Å
+[DEBUG]     ✗ Too far: 17.35 Å > 4.5 Å
+[DEBUG]   Checking ARG48 (positive) <-> ASP744 (negative): 10.53 Å
+[DEBUG]     ✗ Too far: 10.53 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS49 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS49 (positive) <-> GLU711 (negative): 21.49 Å
+[DEBUG]     ✗ Too far: 21.49 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS49 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS49 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS49 (positive) <-> ASP721 (negative): 9.86 Å
+[DEBUG]     ✗ Too far: 9.86 Å > 4.5 Å
+[DEBUG]   Checking LYS49 (positive) <-> GLU729 (negative): 20.01 Å
+[DEBUG]     ✗ Too far: 20.01 Å > 4.5 Å
+[DEBUG]   Checking LYS49 (positive) <-> GLU730 (negative): 17.90 Å
+[DEBUG]     ✗ Too far: 17.90 Å > 4.5 Å
+[DEBUG]   Checking LYS49 (positive) <-> ASP732 (negative): 17.39 Å
+[DEBUG]     ✗ Too far: 17.39 Å > 4.5 Å
+[DEBUG]   Checking LYS49 (positive) <-> GLU733 (negative): 20.67 Å
+[DEBUG]     ✗ Too far: 20.67 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS49 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS49 (positive) <-> GLU742 (negative): 12.20 Å
+[DEBUG]     ✗ Too far: 12.20 Å > 4.5 Å
+[DEBUG]   Checking LYS49 (positive) <-> ASP744 (negative): 6.13 Å
+[DEBUG]     ✗ Too far: 6.13 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS58 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS58 (positive) <-> GLU711 (negative): 23.26 Å
+[DEBUG]     ✗ Too far: 23.26 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS58 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS58 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS58 (positive) <-> ASP721 (negative): 8.48 Å
+[DEBUG]     ✗ Too far: 8.48 Å > 4.5 Å
+[DEBUG]   Checking LYS58 (positive) <-> GLU729 (negative): 12.21 Å
+[DEBUG]     ✗ Too far: 12.21 Å > 4.5 Å
+[DEBUG]   Checking LYS58 (positive) <-> GLU730 (negative): 11.35 Å
+[DEBUG]     ✗ Too far: 11.35 Å > 4.5 Å
+[DEBUG]   Checking LYS58 (positive) <-> ASP732 (negative): 8.60 Å
+[DEBUG]     ✗ Too far: 8.60 Å > 4.5 Å
+[DEBUG]   Checking LYS58 (positive) <-> GLU733 (negative): 12.85 Å
+[DEBUG]     ✗ Too far: 12.85 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS58 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS58 (positive) <-> GLU742 (negative): 9.78 Å
+[DEBUG]     ✗ Too far: 9.78 Å > 4.5 Å
+[DEBUG]   Checking LYS58 (positive) <-> ASP744 (negative): 5.74 Å
+[DEBUG]     ✗ Too far: 5.74 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS67 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking HIS67 (positive) <-> GLU711 (negative): 28.94 Å
+[DEBUG]     ✗ Too far: 28.94 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS67 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: HIS67 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking HIS67 (positive) <-> ASP721 (negative): 20.59 Å
+[DEBUG]     ✗ Too far: 20.59 Å > 4.5 Å
+[DEBUG]   Checking HIS67 (positive) <-> GLU729 (negative): 17.43 Å
+[DEBUG]     ✗ Too far: 17.43 Å > 4.5 Å
+[DEBUG]   Checking HIS67 (positive) <-> GLU730 (negative): 11.56 Å
+[DEBUG]     ✗ Too far: 11.56 Å > 4.5 Å
+[DEBUG]   Checking HIS67 (positive) <-> ASP732 (negative): 15.31 Å
+[DEBUG]     ✗ Too far: 15.31 Å > 4.5 Å
+[DEBUG]   Checking HIS67 (positive) <-> GLU733 (negative): 11.34 Å
+[DEBUG]     ✗ Too far: 11.34 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS67 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking HIS67 (positive) <-> GLU742 (negative): 14.66 Å
+[DEBUG]     ✗ Too far: 14.66 Å > 4.5 Å
+[DEBUG]   Checking HIS67 (positive) <-> ASP744 (negative): 16.27 Å
+[DEBUG]     ✗ Too far: 16.27 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS69 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS69 (positive) <-> GLU711 (negative): 33.92 Å
+[DEBUG]     ✗ Too far: 33.92 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS69 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS69 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS69 (positive) <-> ASP721 (negative): 23.03 Å
+[DEBUG]     ✗ Too far: 23.03 Å > 4.5 Å
+[DEBUG]   Checking LYS69 (positive) <-> GLU729 (negative): 16.02 Å
+[DEBUG]     ✗ Too far: 16.02 Å > 4.5 Å
+[DEBUG]   Checking LYS69 (positive) <-> GLU730 (negative): 12.43 Å
+[DEBUG]     ✗ Too far: 12.43 Å > 4.5 Å
+[DEBUG]   Checking LYS69 (positive) <-> ASP732 (negative): 12.29 Å
+[DEBUG]     ✗ Too far: 12.29 Å > 4.5 Å
+[DEBUG]   Checking LYS69 (positive) <-> GLU733 (negative): 8.86 Å
+[DEBUG]     ✗ Too far: 8.86 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS69 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS69 (positive) <-> GLU742 (negative): 10.25 Å
+[DEBUG]     ✗ Too far: 10.25 Å > 4.5 Å
+[DEBUG]   Checking LYS69 (positive) <-> ASP744 (negative): 14.79 Å
+[DEBUG]     ✗ Too far: 14.79 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS70 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking HIS70 (positive) <-> GLU711 (negative): 33.80 Å
+[DEBUG]     ✗ Too far: 33.80 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS70 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: HIS70 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking HIS70 (positive) <-> ASP721 (negative): 24.67 Å
+[DEBUG]     ✗ Too far: 24.67 Å > 4.5 Å
+[DEBUG]   Checking HIS70 (positive) <-> GLU729 (negative): 16.30 Å
+[DEBUG]     ✗ Too far: 16.30 Å > 4.5 Å
+[DEBUG]   Checking HIS70 (positive) <-> GLU730 (negative): 12.22 Å
+[DEBUG]     ✗ Too far: 12.22 Å > 4.5 Å
+[DEBUG]   Checking HIS70 (positive) <-> ASP732 (negative): 13.41 Å
+[DEBUG]     ✗ Too far: 13.41 Å > 4.5 Å
+[DEBUG]   Checking HIS70 (positive) <-> GLU733 (negative): 8.33 Å
+[DEBUG]     ✗ Too far: 8.33 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS70 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking HIS70 (positive) <-> GLU742 (negative): 15.35 Å
+[DEBUG]     ✗ Too far: 15.35 Å > 4.5 Å
+[DEBUG]   Checking HIS70 (positive) <-> ASP744 (negative): 18.85 Å
+[DEBUG]     ✗ Too far: 18.85 Å > 4.5 Å
+[DEBUG]   Checking GLU73 (negative) <-> HIS708 (positive): 39.23 Å
+[DEBUG]     ✗ Too far: 39.23 Å > 4.5 Å
+[DEBUG]   Skipping same charge: GLU73 (negative) <-> GLU711 (negative)
+[DEBUG]   Checking GLU73 (negative) <-> HIS713 (positive): 36.63 Å
+[DEBUG]     ✗ Too far: 36.63 Å > 4.5 Å
+[DEBUG]   Checking GLU73 (negative) <-> ARG716 (positive): 37.92 Å
+[DEBUG]     ✗ Too far: 37.92 Å > 4.5 Å
+[DEBUG]   Skipping same charge: GLU73 (negative) <-> ASP721 (negative)
+[DEBUG]   Skipping same charge: GLU73 (negative) <-> GLU729 (negative)
+[DEBUG]   Skipping same charge: GLU73 (negative) <-> GLU730 (negative)
+[DEBUG]   Skipping same charge: GLU73 (negative) <-> ASP732 (negative)
+[DEBUG]   Skipping same charge: GLU73 (negative) <-> GLU733 (negative)
+[DEBUG]   Checking GLU73 (negative) <-> ARG736 (positive): 23.27 Å
+[DEBUG]     ✗ Too far: 23.27 Å > 4.5 Å
+[DEBUG]   Skipping same charge: GLU73 (negative) <-> GLU742 (negative)
+[DEBUG]   Skipping same charge: GLU73 (negative) <-> ASP744 (negative)
+[DEBUG]   Skipping same charge: LYS75 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS75 (positive) <-> GLU711 (negative): 33.81 Å
+[DEBUG]     ✗ Too far: 33.81 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS75 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS75 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS75 (positive) <-> ASP721 (negative): 28.69 Å
+[DEBUG]     ✗ Too far: 28.69 Å > 4.5 Å
+[DEBUG]   Checking LYS75 (positive) <-> GLU729 (negative): 31.23 Å
+[DEBUG]     ✗ Too far: 31.23 Å > 4.5 Å
+[DEBUG]   Checking LYS75 (positive) <-> GLU730 (negative): 25.51 Å
+[DEBUG]     ✗ Too far: 25.51 Å > 4.5 Å
+[DEBUG]   Checking LYS75 (positive) <-> ASP732 (negative): 28.48 Å
+[DEBUG]     ✗ Too far: 28.48 Å > 4.5 Å
+[DEBUG]   Checking LYS75 (positive) <-> GLU733 (negative): 26.09 Å
+[DEBUG]     ✗ Too far: 26.09 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS75 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS75 (positive) <-> GLU742 (negative): 20.34 Å
+[DEBUG]     ✗ Too far: 20.34 Å > 4.5 Å
+[DEBUG]   Checking LYS75 (positive) <-> ASP744 (negative): 23.12 Å
+[DEBUG]     ✗ Too far: 23.12 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS85 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS85 (positive) <-> GLU711 (negative): 32.75 Å
+[DEBUG]     ✗ Too far: 32.75 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS85 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS85 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS85 (positive) <-> ASP721 (negative): 24.97 Å
+[DEBUG]     ✗ Too far: 24.97 Å > 4.5 Å
+[DEBUG]   Checking LYS85 (positive) <-> GLU729 (negative): 23.49 Å
+[DEBUG]     ✗ Too far: 23.49 Å > 4.5 Å
+[DEBUG]   Checking LYS85 (positive) <-> GLU730 (negative): 18.99 Å
+[DEBUG]     ✗ Too far: 18.99 Å > 4.5 Å
+[DEBUG]   Checking LYS85 (positive) <-> ASP732 (negative): 19.26 Å
+[DEBUG]     ✗ Too far: 19.26 Å > 4.5 Å
+[DEBUG]   Checking LYS85 (positive) <-> GLU733 (negative): 17.82 Å
+[DEBUG]     ✗ Too far: 17.82 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS85 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS85 (positive) <-> GLU742 (negative): 9.21 Å
+[DEBUG]     ✗ Too far: 9.21 Å > 4.5 Å
+[DEBUG]   Checking LYS85 (positive) <-> ASP744 (negative): 14.67 Å
+[DEBUG]     ✗ Too far: 14.67 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS86 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking HIS86 (positive) <-> GLU711 (negative): 35.31 Å
+[DEBUG]     ✗ Too far: 35.31 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS86 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: HIS86 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking HIS86 (positive) <-> ASP721 (negative): 26.01 Å
+[DEBUG]     ✗ Too far: 26.01 Å > 4.5 Å
+[DEBUG]   Checking HIS86 (positive) <-> GLU729 (negative): 27.54 Å
+[DEBUG]     ✗ Too far: 27.54 Å > 4.5 Å
+[DEBUG]   Checking HIS86 (positive) <-> GLU730 (negative): 23.61 Å
+[DEBUG]     ✗ Too far: 23.61 Å > 4.5 Å
+[DEBUG]   Checking HIS86 (positive) <-> ASP732 (negative): 23.29 Å
+[DEBUG]     ✗ Too far: 23.29 Å > 4.5 Å
+[DEBUG]   Checking HIS86 (positive) <-> GLU733 (negative): 22.62 Å
+[DEBUG]     ✗ Too far: 22.62 Å > 4.5 Å
+[DEBUG]   Skipping same charge: HIS86 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking HIS86 (positive) <-> GLU742 (negative): 9.76 Å
+[DEBUG]     ✗ Too far: 9.76 Å > 4.5 Å
+[DEBUG]   Checking HIS86 (positive) <-> ASP744 (negative): 14.78 Å
+[DEBUG]     ✗ Too far: 14.78 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS87 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking LYS87 (positive) <-> GLU711 (negative): 34.30 Å
+[DEBUG]     ✗ Too far: 34.30 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS87 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: LYS87 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking LYS87 (positive) <-> ASP721 (negative): 21.64 Å
+[DEBUG]     ✗ Too far: 21.64 Å > 4.5 Å
+[DEBUG]   Checking LYS87 (positive) <-> GLU729 (negative): 23.22 Å
+[DEBUG]     ✗ Too far: 23.22 Å > 4.5 Å
+[DEBUG]   Checking LYS87 (positive) <-> GLU730 (negative): 21.00 Å
+[DEBUG]     ✗ Too far: 21.00 Å > 4.5 Å
+[DEBUG]   Checking LYS87 (positive) <-> ASP732 (negative): 18.32 Å
+[DEBUG]     ✗ Too far: 18.32 Å > 4.5 Å
+[DEBUG]   Checking LYS87 (positive) <-> GLU733 (negative): 19.93 Å
+[DEBUG]     ✗ Too far: 19.93 Å > 4.5 Å
+[DEBUG]   Skipping same charge: LYS87 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking LYS87 (positive) <-> GLU742 (negative): 1.75 Å
+[DEBUG]     ✓ CHARGE PAIR ADDED: LYS87 <-> GLU742
+[DEBUG]   Checking LYS87 (positive) <-> ASP744 (negative): 6.88 Å
+[DEBUG]     ✗ Too far: 6.88 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG89 (positive) <-> HIS708 (positive)
+[DEBUG]   Checking ARG89 (positive) <-> GLU711 (negative): 38.61 Å
+[DEBUG]     ✗ Too far: 38.61 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG89 (positive) <-> HIS713 (positive)
+[DEBUG]   Skipping same charge: ARG89 (positive) <-> ARG716 (positive)
+[DEBUG]   Checking ARG89 (positive) <-> ASP721 (negative): 28.76 Å
+[DEBUG]     ✗ Too far: 28.76 Å > 4.5 Å
+[DEBUG]   Checking ARG89 (positive) <-> GLU729 (negative): 23.91 Å
+[DEBUG]     ✗ Too far: 23.91 Å > 4.5 Å
+[DEBUG]   Checking ARG89 (positive) <-> GLU730 (negative): 19.70 Å
+[DEBUG]     ✗ Too far: 19.70 Å > 4.5 Å
+[DEBUG]   Checking ARG89 (positive) <-> ASP732 (negative): 19.77 Å
+[DEBUG]     ✗ Too far: 19.77 Å > 4.5 Å
+[DEBUG]   Checking ARG89 (positive) <-> GLU733 (negative): 16.73 Å
+[DEBUG]     ✗ Too far: 16.73 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ARG89 (positive) <-> ARG736 (positive)
+[DEBUG]   Checking ARG89 (positive) <-> GLU742 (negative): 9.98 Å
+[DEBUG]     ✗ Too far: 9.98 Å > 4.5 Å
+[DEBUG]   Checking ARG89 (positive) <-> ASP744 (negative): 17.05 Å
+[DEBUG]     ✗ Too far: 17.05 Å > 4.5 Å
+[DEBUG] Total charge complementary pairs found: 7
+[DEBUG] Found 7 charge complementary pairs
+[DEBUG] Detecting aromatic pi contacts...
+[DEBUG] Found 2 NH-aromatic pi contacts
+[DEBUG] Analyzing receptor residues...
+[DEBUG] Analyzing 95 receptor residues
+[DEBUG] Input: 18 hydrogen bonds, 7 charge pairs, 2 pi contacts
+[DEBUG] === INPUT INTERACTIONS ===
+[DEBUG] Hydrogen bonds:
+[DEBUG]   HB1: A6(NH1) -> B729(O) - 1.98Å
+[DEBUG]   HB2: A6(NH1) -> B729(OE1) - 1.83Å
+[DEBUG]   HB3: A6(NH2) -> B729(OE1) - 1.96Å
+[DEBUG]   HB4: A7(NE) -> B733(OE2) - 1.82Å
+[DEBUG]   HB5: A7(NH2) -> B733(OE2) - 1.90Å
+[DEBUG]   HB6: A35(NZ) -> B724(O) - 2.01Å
+[DEBUG]   HB7: A48(NH1) -> B719(O) - 2.44Å
+[DEBUG]   HB8: A48(NH1) -> B720(OG1) - 2.17Å
+[DEBUG]   HB9: A48(NH2) -> B720(O) - 1.83Å
+[DEBUG]   HB10: A51(ND2) -> B744(O) - 1.94Å
+[DEBUG]   HB11: A59(NE2) -> B726(O) - 1.85Å
+[DEBUG]   HB12: A87(NZ) -> B745(OG) - 2.45Å
+[DEBUG]   HB13: A87(NZ) -> B742(OE1) - 1.75Å
+[DEBUG]   HB14: A87(NZ) -> B750(O) - 1.82Å
+[DEBUG]   HB15: A91(NE2) -> B742(OE2) - 1.77Å
+[DEBUG]   HB16: B736(NH1) -> A3(OE1) - 1.85Å
+[DEBUG]   HB17: A9(OG) -> B730(OE2) - 1.68Å
+[DEBUG]   HB18: B749(OG1) -> A83(OD1) - 1.91Å
+[DEBUG] Charge pairs:
+[DEBUG]   CP1: A6(ARG) <-> B729(GLU) - 1.83Å
+[DEBUG]   CP2: A6(ARG) <-> B730(GLU) - 2.57Å
+[DEBUG]   CP3: A6(ARG) <-> B732(ASP) - 3.03Å
+[DEBUG]   CP4: A6(ARG) <-> B733(GLU) - 2.41Å
+[DEBUG]   CP5: A7(ARG) <-> B733(GLU) - 1.82Å
+[DEBUG]   CP6: A48(ARG) <-> B721(ASP) - 3.98Å
+[DEBUG]   CP7: A87(LYS) <-> B742(GLU) - 1.75Å
+[DEBUG] === PROCESSING HYDROGEN BONDS ===
+[DEBUG]   Receptor 6 is DONOR -> Ligand 729
+[DEBUG]   Receptor 6 is DONOR -> Ligand 729
+[DEBUG]   Receptor 6 is DONOR -> Ligand 729
+[DEBUG]   Receptor 7 is DONOR -> Ligand 733
+[DEBUG]   Receptor 7 is DONOR -> Ligand 733
+[DEBUG]   Receptor 35 is DONOR -> Ligand 724
+[DEBUG]   Receptor 48 is DONOR -> Ligand 719
+[DEBUG]   Receptor 48 is DONOR -> Ligand 720
+[DEBUG]   Receptor 48 is DONOR -> Ligand 720
+[DEBUG]   Receptor 51 is DONOR -> Ligand 744
+[DEBUG]   Receptor 59 is DONOR -> Ligand 726
+[DEBUG]   Receptor 87 is DONOR -> Ligand 745
+[DEBUG]   Receptor 87 is DONOR -> Ligand 742
+[DEBUG]   Receptor 87 is DONOR -> Ligand 750
+[DEBUG]   Receptor 91 is DONOR -> Ligand 742
+[DEBUG]   Receptor 3 is ACCEPTOR <- Ligand 736
+[DEBUG]   Receptor 9 is DONOR -> Ligand 730
+[DEBUG]   Receptor 83 is ACCEPTOR <- Ligand 749
+[DEBUG] === PROCESSING CHARGE PAIRS ===
+[DEBUG]   Receptor 6 <-> Ligand 729
+[DEBUG]   Receptor 6 <-> Ligand 730
+[DEBUG]   Receptor 6 <-> Ligand 732
+[DEBUG]   Receptor 6 <-> Ligand 733
+[DEBUG]   Receptor 7 <-> Ligand 733
+[DEBUG]   Receptor 48 <-> Ligand 721
+[DEBUG]   Receptor 87 <-> Ligand 742
+[DEBUG] Receptor residues with hydrogen bonds: 11
+[DEBUG] Receptor residues with charge complementarity: 4
+[DEBUG] === PROCESSING PI CONTACTS ===
+[DEBUG]   Receptor 62 <-> Ligand 731 (pi)
+[DEBUG]   Receptor 62 <-> Ligand 743 (pi)
+[DEBUG] Receptor residues with pi contacts: 1
+[DEBUG] === RECEPTOR RESIDUES WITH INTERACTIONS ===
+[DEBUG]   Residue 3: 1 H-bonds, 0 charge pairs, 0 pi contacts
+[DEBUG]   Residue 6: 3 H-bonds, 4 charge pairs, 0 pi contacts
+[DEBUG]   Residue 7: 2 H-bonds, 1 charge pairs, 0 pi contacts
+[DEBUG]   Residue 9: 1 H-bonds, 0 charge pairs, 0 pi contacts
+[DEBUG]   Residue 35: 1 H-bonds, 0 charge pairs, 0 pi contacts
+[DEBUG]   Residue 48: 3 H-bonds, 1 charge pairs, 0 pi contacts
+[DEBUG]   Residue 51: 1 H-bonds, 0 charge pairs, 0 pi contacts
+[DEBUG]   Residue 59: 1 H-bonds, 0 charge pairs, 0 pi contacts
+[DEBUG]   Residue 62: 0 H-bonds, 0 charge pairs, 2 pi contacts
+[DEBUG]   Residue 83: 1 H-bonds, 0 charge pairs, 0 pi contacts
+[DEBUG]   Residue 87: 3 H-bonds, 1 charge pairs, 0 pi contacts
+[DEBUG]   Residue 91: 1 H-bonds, 0 charge pairs, 0 pi contacts
+[DEBUG] === HYDROGEN BOND RESIDUES DICTIONARY ===
+[DEBUG]   Residue 6: 3 H-bonds
+[DEBUG]     {'donor_residue': 6, 'donor_chain': 'A', 'donor_atom': 'NH1', 'acceptor_residue': 729, 'acceptor_chain': 'B', 'acceptor_atom': 'O', 'hydrogen_atom': 'HH11', 'distance': 1.9839122891426086}
+[DEBUG]     {'donor_residue': 6, 'donor_chain': 'A', 'donor_atom': 'NH1', 'acceptor_residue': 729, 'acceptor_chain': 'B', 'acceptor_atom': 'OE1', 'hydrogen_atom': 'HH12', 'distance': 1.833801120519638}
+[DEBUG]     {'donor_residue': 6, 'donor_chain': 'A', 'donor_atom': 'NH2', 'acceptor_residue': 729, 'acceptor_chain': 'B', 'acceptor_atom': 'OE1', 'hydrogen_atom': 'HH22', 'distance': 1.9610515236854553}
+[DEBUG]   Residue 7: 2 H-bonds
+[DEBUG]     {'donor_residue': 7, 'donor_chain': 'A', 'donor_atom': 'NE', 'acceptor_residue': 733, 'acceptor_chain': 'B', 'acceptor_atom': 'OE2', 'hydrogen_atom': 'HE', 'distance': 1.8165276944637299}
+[DEBUG]     {'donor_residue': 7, 'donor_chain': 'A', 'donor_atom': 'NH2', 'acceptor_residue': 733, 'acceptor_chain': 'B', 'acceptor_atom': 'OE2', 'hydrogen_atom': 'HH21', 'distance': 1.8977980315685272}
+[DEBUG]   Residue 35: 1 H-bonds
+[DEBUG]     {'donor_residue': 35, 'donor_chain': 'A', 'donor_atom': 'NZ', 'acceptor_residue': 724, 'acceptor_chain': 'B', 'acceptor_atom': 'O', 'hydrogen_atom': 'HZ3', 'distance': 2.0059388875961304}
+[DEBUG]   Residue 48: 3 H-bonds
+[DEBUG]     {'donor_residue': 48, 'donor_chain': 'A', 'donor_atom': 'NH1', 'acceptor_residue': 719, 'acceptor_chain': 'B', 'acceptor_atom': 'O', 'hydrogen_atom': 'HH12', 'distance': 2.4417251348495483}
+[DEBUG]     {'donor_residue': 48, 'donor_chain': 'A', 'donor_atom': 'NH1', 'acceptor_residue': 720, 'acceptor_chain': 'B', 'acceptor_atom': 'OG1', 'hydrogen_atom': 'HH12', 'distance': 2.167520523071289}
+[DEBUG]     {'donor_residue': 48, 'donor_chain': 'A', 'donor_atom': 'NH2', 'acceptor_residue': 720, 'acceptor_chain': 'B', 'acceptor_atom': 'O', 'hydrogen_atom': 'HH22', 'distance': 1.8301893770694733}
+[DEBUG]   Residue 51: 1 H-bonds
+[DEBUG]     {'donor_residue': 51, 'donor_chain': 'A', 'donor_atom': 'ND2', 'acceptor_residue': 744, 'acceptor_chain': 'B', 'acceptor_atom': 'O', 'hydrogen_atom': 'HD21', 'distance': 1.936846673488617}
+[DEBUG]   Residue 59: 1 H-bonds
+[DEBUG]     {'donor_residue': 59, 'donor_chain': 'A', 'donor_atom': 'NE2', 'acceptor_residue': 726, 'acceptor_chain': 'B', 'acceptor_atom': 'O', 'hydrogen_atom': 'HE21', 'distance': 1.8531827628612518}
+[DEBUG]   Residue 87: 3 H-bonds
+[DEBUG]     {'donor_residue': 87, 'donor_chain': 'A', 'donor_atom': 'NZ', 'acceptor_residue': 745, 'acceptor_chain': 'B', 'acceptor_atom': 'OG', 'hydrogen_atom': 'HZ1', 'distance': 2.453582286834717}
+[DEBUG]     {'donor_residue': 87, 'donor_chain': 'A', 'donor_atom': 'NZ', 'acceptor_residue': 742, 'acceptor_chain': 'B', 'acceptor_atom': 'OE1', 'hydrogen_atom': 'HZ2', 'distance': 1.7507024109363556}
+[DEBUG]     {'donor_residue': 87, 'donor_chain': 'A', 'donor_atom': 'NZ', 'acceptor_residue': 750, 'acceptor_chain': 'B', 'acceptor_atom': 'O', 'hydrogen_atom': 'HZ3', 'distance': 1.8224719166755676}
+[DEBUG]   Residue 91: 1 H-bonds
+[DEBUG]     {'donor_residue': 91, 'donor_chain': 'A', 'donor_atom': 'NE2', 'acceptor_residue': 742, 'acceptor_chain': 'B', 'acceptor_atom': 'OE2', 'hydrogen_atom': 'HE21', 'distance': 1.7718839645385742}
+[DEBUG]   Residue 3: 1 H-bonds
+[DEBUG]     {'donor_residue': 736, 'donor_chain': 'B', 'donor_atom': 'NH1', 'acceptor_residue': 3, 'acceptor_chain': 'A', 'acceptor_atom': 'OE1', 'hydrogen_atom': 'HH12', 'distance': 1.8487721681594849}
+[DEBUG]   Residue 9: 1 H-bonds
+[DEBUG]     {'donor_residue': 9, 'donor_chain': 'A', 'donor_atom': 'OG', 'acceptor_residue': 730, 'acceptor_chain': 'B', 'acceptor_atom': 'OE2', 'hydrogen_atom': 'HG', 'distance': 1.6832518577575684}
+[DEBUG]   Residue 83: 1 H-bonds
+[DEBUG]     {'donor_residue': 749, 'donor_chain': 'B', 'donor_atom': 'OG1', 'acceptor_residue': 83, 'acceptor_chain': 'A', 'acceptor_atom': 'OD1', 'hydrogen_atom': 'HG1', 'distance': 1.9053930044174194}
+[DEBUG] === CHARGE RESIDUES DICTIONARY ===
+[DEBUG]   Residue 6: 4 charge pairs
+[DEBUG]     {'receptor_residue': 6, 'receptor_chain': 'A', 'receptor_residue_name': 'ARG', 'receptor_charge': 'positive', 'ligand_residue': 729, 'ligand_chain': 'B', 'ligand_residue_name': 'GLU', 'ligand_charge': 'negative', 'distance': 1.833801120519638}
+[DEBUG]     {'receptor_residue': 6, 'receptor_chain': 'A', 'receptor_residue_name': 'ARG', 'receptor_charge': 'positive', 'ligand_residue': 730, 'ligand_chain': 'B', 'ligand_residue_name': 'GLU', 'ligand_charge': 'negative', 'distance': 2.5673237442970276}
+[DEBUG]     {'receptor_residue': 6, 'receptor_chain': 'A', 'receptor_residue_name': 'ARG', 'receptor_charge': 'positive', 'ligand_residue': 732, 'ligand_chain': 'B', 'ligand_residue_name': 'ASP', 'ligand_charge': 'negative', 'distance': 3.032824695110321}
+[DEBUG]     {'receptor_residue': 6, 'receptor_chain': 'A', 'receptor_residue_name': 'ARG', 'receptor_charge': 'positive', 'ligand_residue': 733, 'ligand_chain': 'B', 'ligand_residue_name': 'GLU', 'ligand_charge': 'negative', 'distance': 2.413913905620575}
+[DEBUG]   Residue 7: 1 charge pairs
+[DEBUG]     {'receptor_residue': 7, 'receptor_chain': 'A', 'receptor_residue_name': 'ARG', 'receptor_charge': 'positive', 'ligand_residue': 733, 'ligand_chain': 'B', 'ligand_residue_name': 'GLU', 'ligand_charge': 'negative', 'distance': 1.8165276944637299}
+[DEBUG]   Residue 48: 1 charge pairs
+[DEBUG]     {'receptor_residue': 48, 'receptor_chain': 'A', 'receptor_residue_name': 'ARG', 'receptor_charge': 'positive', 'ligand_residue': 721, 'ligand_chain': 'B', 'ligand_residue_name': 'ASP', 'ligand_charge': 'negative', 'distance': 3.9763206243515015}
+[DEBUG]   Residue 87: 1 charge pairs
+[DEBUG]     {'receptor_residue': 87, 'receptor_chain': 'A', 'receptor_residue_name': 'LYS', 'receptor_charge': 'positive', 'ligand_residue': 742, 'ligand_chain': 'B', 'ligand_residue_name': 'GLU', 'ligand_charge': 'negative', 'distance': 1.7507024109363556}
+[DEBUG] === PI RESIDUES DICTIONARY ===
+[DEBUG]   Residue 62: 2 pi contacts
+[DEBUG]     {'receptor_residue': 62, 'receptor_chain': 'A', 'receptor_residue_name': 'ALA', 'ligand_residue': 731, 'ligand_chain': 'B', 'ligand_residue_name': 'PHE', 'distance': 5.873817205429077, 'ring_atoms': 'CG,CD1,CD2,CE1,CE2,CZ'}
+[DEBUG]     {'receptor_residue': 62, 'receptor_chain': 'A', 'receptor_residue_name': 'ALA', 'ligand_residue': 743, 'ligand_chain': 'B', 'ligand_residue_name': 'PHE', 'distance': 4.517473578453064, 'ring_atoms': 'CG,CD1,CD2,CE1,CE2,CZ'}
+[DEBUG] === CHECKING FOR OVERLAP ===
+[DEBUG] Residues with H-bond & charge: [6, 7, 48, 87]
+[DEBUG] Residues with H-bond & pi: []
+[DEBUG] Residues with charge & pi: []
+[DEBUG] Residues with all three: []
+[DEBUG] Residues only in H-bond dict: [3, 9, 35, 51, 59, 83, 91]
+[DEBUG] Residues only in charge dict: []
+[DEBUG] Residues only in pi dict: [62]
+[DEBUG] === ANALYZING EACH RECEPTOR RESIDUE ===
+[DEBUG]   Residue 1 (SER): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 2 (PRO): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 3 (GLN) has 1 H-bonds:
+[DEBUG]     As ACCEPTOR: <- B736
+[DEBUG]   Residue 3 (GLN) final partners: [736]
+[DEBUG]   Residue 3 (GLN): has_hbond=True, has_charge_complement=False, has_pi_contact=False, category=hbond_only
+[DEBUG]   Residue 4 (GLU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 5 (SER): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 6 (ARG) has 3 H-bonds:
+[DEBUG]     As DONOR: -> B729
+[DEBUG]     As DONOR: -> B729
+[DEBUG]     As DONOR: -> B729
+[DEBUG]   Residue 6 (ARG) has 4 charge pairs:
+[DEBUG]     Charge pair: <-> B729
+[DEBUG]     Charge pair: <-> B730
+[DEBUG]     Charge pair: <-> B732
+[DEBUG]     Charge pair: <-> B733
+[DEBUG]   Residue 6 (ARG) final partners: [729, 730, 732, 733]
+[DEBUG]   Residue 6 (ARG): has_hbond=True, has_charge_complement=True, has_pi_contact=False, category=hbond_and_charge
+[DEBUG]   Residue 7 (ARG) has 2 H-bonds:
+[DEBUG]     As DONOR: -> B733
+[DEBUG]     As DONOR: -> B733
+[DEBUG]   Residue 7 (ARG) has 1 charge pairs:
+[DEBUG]     Charge pair: <-> B733
+[DEBUG]   Residue 7 (ARG) final partners: [733]
+[DEBUG]   Residue 7 (ARG): has_hbond=True, has_charge_complement=True, has_pi_contact=False, category=hbond_and_charge
+[DEBUG]   Residue 8 (LEU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 9 (SER) has 1 H-bonds:
+[DEBUG]     As DONOR: -> B730
+[DEBUG]   Residue 9 (SER) final partners: [730]
+[DEBUG]   Residue 9 (SER): has_hbond=True, has_charge_complement=False, has_pi_contact=False, category=hbond_only
+[DEBUG]   Residue 10 (ILE): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 11 (GLN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 12 (ARG): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 13 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 14 (ILE): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 15 (GLN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 16 (SER): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 17 (LEU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 18 (VAL): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 19 (HIS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 20 (ALA): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 21 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 22 (GLN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 23 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 24 (ARG): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 25 (ASN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 26 (ALA): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 27 (ASN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 28 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 29 (SER): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 30 (LEU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 31 (PRO): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 32 (SER): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 33 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 34 (GLN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 35 (LYS) has 1 H-bonds:
+[DEBUG]     As DONOR: -> B724
+[DEBUG]   Residue 35 (LYS) final partners: [724]
+[DEBUG]   Residue 35 (LYS): has_hbond=True, has_charge_complement=False, has_pi_contact=False, category=hbond_only
+[DEBUG]   Residue 36 (MET): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 37 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 38 (ARG): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 39 (VAL): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 40 (VAL): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 41 (GLN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 42 (HIS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 43 (THR): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 44 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 45 (GLY): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 46 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 47 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 48 (ARG) has 3 H-bonds:
+[DEBUG]     As DONOR: -> B719
+[DEBUG]     As DONOR: -> B720
+[DEBUG]     As DONOR: -> B720
+[DEBUG]   Residue 48 (ARG) has 1 charge pairs:
+[DEBUG]     Charge pair: <-> B721
+[DEBUG]   Residue 48 (ARG) final partners: [719, 720, 721]
+[DEBUG]   Residue 48 (ARG): has_hbond=True, has_charge_complement=True, has_pi_contact=False, category=hbond_and_charge
+[DEBUG]   Residue 49 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 50 (THR): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 51 (ASN) has 1 H-bonds:
+[DEBUG]     As DONOR: -> B744
+[DEBUG]   Residue 51 (ASN) final partners: [744]
+[DEBUG]   Residue 51 (ASN): has_hbond=True, has_charge_complement=False, has_pi_contact=False, category=hbond_only
+[DEBUG]   Residue 52 (GLY): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 53 (GLY): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 54 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 55 (PRO): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 56 (VAL): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 57 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 58 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 59 (GLN) has 1 H-bonds:
+[DEBUG]     As DONOR: -> B726
+[DEBUG]   Residue 59 (GLN) final partners: [726]
+[DEBUG]   Residue 59 (GLN): has_hbond=True, has_charge_complement=False, has_pi_contact=False, category=hbond_only
+[DEBUG]   Residue 60 (LEU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 61 (ILE): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 62 (ALA) has 2 pi contacts:
+[DEBUG]     Pi contact: <-> B731
+[DEBUG]     Pi contact: <-> B743
+[DEBUG]   Residue 62 (ALA) final partners: [731, 743]
+[DEBUG]   Residue 62 (ALA): has_hbond=False, has_charge_complement=False, has_pi_contact=True, category=pi_only
+[DEBUG]   Residue 63 (LEU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 64 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 65 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 66 (TYR): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 67 (HIS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 68 (ALA): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 69 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 70 (HIS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 71 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 72 (GLN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 73 (GLU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 74 (ASN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 75 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 76 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 77 (PRO): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 78 (VAL): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 79 (PRO): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 80 (PHE): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 81 (CYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 82 (LEU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 83 (ASN) has 1 H-bonds:
+[DEBUG]     As ACCEPTOR: <- B749
+[DEBUG]   Residue 83 (ASN) final partners: [749]
+[DEBUG]   Residue 83 (ASN): has_hbond=True, has_charge_complement=False, has_pi_contact=False, category=hbond_only
+[DEBUG]   Residue 84 (ILE): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 85 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 86 (HIS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 87 (LYS) has 3 H-bonds:
+[DEBUG]     As DONOR: -> B745
+[DEBUG]     As DONOR: -> B742
+[DEBUG]     As DONOR: -> B750
+[DEBUG]   Residue 87 (LYS) has 1 charge pairs:
+[DEBUG]     Charge pair: <-> B742
+[DEBUG]   Residue 87 (LYS) final partners: [742, 745, 750]
+[DEBUG]   Residue 87 (LYS): has_hbond=True, has_charge_complement=True, has_pi_contact=False, category=hbond_and_charge
+[DEBUG]   Residue 88 (LEU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 89 (ARG): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 90 (GLN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 91 (GLN) has 1 H-bonds:
+[DEBUG]     As DONOR: -> B742
+[DEBUG]   Residue 91 (GLN) final partners: [742]
+[DEBUG]   Residue 91 (GLN): has_hbond=True, has_charge_complement=False, has_pi_contact=False, category=hbond_only
+[DEBUG]   Residue 92 (GLN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 93 (ZN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 94 (ZN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 95 (ZN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG] === FINAL SUMMARY ===
+[DEBUG] Total interacting residues: 12
+[DEBUG] Cleaned up temporary files in /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmpy4swk8po
+[2026-03-30T08:54:36] capture_end
+
+[2026-03-30T08:54:36] capture_start
+[2026-03-30T08:54:36] capture_end

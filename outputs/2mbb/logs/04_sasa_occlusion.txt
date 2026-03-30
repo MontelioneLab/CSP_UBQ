@@ -1,0 +1,65 @@
+
+[2026-03-30T09:06:09] capture_start
+[DEBUG] Multi-model PDB detected, extracting models...
+[DEBUG] Extracted 20 models
+/Users/tiburon/miniconda3/envs/CSP_Rank/lib/python3.12/site-packages/mdtraj/formats/pdb/pdbfile.py:208: UserWarning: Unlikely unit cell vectors detected in PDB file likely resulting from a dummy CRYST1 record. Discarding unit cell vectors.
+  warnings.warn(
+[DEBUG] Calculating RMSD matrix for 20 models...
+[DEBUG] Selected medoid model 11 (sum RMSD: 2.620)
+[DEBUG] Using PDB file: /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmp3fpkmghi/model_11.pdb
+[DEBUG] Loaded holo structure with 1835 atoms, 114 residues
+[DEBUG] Identified receptor chain: B, ligand chain: A
+[DEBUG] Receptor chain length: 76 residues
+[DEBUG] Ligand chain length: 38 residues
+[DEBUG] All chains in structure: {'A', 'B'}
+[DEBUG] Selected 1228 atoms for receptor chain B (index 1)
+[DEBUG] Created receptor-only trajectory with 1228 atoms, 76 residues
+[DEBUG] Computing per-residue SASA (probe_radius=0.0)...
+[DEBUG] Residue-level SASA arrays: holo shape (1, 114), receptor shape (1, 76)
+[DEBUG] holo_sasa values (per residue): [[1.1096683  1.2709068  0.9826243  0.8899845  1.2827082  0.880846
+  1.2450022  0.5667496  0.9959738  0.8438077  1.2457646  1.140585
+  0.96775204 1.3230188  1.4263105  1.2562387  1.1951733  0.9132309
+  1.0853434  1.0544927  1.0948268  1.1876112  1.1508231  1.1837938
+  1.2697785  1.2399291  0.84416515 0.5646877  1.4623877  0.72944206
+  1.7654929  1.1160159  1.5590103  1.4747455  1.3367311  0.58529794
+  1.5589478  1.5075922  1.357923   1.2836381  1.228133   1.5017401
+  1.0370431  1.401037   0.83338624 1.2515285  0.9778352  0.47499812
+  1.3781915  1.0373806  1.1593025  1.0682341  1.2073689  1.2543586
+  0.96471685 1.1617746  0.9701462  0.85911405 0.9533486  0.95064247
+  1.1310742  1.2229266  0.9732506  1.0464964  1.3760424  0.67257416
+  1.4530284  1.1632034  1.1217794  1.0764365  1.4606675  1.2282264
+  0.54432726 1.2667704  0.861367   0.94360214 1.0525758  1.1101398
+  1.1826768  1.5274941  1.2357763  1.1811777  1.3334055  0.78652364
+  0.5693423  1.3539593  1.2774552  1.2399921  1.1038191  1.0475769
+  0.5289384  1.6532971  0.9773538  1.1801288  0.8403769  0.9794124
+  1.5034022  1.086051   1.1248868  1.2616502  1.5021673  1.1546217
+  0.6942048  1.1009586  1.1635618  1.2076269  1.1768296  0.97652525
+  1.217662   1.5661771  1.3520334  1.6909614  0.5919866  0.6968988 ]]
+[DEBUG] receptor_sasa values (per residue): [[1.357923   1.2836381  1.228133   1.5017401  1.0370431  1.4166821
+  0.8412494  1.3303272  1.008183   0.49027213 1.3781915  1.0373806
+  1.1593025  1.0682341  1.2073689  1.2543586  0.96471685 1.1617746
+  0.9701462  0.85911405 0.9533486  0.95064247 1.1310742  1.2229266
+  0.9732506  1.0464964  1.3760424  0.67257416 1.4530284  1.1632034
+  1.1217794  1.0764365  1.4606675  1.2282264  0.54432726 1.2709173
+  0.8653254  0.94360214 1.0525758  1.1545086  1.1826768  1.599889
+  1.2357763  1.2198193  1.3334055  0.78652364 0.5693423  1.3539593
+  1.2774552  1.2399921  1.1038191  1.0475769  0.5289384  1.6532971
+  0.9773538  1.1801288  0.8403769  0.9794124  1.5034022  1.086051
+  1.1248868  1.2616502  1.5021673  1.1546217  0.6942048  1.1009586
+  1.1635618  1.2694993  1.1768296  1.0679822  1.3053666  1.5902312
+  1.3831465  1.7235711  0.5919866  0.6968988 ]]
+[DEBUG] SASA computation took 0.03 seconds
+[DEBUG] SASA arrays: holo shape (1, 114), receptor shape (1, 76)
+[DEBUG] Processing residue-level SASA analysis...
+[DEBUG] Found 76 receptor residues
+[DEBUG] Processed 76 residues total
+[DEBUG] Found 16 occluded residues
+[DEBUG] Processed 76 residues total
+[DEBUG] Found 16 occluded residues
+[DEBUG] Performing contact validation for occluded residues...
+[DEBUG] Warning: Contact validation failed: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.
+[DEBUG] Cleaned up temporary files in /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmp3fpkmghi
+[2026-03-30T09:06:09] capture_end
+
+[2026-03-30T09:06:09] capture_start
+[2026-03-30T09:06:09] capture_end

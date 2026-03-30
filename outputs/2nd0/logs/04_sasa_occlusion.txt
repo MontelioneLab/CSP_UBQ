@@ -1,0 +1,64 @@
+
+[2026-03-30T09:13:03] capture_start
+[DEBUG] Multi-model PDB detected, extracting models...
+[DEBUG] Extracted 20 models
+/Users/tiburon/miniconda3/envs/CSP_Rank/lib/python3.12/site-packages/mdtraj/formats/pdb/pdbfile.py:208: UserWarning: Unlikely unit cell vectors detected in PDB file likely resulting from a dummy CRYST1 record. Discarding unit cell vectors.
+  warnings.warn(
+[DEBUG] Calculating RMSD matrix for 20 models...
+[DEBUG] Selected medoid model 5 (sum RMSD: 5.737)
+[DEBUG] Using PDB file: /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmp5nda_1_e/model_5.pdb
+[DEBUG] Loaded holo structure with 1697 atoms, 102 residues
+[DEBUG] Identified receptor chain: A, ligand chain: B
+[DEBUG] Receptor chain length: 83 residues
+[DEBUG] Ligand chain length: 19 residues
+[DEBUG] All chains in structure: {'A', 'B'}
+[DEBUG] Selected 1383 atoms for receptor chain A (index 0)
+[DEBUG] Created receptor-only trajectory with 1383 atoms, 83 residues
+[DEBUG] Computing per-residue SASA (probe_radius=0.0)...
+[DEBUG] Residue-level SASA arrays: holo shape (1, 102), receptor shape (1, 83)
+[DEBUG] holo_sasa values (per residue): [[0.99704033 1.1944385  1.2429835  1.2131108  1.0231583  1.5388415
+  0.94014585 1.5712867  1.0272787  1.3778479  0.7106495  1.5443816
+  1.2178614  1.1296984  1.4499464  1.6247022  1.1818619  1.1686599
+  0.7567687  1.261081   0.7456719  1.1899972  1.153619   1.4801148
+  1.2034817  0.9301757  0.5610795  1.2269919  1.3499807  1.2773055
+  0.5089378  1.6171877  1.0092506  0.92950225 1.329874   1.2220203
+  1.2268835  1.279827   0.8705036  1.7016584  1.0125568  1.0228289
+  0.8787231  1.2802451  1.5644019  1.1456326  0.8272439  0.9606657
+  0.9760859  1.0537544  1.1146884  1.2290707  1.230649   1.1957631
+  0.92004085 1.5282525  1.1966511  1.0066224  1.2516536  1.3598671
+  0.9744447  0.8090036  0.9280582  1.2425014  1.6716573  1.2190672
+  1.2063152  1.1057256  1.7435012  1.5123584  0.90586704 0.90755135
+  0.81018686 0.90391207 1.2926403  1.7221212  1.6100425  1.4542661
+  1.7397531  1.5151006  0.9628409  1.2661915  1.0028738  1.3007765
+  1.3986104  1.309047   0.8363162  0.8700435  1.3410424  1.053357
+  1.4413896  1.4394765  1.5360591  1.489922   1.0078151  1.3093934
+  0.99707854 1.3155049  1.0583401  1.3408207  1.0007058  0.78597426]]
+[DEBUG] receptor_sasa values (per residue): [[0.99704033 1.1944385  1.2429835  1.2131108  1.0231583  1.5388415
+  0.94014585 1.5712867  1.0272787  1.3778479  0.7106495  1.6007863
+  1.2178614  1.1296984  1.4499464  1.6247022  1.1818619  1.1686599
+  0.7871165  1.261081   0.7456719  1.1899972  1.153619   1.4801148
+  1.2034817  0.9301757  0.5610795  1.2269919  1.3499807  1.2927622
+  0.5151581  1.6171877  1.0092506  0.9879672  1.329874   1.2220203
+  1.2268835  1.279827   0.8705036  1.7016584  1.0125568  1.0228289
+  0.8787231  1.2802451  1.5644019  1.1456326  0.8272439  0.9606657
+  1.0120752  1.0797634  1.2001975  1.3165568  1.3096286  1.3333156
+  0.931916   1.5380542  1.2373296  1.0066224  1.2516536  1.3598671
+  0.9744447  0.8090036  0.9280582  1.2425014  1.6716573  1.2190672
+  1.2063152  1.1057256  1.7435012  1.5123584  0.90586704 0.90755135
+  0.81018686 0.90391207 1.2926403  1.7221212  1.6100425  1.4542661
+  1.7397531  1.5151006  0.9628409  1.2661915  1.0028738 ]]
+[DEBUG] SASA computation took 0.03 seconds
+[DEBUG] SASA arrays: holo shape (1, 102), receptor shape (1, 83)
+[DEBUG] Processing residue-level SASA analysis...
+[DEBUG] Found 83 receptor residues
+[DEBUG] Processed 83 residues total
+[DEBUG] Found 14 occluded residues
+[DEBUG] Processed 83 residues total
+[DEBUG] Found 14 occluded residues
+[DEBUG] Performing contact validation for occluded residues...
+[DEBUG] Warning: Contact validation failed: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part.
+[DEBUG] Cleaned up temporary files in /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmp5nda_1_e
+[2026-03-30T09:13:03] capture_end
+
+[2026-03-30T09:13:03] capture_start
+[2026-03-30T09:13:03] capture_end

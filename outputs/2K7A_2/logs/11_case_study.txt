@@ -408,3 +408,529 @@ PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_a
 PyMOL>quit
 
 [2026-03-25T10:58:24] capture_end
+
+[2026-03-30T09:58:34] capture_start
+[CASE_STUDY] capture_user_view_interactive:2K7A stdout:
+ PyMOL(TM) Molecular Graphics System, Version 3.1.0.
+ Copyright (c) Schrodinger, LLC.
+ All Rights Reserved.
+ 
+    Created by Warren L. DeLano, Ph.D. 
+ 
+    PyMOL is user-supported open-source software.  Although some versions
+    are freely available, PyMOL is not in the public domain.
+ 
+    If PyMOL is helpful in your work or study, then please volunteer 
+    support for our ongoing efforts to create open and affordable scientific
+    software by purchasing a PyMOL Maintenance and/or Support subscription.
+
+    More information can be found at "http://www.pymol.org".
+ 
+    Enter "help" for a list of commands.
+    Enter "help <command-name>" for information on a specific command.
+
+ Hit ESC anytime to toggle between text and graphics.
+
+ Detected OpenGL version 2.1. Shaders available.
+ Tessellation shaders not available
+ Detected GLSL version 1.20.
+ OpenGL graphics engine:
+  GL_VENDOR:   Apple
+  GL_RENDERER: Apple M3
+  GL_VERSION:  2.1 Metal - 89.4
+ Detected 8 CPU cores.  Enabled multithreaded rendering.
+PyMOL>reinitialize
+PyMOL>load ./outputs/2K7A_2/2K7A_csp.pdb, 2K7A_structure
+HEADER    TRANSFERASE                             08-AUG-08   2K7A
+TITLE     ENSEMBLE STRUCTURES OF THE BINARY COMPLEX BETWEEN THE SH3 AND SH2
+TITLE    2 DOMAIN OF INTERLEUKIN-2 TYROSINE KINASE.
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: SH3 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND   3 CHAIN: A;
+COMPND   4 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND   5 EMT, KINASE TLK;
+COMPND   6 EC: 2.7.10.2;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: SH2 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND  12 EMT, KINASE TLK;
+COMPND  13 EC: 2.7.10.2;
+COMPND  14 ENGINEERED: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "2K7A_structure".
+PyMOL>hide everything, 2K7A_structure
+PyMOL>show cartoon, 2K7A_structure
+PyMOL>color cyan, 2K7A_structure and chain B
+ Executive: Colored 1756 atoms.
+PyMOL>color gray30, 2K7A_structure and chain A
+ Executive: Colored 993 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 177
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 178
+ Executive: Colored 10 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 179
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 180
+ Executive: Colored 21 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 181
+ Executive: Colored 12 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 182
+ Executive: Colored 21 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 184
+ Executive: Colored 14 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 185
+ Executive: Colored 14 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 186
+ Executive: Colored 12 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 190
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 192
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 193
+ Executive: Colored 24 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 194
+ Executive: Colored 11 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 203
+ Executive: Colored 11 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 205
+ Executive: Colored 15 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 206
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 208
+ Executive: Colored 24 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 209
+ Executive: Colored 24 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 220
+ Executive: Colored 21 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 221
+ Executive: Colored 10 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 223
+ Executive: Colored 11 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 224
+ Executive: Colored 11 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 225
+ Executive: Colored 21 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 226
+ Executive: Colored 19 atoms.
+PyMOL>color red, 2K7A_structure and chain A and resi 227
+ Executive: Colored 16 atoms.
+PyMOL>set cartoon_transparency, 0.2, 2K7A_structure
+ Setting: cartoon_transparency set to 0.20000 in object "2K7A_structure".
+PyMOL>run /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmpgyd205oj_case_study_capture.py,main
+[CASE_STUDY] ------------------------------------------------------------
+[CASE_STUDY] Case-study view capture for 2K7A
+[CASE_STUDY] 1) Set your desired model orientation.
+[CASE_STUDY] 2) Press F5 to save the view and close PyMOL.
+[CASE_STUDY] ------------------------------------------------------------
+[CASE_STUDY] Saved view to /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/pymol_views/2K7A_2_case_study_view.json
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study_color_csp_mask.png stdout:
+HEADER    TRANSFERASE                             08-AUG-08   2K7A
+TITLE     ENSEMBLE STRUCTURES OF THE BINARY COMPLEX BETWEEN THE SH3 AND SH2
+TITLE    2 DOMAIN OF INTERLEUKIN-2 TYROSINE KINASE.
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: SH3 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND   3 CHAIN: A;
+COMPND   4 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND   5 EMT, KINASE TLK;
+COMPND   6 EC: 2.7.10.2;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: SH2 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND  12 EMT, KINASE TLK;
+COMPND  13 EC: 2.7.10.2;
+COMPND  14 ENGINEERED: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "2K7A_structure".
+ Executive: Colored 1756 atoms.
+ Executive: Colored 993 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 16 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "2K7A_structure".
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -150.461959839, -17.502498627, -19.995601654, 241.122634888, 118.625358582, 182.298568726, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 0.50 sec. = 7180.0 frames/hour (0.50 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study_color_csp_mask.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study_color_csp_mask.png".
+PyMOL>quit
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study_color_occlusion.png stdout:
+HEADER    TRANSFERASE                             08-AUG-08   2K7A
+TITLE     ENSEMBLE STRUCTURES OF THE BINARY COMPLEX BETWEEN THE SH3 AND SH2
+TITLE    2 DOMAIN OF INTERLEUKIN-2 TYROSINE KINASE.
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: SH3 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND   3 CHAIN: A;
+COMPND   4 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND   5 EMT, KINASE TLK;
+COMPND   6 EC: 2.7.10.2;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: SH2 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND  12 EMT, KINASE TLK;
+COMPND  13 EC: 2.7.10.2;
+COMPND  14 ENGINEERED: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "structure".
+ Executive: Colored 993 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 1756 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "structure".
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -150.461959839, -17.502498627, -19.995601654, 241.122634888, 118.625358582, 182.298568726, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 0.46 sec. = 7784.4 frames/hour (0.46 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study_color_occlusion.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study_color_occlusion.png".
+PyMOL>quit
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study_csp_classification_original.png stdout:
+HEADER    TRANSFERASE                             08-AUG-08   2K7A
+TITLE     ENSEMBLE STRUCTURES OF THE BINARY COMPLEX BETWEEN THE SH3 AND SH2
+TITLE    2 DOMAIN OF INTERLEUKIN-2 TYROSINE KINASE.
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: SH3 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND   3 CHAIN: A;
+COMPND   4 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND   5 EMT, KINASE TLK;
+COMPND   6 EC: 2.7.10.2;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: SH2 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND  12 EMT, KINASE TLK;
+COMPND  13 EC: 2.7.10.2;
+COMPND  14 ENGINEERED: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "structure".
+ Executive: Colored 1756 atoms.
+ Setting: cartoon_tube_radius set for 1756 atoms in object "structure".
+ Setting-Warning: 'cartoon_tube_radius' is a object-state-level setting
+ Executive: Colored 993 atoms.
+ Color: "tp_color" defined as [ 0.180, 0.800, 0.443 ].
+ Color: "tn_color" defined as [ 0.204, 0.596, 0.859 ].
+ Color: "fp_color" defined as [ 0.608, 0.349, 0.714 ].
+ Color: "fn_color" defined as [ 0.953, 0.612, 0.071 ].
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 9 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 17 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "structure".
+ Setting: cartoon_fancy_helices set to on.
+ Setting: cartoon_ring_mode set to 1.
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -150.461959839, -17.502498627, -19.995601654, 241.122634888, 118.625358582, 182.298568726, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 0.55 sec. = 6522.8 frames/hour (0.55 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study_csp_classification_original.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study_csp_classification_original.png".
+PyMOL>quit
+
+[2026-03-30T09:58:41] capture_end
+
+[2026-03-30T09:58:41] capture_start
+[CASE_STUDY_2] Reusing saved view: /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/pymol_views/2K7A_2_case_study_view.json
+[CASE_STUDY] render_pymol_panel_with_view:case_study2_color_csp_mask.png stdout:
+HEADER    TRANSFERASE                             08-AUG-08   2K7A
+TITLE     ENSEMBLE STRUCTURES OF THE BINARY COMPLEX BETWEEN THE SH3 AND SH2
+TITLE    2 DOMAIN OF INTERLEUKIN-2 TYROSINE KINASE.
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: SH3 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND   3 CHAIN: A;
+COMPND   4 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND   5 EMT, KINASE TLK;
+COMPND   6 EC: 2.7.10.2;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: SH2 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND  12 EMT, KINASE TLK;
+COMPND  13 EC: 2.7.10.2;
+COMPND  14 ENGINEERED: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "2K7A_structure".
+ Executive: Colored 1756 atoms.
+ Executive: Colored 993 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 16 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "2K7A_structure".
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -150.461959839, -17.502498627, -19.995601654, 241.122634888, 118.625358582, 182.298568726, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 0.44 sec. = 8246.8 frames/hour (0.44 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study2_color_csp_mask.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study2_color_csp_mask.png".
+PyMOL>quit
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study2_color_occlusion.png stdout:
+HEADER    TRANSFERASE                             08-AUG-08   2K7A
+TITLE     ENSEMBLE STRUCTURES OF THE BINARY COMPLEX BETWEEN THE SH3 AND SH2
+TITLE    2 DOMAIN OF INTERLEUKIN-2 TYROSINE KINASE.
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: SH3 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND   3 CHAIN: A;
+COMPND   4 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND   5 EMT, KINASE TLK;
+COMPND   6 EC: 2.7.10.2;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: SH2 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND  12 EMT, KINASE TLK;
+COMPND  13 EC: 2.7.10.2;
+COMPND  14 ENGINEERED: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "structure".
+ Executive: Colored 993 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 1756 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "structure".
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -150.461959839, -17.502498627, -19.995601654, 241.122634888, 118.625358582, 182.298568726, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 0.46 sec. = 7897.8 frames/hour (0.46 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study2_color_occlusion.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study2_color_occlusion.png".
+PyMOL>quit
+
+[CASE_STUDY] render_pymol_panel_with_view:case_study2_csp_classification_original.png stdout:
+HEADER    TRANSFERASE                             08-AUG-08   2K7A
+TITLE     ENSEMBLE STRUCTURES OF THE BINARY COMPLEX BETWEEN THE SH3 AND SH2
+TITLE    2 DOMAIN OF INTERLEUKIN-2 TYROSINE KINASE.
+COMPND    MOL_ID: 1;
+COMPND   2 MOLECULE: SH3 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND   3 CHAIN: A;
+COMPND   4 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND   5 EMT, KINASE TLK;
+COMPND   6 EC: 2.7.10.2;
+COMPND   7 ENGINEERED: YES;
+COMPND   8 MOL_ID: 2;
+COMPND   9 MOLECULE: SH2 DOMAIN OF TYROSINE-PROTEIN KINASE ITK/TSK;
+COMPND  10 CHAIN: B;
+COMPND  11 SYNONYM: T-CELL-SPECIFIC KINASE, IL-2-INDUCIBLE T-CELL KINASE, KINASE
+COMPND  12 EMT, KINASE TLK;
+COMPND  13 EC: 2.7.10.2;
+COMPND  14 ENGINEERED: YES
+ ObjectMolecule: Read secondary structure assignments.
+ ObjectMolecule: Read crystal symmetry information.
+ CmdLoad: "" loaded as "structure".
+ Executive: Colored 1756 atoms.
+ Setting: cartoon_tube_radius set for 1756 atoms in object "structure".
+ Setting-Warning: 'cartoon_tube_radius' is a object-state-level setting
+ Executive: Colored 993 atoms.
+ Color: "tp_color" defined as [ 0.180, 0.800, 0.443 ].
+ Color: "tn_color" defined as [ 0.204, 0.596, 0.859 ].
+ Color: "fp_color" defined as [ 0.608, 0.349, 0.714 ].
+ Color: "fn_color" defined as [ 0.953, 0.612, 0.071 ].
+ Executive: Colored 19 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 9 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 10 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 21 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 19 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 24 atoms.
+ Executive: Colored 16 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 12 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 14 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 17 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 7 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 22 atoms.
+ Executive: Colored 11 atoms.
+ Executive: Colored 15 atoms.
+ Executive: Colored 17 atoms.
+ Setting: cartoon_transparency set to 0.20000 in object "structure".
+ Setting: cartoon_fancy_helices set to on.
+ Setting: cartoon_ring_mode set to 1.
+PyMOL>set_view (1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, 0.000000000, 1.000000000, 0.000000000, 0.000000000, -150.461959839, -17.502498627, -19.995601654, 241.122634888, 118.625358582, 182.298568726, -20.000000000)
+ Scene: view updated.
+PyMOL>ray 1600, 1200
+ Ray: render time: 0.61 sec. = 5921.7 frames/hour (0.61 sec. accum.).
+PyMOL>png /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study2_csp_classification_original.png, dpi=300
+ ScenePNG: wrote 1600x1200 pixel image to file "/Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/2K7A_2/case_study_assets/case_study2_csp_classification_original.png".
+PyMOL>quit
+
+[2026-03-30T09:58:45] capture_end

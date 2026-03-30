@@ -1,0 +1,298 @@
+
+[2026-03-30T08:56:29] capture_start
+[DEBUG] Multi-model PDB detected, extracting models...
+[DEBUG] Extracted 20 models
+[DEBUG] Calculating RMSD matrix for 20 models...
+[DEBUG] Selected medoid model 7 (sum RMSD: 3.466)
+[DEBUG] Using PDB file: /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmpszfa8o2c/model_7.pdb
+[DEBUG] Loaded holo structure with 718 atoms, 43 residues
+[DEBUG] === CHAIN IDENTIFICATION ===
+[DEBUG] Identified receptor chain: A, ligand chain: B
+[DEBUG] Receptor chain length: 34 residues
+[DEBUG] Ligand chain length: 9 residues
+[DEBUG] All chains in structure:
+[DEBUG]   Chain A: 34 residues
+[DEBUG]   Chain B: 9 residues
+[DEBUG] All chains in structure: {'A', 'B'}
+[DEBUG] Detecting hydrogen bonds...
+[DEBUG] MDTraj baker_hubbard returned: <class 'numpy.ndarray'>
+[DEBUG] MDTraj baker_hubbard length: 30
+[DEBUG] First element type: <class 'numpy.ndarray'>
+[DEBUG] First element length: 3
+[DEBUG] First hbond type: <class 'numpy.int64'>
+[DEBUG] First hbond shape: ()
+[DEBUG] First hbond content: 82
+[DEBUG] MDTraj found 30 total hydrogen bonds
+[DEBUG] Processing hbond 0: donor=82, acceptor=42, hydrogen=96
+[DEBUG] Donor residue: index=82, name=N, element=N, chain=A, residue=17
+[DEBUG] Acceptor residue: index=42, name=O, element=O, chain=A, residue=14
+[DEBUG] Hydrogen residue: index=96, name=H, element=H, chain=A, residue=17
+[DEBUG] Processing hbond 1: donor=106, acceptor=305, hydrogen=115
+[DEBUG] Donor residue: index=106, name=N, element=N, chain=A, residue=18
+[DEBUG] Acceptor residue: index=305, name=O, element=O, chain=A, residue=30
+[DEBUG] Hydrogen residue: index=115, name=H, element=H, chain=A, residue=18
+[DEBUG] Processing hbond 2: donor=146, acceptor=696, hydrogen=158
+[DEBUG] Donor residue: index=146, name=NH1, element=N, chain=A, residue=20
+[DEBUG] Acceptor residue: index=696, name=OE2, element=O, chain=B, residue=119
+[DEBUG] Hydrogen residue: index=158, name=HH12, element=H, chain=A, residue=20
+[DEBUG]   Added H-bond: A20(NH1)-HH12 -> B119(OE2) - H-A dist: 1.85Å
+[DEBUG] Processing hbond 3: donor=147, acceptor=696, hydrogen=160
+[DEBUG] Donor residue: index=147, name=NH2, element=N, chain=A, residue=20
+[DEBUG] Acceptor residue: index=696, name=OE2, element=O, chain=B, residue=119
+[DEBUG] Hydrogen residue: index=160, name=HH22, element=H, chain=A, residue=20
+[DEBUG]   Added H-bond: A20(NH2)-HH22 -> B119(OE2) - H-A dist: 1.95Å
+[DEBUG] Processing hbond 4: donor=179, acceptor=227, hydrogen=184
+[DEBUG] Donor residue: index=179, name=N, element=N, chain=A, residue=22
+[DEBUG] Acceptor residue: index=227, name=O, element=O, chain=A, residue=26
+[DEBUG] Hydrogen residue: index=184, name=H, element=H, chain=A, residue=22
+[DEBUG] Processing hbond 5: donor=217, acceptor=182, hydrogen=221
+[DEBUG] Donor residue: index=217, name=N, element=N, chain=A, residue=25
+[DEBUG] Acceptor residue: index=182, name=O, element=O, chain=A, residue=22
+[DEBUG] Hydrogen residue: index=221, name=H, element=H, chain=A, residue=25
+[DEBUG] Processing hbond 6: donor=224, acceptor=209, hydrogen=235
+[DEBUG] Donor residue: index=224, name=N, element=N, chain=A, residue=26
+[DEBUG] Acceptor residue: index=209, name=OD1, element=O, chain=A, residue=24
+[DEBUG] Hydrogen residue: index=235, name=H, element=H, chain=A, residue=26
+[DEBUG] Processing hbond 7: donor=231, acceptor=220, hydrogen=243
+[DEBUG] Donor residue: index=231, name=NE, element=N, chain=A, residue=26
+[DEBUG] Acceptor residue: index=220, name=O, element=O, chain=A, residue=25
+[DEBUG] Hydrogen residue: index=243, name=HE, element=H, chain=A, residue=26
+[DEBUG] Processing hbond 8: donor=262, acceptor=140, hydrogen=273
+[DEBUG] Donor residue: index=262, name=N, element=N, chain=A, residue=28
+[DEBUG] Acceptor residue: index=140, name=O, element=O, chain=A, residue=20
+[DEBUG] Hydrogen residue: index=273, name=H, element=H, chain=A, residue=28
+[DEBUG] Processing hbond 9: donor=282, acceptor=432, hydrogen=293
+[DEBUG] Donor residue: index=282, name=N, element=N, chain=A, residue=29
+[DEBUG] Acceptor residue: index=432, name=O, element=O, chain=A, residue=38
+[DEBUG] Hydrogen residue: index=293, name=H, element=H, chain=A, residue=29
+[DEBUG] Processing hbond 10: donor=302, acceptor=109, hydrogen=310
+[DEBUG] Donor residue: index=302, name=N, element=N, chain=A, residue=30
+[DEBUG] Acceptor residue: index=109, name=O, element=O, chain=A, residue=18
+[DEBUG] Hydrogen residue: index=310, name=H, element=H, chain=A, residue=30
+[DEBUG] Processing hbond 11: donor=321, acceptor=404, hydrogen=329
+[DEBUG] Donor residue: index=321, name=N, element=N, chain=A, residue=31
+[DEBUG] Acceptor residue: index=404, name=O, element=O, chain=A, residue=36
+[DEBUG] Hydrogen residue: index=329, name=H, element=H, chain=A, residue=31
+[DEBUG] Processing hbond 12: donor=333, acceptor=78, hydrogen=343
+[DEBUG] Donor residue: index=333, name=N, element=N, chain=A, residue=32
+[DEBUG] Acceptor residue: index=78, name=O, element=O, chain=A, residue=16
+[DEBUG] Hydrogen residue: index=343, name=H, element=H, chain=A, residue=32
+[DEBUG] Processing hbond 13: donor=339, acceptor=706, hydrogen=347
+[DEBUG] Donor residue: index=339, name=ND1, element=N, chain=A, residue=32
+[DEBUG] Acceptor residue: index=706, name=O, element=O, chain=B, residue=120
+[DEBUG] Hydrogen residue: index=347, name=HD1, element=H, chain=A, residue=32
+[DEBUG]   Added H-bond: A32(ND1)-HD1 -> B120(O) - H-A dist: 1.61Å
+[DEBUG] Processing hbond 14: donor=351, acceptor=327, hydrogen=359
+[DEBUG] Donor residue: index=351, name=N, element=N, chain=A, residue=33
+[DEBUG] Acceptor residue: index=327, name=OD1, element=O, chain=A, residue=31
+[DEBUG] Hydrogen residue: index=359, name=H, element=H, chain=A, residue=33
+[DEBUG] Processing hbond 15: donor=358, acceptor=327, hydrogen=363
+[DEBUG] Donor residue: index=358, name=ND2, element=N, chain=A, residue=33
+[DEBUG] Acceptor residue: index=327, name=OD1, element=O, chain=A, residue=31
+[DEBUG] Hydrogen residue: index=363, name=HD21, element=H, chain=A, residue=33
+[DEBUG] Processing hbond 16: donor=358, acceptor=56, hydrogen=364
+[DEBUG] Donor residue: index=358, name=ND2, element=N, chain=A, residue=33
+[DEBUG] Acceptor residue: index=56, name=O, element=O, chain=A, residue=15
+[DEBUG] Hydrogen residue: index=364, name=HD22, element=H, chain=A, residue=33
+[DEBUG] Processing hbond 17: donor=365, acceptor=327, hydrogen=372
+[DEBUG] Donor residue: index=365, name=N, element=N, chain=A, residue=34
+[DEBUG] Acceptor residue: index=327, name=OD1, element=O, chain=A, residue=31
+[DEBUG] Hydrogen residue: index=372, name=H, element=H, chain=A, residue=34
+[DEBUG] Processing hbond 18: donor=365, acceptor=328, hydrogen=372
+[DEBUG] Donor residue: index=365, name=N, element=N, chain=A, residue=34
+[DEBUG] Acceptor residue: index=328, name=OD2, element=O, chain=A, residue=31
+[DEBUG] Hydrogen residue: index=372, name=H, element=H, chain=A, residue=34
+[DEBUG] Processing hbond 19: donor=401, acceptor=324, hydrogen=408
+[DEBUG] Donor residue: index=401, name=N, element=N, chain=A, residue=36
+[DEBUG] Acceptor residue: index=324, name=O, element=O, chain=A, residue=31
+[DEBUG] Hydrogen residue: index=408, name=H, element=H, chain=A, residue=36
+[DEBUG] Processing hbond 20: donor=429, acceptor=285, hydrogen=436
+[DEBUG] Donor residue: index=429, name=N, element=N, chain=A, residue=38
+[DEBUG] Acceptor residue: index=285, name=O, element=O, chain=A, residue=29
+[DEBUG] Hydrogen residue: index=436, name=H, element=H, chain=A, residue=38
+[DEBUG] Processing hbond 21: donor=467, acceptor=434, hydrogen=476
+[DEBUG] Donor residue: index=467, name=N, element=N, chain=A, residue=40
+[DEBUG] Acceptor residue: index=434, name=OG1, element=O, chain=A, residue=38
+[DEBUG] Hydrogen residue: index=476, name=H, element=H, chain=A, residue=40
+[DEBUG] Processing hbond 22: donor=515, acceptor=489, hydrogen=527
+[DEBUG] Donor residue: index=515, name=NE, element=N, chain=A, residue=43
+[DEBUG] Acceptor residue: index=489, name=OD2, element=O, chain=A, residue=41
+[DEBUG] Hydrogen residue: index=527, name=HE, element=H, chain=A, residue=43
+[DEBUG] Processing hbond 23: donor=518, acceptor=489, hydrogen=530
+[DEBUG] Donor residue: index=518, name=NH2, element=N, chain=A, residue=43
+[DEBUG] Acceptor residue: index=489, name=OD2, element=O, chain=A, residue=41
+[DEBUG] Hydrogen residue: index=530, name=HH21, element=H, chain=A, residue=43
+[DEBUG] Processing hbond 24: donor=532, acceptor=485, hydrogen=540
+[DEBUG] Donor residue: index=532, name=N, element=N, chain=A, residue=44
+[DEBUG] Acceptor residue: index=485, name=O, element=O, chain=A, residue=41
+[DEBUG] Hydrogen residue: index=540, name=H, element=H, chain=A, residue=44
+[DEBUG] Processing hbond 25: donor=559, acceptor=475, hydrogen=572
+[DEBUG] Donor residue: index=559, name=NZ, element=N, chain=A, residue=45
+[DEBUG] Acceptor residue: index=475, name=OE2, element=O, chain=A, residue=40
+[DEBUG] Hydrogen residue: index=572, name=HZ3, element=H, chain=A, residue=45
+[DEBUG] Processing hbond 26: donor=370, acceptor=328, hydrogen=375
+[DEBUG] Donor residue: index=370, name=OG1, element=O, chain=A, residue=34
+[DEBUG] Acceptor residue: index=328, name=OD2, element=O, chain=A, residue=31
+[DEBUG] Hydrogen residue: index=375, name=HG1, element=H, chain=A, residue=34
+[DEBUG] Processing hbond 27: donor=406, acceptor=328, hydrogen=411
+[DEBUG] Donor residue: index=406, name=OG1, element=O, chain=A, residue=36
+[DEBUG] Acceptor residue: index=328, name=OD2, element=O, chain=A, residue=31
+[DEBUG] Hydrogen residue: index=411, name=HG1, element=H, chain=A, residue=36
+[DEBUG] Processing hbond 28: donor=420, acceptor=612, hydrogen=425
+[DEBUG] Donor residue: index=420, name=OG1, element=O, chain=A, residue=37
+[DEBUG] Acceptor residue: index=612, name=O, element=O, chain=B, residue=114
+[DEBUG] Hydrogen residue: index=425, name=HG1, element=H, chain=A, residue=37
+[DEBUG]   Added H-bond: A37(OG1)-HG1 -> B114(O) - H-A dist: 1.97Å
+[DEBUG] Processing hbond 29: donor=434, acceptor=475, hydrogen=439
+[DEBUG] Donor residue: index=434, name=OG1, element=O, chain=A, residue=38
+[DEBUG] Acceptor residue: index=475, name=OE2, element=O, chain=A, residue=40
+[DEBUG] Hydrogen residue: index=439, name=HG1, element=H, chain=A, residue=38
+[DEBUG] Found 4 cross-chain hydrogen bonds
+[DEBUG] Found 4 hydrogen bonds
+[DEBUG] Detecting charge complementarity...
+[DEBUG] === DETECTING CHARGE COMPLEMENTARITY ===
+[DEBUG] Distance threshold: 4.5 Å
+[DEBUG]   Receptor charged residue: LYS15 (positive)
+[DEBUG]   Receptor charged residue: GLU18 (negative)
+[DEBUG]   Receptor charged residue: ARG20 (positive)
+[DEBUG]   Receptor charged residue: HIS21 (positive)
+[DEBUG]   Receptor charged residue: ARG26 (positive)
+[DEBUG]   Receptor charged residue: ASP31 (negative)
+[DEBUG]   Receptor charged residue: HIS32 (positive)
+[DEBUG]   Receptor charged residue: LYS35 (positive)
+[DEBUG]   Receptor charged residue: GLU40 (negative)
+[DEBUG]   Receptor charged residue: ASP41 (negative)
+[DEBUG]   Receptor charged residue: ARG43 (positive)
+[DEBUG]   Receptor charged residue: LYS45 (positive)
+[DEBUG]   Ligand charged residue: GLU119 (negative)
+[DEBUG] Found 12 charged receptor residues, 1 charged ligand residues
+[DEBUG]   Checking LYS15 (positive) <-> GLU119 (negative): 12.53 Å
+[DEBUG]     ✗ Too far: 12.53 Å > 4.5 Å
+[DEBUG]   Skipping same charge: GLU18 (negative) <-> GLU119 (negative)
+[DEBUG]   Checking ARG20 (positive) <-> GLU119 (negative): 1.85 Å
+[DEBUG]     ✓ CHARGE PAIR ADDED: ARG20 <-> GLU119
+[DEBUG]   Checking HIS21 (positive) <-> GLU119 (negative): 11.37 Å
+[DEBUG]     ✗ Too far: 11.37 Å > 4.5 Å
+[DEBUG]   Checking ARG26 (positive) <-> GLU119 (negative): 15.70 Å
+[DEBUG]     ✗ Too far: 15.70 Å > 4.5 Å
+[DEBUG]   Skipping same charge: ASP31 (negative) <-> GLU119 (negative)
+[DEBUG]   Checking HIS32 (positive) <-> GLU119 (negative): 3.12 Å
+[DEBUG]     ✓ CHARGE PAIR ADDED: HIS32 <-> GLU119
+[DEBUG]   Checking LYS35 (positive) <-> GLU119 (negative): 9.05 Å
+[DEBUG]     ✗ Too far: 9.05 Å > 4.5 Å
+[DEBUG]   Skipping same charge: GLU40 (negative) <-> GLU119 (negative)
+[DEBUG]   Skipping same charge: ASP41 (negative) <-> GLU119 (negative)
+[DEBUG]   Checking ARG43 (positive) <-> GLU119 (negative): 18.94 Å
+[DEBUG]     ✗ Too far: 18.94 Å > 4.5 Å
+[DEBUG]   Checking LYS45 (positive) <-> GLU119 (negative): 17.54 Å
+[DEBUG]     ✗ Too far: 17.54 Å > 4.5 Å
+[DEBUG] Total charge complementary pairs found: 2
+[DEBUG] Found 2 charge complementary pairs
+[DEBUG] Detecting aromatic pi contacts...
+[DEBUG] Found 0 NH-aromatic pi contacts
+[DEBUG] Analyzing receptor residues...
+[DEBUG] Analyzing 34 receptor residues
+[DEBUG] Input: 4 hydrogen bonds, 2 charge pairs, 0 pi contacts
+[DEBUG] === INPUT INTERACTIONS ===
+[DEBUG] Hydrogen bonds:
+[DEBUG]   HB1: A20(NH1) -> B119(OE2) - 1.85Å
+[DEBUG]   HB2: A20(NH2) -> B119(OE2) - 1.95Å
+[DEBUG]   HB3: A32(ND1) -> B120(O) - 1.61Å
+[DEBUG]   HB4: A37(OG1) -> B114(O) - 1.97Å
+[DEBUG] Charge pairs:
+[DEBUG]   CP1: A20(ARG) <-> B119(GLU) - 1.85Å
+[DEBUG]   CP2: A32(HIS) <-> B119(GLU) - 3.12Å
+[DEBUG] === PROCESSING HYDROGEN BONDS ===
+[DEBUG]   Receptor 20 is DONOR -> Ligand 119
+[DEBUG]   Receptor 20 is DONOR -> Ligand 119
+[DEBUG]   Receptor 32 is DONOR -> Ligand 120
+[DEBUG]   Receptor 37 is DONOR -> Ligand 114
+[DEBUG] === PROCESSING CHARGE PAIRS ===
+[DEBUG]   Receptor 20 <-> Ligand 119
+[DEBUG]   Receptor 32 <-> Ligand 119
+[DEBUG] Receptor residues with hydrogen bonds: 3
+[DEBUG] Receptor residues with charge complementarity: 2
+[DEBUG] === PROCESSING PI CONTACTS ===
+[DEBUG] Receptor residues with pi contacts: 0
+[DEBUG] === RECEPTOR RESIDUES WITH INTERACTIONS ===
+[DEBUG]   Residue 20: 2 H-bonds, 1 charge pairs, 0 pi contacts
+[DEBUG]   Residue 32: 1 H-bonds, 1 charge pairs, 0 pi contacts
+[DEBUG]   Residue 37: 1 H-bonds, 0 charge pairs, 0 pi contacts
+[DEBUG] === HYDROGEN BOND RESIDUES DICTIONARY ===
+[DEBUG]   Residue 20: 2 H-bonds
+[DEBUG]     {'donor_residue': 20, 'donor_chain': 'A', 'donor_atom': 'NH1', 'acceptor_residue': 119, 'acceptor_chain': 'B', 'acceptor_atom': 'OE2', 'hydrogen_atom': 'HH12', 'distance': 1.847335547208786}
+[DEBUG]     {'donor_residue': 20, 'donor_chain': 'A', 'donor_atom': 'NH2', 'acceptor_residue': 119, 'acceptor_chain': 'B', 'acceptor_atom': 'OE2', 'hydrogen_atom': 'HH22', 'distance': 1.9522909820079803}
+[DEBUG]   Residue 32: 1 H-bonds
+[DEBUG]     {'donor_residue': 32, 'donor_chain': 'A', 'donor_atom': 'ND1', 'acceptor_residue': 120, 'acceptor_chain': 'B', 'acceptor_atom': 'O', 'hydrogen_atom': 'HD1', 'distance': 1.6132883727550507}
+[DEBUG]   Residue 37: 1 H-bonds
+[DEBUG]     {'donor_residue': 37, 'donor_chain': 'A', 'donor_atom': 'OG1', 'acceptor_residue': 114, 'acceptor_chain': 'B', 'acceptor_atom': 'O', 'hydrogen_atom': 'HG1', 'distance': 1.9688573479652405}
+[DEBUG] === CHARGE RESIDUES DICTIONARY ===
+[DEBUG]   Residue 20: 1 charge pairs
+[DEBUG]     {'receptor_residue': 20, 'receptor_chain': 'A', 'receptor_residue_name': 'ARG', 'receptor_charge': 'positive', 'ligand_residue': 119, 'ligand_chain': 'B', 'ligand_residue_name': 'GLU', 'ligand_charge': 'negative', 'distance': 1.847335547208786}
+[DEBUG]   Residue 32: 1 charge pairs
+[DEBUG]     {'receptor_residue': 32, 'receptor_chain': 'A', 'receptor_residue_name': 'HIS', 'receptor_charge': 'positive', 'ligand_residue': 119, 'ligand_chain': 'B', 'ligand_residue_name': 'GLU', 'ligand_charge': 'negative', 'distance': 3.1216782331466675}
+[DEBUG] === PI RESIDUES DICTIONARY ===
+[DEBUG] === CHECKING FOR OVERLAP ===
+[DEBUG] Residues with H-bond & charge: [20, 32]
+[DEBUG] Residues with H-bond & pi: []
+[DEBUG] Residues with charge & pi: []
+[DEBUG] Residues with all three: []
+[DEBUG] Residues only in H-bond dict: [37]
+[DEBUG] Residues only in charge dict: []
+[DEBUG] Residues only in pi dict: []
+[DEBUG] === ANALYZING EACH RECEPTOR RESIDUE ===
+[DEBUG]   Residue 12 (PHE): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 13 (LEU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 14 (PRO): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 15 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 16 (GLY): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 17 (TRP): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 18 (GLU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 19 (VAL): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 20 (ARG) has 2 H-bonds:
+[DEBUG]     As DONOR: -> B119
+[DEBUG]     As DONOR: -> B119
+[DEBUG]   Residue 20 (ARG) has 1 charge pairs:
+[DEBUG]     Charge pair: <-> B119
+[DEBUG]   Residue 20 (ARG) final partners: [119]
+[DEBUG]   Residue 20 (ARG): has_hbond=True, has_charge_complement=True, has_pi_contact=False, category=hbond_and_charge
+[DEBUG]   Residue 21 (HIS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 22 (ALA): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 23 (PRO): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 24 (ASN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 25 (GLY): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 26 (ARG): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 27 (PRO): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 28 (PHE): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 29 (PHE): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 30 (ILE): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 31 (ASP): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 32 (HIS) has 1 H-bonds:
+[DEBUG]     As DONOR: -> B120
+[DEBUG]   Residue 32 (HIS) has 1 charge pairs:
+[DEBUG]     Charge pair: <-> B119
+[DEBUG]   Residue 32 (HIS) final partners: [119, 120]
+[DEBUG]   Residue 32 (HIS): has_hbond=True, has_charge_complement=True, has_pi_contact=False, category=hbond_and_charge
+[DEBUG]   Residue 33 (ASN): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 34 (THR): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 35 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 36 (THR): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 37 (THR) has 1 H-bonds:
+[DEBUG]     As DONOR: -> B114
+[DEBUG]   Residue 37 (THR) final partners: [114]
+[DEBUG]   Residue 37 (THR): has_hbond=True, has_charge_complement=False, has_pi_contact=False, category=hbond_only
+[DEBUG]   Residue 38 (THR): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 39 (TRP): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 40 (GLU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 41 (ASP): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 42 (PRO): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 43 (ARG): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 44 (LEU): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG]   Residue 45 (LYS): has_hbond=False, has_charge_complement=False, has_pi_contact=False, category=none
+[DEBUG] === FINAL SUMMARY ===
+[DEBUG] Total interacting residues: 3
+[DEBUG] Cleaned up temporary files in /var/folders/6t/n56km9k96y9g6q6wb3x1xc2m0000gn/T/tmpszfa8o2c
+[2026-03-30T08:56:29] capture_end
+
+[2026-03-30T08:56:29] capture_start
+[2026-03-30T08:56:29] capture_end

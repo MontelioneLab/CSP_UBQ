@@ -101,4 +101,4 @@ set cartoon_ring_mode, 1
 # FN (low CSP in Union Site): 3
 # Residues without CSP data: 43
 # Structure colored by CSP classification (TP/FP/TN/FN)
-# Modified PDB file: /Users/tiburon/Desktop/CSP_UBQ/outputs/5U5S/5U5S_csp.pdb
+# Modified PDB file: /Users/tiburon/Desktop/new_CSP_UBQ/CSP_UBQ/outputs/5U5S/5U5S_csp.pdb
