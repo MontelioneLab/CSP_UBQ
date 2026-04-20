@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
 """
-Generate SI Figs S1–S12 (Confusion Matrix Histograms) and SI Tables S2–S13 (Data).
+Generate SI Figs S1–S8 (Confusion Matrix Histograms) and SI Tables S2–S9 (Data).
 
 Naming scheme:
   SI Table S2 / SI Fig S1: Hydrolase Receptors
-  SI Table S3 / SI Fig S2: Isomerase Receptors
-  SI Table S4 / SI Fig S3: Oxidoreductase Receptors
-  SI Table S5 / SI Fig S4: Transferase Receptors
-  SI Table S6 / SI Fig S5: Translocase Receptors
-  SI Table S7 / SI Fig S6: All Alpha Receptors
-  SI Table S8 / SI Fig S7: All Beta Receptors
-  SI Table S9 / SI Fig S8: Alpha and Beta (a+b) Receptors
-  SI Table S10 / SI Fig S9: CBP Domain Receptors
-  SI Table S11 / SI Fig S10: BET-ET Domain Receptors
-  SI Table S12 / SI Fig S11: TFIIH Domain Receptors
-  SI Table S13 / SI Fig S12: Ubiquitin Domain Receptors
+  SI Table S3 / SI Fig S2: Transferase Receptors
+  SI Table S4 / SI Fig S3: All Alpha Receptors
+  SI Table S5 / SI Fig S4: All Beta Receptors
+  SI Table S6 / SI Fig S5: Alpha and Beta (a+b) Receptors
+  SI Table S7 / SI Fig S6: BET-ET Domain Receptors
+  SI Table S8 / SI Fig S7: TFIIH Domain Receptors
+  SI Table S9 / SI Fig S8: Ubiquitin Domain Receptors
 
 For each configured selection, this script:
 1) Loads holo_pdb IDs either from a targets CSV or from CSP_UBQ.csv class columns.
@@ -50,10 +46,10 @@ class ClassSpec(TypedDict):
     targets_csv: Optional[Path]
 
 
-# Order and IDs match SI Tables S2–S13 and SI Figs S1–S12:
-# S2/S1 Hydrolases, S3/S2 Isomerases, S4/S3 Oxidoreductases, S5/S4 Transferases, S6/S5 Translocases
-# S7/S6 All Alpha, S8/S7 All Beta, S9/S8 Alpha and Beta (a+b)
-# S10/S9 CBP, S11/S10 BET-ET, S12/S11 TFIIH, S13/S12 Ubiquitin
+# Order and IDs match SI Tables S2–S9 and SI Figs S1–S8:
+# S2/S1 Hydrolases, S3/S2 Transferases
+# S4/S3 All Alpha, S5/S4 All Beta, S6/S5 Alpha and Beta (a+b)
+# S7/S6 BET-ET, S8/S7 TFIIH, S9/S8 Ubiquitin
 CLASS_SPECS: List[ClassSpec] = [
     {
         "column": "ec_classes",
@@ -66,46 +62,19 @@ CLASS_SPECS: List[ClassSpec] = [
     },
     {
         "column": "ec_classes",
-        "class_label": "isomerases",
-        "file_token": "isomerases",
-        "st_id": "ST3",
-        "sf_id": "SF2",
-        "display_title": "Isomerase Receptors",
-        "targets_csv": None,
-    },
-    {
-        "column": "ec_classes",
-        "class_label": "oxidoreductases",
-        "file_token": "oxidoreductases",
-        "st_id": "ST4",
-        "sf_id": "SF3",
-        "display_title": "Oxidoreductase Receptors",
-        "targets_csv": None,
-    },
-    {
-        "column": "ec_classes",
         "class_label": "transferases",
         "file_token": "transferases",
-        "st_id": "ST5",
-        "sf_id": "SF4",
+        "st_id": "ST3",
+        "sf_id": "SF2",
         "display_title": "Transferase Receptors",
-        "targets_csv": None,
-    },
-    {
-        "column": "ec_classes",
-        "class_label": "translocases",
-        "file_token": "translocases",
-        "st_id": "ST6",
-        "sf_id": "SF5",
-        "display_title": "Translocase Receptors",
         "targets_csv": None,
     },
     {
         "column": "scope_fold_type",
         "class_label": "all alpha proteins",
         "file_token": "all_alpha_proteins",
-        "st_id": "ST7",
-        "sf_id": "SF6",
+        "st_id": "ST4",
+        "sf_id": "SF3",
         "display_title": "All Alpha Receptors",
         "targets_csv": None,
     },
@@ -113,8 +82,8 @@ CLASS_SPECS: List[ClassSpec] = [
         "column": "scope_fold_type",
         "class_label": "all beta proteins",
         "file_token": "all_beta_proteins",
-        "st_id": "ST8",
-        "sf_id": "SF7",
+        "st_id": "ST5",
+        "sf_id": "SF4",
         "display_title": "All Beta Receptors",
         "targets_csv": None,
     },
@@ -122,26 +91,17 @@ CLASS_SPECS: List[ClassSpec] = [
         "column": "scope_fold_type",
         "class_label": "alpha and beta proteins (a+b)",
         "file_token": "alpha_and_beta_proteins_a_plus_b",
-        "st_id": "ST9",
-        "sf_id": "SF8",
+        "st_id": "ST6",
+        "sf_id": "SF5",
         "display_title": "Alpha and Beta (a+b) Receptors",
         "targets_csv": None,
     },
     {
         "column": None,
         "class_label": None,
-        "file_token": "CBP",
-        "st_id": "ST10",
-        "sf_id": "SF9",
-        "display_title": "CBP Domain Receptors",
-        "targets_csv": Path("data/targets_CBP.csv"),
-    },
-    {
-        "column": None,
-        "class_label": None,
         "file_token": "BET_ET",
-        "st_id": "ST11",
-        "sf_id": "SF10",
+        "st_id": "ST7",
+        "sf_id": "SF6",
         "display_title": "BET-ET Domain Receptors",
         "targets_csv": Path("data/targets_BET_ET.csv"),
     },
@@ -149,8 +109,8 @@ CLASS_SPECS: List[ClassSpec] = [
         "column": None,
         "class_label": None,
         "file_token": "TFIIH",
-        "st_id": "ST12",
-        "sf_id": "SF11",
+        "st_id": "ST8",
+        "sf_id": "SF7",
         "display_title": "TFIIH Domain Receptors",
         "targets_csv": Path("data/targets_TFIIH.csv"),
     },
@@ -158,8 +118,8 @@ CLASS_SPECS: List[ClassSpec] = [
         "column": None,
         "class_label": None,
         "file_token": "ubiquitin",
-        "st_id": "ST13",
-        "sf_id": "SF12",
+        "st_id": "ST9",
+        "sf_id": "SF8",
         "display_title": "Ubiquitin Domain Receptors",
         "targets_csv": Path("data/targets_ubiquitin.csv"),
     },

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-SI Table S14 + SI Fig. S13 — targets in CSP_UBQ.csv but not in the buffer-similar
+SI Table S10 + SI Fig. S9 — targets in CSP_UBQ.csv but not in the buffer-similar
 subset (CSP_UBQ_ph0.5_temp5C.csv).
 
 Writes:
   - A filtered CSP CSV (full study rows with dissimilar apo/holo conditions)
   - targets CSV (holo_pdb) for analyze_targets.py
-  - figures/ST14_dissimilar_apo_holo_conditions.tex (via create_csp_latex_table.py)
-  - figures/SF13_dissimilar_apo_holo_conditions.png (two-panel confusion histograms)
+  - figures/ST10_dissimilar_apo_holo_conditions.tex (via create_csp_latex_table.py)
+  - figures/SF9_dissimilar_apo_holo_conditions.png (two-panel confusion histograms)
 
 Row identity matches CSP_UBQ vs the filtered file on (holo_pdb, apo_bmrb) after the
 same normalization used for LaTeX tables.
@@ -35,7 +35,7 @@ except Exception:
 
 SELECTION_NAME = "dissimilar_apo_holo_conditions"
 FILE_TOKEN = "dissimilar_apo_holo_conditions"
-SF_ID = "SF13"
+SF_ID = "SF9"
 
 
 def _row_key_series(df: pd.DataFrame) -> pd.Series:
@@ -109,7 +109,7 @@ def compose_two_panel_figure(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="SI Table S14 + SI Fig. S13 (dissimilar apo/holo experimental conditions)."
+        description="SI Table S10 + SI Fig. S9 (dissimilar apo/holo experimental conditions)."
     )
     parser.add_argument(
         "--full-csp-csv",
@@ -140,7 +140,7 @@ def main() -> int:
     parser.add_argument(
         "--output-tex",
         type=Path,
-        default=Path("figures") / "ST14_dissimilar_apo_holo_conditions.tex",
+        default=Path("figures") / "ST10_dissimilar_apo_holo_conditions.tex",
     )
     parser.add_argument(
         "--subset-csv",
@@ -264,7 +264,7 @@ def main() -> int:
     collated = figures_dir / f"{SF_ID}_{FILE_TOKEN}.png"
     if stacked.is_file() and confusion_hist.is_file():
         compose_two_panel_figure(stacked, confusion_hist, collated)
-        print(f"SI Fig. S13 saved to {collated.resolve()}")
+        print(f"SI Fig. S9 saved to {collated.resolve()}")
     else:
         print("Warning: stacked or confusion histogram PNGs missing.", file=sys.stderr)
         return 1

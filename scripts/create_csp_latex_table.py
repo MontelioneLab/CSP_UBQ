@@ -23,24 +23,20 @@ from pathlib import Path
 
 import pandas as pd
 
-# SI Tables S2–S13 / S14 and SI Figs S1–S12 / S13 (see SELECTION_NUMBERING)
+# SI Tables S2–S9 / S10 and SI Figs S1–S8 / S9 (see SELECTION_NUMBERING)
 SELECTION_NUMBERING: dict[str, dict[str, str]] = {
     "hydrolases": {"st_id": "ST2", "sf_id": "SF1", "title": "Hydrolase Receptors", "file_token": "hydrolases"},
-    "isomerases": {"st_id": "ST3", "sf_id": "SF2", "title": "Isomerase Receptors", "file_token": "isomerases"},
-    "oxidoreductases": {"st_id": "ST4", "sf_id": "SF3", "title": "Oxidoreductase Receptors", "file_token": "oxidoreductases"},
-    "transferases": {"st_id": "ST5", "sf_id": "SF4", "title": "Transferase Receptors", "file_token": "transferases"},
-    "translocases": {"st_id": "ST6", "sf_id": "SF5", "title": "Translocase Receptors", "file_token": "translocases"},
-    "all_alpha_proteins": {"st_id": "ST7", "sf_id": "SF6", "title": "All Alpha Receptors", "file_token": "all_alpha_proteins"},
-    "all_beta_proteins": {"st_id": "ST8", "sf_id": "SF7", "title": "All Beta Receptors", "file_token": "all_beta_proteins"},
-    "alpha_and_beta_proteins_(a+b)": {"st_id": "ST9", "sf_id": "SF8", "title": "Alpha and Beta (a+b) Receptors", "file_token": "alpha_and_beta_proteins_a_plus_b"},
-    "alpha_and_beta_proteins_a_plus_b": {"st_id": "ST9", "sf_id": "SF8", "title": "Alpha and Beta (a+b) Receptors", "file_token": "alpha_and_beta_proteins_a_plus_b"},
-    "cbp": {"st_id": "ST10", "sf_id": "SF9", "title": "CBP Domain Receptors", "file_token": "CBP"},
-    "bet_et": {"st_id": "ST11", "sf_id": "SF10", "title": "BET-ET Domain Receptors", "file_token": "BET_ET"},
-    "tfiih": {"st_id": "ST12", "sf_id": "SF11", "title": "TFIIH Domain Receptors", "file_token": "TFIIH"},
-    "ubiquitin": {"st_id": "ST13", "sf_id": "SF12", "title": "Ubiquitin Domain Receptors", "file_token": "ubiquitin"},
+    "transferases": {"st_id": "ST3", "sf_id": "SF2", "title": "Transferase Receptors", "file_token": "transferases"},
+    "all_alpha_proteins": {"st_id": "ST4", "sf_id": "SF3", "title": "All Alpha Receptors", "file_token": "all_alpha_proteins"},
+    "all_beta_proteins": {"st_id": "ST5", "sf_id": "SF4", "title": "All Beta Receptors", "file_token": "all_beta_proteins"},
+    "alpha_and_beta_proteins_(a+b)": {"st_id": "ST6", "sf_id": "SF5", "title": "Alpha and Beta (a+b) Receptors", "file_token": "alpha_and_beta_proteins_a_plus_b"},
+    "alpha_and_beta_proteins_a_plus_b": {"st_id": "ST6", "sf_id": "SF5", "title": "Alpha and Beta (a+b) Receptors", "file_token": "alpha_and_beta_proteins_a_plus_b"},
+    "bet_et": {"st_id": "ST7", "sf_id": "SF6", "title": "BET-ET Domain Receptors", "file_token": "BET_ET"},
+    "tfiih": {"st_id": "ST8", "sf_id": "SF7", "title": "TFIIH Domain Receptors", "file_token": "TFIIH"},
+    "ubiquitin": {"st_id": "ST9", "sf_id": "SF8", "title": "Ubiquitin Domain Receptors", "file_token": "ubiquitin"},
     "dissimilar_apo_holo_conditions": {
-        "st_id": "ST14",
-        "sf_id": "SF13",
+        "st_id": "ST10",
+        "sf_id": "SF9",
         "title": "targets with dissimilar apo/holo experimental conditions",
         "file_token": "dissimilar_apo_holo_conditions",
     },
@@ -491,7 +487,7 @@ def main(argv=None) -> int:
             label = f"tab:csp_confusion_{selection_slug}"
     else:
         caption = "Data for all receptors in this study"
-        label = "tab:st13"
+        label = "tab:st1"
     latex = build_latex(df, caption=caption, label=label)
 
     # Append the corresponding SI figure block when we have a selection with numbering

@@ -81,6 +81,79 @@ def parse_scope_folds_by_pdb(data: str) -> dict[str, set[str]]:
     return pdb_to_folds
 
 
+def parse_scope_folds_by_pdb_chain(data: str) -> dict[tuple[str, str], set[str]]:
+    """
+    Parse SCOPe dir.cla.scope file and return a mapping keyed by (pdb_id, chain):
+    (pdb_id_lower, chain_lower) -> set of fold type strings.
+
+    Chain is derived from the residue-description column (e.g. 'A:1-100' or
+    'A:1-100,B:50-120'). Domains whose description is '-' (whole entry) are
+    registered under the sentinel chain '*' and should be merged in at query
+    time via `fold_types_for`.
+    """
+    lookup: dict[tuple[str, str], set[str]] = {}
+    for line in data.splitlines():
+        if line.startswith("#") or not line.strip():
+            continue
+        parts = line.split("\t")
+        if len(parts) < 4:
+            continue
+        domain_id = parts[0]
+        if not domain_id.startswith("d") or len(domain_id) < 6:
+            continue
+        pdb_id = domain_id[1:5].lower()
+
+        sccs = parts[3].strip() if "." in parts[3] else ""
+        if not sccs:
+            sccs = parts[1].strip()
+        if not sccs:
+            continue
+        fold_type = CLASS_MAP.get(sccs[0].lower(), "unknown")
+
+        description = parts[2].strip() if len(parts) >= 3 else ""
+        chains: set[str] = set()
+        if ":" in description:
+            for segment in description.split(","):
+                seg = segment.strip()
+                if ":" in seg and seg[:1].isalpha():
+                    chains.add(seg[0].lower())
+        elif description == "-":
+            sid_chain = domain_id[5]
+            if sid_chain.isalpha():
+                chains.add(sid_chain.lower())
+            else:
+                chains.add("*")
+        else:
+            sid_chain = domain_id[5]
+            if sid_chain.isalpha():
+                chains.add(sid_chain.lower())
+            else:
+                chains.add("*")
+
+        for chain in chains:
+            lookup.setdefault((pdb_id, chain), set()).add(fold_type)
+    return lookup
+
+
+def fold_types_for(
+    pdb: str,
+    chain: str,
+    lookup: dict[tuple[str, str], set[str]],
+) -> set[str]:
+    """
+    Return the union of fold types for `(pdb, chain)` and any whole-entry
+    ('*') fold types recorded for `pdb`. Both `pdb` and `chain` are
+    normalized to lowercase.
+    """
+    pdb_l = (pdb or "").strip().lower()
+    chain_l = (chain or "").strip().lower()
+    if not pdb_l or not chain_l:
+        return set()
+    specific = lookup.get((pdb_l, chain_l), set())
+    whole_entry = lookup.get((pdb_l, "*"), set())
+    return specific | whole_entry
+
+
 def get_unique_holo_pdbs(csp_csv_path: Path) -> list[str]:
     """Read CSP_UBQ.csv and return unique, non-empty holo_pdb values (normalized to lowercase)."""
     pdbs = []

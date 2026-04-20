@@ -5,7 +5,7 @@ SI Table S1. Data for all receptors in this study.
 Creates a LaTeX table (figures/ST1_all_receptors.tex) with study targets (buffer-
 filtered CSP_UBQ_ph0.5_temp5C.csv by default), their apo/holo PDB and BMRB IDs,
 F1 and MCC scores, and hyperlinks to RCSB/BMRB where available. Format matches
-other supplementary tables (ST2–ST13).
+other supplementary tables (ST2–ST9).
 """
 
 from __future__ import annotations

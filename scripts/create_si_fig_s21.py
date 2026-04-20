@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-SI Fig. S20 — CSP significance threshold histogram.
+SI Fig. S16 — CSP significance threshold histogram.
 
 For each target, recomputes the significance threshold from csp_A values using
 the same logic as the pipeline (compute_threshold_with_outlier_removal with
 default config). Plots a histogram of these per-target thresholds.
 
-Output: figures/SF20_significance_threshold.png
+Output: figures/SF16_significance_threshold.png
 
 By default only targets listed in CSP_UBQ_ph0.5_temp5C.csv (holo_pdb) are included.
 Override with --targets-csv.
@@ -75,7 +75,7 @@ def collect_thresholds(outputs_dir: Path, holo_lower: Set[str]) -> List[tuple[st
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Create SI Fig. S20 (CSP significance threshold histogram)"
+        description="Create SI Fig. S16 (CSP significance threshold histogram)"
     )
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
     parser.add_argument(
@@ -84,7 +84,7 @@ def main() -> int:
         default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
         help="CSV with holo_pdb column (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
-    parser.add_argument("--output", type=Path, default=Path("figures") / "SF20_significance_threshold.png")
+    parser.add_argument("--output", type=Path, default=Path("figures") / "SF16_significance_threshold.png")
     parser.add_argument("--bin-width", type=float, default=0.02)
     parser.add_argument("--dpi", type=int, default=300)
     parser.add_argument("--fig-width", type=float, default=8.0)
@@ -150,7 +150,7 @@ def main() -> int:
     plt.savefig(output_path, dpi=args.dpi)
     plt.close()
 
-    print(f"SI Fig. S20 written to {output_path.resolve()}")
+    print(f"SI Fig. S16 written to {output_path.resolve()}")
     return 0
 
 

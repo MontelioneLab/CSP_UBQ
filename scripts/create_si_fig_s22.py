@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-SI Fig. S21 — F1 vs MCC scatterplot.
+SI Fig. S17 — F1 vs MCC scatterplot.
 
 Reuses existing logic from scripts/plot_f1_vs_mcc.py and writes:
-  ./figures/SF21_f1_vs_mcc.png
+  ./figures/SF17_f1_vs_mcc.png
 
 By default only systems whose system_id matches holo_pdb entries in
 CSP_UBQ_ph0.5_temp5C.csv are plotted. Override with --targets-csv.
@@ -30,7 +30,7 @@ except Exception:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create SI Fig. S21 (F1 vs MCC scatter plot)."
+        description="Create SI Fig. S17 (F1 vs MCC scatter plot)."
     )
     parser.add_argument(
         "--input",
@@ -47,8 +47,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-image",
         type=Path,
-        default=Path("figures") / "SF21_f1_vs_mcc.png",
-        help="Destination for SI Fig. S21 image.",
+        default=Path("figures") / "SF17_f1_vs_mcc.png",
+        help="Destination for SI Fig. S17 image.",
     )
     return parser.parse_args()
 
@@ -74,7 +74,7 @@ def main() -> int:
     f1_vals, mcc_vals = load_f1_mcc(input_csv, holo_pdb_filter=holo_filter)
     output_image.parent.mkdir(parents=True, exist_ok=True)
     plot_f1_vs_mcc(f1_vals, mcc_vals, output_image)
-    print(f"SI Fig. S21 saved to {output_image.resolve()}")
+    print(f"SI Fig. S17 saved to {output_image.resolve()}")
     return 0
 
 

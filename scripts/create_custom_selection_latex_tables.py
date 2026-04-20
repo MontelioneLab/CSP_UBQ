@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Create ST2-ST13 LaTeX tables for predefined custom target selections.
+Create ST2-ST9 LaTeX tables for predefined custom target selections.
 
 This script runs `scripts/create_csp_latex_table.py` for each selection CSV and
 writes one `.tex` file per selection to `./figures/`. The generated `.tex` files
-include the corresponding supplementary figure block with SF1-SF12 filenames.
+include the corresponding supplementary figure block with SF1-SF8 filenames.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Iterable
 
 
-# Order matches SI Tables S2–S13
+# Order matches SI Tables S2–S9
 SELECTIONS = [
     {
         "st_id": "ST2",
@@ -27,87 +27,59 @@ SELECTIONS = [
     },
     {
         "st_id": "ST3",
-        "title": "Isomerase Receptors",
-        "selection_name": "isomerases",
-        "targets_csv": Path("outputs") / "si_figs_s1_s12_aux" / "targets_isomerases.csv",
-        "output_tex": "ST3_isomerase_receptors.tex",
-    },
-    {
-        "st_id": "ST4",
-        "title": "Oxidoreductase Receptors",
-        "selection_name": "oxidoreductases",
-        "targets_csv": Path("outputs") / "si_figs_s1_s12_aux" / "targets_oxidoreductases.csv",
-        "output_tex": "ST4_oxidoreductase_receptors.tex",
-    },
-    {
-        "st_id": "ST5",
         "title": "Transferase Receptors",
         "selection_name": "transferases",
         "targets_csv": Path("outputs") / "si_figs_s1_s12_aux" / "targets_transferases.csv",
-        "output_tex": "ST5_transferase_receptors.tex",
+        "output_tex": "ST3_transferase_receptors.tex",
     },
     {
-        "st_id": "ST6",
-        "title": "Translocase Receptors",
-        "selection_name": "translocases",
-        "targets_csv": Path("outputs") / "si_figs_s1_s12_aux" / "targets_translocases.csv",
-        "output_tex": "ST6_translocase_receptors.tex",
-    },
-    {
-        "st_id": "ST7",
+        "st_id": "ST4",
         "title": "All Alpha Receptors",
         "selection_name": "all_alpha_proteins",
         "targets_csv": Path("outputs") / "si_figs_s1_s12_aux" / "targets_all_alpha_proteins.csv",
-        "output_tex": "ST7_all_alpha_receptors.tex",
+        "output_tex": "ST4_all_alpha_receptors.tex",
     },
     {
-        "st_id": "ST8",
+        "st_id": "ST5",
         "title": "All Beta Receptors",
         "selection_name": "all_beta_proteins",
         "targets_csv": Path("outputs") / "si_figs_s1_s12_aux" / "targets_all_beta_proteins.csv",
-        "output_tex": "ST8_all_beta_receptors.tex",
+        "output_tex": "ST5_all_beta_receptors.tex",
     },
     {
-        "st_id": "ST9",
+        "st_id": "ST6",
         "title": "Alpha and Beta (a+b) Receptors",
         "selection_name": "alpha_and_beta_proteins_a_plus_b",
         "targets_csv": Path("outputs") / "si_figs_s1_s12_aux" / "targets_alpha_and_beta_proteins_a_plus_b.csv",
-        "output_tex": "ST9_alpha_and_beta_a_plus_b_receptors.tex",
+        "output_tex": "ST6_alpha_and_beta_a_plus_b_receptors.tex",
     },
     {
-        "st_id": "ST10",
-        "title": "CBP Domain Receptors",
-        "selection_name": "CBP",
-        "targets_csv": Path("data/targets_CBP.csv"),
-        "output_tex": "ST10_cbp_domain_receptors.tex",
-    },
-    {
-        "st_id": "ST11",
+        "st_id": "ST7",
         "title": "BET-ET Domain Receptors",
         "selection_name": "BET_ET",
         "targets_csv": Path("data/targets_BET_ET.csv"),
-        "output_tex": "ST11_bet_et_domain_receptors.tex",
+        "output_tex": "ST7_bet_et_domain_receptors.tex",
     },
     {
-        "st_id": "ST12",
+        "st_id": "ST8",
         "title": "TFIIH Domain Receptors",
         "selection_name": "TFIIH",
         "targets_csv": Path("data/targets_TFIIH.csv"),
-        "output_tex": "ST12_tfiih_domain_receptors.tex",
+        "output_tex": "ST8_tfiih_domain_receptors.tex",
     },
     {
-        "st_id": "ST13",
+        "st_id": "ST9",
         "title": "Ubiquitin Domain Receptors",
         "selection_name": "ubiquitin",
         "targets_csv": Path("data/targets_ubiquitin.csv"),
-        "output_tex": "ST13_ubiquitin_domain_receptors.tex",
+        "output_tex": "ST9_ubiquitin_domain_receptors.tex",
     },
 ]
 
 
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create ST2–ST13 LaTeX tables (SI Table S14 is create_si_st14_fig_s13_dissimilar_conditions.py)."
+        description="Create ST2–ST9 LaTeX tables (SI Table S10 is create_si_st14_fig_s13_dissimilar_conditions.py)."
     )
     parser.add_argument(
         "--csp-csv",
