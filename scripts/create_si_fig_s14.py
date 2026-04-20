@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Generator script filename (s14) ≠ SI index: this produces SI Fig. S15.
+Generator script filename (s14) ≠ SI index: this produces SI Fig. S11.
 
-SI Fig. S15 — CA-inclusive vs exclusive CSP F1 scores scatterplot.
+SI Fig. S11 — CA-inclusive vs exclusive CSP F1 scores scatterplot.
 
 Reuses existing logic from scripts/analyze_targets_ca.py and writes:
-  ./figures/SF15_f1_ca_vs_exclusive.png
+  ./figures/SF11_f1_ca_vs_exclusive.png
 
 Default targets list: CSP_UBQ_ph0.5_temp5C.csv (buffer-filtered subset). Override with --targets-csv.
 """
@@ -37,7 +37,7 @@ except Exception:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create SI Fig. S16 (CA-inclusive vs exclusive CSP F1 scores)."
+        description="Create SI Fig. S11 (CA-inclusive vs exclusive CSP F1 scores)."
     )
     parser.add_argument(
         "--outputs-dir",
@@ -54,8 +54,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-image",
         type=Path,
-        default=Path("figures") / "SF15_f1_ca_vs_exclusive.png",
-        help="Destination for SI Fig. S15.",
+        default=Path("figures") / "SF11_f1_ca_vs_exclusive.png",
+        help="Destination for SI Fig. S11.",
     )
     return parser.parse_args()
 
@@ -88,7 +88,7 @@ def main() -> int:
 
     output_image.parent.mkdir(parents=True, exist_ok=True)
     render_f1_comparison_scatterplot(ca_results, nh_results, output_image)
-    print(f"SI Fig. S15 saved to {output_image.resolve()}")
+    print(f"SI Fig. S11 saved to {output_image.resolve()}")
     return 0
 
 

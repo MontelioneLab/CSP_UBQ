@@ -3,25 +3,27 @@
 Wrapper script to run all scripts that create supplemental figures and tables.
 
 SI numbering (current convention):
-  - SI Figs S1–S12: create_si_figs_s1_s12.py (by EC class / fold / domain selections)
   - SI Table S1: create_si_table_s1.py (CSP_UBQ_ph0.5_temp5C.csv)
-  - SI Table S14 + SI Fig. S13: create_si_st14_fig_s13_dissimilar_conditions.py
+  - SI Tables S2–S9 / SI Figs S1–S8: create_si_figs_s1_s12.py
+        (EC class / SCOPe fold / domain selections; hydrolases, transferases,
+         all alpha, all beta, a+b, BET-ET, TFIIH, ubiquitin)
+  - SI Table S10 + SI Fig. S9: create_si_st14_fig_s13_dissimilar_conditions.py
         (CSP_UBQ rows not in CSP_UBQ_ph0.5_temp5C.csv; dissimilar apo/holo conditions)
-  - SI Fig. S14: create_si_fig_s13.py (CA-inclusive confusion histograms)
-  - SI Fig. S15: create_si_fig_s14.py (CA-inclusive vs exclusive F1)
-  - SI Fig. S16: create_si_fig_s15.py (N–N distance histograms)
-  - SI Fig. S17: create_si_fig_s16.py (atom–atom distance histograms)
-  - SI Fig. S18: create_si_fig_s17.py (PDB Advanced Search; placeholder)
+  - SI Fig. S10: create_si_fig_s13.py (CA-inclusive confusion histograms)
+  - SI Fig. S11: create_si_fig_s14.py (CA-inclusive vs exclusive F1)
+  - SI Fig. S12: create_si_fig_s15.py (N–N distance histograms)
+  - SI Fig. S13: create_si_fig_s16.py (atom–atom distance histograms)
+  - SI Fig. S14: create_si_fig_s17.py (PDB Advanced Search; placeholder)
   - SI Eqn. S1 / S2: create_si_eqn_1.py, create_si_eqn_2.py
-  - SI Fig. S19: create_si_fig_s20.py (ideal N/H offsets)
-  - SI Fig. S20: create_si_fig_s21.py (CSP significance threshold histogram)
-  - SI Fig. S21: create_si_fig_s22.py (F1 vs MCC)
-  - SI Tables S2–S13: create_custom_selection_latex_tables.py
+  - SI Fig. S15: create_si_fig_s20.py (ideal N/H offsets)
+  - SI Fig. S16: create_si_fig_s21.py (CSP significance threshold histogram)
+  - SI Fig. S17: create_si_fig_s22.py (F1 vs MCC)
+  - SI Tables S2–S9 LaTeX tables: create_custom_selection_latex_tables.py
 
 Prerequisites:
   - Pipeline outputs under --outputs-dir (master_alignment.csv per target, etc.)
   - confusion_matrix_per_system.csv (e.g. scripts/confusion_matrix_analysis.py)
-  - Domain targets CSVs for ST2–ST13 (targets_CBP.csv, … targets_ubiquitin.csv)
+  - Domain targets CSVs for ST7–ST9 (targets_BET_ET.csv, targets_TFIIH.csv, targets_ubiquitin.csv)
 """
 
 from __future__ import annotations
@@ -68,7 +70,7 @@ def main() -> int:
     parser.add_argument(
         "--include-placeholders",
         action="store_true",
-        help="Run placeholder scripts (SI Fig. S18 / create_si_fig_s17.py) that do not yet produce output.",
+        help="Run placeholder scripts (SI Fig. S14 / create_si_fig_s17.py) that do not yet produce output.",
     )
     parser.add_argument(
         "--stop-on-error",
@@ -122,9 +124,9 @@ def main() -> int:
             ("create_si_fig_s20.py", ["--outputs-dir", outputs, "--figures-dir", figures]),
             (
                 "create_si_fig_s21.py",
-                ["--outputs-dir", outputs, "--output", str(Path(figures) / "SF20_significance_threshold.png")],
+                ["--outputs-dir", outputs, "--output", str(Path(figures) / "SF16_significance_threshold.png")],
             ),
-            ("create_si_fig_s22.py", ["--output-image", str(Path(figures) / "SF21_f1_vs_mcc.png")]),
+            ("create_si_fig_s22.py", ["--output-image", str(Path(figures) / "SF17_f1_vs_mcc.png")]),
             ("create_custom_selection_latex_tables.py", ["--figures-dir", figures]),
         ]
     )

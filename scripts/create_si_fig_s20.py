@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-SI Fig. S19 — ideal N/H offsets (offset grid heatmap from grid search).
+SI Fig. S15 — ideal N/H offsets (offset grid heatmap from grid search).
 
 Reads grid search CSV files from outputs/, creates the heatmap, and saves to
-./figures/SF19_ideal_offsets.png.
+./figures/SF15_ideal_offsets.png.
 
 By default only targets listed in CSP_UBQ_ph0.5_temp5C.csv (holo_pdb) are included.
 Override with --targets-csv.
@@ -34,7 +34,7 @@ def _output_dir_matches_targets(dir_name: str, holo_lower: Set[str]) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Create SI Fig. S19 (ideal N/H offsets heatmap).")
+    parser = argparse.ArgumentParser(description="Create SI Fig. S15 (ideal N/H offsets heatmap).")
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"), help="Path to outputs directory")
     parser.add_argument("--figures-dir", type=Path, default=Path("figures"), help="Path to figures directory")
     parser.add_argument(
@@ -100,9 +100,9 @@ def main() -> int:
         print("Failed to create heatmap.")
         return 1
 
-    suppl_path = figures_dir / "SF19_ideal_offsets.png"
+    suppl_path = figures_dir / "SF15_ideal_offsets.png"
     os.rename(heatmap_path, suppl_path)
-    print(f"SI Fig. S19 saved to {suppl_path.resolve()}")
+    print(f"SI Fig. S15 saved to {suppl_path.resolve()}")
     return 0
 
 

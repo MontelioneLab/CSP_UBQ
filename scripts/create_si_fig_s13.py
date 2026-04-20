@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Generator script filename (s13) ≠ SI index: this produces SI Fig. S14.
+Generator script filename (s13) ≠ SI index: this produces SI Fig. S10.
 
-SI Fig. S14 — CA-inclusive CSP confusion matrix histograms (two-panel image).
+SI Fig. S10 — CA-inclusive CSP confusion matrix histograms (two-panel image).
 
 - Panel A: stacked histogram of significant residues (TP/FP only)
 - Panel B: stacked confusion-matrix histogram (TN/FP/FN/TP)
 
 Output:
-- figures/SF14_ca_inclusive.png
+- figures/SF10_ca_inclusive.png
 
 Default targets list: CSP_UBQ_ph0.5_temp5C.csv (buffer-filtered subset). Override with --targets-csv.
 """
@@ -52,7 +52,7 @@ except Exception:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create SI Fig. S14 (CA-inclusive CSP confusion matrix histograms)."
+        description="Create SI Fig. S10 (CA-inclusive CSP confusion matrix histograms)."
     )
     parser.add_argument(
         "--outputs-dir",
@@ -66,7 +66,7 @@ def parse_args() -> argparse.Namespace:
         default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
         help="CSV with holo_pdb target IDs (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
-    parser.add_argument("--output-image", type=Path, default=Path("figures") / "SF14_ca_inclusive.png")
+    parser.add_argument("--output-image", type=Path, default=Path("figures") / "SF10_ca_inclusive.png")
     return parser.parse_args()
 
 
@@ -161,14 +161,14 @@ def main() -> int:
         )
         if not panel_a_path.is_file() or not panel_b_path.is_file():
             print(
-                "Cannot compose SI Fig. S14: one or both panel PNGs were not written "
+                "Cannot compose SI Fig. S10: one or both panel PNGs were not written "
                 "(no CA-distance data for selected targets / outputs).",
                 file=sys.stderr,
             )
             return 1
         compose_two_panel_figure(panel_a_path, panel_b_path, output_image)
 
-    print(f"SI Fig. S14 saved to {output_image.resolve()}")
+    print(f"SI Fig. S10 saved to {output_image.resolve()}")
     return 0
 
 

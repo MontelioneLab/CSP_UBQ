@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Generator script filename (s15) ≠ SI index: this produces SI Fig. S16.
+Generator script filename (s15) ≠ SI index: this produces SI Fig. S12.
 
-SI Fig. S16 — CSP DB confusion matrix histograms by closest interchain N–N distance.
+SI Fig. S12 — CSP DB confusion matrix histograms by closest interchain N–N distance.
 
 Two-panel figure:
 - Panel A: stacked histogram of significant residues (TP vs FP only)
 - Panel B: stacked confusion-matrix histogram (TN, FP, FN, TP)
 
-Output: figures/SF16_nn_distance.png
+Output: figures/SF12_nn_distance.png
 
 Default targets list: CSP_UBQ_ph0.5_temp5C.csv (buffer-filtered subset). Override with --targets-csv.
 """
@@ -295,10 +295,10 @@ def compose_two_panel_figure(panel_a_path: Path, panel_b_path: Path, output_imag
 
 
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Create SI Fig. S16 (N–N distance confusion matrix histograms).")
+    parser = argparse.ArgumentParser(description="Create SI Fig. S12 (N–N distance confusion matrix histograms).")
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
     parser.add_argument("--figures-dir", type=Path, default=Path("figures"))
-    parser.add_argument("--output", type=Path, default=None, help="Output path for SF16_nn_distance.png")
+    parser.add_argument("--output", type=Path, default=None, help="Output path for SF12_nn_distance.png")
     parser.add_argument(
         "--targets-csv",
         type=Path,
@@ -319,7 +319,7 @@ def main(argv: Iterable[str]) -> int:
     project_root = Path(__file__).resolve().parent.parent
     outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
     figures_dir = args.figures_dir if args.figures_dir.is_absolute() else project_root / args.figures_dir
-    output_image = args.output or (figures_dir / "SF16_nn_distance.png")
+    output_image = args.output or (figures_dir / "SF12_nn_distance.png")
     if not output_image.is_absolute():
         output_image = project_root / output_image
 
@@ -359,7 +359,7 @@ def main(argv: Iterable[str]) -> int:
         )
         compose_two_panel_figure(panel_a_path, panel_b_path, output_image)
 
-    print(f"SI Fig. S16 written to {output_image.resolve()}")
+    print(f"SI Fig. S12 written to {output_image.resolve()}")
     return 0
 
 
