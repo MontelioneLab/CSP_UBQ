@@ -19,6 +19,21 @@ from matplotlib.gridspec import GridSpec
 import numpy as np
 
 
+def format_case_study_metadata_header(
+    pdb_id: str,
+    apo_bmrb: Optional[str],
+    holo_bmrb: Optional[str],
+    apo_pdb: Optional[str] = None,
+) -> str:
+    """Build the case-study figure suptitle; PDB IDs are shown in uppercase."""
+    holo_s = (pdb_id or "").strip().upper() or "N/A"
+    apo_s = (apo_pdb or "").strip().upper() or "N/A"
+    return (
+        f"holo_pdb: {holo_s} | apo_pdb: {apo_s} | "
+        f"apo_bmrb: {apo_bmrb or 'N/A'} | holo_bmrb: {holo_bmrb or 'N/A'}"
+    )
+
+
 def extract_hsqc_bottom_right_panel(hsqc_png_path: str):
     """
     Extract the bottom-right panel from the 2x2 HSQC comparison image.
@@ -180,7 +195,7 @@ def compose_case_study_figure(
     hsqc_panel = _trim_whitespace(hsqc_bottom_right_panel)
 
     fig = plt.figure(figsize=(22, 12))
-    grid = GridSpec(2, 6, figure=fig, height_ratios=[1.0, 1.15], wspace=0.02, hspace=0.06)
+    grid = GridSpec(2, 6, figure=fig, height_ratios=[1.0, 1.15], wspace=0.02, hspace=0.08)
     fig.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.01)
     if case_study_header:
         fig.suptitle(case_study_header, fontsize=18, fontweight="bold", x=0.5, y=0.99)
@@ -202,6 +217,12 @@ def compose_case_study_figure(
     ax_top_left.set_title("Apo/Holo HSQC Offset", fontsize=14, fontweight="bold", pad=4)
     ax_top_right.imshow(csp_plot)
     ax_top_right.set_title("CSP Classification", fontsize=14, fontweight="bold", pad=4)
+    ax_top_right.set_xlabel("Sequence", fontsize=14)
+    ax_top_right.set_ylabel(r"$\Delta\delta_{NH}$ (ppm)", fontsize=14)
+    ax_top_right.set_xticks([])
+    ax_top_right.set_yticks([])
+    for spine in ax_top_right.spines.values():
+        spine.set_visible(False)
 
     ax_bottom_left.imshow(panel_left)
     ax_bottom_left.set_title("CSP Mask", fontsize=14, fontweight="bold", pad=4)
@@ -231,7 +252,7 @@ def compose_case_study_figure(
             bbox={"facecolor": "white", "alpha": 0.8, "edgecolor": "none", "pad": 2},
         )
 
-    for axis in (ax_top_left, ax_top_right, ax_bottom_left, ax_bottom_mid, ax_bottom_right):
+    for axis in (ax_top_left, ax_bottom_left, ax_bottom_mid, ax_bottom_right):
         axis.axis("off")
 
     fig.savefig(output_path, dpi=300, bbox_inches="tight")
@@ -243,6 +264,7 @@ def generate_case_study_figure(
     pdb_id: str,
     apo_bmrb: Optional[str] = None,
     holo_bmrb: Optional[str] = None,
+    apo_pdb: Optional[str] = None,
     force_view_reset: bool = False,
     view_key: Optional[str] = None,
 ) -> str:
@@ -310,6 +332,6 @@ def generate_case_study_figure(
 
     hsqc_panel = extract_hsqc_bottom_right_panel(hsqc_scatter_path)
     out_path = os.path.join(target_dir, f"{pdb_id}_case_study.png")
-    header = f"holo_pdb: {pdb_id} | apo_bmrb: {apo_bmrb or 'N/A'} | holo_bmrb: {holo_bmrb or 'N/A'}"
+    header = format_case_study_metadata_header(pdb_id, apo_bmrb, holo_bmrb, apo_pdb)
     compose_case_study_figure(hsqc_panel, csp_bars_path, rendered, out_path, case_study_header=header)
     return out_path

@@ -118,20 +118,43 @@ END
 
 @pytest.fixture
 def minimal_nmr_star_v3():
-    """Minimal NMR-STAR v3 format for BMRB parse test."""
+    """Minimal NMR-STAR v3 format for BMRB parse test (includes α-H)."""
     return """save_assigned_chemical_shifts_1
 _Assigned_chem_shift_list.Sf_category    assigned_chemical_shifts
+loop_
+_Atom_chem_shift.Seq_ID
+_Atom_chem_shift.Comp_ID
+_Atom_chem_shift.Atom_ID
+_Atom_chem_shift.Val
+1 MET N 120.5
+1 MET H 8.41
+1 MET CA 55.0
+1 MET HA 4.52
+2 GLY N 108.0
+2 GLY H 8.2
+2 GLY CA 44.0
+2 GLY HA2 3.90
+2 GLY HA3 3.95
+stop_
+save_
+"""
+
+
+@pytest.fixture
+def minimal_nmr_star_v21():
+    """Minimal NMR-STAR v2.1-style saveframe with α-H."""
+    return """save_assigned_chem_shift_list_1
+_Saveframe_category   assigned_chemical_shifts
 loop_
 _Residue_seq_code
 _Residue_label
 _Atom_name
-_Atom_chem_shift.Val
-1   MET   N   120.5
-1   MET   H   8.41
-1   MET   CA  55.0
-2   GLY   N   108.0
-2   GLY   H   8.2
-2   GLY   CA  44.0
+_Chem_shift_value
+1 MET N 120.5
+1 MET H 8.41
+1 MET CA 55.0
+1 MET HA 4.52
+stop_
 save_
 """
 
@@ -229,10 +252,36 @@ class TestParseSequenceAndShiftsFromSaveframes:
         star_path = os.path.join(temp_dir, "test_3.str")
         with open(star_path, "w") as f:
             f.write(minimal_nmr_star_v3)
-        # v3 format detection may require _Atom_chem_shift.Val
         result = parse_sequence_and_shifts_from_saveframes(star_path)
-        # May return [] if format is not fully valid; at least no crash
         assert isinstance(result, list)
+        assert len(result) == 1
+        seq, H, N, CA, HA, _name = result[0]
+        assert seq == "MG"
+        assert HA[1] == pytest.approx(4.52)
+        assert HA[2] == pytest.approx(3.925)
+        csv_path = os.path.join(temp_dir, "parsed", "test_3_residue_shifts.csv")
+        assert os.path.isfile(csv_path)
+        with open(csv_path, "r") as f:
+            lines = f.read().strip().splitlines()
+        assert lines[0] == "seq_pos,aa,H,N,CA,HA"
+        assert "4.520000" in lines[1]
+        assert "3.925000" in lines[2]
+
+    def test_parse_minimal_nmr_star_v21(self, temp_dir, minimal_nmr_star_v21):
+        star_path = os.path.join(temp_dir, "case_21.str")
+        with open(star_path, "w") as f:
+            f.write(minimal_nmr_star_v21)
+        result = parse_sequence_and_shifts_from_saveframes(star_path)
+        assert len(result) == 1
+        seq, _H, _N, _CA, HA, _name = result[0]
+        assert seq == "M"
+        assert HA[1] == pytest.approx(4.52)
+        per_sf_csv = os.path.join(
+            temp_dir,
+            "parsed",
+            "case_21_assigned-chem-shift-list-1_residue_shifts.csv",
+        )
+        assert os.path.isfile(per_sf_csv)
 
 
 class TestMergeAllCsvFiles:
@@ -341,18 +390,20 @@ class TestComputeCspMultipleSaveframes:
     """Tests for compute_csp_multiple_saveframes."""
 
     def test_compute_csp_returns_results(self):
-        # (sequence, H_shifts, N_shifts, CA_shifts, saveframe_name)
+        # (sequence, H_shifts, N_shifts, CA_shifts, HA_shifts, saveframe_name)
         apo_seq = "MQT"
         holo_seq = "MQT"
         H_apo = {1: 8.41, 2: 8.50, 3: 8.22}
         N_apo = {1: 122.0, 2: 121.7, 3: 117.2}
         CA_apo = {1: 55.0, 2: 56.0, 3: 61.5}
+        HA_apo: dict = {}
         H_holo = {1: 8.26, 2: 8.50, 3: 8.26}
         N_holo = {1: 115.7, 2: 121.7, 3: 115.7}
         CA_holo = {1: 55.8, 2: 56.0, 3: 60.6}
+        HA_holo: dict = {}
 
-        apo_sequences = [(apo_seq, H_apo, N_apo, CA_apo, "apo1")]
-        holo_sequences = [(holo_seq, H_holo, N_holo, CA_holo, "holo1")]
+        apo_sequences = [(apo_seq, H_apo, N_apo, CA_apo, HA_apo, "apo1")]
+        holo_sequences = [(holo_seq, H_holo, N_holo, CA_holo, HA_holo, "holo1")]
 
         results = compute_csp_multiple_saveframes(
             apo_sequences, holo_sequences,
@@ -540,6 +591,7 @@ class TestProcessRowIntegration:
             row,
             temp_dir,
             generate_case_study=False,
+            receptor_msa_png=False,
         )
         tgt_dir = os.path.join(temp_dir, "1cf4")
         assert os.path.exists(tgt_dir)

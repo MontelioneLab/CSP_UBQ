@@ -29,6 +29,7 @@ try:
     from .config import classification_colors, paths
     from .interaction_analysis import compute_nn_distance_filter
     from .rcsb_io import fetch_pdb
+    from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     import os as _os
     import sys as _sys
@@ -36,6 +37,7 @@ except Exception:
     from scripts.config import classification_colors, paths
     from scripts.interaction_analysis import compute_nn_distance_filter
     from scripts.rcsb_io import fetch_pdb
+    from scripts.target_resolution import load_target_rows, resolve_target_rows
 
 
 SIGNIFICANT_COLUMN = "significant"
@@ -57,24 +59,27 @@ def _as_bool(value: object) -> bool:
     return str(value).strip().lower() in {"1", "true", "t", "yes", "y"}
 
 
-def _parse_targets(targets_csv: Optional[Path], targets_str: Optional[str]) -> Optional[Set[str]]:
-    selected: Set[str] = set()
-    if targets_csv:
-        df = pd.read_csv(targets_csv)
-        if "holo_pdb" not in df.columns:
-            raise ValueError(f"Missing 'holo_pdb' column in {targets_csv}")
-        selected.update(df["holo_pdb"].astype(str).str.strip().str.lower().tolist())
+def _resolve_selected_dirs(
+    outputs_dir: Path,
+    targets_csv: Optional[Path],
+    targets_str: Optional[str],
+) -> Optional[Set[str]]:
+    """Resolve targets-CSV rows + comma-separated --targets to outputs/<dir> basenames.
+
+    Each row is matched to an outputs/ subdir by congruent ``apo_bmrb`` and
+    ``holo_bmrb`` (delegated to :mod:`scripts.target_resolution`); the first
+    matching dir wins when several share the same BMRB pair.
+    """
+    if targets_csv is None and not targets_str:
+        return None
+    extras: List[str] = []
     if targets_str:
-        selected.update(t.strip().lower() for t in targets_str.split(",") if t.strip())
-    return selected or None
-
-
-def _target_is_selected(target_name: str, selected: Optional[Set[str]]) -> bool:
-    if selected is None:
-        return True
-    target_lower = target_name.lower()
-    base_target = target_lower.split("_")[0]
-    return target_lower in selected or base_target in selected
+        extras = [t for t in targets_str.split(",") if t.strip()]
+    rows = load_target_rows(targets_csv, extra_holo_pdbs=extras)
+    if not rows:
+        return set()
+    paths = resolve_target_rows(rows, outputs_dir)
+    return {p.name for p in paths}
 
 
 def _resolve_pdb_path(holo_pdb: str) -> Optional[str]:
@@ -122,8 +127,14 @@ def _get_bins(data: Sequence[float], bin_width: float, max_distance: Optional[fl
 
 def collect_distance_categories(
     outputs_dir: Path,
-    selected_targets: Optional[Set[str]] = None,
+    selected_dir_names: Optional[Set[str]] = None,
 ) -> tuple[List[float], List[float], List[float], List[float]]:
+    """Collect (TP, FP, FN, TN) min-N distances across selected outputs/<dir> targets.
+
+    ``selected_dir_names`` is the set of resolved outputs basenames returned by
+    :func:`scripts.target_resolution.resolve_target_rows`. Pass ``None`` to
+    include every target subdirectory.
+    """
     tp_distances: List[float] = []
     fp_distances: List[float] = []
     fn_distances: List[float] = []
@@ -133,7 +144,7 @@ def collect_distance_categories(
 
     for alignment_path in sorted(outputs_dir.glob("*/master_alignment.csv")):
         target_name = alignment_path.parent.name
-        if not _target_is_selected(target_name, selected_targets):
+        if selected_dir_names is not None and target_name not in selected_dir_names:
             continue
 
         df = pd.read_csv(alignment_path)
@@ -324,10 +335,10 @@ def main(argv: Iterable[str]) -> int:
         output_image = project_root / output_image
 
     targets_csv = args.targets_csv
-    if not targets_csv.is_absolute():
+    if targets_csv is not None and not targets_csv.is_absolute():
         targets_csv = project_root / targets_csv
-    selected_targets = _parse_targets(targets_csv, args.targets)
-    tp, fp, fn, tn = collect_distance_categories(outputs_dir, selected_targets)
+    selected_dirs = _resolve_selected_dirs(outputs_dir, targets_csv, args.targets)
+    tp, fp, fn, tn = collect_distance_categories(outputs_dir, selected_dirs)
     if not (tp or fp or fn or tn):
         print(
             "No N-distance data found for selected targets. "

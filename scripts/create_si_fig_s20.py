@@ -15,22 +15,15 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from typing import Set
-
 try:
     from .analyze_offsets import collect_best_grid_offsets, create_grid_heatmap
-    from .plot_f1_vs_mcc import load_holo_pdb_ids_from_targets_csv
+    from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     project_root = Path(__file__).resolve().parent.parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
     from scripts.analyze_offsets import collect_best_grid_offsets, create_grid_heatmap  # type: ignore
-    from scripts.plot_f1_vs_mcc import load_holo_pdb_ids_from_targets_csv  # type: ignore
-
-
-def _output_dir_matches_targets(dir_name: str, holo_lower: Set[str]) -> bool:
-    t = dir_name.lower()
-    return t in holo_lower or t.split("_")[0] in holo_lower
+    from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
 
 
 def main() -> int:
@@ -60,7 +53,8 @@ def main() -> int:
         print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
         return 1
 
-    holo_set = load_holo_pdb_ids_from_targets_csv(targets_csv)
+    rows = load_target_rows(targets_csv)
+    selected_dir_names = {p.name for p in resolve_target_rows(rows, outputs_dir)}
 
     (
         _all_h,
@@ -72,9 +66,7 @@ def main() -> int:
     ) = collect_best_grid_offsets(str(outputs_dir))
 
     keys = sorted(
-        k
-        for k in h_by_target
-        if k in n_by_target and _output_dir_matches_targets(k, holo_set)
+        k for k in h_by_target if k in n_by_target and k in selected_dir_names
     )
     best_h_offsets = [h_by_target[k] for k in keys]
     best_n_offsets = [n_by_target[k] for k in keys]

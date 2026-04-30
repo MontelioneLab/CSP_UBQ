@@ -66,19 +66,33 @@ def system_id_matches_holo_csv(
 def load_f1_mcc(
     path: Path,
     holo_pdb_filter: Optional[Set[str]] = None,
+    *,
+    allowed_system_ids: Optional[Set[str]] = None,
 ) -> Tuple[List[float], List[float]]:
     """Load F1 and MCC columns as floats from the confusion-matrix CSV.
 
-    If holo_pdb_filter is set, only rows whose system_id matches an entry in the set
-    (or shares the same base PDB before '_') are included.
+    If ``allowed_system_ids`` is set, only rows whose ``system_id`` (case-insensitive)
+    matches one of those strings are included — use resolved ``outputs/<dir>``
+    basenames from :mod:`scripts.target_resolution`.
+
+    Otherwise if ``holo_pdb_filter`` is set, only rows whose system_id matches an entry
+    in the set (or shares the same base PDB before '_') are included.
     """
     f1_values: List[float] = []
     mcc_values: List[float] = []
 
+    allowed_lower: Optional[Set[str]] = None
+    if allowed_system_ids is not None:
+        allowed_lower = {s.strip().lower() for s in allowed_system_ids if s.strip()}
+
     with path.open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if holo_pdb_filter is not None:
+            if allowed_lower is not None:
+                sid = (row.get("system_id") or "").strip()
+                if not sid or sid.lower() not in allowed_lower:
+                    continue
+            elif holo_pdb_filter is not None:
                 sid = (row.get("system_id") or "").strip()
                 if not system_id_matches_holo_csv(sid, holo_pdb_filter):
                     continue

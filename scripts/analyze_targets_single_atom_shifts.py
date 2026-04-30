@@ -32,12 +32,26 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+# Reuse the canonical outlier-removal significance-threshold routine that the
+# 2D/HN-weighted pipeline in scripts/csp.py uses (outlier_z=3 iteratively,
+# threshold = mean + significance_z * SD of the cleaned subset, defaults
+# yielding threshold = mean of outlier-free subset).
+try:
+    from .csp import compute_threshold_with_outlier_removal  # type: ignore
+    from .config import thresholds as _thresholds  # type: ignore
+except Exception:
+    import os as _os, sys as _sys
+    _sys.path.append(_os.path.dirname(_os.path.dirname(os.path.abspath(__file__))))
+    from scripts.csp import compute_threshold_with_outlier_removal  # type: ignore
+    from scripts.config import thresholds as _thresholds  # type: ignore
+
 
 @dataclass
 class Atom1DStats:
     delta: Optional[float]
     csp_1d: Optional[float]
     z_1d: Optional[float]
+    significant: Optional[bool] = None
 
 
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
@@ -205,35 +219,49 @@ def _compute_f1_for_atom(
     target_name: str = "",
 ) -> Optional[TargetResult]:
     """
-    Compute F1 score for a single atom type using z_X_1d > 0 as ground truth
-    and predictor columns as the prediction.
+    Compute F1 score for a single atom type using the 2D-convention significance
+    column (csp_X_1d_significant) as ground truth and predictor columns as the
+    prediction.
+
+    The significance column is computed per target via iterative outlier removal
+    (mirroring scripts/csp.py for the HN-weighted pipeline): outliers with
+    z > outlier_z are removed iteratively, then the cutoff for significance
+    equals ``mean(cleaned) + significance_z * SD(cleaned)`` with the defaults
+    from scripts/config.py (outlier_z=3, significance_z=0) giving
+    "CSP_X_1d >= mean(outlier-free subset)".
+
+    For backward compatibility, if the significance column is missing we fall
+    back to the legacy ``z_X_1d > 0`` rule.
     """
-    # After merge, z-score columns may have suffixes. For CA in particular,
-    # the reliable z-scores often come from master_alignment.csv rather than 1d_analysis.csv.
-    base_z_col = f"z_{atom_type}_1d"
-
-    # Prefer columns that actually contain non-null data. Try several naming patterns:
-    #   - '{base}_align'  (from master_alignment.csv after merge)
-    #   - '{base}_1d'     (from 1d_analysis.csv after merge)
-    #   - '{base}'        (either side if no suffix was applied)
-    z_col: Optional[str] = None
-    for candidate in [f"{base_z_col}_align", f"{base_z_col}_1d", base_z_col]:
-        exists = candidate in df.columns
-        has_data = exists and df[candidate].notna().any() if exists else False
-        if exists and has_data:
-            z_col = candidate
-            break
-
-    if z_col is None:
+    # After merge, columns may carry a '_1d' or '_align' suffix. Probe several
+    # naming patterns and use the first candidate that has any non-null data.
+    def _pick_column(base: str) -> Optional[str]:
+        for candidate in [f"{base}_1d", f"{base}_align", base]:
+            if candidate in df.columns and df[candidate].notna().any():
+                return candidate
         return None
 
-    # Ground truth: z-score > 0
-    valid_mask = df[z_col].notna()
-    if not valid_mask.any():
-        return None
+    sig_col = _pick_column(f"csp_{atom_type}_1d_significant")
+    z_col = _pick_column(f"z_{atom_type}_1d")
 
-    z_vals = df.loc[valid_mask, z_col].astype(float)
-    actual = z_vals > 0.0
+    if sig_col is not None:
+        valid_mask = df[sig_col].notna()
+        if not valid_mask.any():
+            return None
+        raw = df.loc[valid_mask, sig_col]
+        # Column is stored as "True"/"False" strings in 1d_analysis.csv but may
+        # also arrive as bool/numeric depending on loader. Normalise robustly.
+        if raw.dtype == bool:
+            actual = raw.astype(bool)
+        else:
+            actual = raw.astype(str).str.strip().str.lower().isin({"true", "1", "1.0"})
+    elif z_col is not None:
+        valid_mask = df[z_col].notna()
+        if not valid_mask.any():
+            return None
+        actual = df.loc[valid_mask, z_col].astype(float) > 0.0
+    else:
+        return None
 
     # Prediction: any predictor column true
     # After merge, predictor columns may have _align suffix
@@ -454,24 +482,42 @@ def render_1d_f1_boxplot(
 
 def compute_1d_metrics_for_target(target_dir: Path) -> None:
     """
-    For a single target directory, compute 1D single-atom metrics and write 1d_analysis.csv.
+    For a single target directory, compute 1D single-atom metrics and write
+    ``1d_analysis.csv``.
+
+    Holo-shift offsets are applied consistently with the 3D grid search method
+    from :mod:`scripts.csp`: whenever ``csp_table_CA.csv`` exists (which is
+    the table produced by ``run_offset_grid_search_3d`` jointly optimizing
+    H/N/CA offsets), it is used as the primary source for H_apo, H_holo,
+    N_apo, N_holo, CA_apo, CA_holo, H_offset, N_offset, and CA_offset so all
+    three 1D CSPs come from the same offset set. ``csp_table.csv`` (which
+    carries 2D HN-grid offsets for H/N and 3D-grid CA offsets for CA) is used
+    as a fallback only when the CA-inclusive table is absent.
     """
     csp_table_path = target_dir / "csp_table.csv"
-    if not csp_table_path.exists():
-        return
-
-    # Optional CA-inclusive table; used to extend CA fields if needed.
     csp_table_ca_path = target_dir / "csp_table_CA.csv"
 
+    # Prefer csp_table_CA.csv when available so that H, N, and CA 1D CSPs all
+    # use the same 3D-grid-search-derived offsets.
+    if csp_table_ca_path.exists():
+        primary_path = csp_table_ca_path
+    elif csp_table_path.exists():
+        primary_path = csp_table_path
+    else:
+        return
+
     rows: List[Dict[str, str]] = []
-    with open(csp_table_path, "r", newline="") as f:
+    with open(primary_path, "r", newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
             rows.append(dict(row))
 
-    # Build CA lookup from csp_table_CA.csv keyed by (holo_resi, holo_aa)
+    # Secondary CA lookup retained as a fallback: if we ended up using
+    # csp_table.csv (no CA-inclusive table) we still try to pull CA shifts
+    # from any co-located csp_table_CA.csv; in practice the two branches are
+    # mutually exclusive but this preserves prior robustness guarantees.
     ca_lookup: Dict[Tuple[str, str], Dict[str, str]] = {}
-    if csp_table_ca_path.exists():
+    if primary_path is csp_table_path and csp_table_ca_path.exists():
         with open(csp_table_ca_path, "r", newline="") as f_ca:
             ca_reader = csv.DictReader(f_ca)
             for ca_row in ca_reader:
@@ -568,36 +614,65 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
 
         per_row_stats.append(stats_for_row)
 
-    # Compute per-target mean/sd and z-scores
+    # Compute per-target mean/sd (full data, used for informative z-scores)
+    # and the canonical significance threshold using iterative outlier removal
+    # matching the 2D/HN-weighted pipeline: outliers with z > outlier_z are
+    # removed iteratively from the per-target distribution, then the cutoff
+    # for significance is mean(cleaned) + significance_z * SD(cleaned).
     h_mean, h_sd = compute_atom_stats(h_csp_vals)
     n_mean, n_sd = compute_atom_stats(n_csp_vals)
     ca_mean, ca_sd = compute_atom_stats(ca_csp_vals)
 
-    idx_h = 0
-    idx_n = 0
-    idx_ca = 0
+    h_threshold_info = compute_threshold_with_outlier_removal(
+        h_csp_vals,
+        _thresholds.outlier_z_score,
+        _thresholds.significance_z_score,
+        _thresholds.max_outlier_iterations,
+        _thresholds.max_outlier_fraction,
+    )
+    n_threshold_info = compute_threshold_with_outlier_removal(
+        n_csp_vals,
+        _thresholds.outlier_z_score,
+        _thresholds.significance_z_score,
+        _thresholds.max_outlier_iterations,
+        _thresholds.max_outlier_fraction,
+    )
+    ca_threshold_info = compute_threshold_with_outlier_removal(
+        ca_csp_vals,
+        _thresholds.outlier_z_score,
+        _thresholds.significance_z_score,
+        _thresholds.max_outlier_iterations,
+        _thresholds.max_outlier_fraction,
+    )
 
-    for i, stats_for_row in enumerate(per_row_stats):
+    h_cutoff = float(h_threshold_info.threshold) if h_csp_vals else None
+    n_cutoff = float(n_threshold_info.threshold) if n_csp_vals else None
+    ca_cutoff = float(ca_threshold_info.threshold) if ca_csp_vals else None
+
+    for stats_for_row in per_row_stats:
         # H
         if stats_for_row["H"].csp_1d is not None and h_sd > 0.0:
-            z = (stats_for_row["H"].csp_1d - h_mean) / h_sd
-            stats_for_row["H"].z_1d = z
+            stats_for_row["H"].z_1d = (stats_for_row["H"].csp_1d - h_mean) / h_sd
         elif stats_for_row["H"].csp_1d is not None:
             stats_for_row["H"].z_1d = 0.0
+        if stats_for_row["H"].csp_1d is not None and h_cutoff is not None:
+            stats_for_row["H"].significant = bool(stats_for_row["H"].csp_1d >= h_cutoff)
 
         # N
         if stats_for_row["N"].csp_1d is not None and n_sd > 0.0:
-            z = (stats_for_row["N"].csp_1d - n_mean) / n_sd
-            stats_for_row["N"].z_1d = z
+            stats_for_row["N"].z_1d = (stats_for_row["N"].csp_1d - n_mean) / n_sd
         elif stats_for_row["N"].csp_1d is not None:
             stats_for_row["N"].z_1d = 0.0
+        if stats_for_row["N"].csp_1d is not None and n_cutoff is not None:
+            stats_for_row["N"].significant = bool(stats_for_row["N"].csp_1d >= n_cutoff)
 
         # CA
         if stats_for_row["CA"].csp_1d is not None and ca_sd > 0.0:
-            z = (stats_for_row["CA"].csp_1d - ca_mean) / ca_sd
-            stats_for_row["CA"].z_1d = z
+            stats_for_row["CA"].z_1d = (stats_for_row["CA"].csp_1d - ca_mean) / ca_sd
         elif stats_for_row["CA"].csp_1d is not None:
             stats_for_row["CA"].z_1d = 0.0
+        if stats_for_row["CA"].csp_1d is not None and ca_cutoff is not None:
+            stats_for_row["CA"].significant = bool(stats_for_row["CA"].csp_1d >= ca_cutoff)
 
     # Write per-target 1d_analysis.csv
     output_path = target_dir / "1d_analysis.csv"
@@ -620,6 +695,7 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         "dH_1d",
         "CSP_H_1d",
         "z_H_1d",
+        "csp_H_1d_significant",
         # N metrics
         "N_apo",
         "N_holo",
@@ -627,6 +703,7 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         "dN_1d",
         "CSP_N_1d",
         "z_N_1d",
+        "csp_N_1d_significant",
         # CA metrics
         "CA_apo",
         "CA_holo",
@@ -634,6 +711,7 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         "dCA_1d",
         "CSP_CA_1d",
         "z_CA_1d",
+        "csp_CA_1d_significant",
     ]
 
     with open(output_path, "w", newline="") as f_out:
@@ -663,6 +741,9 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
             out_row["dH_1d"] = f"{h_stats.delta:.4f}" if h_stats.delta is not None else ""
             out_row["CSP_H_1d"] = f"{h_stats.csp_1d:.4f}" if h_stats.csp_1d is not None else ""
             out_row["z_H_1d"] = f"{h_stats.z_1d:.4f}" if h_stats.z_1d is not None else ""
+            out_row["csp_H_1d_significant"] = (
+                "True" if h_stats.significant is True else ("False" if h_stats.significant is False else "")
+            )
 
             # N
             out_row["N_apo"] = row.get("N_apo", "")
@@ -672,6 +753,9 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
             out_row["dN_1d"] = f"{n_stats.delta:.4f}" if n_stats.delta is not None else ""
             out_row["CSP_N_1d"] = f"{n_stats.csp_1d:.4f}" if n_stats.csp_1d is not None else ""
             out_row["z_N_1d"] = f"{n_stats.z_1d:.4f}" if n_stats.z_1d is not None else ""
+            out_row["csp_N_1d_significant"] = (
+                "True" if n_stats.significant is True else ("False" if n_stats.significant is False else "")
+            )
 
             # CA (may be absent)
             out_row["CA_apo"] = row.get("CA_apo", "")
@@ -681,6 +765,9 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
             out_row["dCA_1d"] = f"{ca_stats.delta:.4f}" if ca_stats.delta is not None else ""
             out_row["CSP_CA_1d"] = f"{ca_stats.csp_1d:.4f}" if ca_stats.csp_1d is not None else ""
             out_row["z_CA_1d"] = f"{ca_stats.z_1d:.4f}" if ca_stats.z_1d is not None else ""
+            out_row["csp_CA_1d_significant"] = (
+                "True" if ca_stats.significant is True else ("False" if ca_stats.significant is False else "")
+            )
 
             writer.writerow(out_row)
 

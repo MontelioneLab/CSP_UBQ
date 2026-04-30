@@ -5,6 +5,7 @@ Usage examples:
   python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs --workers 4
   python scripts/pipeline.py --input data/CSP_UBQ.csv --ids 18251,34688 --out outputs
   python scripts/pipeline.py --input data/CSP_UBQ.csv --holo-pdb 1cf4 --out outputs
+  python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs --receptor-msa-png-only
 """
 
 from __future__ import annotations
@@ -34,8 +35,9 @@ try:
     from .analyze_targets_single_atom_shifts import compute_1d_metrics_for_target
     from .case_study import generate_case_study_figure
     from .case_study_2 import generate_case_study_2_figure
-    from .annotate_csp_csv_metadata import annotate_csv_with_ec_and_scope
+    from .annotate_csp_csv_metadata import annotate_csv_with_ec_and_scope, _load_receptor_chain_map
     from .confusion_matrix_analysis import generate_confusion_matrix_per_system
+    from .receptor_msa import try_write_receptor_alignment_png
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
@@ -52,8 +54,9 @@ except Exception:
     from scripts.analyze_targets_single_atom_shifts import compute_1d_metrics_for_target
     from scripts.case_study import generate_case_study_figure
     from scripts.case_study_2 import generate_case_study_2_figure
-    from scripts.annotate_csp_csv_metadata import annotate_csv_with_ec_and_scope
+    from scripts.annotate_csp_csv_metadata import annotate_csv_with_ec_and_scope, _load_receptor_chain_map
     from scripts.confusion_matrix_analysis import generate_confusion_matrix_per_system
+    from scripts.receptor_msa import try_write_receptor_alignment_png
 
 
 
@@ -93,6 +96,98 @@ def _emit_warning(message: str, log_path: Optional[str] = None) -> None:
         _append_log(log_path, message)
 
 
+def process_row_msa_png_only(
+    row: Dict[str, str],
+    out_dir: str,
+    *,
+    directory_suffix: Optional[str] = None,
+    bifurcation_basename: Optional[str] = None,
+) -> None:
+    """
+    Fetch holo (and optional apo) PDB chain sequences and write the five-way receptor
+    MSA PNG only — no BMRB, CSP, SASA, or other pipeline steps. Receptor chain comes
+    from ``data/receptor_chain_id.csv`` (same key as bifurcation).
+    """
+    apo_bmrb = (row.get("apo_bmrb") or "").strip()
+    holo_bmrb = (row.get("holo_bmrb") or "").strip()
+    apo_pdb = (row.get("apo_pdb") or "").strip()
+    holo_pdb = (row.get("holo_pdb") or "").strip() or (row.get("holo_pdb_id") or "").strip()
+    if not apo_bmrb or not holo_bmrb or not holo_pdb:
+        _emit_warning("[PIPE] MSA-only: skip row (missing apo_bmrb, holo_bmrb, or holo_pdb)")
+        return
+
+    if directory_suffix:
+        tgt_dir = os.path.join(out_dir, f"{holo_pdb}_{directory_suffix}")
+    else:
+        tgt_dir = os.path.join(out_dir, holo_pdb)
+    os.makedirs(tgt_dir, exist_ok=True)
+    logs_dir = os.path.join(tgt_dir, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+    log_msa = os.path.join(logs_dir, "12_receptor_msa_png.txt")
+    target_label = os.path.basename(tgt_dir)
+
+    _console_line(f"[PIPE] [{target_label}] receptor-msa-png-only (skipping CSP/SASA/…)")
+    _append_log(
+        log_msa,
+        f"[PIPE] Start MSA-only apo_bmrb={apo_bmrb} holo_bmrb={holo_bmrb} holo_pdb={holo_pdb}",
+    )
+
+    bifurcation_bn = (bifurcation_basename or "").strip() or None
+    if not bifurcation_bn:
+        bifurcation_bn = Path(paths.filtered_input_csv).stem
+
+    receptor_map = _load_receptor_chain_map(Path(paths.receptor_chain_csv))
+    receptor_chain = receptor_map.get((apo_bmrb, holo_bmrb, holo_pdb.lower()))
+
+    png_path = os.path.join(tgt_dir, f"{target_label}_sequence_alignments.png")
+    seq_apo_pdb_sq: Optional[str] = None
+    seq_holo_pdb_sq: Optional[str] = None
+
+    if not receptor_chain:
+        _emit_warning(
+            f"[PIPE] MSA-only: no receptor_chain_id mapping for ({apo_bmrb}, {holo_bmrb}, {holo_pdb}) in receptor_chain CSV",
+            log_msa,
+        )
+    else:
+        try:
+            holo_path = fetch_pdb(holo_pdb)
+            chains_h = parse_pdb_sequences(holo_path)
+            ru = str(receptor_chain).upper()
+            for ck, sq in chains_h.items():
+                if str(ck).upper() == ru:
+                    seq_holo_pdb_sq = sq
+                    break
+        except Exception as exc:
+            _append_log(log_msa, f"[PIPE] ERROR: holo PDB fetch/parse failed: {exc}")
+
+        if apo_pdb and receptor_chain:
+            try:
+                apo_path = fetch_pdb(apo_pdb)
+                chains_a = parse_pdb_sequences(apo_path)
+                ru = str(receptor_chain).upper()
+                for ck, sq in chains_a.items():
+                    if str(ck).upper() == ru:
+                        seq_apo_pdb_sq = sq
+                        break
+            except Exception as exc:
+                _append_log(log_msa, f"[PIPE] WARNING: apo PDB fetch/parse failed: {exc}")
+
+    ok, msa_msg = try_write_receptor_alignment_png(
+        data_dir=Path(paths.data_dir),
+        bifurcation_basename=bifurcation_bn,
+        apo_bmrb=apo_bmrb,
+        holo_bmrb=holo_bmrb,
+        holo_pdb=holo_pdb,
+        receptor_chain=receptor_chain,
+        seq_apo_pdb=seq_apo_pdb_sq,
+        seq_holo_pdb=seq_holo_pdb_sq,
+        out_png=Path(png_path),
+    )
+    _append_log(log_msa, f"[PIPE] receptor_msa_png: {msa_msg}")
+    if ok and os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes"):
+        print(f"[PIPE] ✓ Receptor sequence MSA PNG: {png_path}")
+
+
 def process_row(
     row: Dict[str, str],
     out_dir: str,
@@ -105,9 +200,12 @@ def process_row(
     generate_case_study: bool = True,
     include_numeric_residue_ticks: bool = False,
     force_case_study_view_reset: bool = False,
+    bifurcation_basename: Optional[str] = None,
+    receptor_msa_png: bool = True,
 ) -> None:
     apo_bmrb = (row.get("apo_bmrb") or "").strip()
     holo_bmrb = (row.get("holo_bmrb") or "").strip()
+    apo_pdb = (row.get("apo_pdb") or "").strip()
     holo_pdb = (row.get("holo_pdb") or "").strip() or (row.get("holo_pdb_id") or "").strip()
     if not apo_bmrb or not holo_bmrb or not holo_pdb:
         return
@@ -135,6 +233,7 @@ def process_row(
         "tables_outputs": os.path.join(logs_dir, "09_tables_and_visualizations.txt"),
         "master_csv": os.path.join(logs_dir, "10_master_csv.txt"),
         "case_study": os.path.join(logs_dir, "11_case_study.txt"),
+        "receptor_msa_png": os.path.join(logs_dir, "12_receptor_msa_png.txt"),
     }
     target_label = os.path.basename(tgt_dir)
     
@@ -256,8 +355,8 @@ def process_row(
     best_aligned_holo = None
     best_mapping = None
     
-    for apo_seq, _, _, _, apo_saveframe in apo_sequences:
-        for holo_seq, _, _, _, holo_saveframe in holo_sequences:
+    for apo_seq, _, _, _, _, apo_saveframe in apo_sequences:
+        for holo_seq, _, _, _, _, holo_saveframe in holo_sequences:
             aligned_apo, aligned_holo, mapping, alignment_score = align_global(apo_seq, holo_seq)
             if alignment_score > best_alignment_score:
                 best_alignment_score = alignment_score
@@ -356,7 +455,7 @@ def process_row(
     else:
         # Fallback: use any holo sequence if we couldn't determine the best one
         for ch, seq in chains.items():
-            for holo_seq, _, _, _, _ in holo_sequences:
+            for holo_seq, _, _, _, _, _ in holo_sequences:
                 _, _, ch_map, _ = align_global(holo_seq, seq)
                 num_mapped = len(ch_map)
                 if num_mapped > best_score or (num_mapped >= best_score * 0.95 and len(seq) > best_chain_length):
@@ -378,6 +477,52 @@ def process_row(
         print(f"[PIPE] Selected receptor chain={receptor_chain} (score={best_score:.2f}, length_match={best_length_match}) based on apo sequence alignment")
         if ligand_chain:
             print(f"[PIPE] Selected ligand chain={ligand_chain} (length={len(chains[ligand_chain])})")
+
+    if receptor_msa_png:
+        bifurcation_bn = (bifurcation_basename or "").strip() or None
+        if not bifurcation_bn:
+            bifurcation_bn = Path(paths.filtered_input_csv).stem
+        png_path = os.path.join(tgt_dir, f"{target_label}_sequence_alignments.png")
+        seq_apo_pdb_sq: Optional[str] = None
+        seq_holo_pdb_sq: Optional[str] = None
+        if receptor_chain:
+            rcu = str(receptor_chain).upper()
+            for ck, sq in chains.items():
+                if str(ck).upper() == rcu:
+                    seq_holo_pdb_sq = sq
+                    break
+        if apo_pdb and receptor_chain:
+            try:
+                apo_path = _run_logged(
+                    log_files["structure_pdb_alignment"],
+                    fetch_pdb,
+                    apo_pdb,
+                )
+                ac = _run_logged(log_files["structure_pdb_alignment"], parse_pdb_sequences, apo_path)
+                ru = str(receptor_chain).upper()
+                for ck, sq in ac.items():
+                    if str(ck).upper() == ru:
+                        seq_apo_pdb_sq = sq
+                        break
+            except Exception as exc:
+                _append_log(
+                    log_files["receptor_msa_png"],
+                    f"[PIPE] WARNING: Could not fetch/parse apo PDB {apo_pdb} for MSA PNG: {exc}",
+                )
+        ok, msa_msg = try_write_receptor_alignment_png(
+            data_dir=Path(paths.data_dir),
+            bifurcation_basename=bifurcation_bn,
+            apo_bmrb=apo_bmrb,
+            holo_bmrb=holo_bmrb,
+            holo_pdb=holo_pdb,
+            receptor_chain=receptor_chain,
+            seq_apo_pdb=seq_apo_pdb_sq,
+            seq_holo_pdb=seq_holo_pdb_sq,
+            out_png=Path(png_path),
+        )
+        _append_log(log_files["receptor_msa_png"], f"[PIPE] receptor_msa_png: {msa_msg}")
+        if ok and os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes"):
+            print(f"[PIPE] ✓ Receptor sequence MSA PNG: {png_path}")
 
     # Perform SASA occlusion analysis
     if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
@@ -1209,6 +1354,7 @@ def process_row(
                 pdb_id=holo_pdb,
                 apo_bmrb=apo_bmrb,
                 holo_bmrb=holo_bmrb,
+                apo_pdb=apo_pdb or None,
                 force_view_reset=force_reset_for_case_study_1,
                 view_key=target_label,
             )
@@ -1224,6 +1370,7 @@ def process_row(
                 pdb_id=holo_pdb,
                 apo_bmrb=apo_bmrb,
                 holo_bmrb=holo_bmrb,
+                apo_pdb=apo_pdb or None,
                 force_view_reset=force_reset_for_case_study_2,
                 view_key=target_label,
             )
@@ -1236,17 +1383,13 @@ def process_row(
 
 
 def lookup_all_rows_from_holo_pdb(csv_path: str, holo_pdb: str) -> List[Dict[str, str]]:
-    """Look up all rows with matching holo_pdb from CSP_UBQ.csv."""
+    """Look up all rows with matching holo_pdb from the input CSV (full row dicts, values stripped)."""
     rows = []
     with open(csv_path, "r", newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
             if row.get("holo_pdb", "").strip() == holo_pdb:
-                rows.append({
-                    "apo_bmrb": row.get("apo_bmrb", "").strip(),
-                    "holo_bmrb": row.get("holo_bmrb", "").strip(),
-                    "holo_pdb": row.get("holo_pdb", "").strip()
-                })
+                rows.append({k: (v or "").strip() for k, v in row.items()})
     if not rows:
         raise ValueError(f"No entry found for holo_pdb ID: {holo_pdb}")
     return rows
@@ -1357,12 +1500,30 @@ def main() -> None:
         help="Always recapture PyMOL perspective (F5) even if a saved view already exists.",
     )
     parser.add_argument(
+        "--bifurcation-basename",
+        default=None,
+        help="Stem for bifurcation CSV pair in data/ (e.g. CSP_UBQ_ph0.5_temp5C -> ..._domains.csv). "
+        "Defaults to the stem of filtered_input_csv from config.",
+    )
+    parser.add_argument(
+        "--no-receptor-msa-png",
+        action="store_true",
+        help="Skip five-way receptor sequence alignment PNG (data/*_domains.csv / *_full_length.csv + UniProt row).",
+    )
+    parser.add_argument(
         "--include-numeric-residue-ticks",
         action="store_true",
-        help="Include numeric residue index rows under CSP classification bar plots (default: off, amino-acid row only).",
+        help="Include numeric residue index rows under CSP classification bar plots (default: off).",
     )
-    
+    parser.add_argument(
+        "--receptor-msa-png-only",
+        action="store_true",
+        help="Only write receptor five-way sequence alignment PNG(s); skip BMRB fetch, CSP, SASA, and other steps.",
+    )
+
     args = parser.parse_args()
+    if args.receptor_msa_png_only and args.no_receptor_msa_png:
+        parser.error("--receptor-msa-png-only cannot be used with --no-receptor-msa-png")
 
     generate_case_study = not args.no_case_study
     if generate_case_study and not args.holo_pdb and args.workers and args.workers > 1:
@@ -1466,6 +1627,22 @@ def main() -> None:
                 rows.append(row)
                 row_suffixes[len(rows) - 1] = None
 
+    if args.receptor_msa_png_only:
+        if not rows:
+            print("[PIPE] ERROR: No rows matched for --receptor-msa-png-only")
+            return
+        if args.workers and args.workers > 1:
+            print("[PIPE] WARNING: --receptor-msa-png-only runs serially (ignoring --workers > 1).")
+        for idx, row in enumerate(rows):
+            process_row_msa_png_only(
+                row,
+                args.out,
+                directory_suffix=row_suffixes.get(idx),
+                bifurcation_basename=args.bifurcation_basename,
+            )
+        _console_line(f"[PIPE] receptor-msa-png-only: finished {len(rows)} row(s).")
+        return
+
     # Prepare SASA arguments
     sasa_args = {
         'probe_radius': args.probe_radius,
@@ -1523,6 +1700,8 @@ def main() -> None:
                     generate_case_study,
                     args.include_numeric_residue_ticks,
                     args.force_case_study_view_reset,
+                    args.bifurcation_basename,
+                    not args.no_receptor_msa_png,
                 )
                 for idx, row in enumerate(rows)
             ]
@@ -1550,6 +1729,8 @@ def main() -> None:
                 generate_case_study,
                 args.include_numeric_residue_ticks,
                 args.force_case_study_view_reset,
+                args.bifurcation_basename,
+                not args.no_receptor_msa_png,
             )
 
     # Generate confusion_matrix_per_system.csv for downstream scripts (create_si_fig_s20, etc.)

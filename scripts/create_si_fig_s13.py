@@ -34,20 +34,20 @@ except Exception:
 try:
     from .analyze_targets_ca import (
         collect_results,
-        load_targets_from_csv,
         render_confusion_matrix_stacked_histogram,
         render_stacked_histogram,
     )
+    from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     project_root = Path(__file__).resolve().parent.parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
     from scripts.analyze_targets_ca import (  # type: ignore
         collect_results,
-        load_targets_from_csv,
         render_confusion_matrix_stacked_histogram,
         render_stacked_histogram,
     )
+    from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
 
 
 def parse_args() -> argparse.Namespace:
@@ -125,7 +125,8 @@ def main() -> int:
         print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
         return 1
 
-    allowed_targets = load_targets_from_csv(targets_csv)
+    rows = load_target_rows(targets_csv)
+    allowed_targets = {p.name for p in resolve_target_rows(rows, outputs_dir)}
     _, distances, confusion_records = collect_results(outputs_dir, allowed_targets)
 
     positive_count = sum(1 for record in distances if record.is_predicted_positive)

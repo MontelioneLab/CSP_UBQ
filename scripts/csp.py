@@ -606,8 +606,8 @@ def save_grid_heatmap_png(output_png: str, grid_result: Dict[str, object], title
     cbar = plt.colorbar(im, ax=ax, orientation='horizontal', pad=0.25, shrink=0.8, aspect=25)
     cbar.set_label(r'Number of aligned peaks ($\Delta\delta$ < 0.05 ppm)', fontsize=10)
     cbar.ax.tick_params(labelsize=8)
-    ax.set_xlabel('¹⁵N Offset', fontsize=10)
-    ax.set_ylabel('¹H Offset', fontsize=10)
+    ax.set_xlabel('¹⁵N Offset (ppm)', fontsize=10)
+    ax.set_ylabel('¹H Offset (ppm)', fontsize=10)
     ax.set_title(title, fontsize=11)
     # Mark optimal offset with black star
     best_h_idx = int(np.argmin(np.abs(h_values - best_h)))
@@ -618,13 +618,26 @@ def save_grid_heatmap_png(output_png: str, grid_result: Dict[str, object], title
     n_idx = np.linspace(0, len(n_values) - 1, num=num_ticks).astype(int)
     h_idx = np.linspace(0, len(h_values) - 1, num=num_ticks).astype(int)
     ax.set_xticks(n_idx)
-    ax.set_xticklabels([f"{n_values[i]:.2f}" for i in n_idx], fontsize=8, rotation=45, ha='right')
+    _tick_fs = 6
+    ax.set_xticklabels(
+        [f"{n_values[i]:.2f}" for i in n_idx],
+        fontsize=_tick_fs,
+        rotation=45,
+        ha='right',
+    )
     ax.set_yticks(h_idx)
-    ax.set_yticklabels([f"{h_values[i]:.2f}" for i in h_idx], fontsize=8)
+    ax.set_yticklabels([f"{h_values[i]:.2f}" for i in h_idx], fontsize=_tick_fs)
     # Add optimal offset result as text
-    ax.text(0.02, 0.98, f"(¹⁵N offset, ¹H offset) = ({best_n:.2f}, {best_h:.2f})",
-            transform=ax.transAxes, fontsize=9, va='top', ha='left',
-            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    ax.text(
+        0.02,
+        0.98,
+        f"(¹⁵N offset, ¹H offset) = ({best_n:.2f}, {best_h:.2f}) ppm",
+        transform=ax.transAxes,
+        fontsize=9,
+        va='top',
+        ha='left',
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8),
+    )
     plt.tight_layout(pad=1.5)
     _ensure_dir(os.path.dirname(output_png))
     fig.savefig(output_png, dpi=200, bbox_inches='tight')
@@ -1059,8 +1072,8 @@ def compute_csp_A(
 
 
 def compute_csp_multiple_saveframes(
-    apo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], str]],
-    holo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], str]],
+    apo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], str]],
+    holo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], str]],
     apo_bmrb: str,
     holo_bmrb: str,
     holo_pdb: str,
@@ -1089,8 +1102,8 @@ def compute_csp_multiple_saveframes(
     best_alignment_score = float('-inf')
     best_alignment_info = None
     
-    for apo_seq, H_apo, N_apo, _CA_apo, apo_saveframe in apo_sequences:
-        for holo_seq, H_holo, N_holo, _CA_holo, holo_saveframe in holo_sequences:
+    for apo_seq, H_apo, N_apo, _CA_apo, _HA_apo, apo_saveframe in apo_sequences:
+        for holo_seq, H_holo, N_holo, _CA_holo, _HA_holo, holo_saveframe in holo_sequences:
             if _verbose:
                 print(f"[CSP] Aligning apo({apo_saveframe}) vs holo({holo_saveframe})")
             
@@ -1735,8 +1748,8 @@ def compute_csp_from_aligned_sequences_ca(
 
 
 def compute_csp_multiple_saveframes_ca(
-    apo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], str]],
-    holo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], str]],
+    apo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], str]],
+    holo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], str]],
     apo_bmrb: str,
     holo_bmrb: str,
     holo_pdb: str,
@@ -1763,8 +1776,8 @@ def compute_csp_multiple_saveframes_ca(
     best_alignment_score = float('-inf')
     best_alignment_info = None
 
-    for apo_seq, H_apo, N_apo, CA_apo, apo_saveframe in apo_sequences:
-        for holo_seq, H_holo, N_holo, CA_holo, holo_saveframe in holo_sequences:
+    for apo_seq, H_apo, N_apo, CA_apo, _HA_apo, apo_saveframe in apo_sequences:
+        for holo_seq, H_holo, N_holo, CA_holo, _HA_holo, holo_saveframe in holo_sequences:
             if _verbose:
                 print(f"[CSP-CA] Aligning apo({apo_saveframe}) vs holo({holo_saveframe})")
 

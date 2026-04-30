@@ -8,8 +8,9 @@ default config). Plots a histogram of these per-target thresholds.
 
 Output: figures/SF16_significance_threshold.png
 
-By default only targets listed in CSP_UBQ_ph0.5_temp5C.csv (holo_pdb) are included.
-Override with --targets-csv.
+By default only targets listed in CSP_UBQ_ph0.5_temp5C.csv are included; each row is
+resolved to ``outputs/<dir>`` via ``apo_bmrb``/``holo_bmrb`` congruence with
+``master_alignment.csv`` (see ``scripts.target_resolution``). Override with --targets-csv.
 """
 
 from __future__ import annotations
@@ -18,7 +19,7 @@ import argparse
 import statistics
 import sys
 from pathlib import Path
-from typing import List, Set
+from typing import List, Optional, Set
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -26,28 +27,27 @@ import pandas as pd
 try:
     from .config import thresholds
     from .csp import compute_threshold_with_outlier_removal
-    from .plot_f1_vs_mcc import load_holo_pdb_ids_from_targets_csv
+    from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     import os as _os
     import sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.config import thresholds
     from scripts.csp import compute_threshold_with_outlier_removal
-    from scripts.plot_f1_vs_mcc import load_holo_pdb_ids_from_targets_csv
+    from scripts.target_resolution import load_target_rows, resolve_target_rows
 
 
-def _output_dir_matches_targets(dir_name: str, holo_lower: Set[str]) -> bool:
-    t = dir_name.lower()
-    return t in holo_lower or t.split("_")[0] in holo_lower
+def collect_thresholds(outputs_dir: Path, selected_dir_names: Optional[Set[str]]) -> List[tuple[str, float]]:
+    """Collect (target_name, threshold) for each target with valid csp_A data.
 
-
-def collect_thresholds(outputs_dir: Path, holo_lower: Set[str]) -> List[tuple[str, float]]:
-    """Collect (target_name, threshold) for each target with valid csp_A data."""
+    ``selected_dir_names`` is the set of resolved ``outputs/<dir>`` basenames;
+    pass ``None`` to scan every subdirectory.
+    """
     results: List[tuple[str, float]] = []
 
     for alignment_path in sorted(outputs_dir.glob("*/master_alignment.csv")):
         target_name = alignment_path.parent.name
-        if not _output_dir_matches_targets(target_name, holo_lower):
+        if selected_dir_names is not None and target_name not in selected_dir_names:
             continue
         df = pd.read_csv(alignment_path)
 
@@ -82,7 +82,9 @@ def main() -> int:
         "--targets-csv",
         type=Path,
         default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
-        help="CSV with holo_pdb column (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
+        help=(
+            "CSV with holo_pdb plus apo_bmrb/holo_bmrb (default: data/CSP_UBQ_ph0.5_temp5C.csv)."
+        ),
     )
     parser.add_argument("--output", type=Path, default=Path("figures") / "SF16_significance_threshold.png")
     parser.add_argument("--bin-width", type=float, default=0.02)
@@ -105,8 +107,9 @@ def main() -> int:
         print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
         return 1
 
-    holo_set = load_holo_pdb_ids_from_targets_csv(targets_csv)
-    data = collect_thresholds(outputs_dir, holo_set)
+    rows = load_target_rows(targets_csv)
+    selected = {p.name for p in resolve_target_rows(rows, outputs_dir)}
+    data = collect_thresholds(outputs_dir, selected)
     if not data:
         print("No threshold data found.", file=sys.stderr)
         return 1

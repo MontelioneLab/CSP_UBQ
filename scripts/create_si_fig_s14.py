@@ -20,9 +20,9 @@ try:
     from .analyze_targets_ca import (
         collect_nh_results,
         collect_results,
-        load_targets_from_csv,
         render_f1_comparison_scatterplot,
     )
+    from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     project_root = Path(__file__).resolve().parent.parent
     if str(project_root) not in sys.path:
@@ -30,9 +30,9 @@ except Exception:
     from scripts.analyze_targets_ca import (  # type: ignore
         collect_nh_results,
         collect_results,
-        load_targets_from_csv,
         render_f1_comparison_scatterplot,
     )
+    from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
 
 
 def parse_args() -> argparse.Namespace:
@@ -75,7 +75,8 @@ def main() -> int:
         print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
         return 1
 
-    allowed_targets = load_targets_from_csv(targets_csv)
+    rows = load_target_rows(targets_csv)
+    allowed_targets = {p.name for p in resolve_target_rows(rows, outputs_dir)}
     ca_results, _, _ = collect_results(outputs_dir, allowed_targets)
     nh_results = collect_nh_results(outputs_dir, allowed_targets)
 

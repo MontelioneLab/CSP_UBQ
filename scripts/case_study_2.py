@@ -18,12 +18,16 @@ from matplotlib.gridspec import GridSpec
 import numpy as np
 
 try:
-    from .case_study import capture_user_view_interactive, render_pymol_panel_with_view
+    from .case_study import capture_user_view_interactive, format_case_study_metadata_header, render_pymol_panel_with_view
 except Exception:
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     if project_root not in sys.path:
         sys.path.insert(0, project_root)
-    from scripts.case_study import capture_user_view_interactive, render_pymol_panel_with_view  # type: ignore
+    from scripts.case_study import (  # type: ignore
+        capture_user_view_interactive,
+        format_case_study_metadata_header,
+        render_pymol_panel_with_view,
+    )
 
 
 def _load_view(view_output_path: str) -> List[float]:
@@ -110,6 +114,7 @@ def generate_case_study_2_figure(
     pdb_id: str,
     apo_bmrb: Optional[str] = None,
     holo_bmrb: Optional[str] = None,
+    apo_pdb: Optional[str] = None,
     force_view_reset: bool = False,
     panel_labels: Optional[Sequence[str]] = None,
     view_key: Optional[str] = None,
@@ -171,7 +176,7 @@ def generate_case_study_2_figure(
     render_pymol_panel_with_view(classification_pml, view, rendered["confusion"])
 
     out_path = os.path.join(target_dir, f"{pdb_id}_case_study_2.png")
-    header = f"holo_pdb: {pdb_id} | apo_bmrb: {apo_bmrb or 'N/A'} | holo_bmrb: {holo_bmrb or 'N/A'}"
+    header = format_case_study_metadata_header(pdb_id, apo_bmrb, holo_bmrb, apo_pdb)
     compose_case_study_2_figure(
         csp_bars_path,
         rendered,

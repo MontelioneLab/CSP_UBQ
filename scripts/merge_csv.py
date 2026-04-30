@@ -497,9 +497,9 @@ def write_master_csv(csp_data: Dict[int, Dict[str, Any]],
     one_d_columns = [
         'H_offset', 'N_offset', 'CA_offset',
         'CA_apo', 'CA_holo',
-        'dH_1d', 'CSP_H_1d', 'z_H_1d',
-        'dN_1d', 'CSP_N_1d', 'z_N_1d',
-        'dCA_1d', 'CSP_CA_1d', 'z_CA_1d',
+        'dH_1d', 'CSP_H_1d', 'z_H_1d', 'csp_H_1d_significant',
+        'dN_1d', 'CSP_N_1d', 'z_N_1d', 'csp_N_1d_significant',
+        'dCA_1d', 'CSP_CA_1d', 'z_CA_1d', 'csp_CA_1d_significant',
     ]
     
     # Add classification column after CSP columns
