@@ -1,13 +1,25 @@
 #!/usr/bin/env python3
 """
-Generator script filename (s14) ≠ SI index: this produces SI Fig. S11.
+SI Fig. S14 — Per-target **F1 scores** for 1D H / N / Cα CSPs (boxplots + paired Wilcoxon).
 
-SI Fig. S11 — CA-inclusive vs exclusive CSP F1 scores scatterplot.
+Implements publication SI Fig. S14 by delegating to
+:func:`run_f1_1d_boxplot` in ``create_si_fig_f1_1d_boxplot`` (same F1 /
+significance logic as ``SF_f1_1d_boxplot.png``). Targets are filtered with
+:class:`scripts.target_resolution` so canonical ``outputs/{HOLO}_{apo_bmrb}/``
+directories match ``CSP_UBQ``-style rows.
 
-Reuses existing logic from scripts/analyze_targets_ca.py and writes:
-  ./figures/SF11_f1_ca_vs_exclusive.png
+Older versions of this script incorrectly plotted summarized **|1D CSP|**
+magnitudes on the *y*-axis rather than classifier **F1** scores derived from the
+same 1D significance rules as the rest of the 1D single-atom analysis.
 
-Default targets list: CSP_UBQ_ph0.5_temp5C.csv (buffer-filtered subset). Override with --targets-csv.
+Outputs:
+
+  ./figures/SF14_1d_CSP_boxplot.png
+  ./figures/SF14_1d_CSP_boxplot_stats.csv  (Holm-adjusted pairwise *p*-values)
+
+Default targets: ``data/CSP_UBQ_ph0.5_temp5C.csv``. Override via ``--targets-csv``.
+CA-shift gating uses :func:`target_basenames_passing_ca_shift_coverage` in
+``analyze_targets_single_atom_shifts`` (same as SI Fig. S10 / S11; ``--min-ca-coverage``).
 """
 
 from __future__ import annotations
@@ -17,45 +29,54 @@ import sys
 from pathlib import Path
 
 try:
-    from .analyze_targets_ca import (
-        collect_nh_results,
-        collect_results,
-        render_f1_comparison_scatterplot,
-    )
-    from .target_resolution import load_target_rows, resolve_target_rows
+    from .analyze_targets_single_atom_shifts import DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE
+    from .create_si_fig_f1_1d_boxplot import run_f1_1d_boxplot
 except Exception:
     project_root = Path(__file__).resolve().parent.parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
-    from scripts.analyze_targets_ca import (  # type: ignore
-        collect_nh_results,
-        collect_results,
-        render_f1_comparison_scatterplot,
+    from scripts.analyze_targets_single_atom_shifts import (  # type: ignore
+        DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
     )
-    from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
+    from scripts.create_si_fig_f1_1d_boxplot import run_f1_1d_boxplot  # type: ignore
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create SI Fig. S11 (CA-inclusive vs exclusive CSP F1 scores)."
+        description="SI Fig. S14: 1D H/N/Cα F1 score boxplots with paired Wilcoxon (Holm-adjusted)."
     )
     parser.add_argument(
         "--outputs-dir",
         type=Path,
         default=Path("outputs"),
-        help="Root outputs directory with per-target subdirectories.",
+        help="Root outputs directory with per-target folders.",
     )
     parser.add_argument(
         "--targets-csv",
         type=Path,
         default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
-        help="CSV file containing holo_pdb targets (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
+        help="Targets CSV (holo_pdb + apo_bmrb); resolved to output dirs (default: buffer-filtered CSP_UBQ).",
     )
     parser.add_argument(
         "--output-image",
         type=Path,
-        default=Path("figures") / "SF11_f1_ca_vs_exclusive.png",
-        help="Destination for SI Fig. S11.",
+        default=Path("figures") / "SF14_1d_CSP_boxplot.png",
+        help="Destination PNG for SI Fig. S14.",
+    )
+    parser.add_argument(
+        "--stats-csv",
+        type=Path,
+        default=None,
+        help="Optional Holm stats table path (default: sibling <stem>_stats.csv next to --output-image).",
+    )
+    parser.add_argument(
+        "--min-ca-coverage",
+        type=float,
+        default=DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
+        help=(
+            "Same as SI Fig. S11: strictly more than this fraction of 1d_analysis.csv "
+            "rows must have both CA_apo and CA_holo (default: %(default)s)."
+        ),
     )
     return parser.parse_args()
 
@@ -67,30 +88,22 @@ def main() -> int:
     outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
     targets_csv = args.targets_csv if args.targets_csv.is_absolute() else project_root / args.targets_csv
     output_image = args.output_image if args.output_image.is_absolute() else project_root / args.output_image
+    stats_csv = (
+        None
+        if args.stats_csv is None
+        else (args.stats_csv if args.stats_csv.is_absolute() else project_root / args.stats_csv)
+    )
 
-    if not outputs_dir.exists():
-        print(f"Error: outputs directory does not exist: {outputs_dir}", file=sys.stderr)
-        return 1
-    if not targets_csv.exists():
-        print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
-        return 1
-
-    rows = load_target_rows(targets_csv)
-    allowed_targets = {p.name for p in resolve_target_rows(rows, outputs_dir)}
-    ca_results, _, _ = collect_results(outputs_dir, allowed_targets)
-    nh_results = collect_nh_results(outputs_dir, allowed_targets)
-
-    if not ca_results:
-        print("No CA-inclusive results found for selected targets.", file=sys.stderr)
-        return 1
-    if not nh_results:
-        print("No N/H results found for selected targets.", file=sys.stderr)
-        return 1
-
-    output_image.parent.mkdir(parents=True, exist_ok=True)
-    render_f1_comparison_scatterplot(ca_results, nh_results, output_image)
-    print(f"SI Fig. S11 saved to {output_image.resolve()}")
-    return 0
+    rc = run_f1_1d_boxplot(
+        outputs_dir,
+        targets_csv=targets_csv,
+        output_image=output_image,
+        stats_csv=stats_csv,
+        min_ca_coverage=float(args.min_ca_coverage),
+    )
+    if rc == 0:
+        print(f"SI Fig. S14 saved to {output_image.resolve()}")
+    return rc
 
 
 if __name__ == "__main__":

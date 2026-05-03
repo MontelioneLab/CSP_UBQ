@@ -11,8 +11,8 @@ Rows are classified using apo_holo_exp_conditions.csv (or recomputed from the sa
 
 Stricter pH match (e.g. |ΔpH| ≤ 0.1):  --ph-max-diff 0.1
 
-Each CSP_UBQ row is mapped to its pipeline output folder (including holo_pdb_1, _2, … when
-duplicates exist). Folder names are matched case-insensitively against outputs/.
+Each CSP_UBQ row is mapped to its pipeline output folder ``outputs/{HOLO_PDB}_{apo_bmrb}/``
+(see ``scripts.target_resolution``). Folder names are matched case-insensitively against outputs/.
 
 Default mode is CA-inclusive CSPs (csp_table_CA.csv). Use --mode nh for N/H (master_alignment.csv).
 
@@ -29,13 +29,18 @@ import argparse
 import csv
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Set
+from typing import Any, Dict, List, Optional, Set
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from scripts.config import Paths  # noqa: E402
+from scripts.target_resolution import (  # noqa: E402
+    build_resolution_caches,
+    logical_output_dirname_for_manifest,
+    resolve_output_dir_from_csv_row,
+)
 
 DEFAULT_PH_MAX_DIFF = 0.5
 DEFAULT_TEMP_MAX_DIFF_C = 5.0
@@ -44,57 +49,6 @@ DEFAULT_TEMP_MAX_DIFF_C = 5.0
 def load_csp_ubq_rows(path: Path) -> List[Dict[str, str]]:
     with path.open(newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
-
-
-def logical_output_dirname_per_row(rows: Sequence[Dict[str, str]]) -> List[Optional[str]]:
-    """Same holo_pdb + duplicate-index scheme as scripts/pipeline.py."""
-    holo_pdb_to_rows: Dict[str, List[Dict[str, str]]] = {}
-    for row in rows:
-        h = (row.get("holo_pdb") or "").strip()
-        if h:
-            holo_pdb_to_rows.setdefault(h, []).append(row)
-
-    out: List[Optional[str]] = []
-    for row in rows:
-        h = (row.get("holo_pdb") or "").strip()
-        apo = (row.get("apo_bmrb") or "").strip()
-        holo_b = (row.get("holo_bmrb") or "").strip()
-        if not h:
-            out.append(None)
-            continue
-        matches = holo_pdb_to_rows[h]
-        if len(matches) <= 1:
-            out.append(h)
-            continue
-        duplicate_index: Optional[int] = None
-        for idx, m in enumerate(matches, start=1):
-            if (m.get("apo_bmrb") or "").strip() == apo and (m.get("holo_bmrb") or "").strip() == holo_b:
-                duplicate_index = idx
-                break
-        if duplicate_index is not None:
-            out.append(f"{h}_{duplicate_index}")
-        else:
-            out.append(None)
-    return out
-
-
-def build_outputs_index(outputs_dir: Path) -> Dict[str, Path]:
-    """Lowercase directory name -> actual path (first wins)."""
-    idx: Dict[str, Path] = {}
-    if not outputs_dir.is_dir():
-        return idx
-    for p in sorted(outputs_dir.iterdir()):
-        if p.is_dir() and not p.name.startswith("."):
-            k = p.name.lower()
-            if k not in idx:
-                idx[k] = p
-    return idx
-
-
-def resolve_dir(index: Dict[str, Path], logical: Optional[str]) -> Optional[Path]:
-    if not logical:
-        return None
-    return index.get(logical.lower())
 
 
 def row_meets_ph_temp_criteria(
@@ -269,7 +223,8 @@ def main() -> int:
         return 1
 
     csp_rows = load_csp_ubq_rows(csp_path)
-    dirnames = logical_output_dirname_per_row(csp_rows)
+
+    resolution_caches = build_resolution_caches(outputs_root)
 
     with exp_path.open(newline="", encoding="utf-8") as f:
         exp_rows = list(csv.DictReader(f))
@@ -282,7 +237,6 @@ def main() -> int:
         )
     n = min(len(csp_rows), len(exp_rows))
 
-    index = build_outputs_index(outputs_root)
     similar_dirs: List[Path] = []
     complement_dirs: List[Path] = []
     manifest_rows: List[Dict[str, str]] = []
@@ -294,8 +248,9 @@ def main() -> int:
     temp_tol = float(args.temp_max_diff_c)
 
     for i in range(n):
-        logical = dirnames[i] if i < len(dirnames) else None
-        resolved = resolve_dir(index, logical)
+        row = csp_rows[i]
+        logical = logical_output_dirname_for_manifest(row) or None
+        resolved = resolve_output_dir_from_csv_row(row, caches=resolution_caches)
         similar = row_meets_ph_temp_criteria(
             exp_rows[i], ph_max_diff=ph_tol, temp_max_diff_c=temp_tol
         )

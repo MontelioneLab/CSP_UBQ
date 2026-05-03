@@ -176,7 +176,7 @@ See your project CSV for any additional columns.
 
 ## Output files
 
-Per processed entry, under `outputs/{holo_pdb}/` (or suffixed directory if duplicates):
+Per processed entry, under `outputs/{HOLO_PDB}_{apo_bmrb}/` (uppercase PDB ID and apo BMRB ID, e.g. `1CF4_18251`). Each `(holo_pdb, apo_bmrb)` pair must be unique in the input CSV. Older `outputs/<pdb>/` or `outputs/<pdb>_<n>/` trees are not resolved unless `CSP_LEGACY_OUTPUT_DIRS=1` is set when using analysis helpers in `scripts/target_resolution.py`.
 
 ### Data
 
@@ -260,10 +260,16 @@ Edit `scripts/config.py` for paths, network timeouts, alignment scoring, thresho
 Example:
 
 ```bash
-pymol outputs/<holo_pdb>/color_occlusion.pml
+pymol outputs/<HOLO_PDB>_<apo_bmrb>/color_occlusion.pml
 ```
 
 Scripts typically color the receptor chain, binding-site-related residues, and ligand (e.g. cyan) according to the generator in `visualize.py`.
+
+### Case-study views, grid referencing, and `--apo-bmrb`
+
+- Saved case-study camera JSON files live under `pymol_views/`. New captures are written as `{HOLO_PDB}_{apo_bmrb}_case_study_view.json` (same as the canonical outputs folder basename). The pipeline **also** loads legacy files `{holo_pdb}_case_study_view.json` (CSV casing, plus a lowercase variant if different) when the canonical file is missing, so existing views keep working without renaming.
+- With **grid referencing** enabled in `scripts/config.py`, offset grid CSV/PNG caches are written under `outputs/{HOLO_PDB}_{apo_bmrb}/` using the same `target_label` the pipeline passes into `scripts/csp.py`.
+- `scripts/confusion_matrix_visualizer.py` resolves directories via `scripts/target_resolution.py`. Pass **`--apo-bmrb`** when several CSP_UBQ rows share the same holo PDB so the correct folder is chosen.
 
 ## Troubleshooting
 

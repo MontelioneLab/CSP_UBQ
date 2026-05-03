@@ -7,8 +7,9 @@ For each target directory under ``outputs/``, the F1 scores for 1D H, N, and
 CA CSPs are computed (reusing :func:`collect_1d_f1_results` from
 :mod:`analyze_targets_single_atom_shifts`). The figure is then restricted to
 the intersection of targets that yield a valid F1 for all three atom types -
-which coincides with the subset of "targets with Ca shifts", since CA F1
-requires ``CA_apo``/``CA_holo`` to be populated.
+which coincide with targets whose ``1d_analysis.csv`` shows sufficient per-row CA
+coverage (same rule as SI Fig. S10 / S11; see
+:func:`target_basenames_passing_ca_shift_coverage`).
 
 Inter-group comparisons are performed with paired Wilcoxon signed-rank tests
 (H vs N, H vs CA, N vs CA) and the three raw p-values are adjusted with
@@ -22,7 +23,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from typing import Iterable, List, Optional, Sequence, Tuple
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -32,17 +33,21 @@ from scipy.stats import wilcoxon
 # Support running as a script or module.
 try:
     from .analyze_targets_single_atom_shifts import (
+        DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
         TargetResult,
         collect_1d_f1_results,
-        load_allowed_targets,
+        target_basenames_passing_ca_shift_coverage,
     )
+    from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from scripts.analyze_targets_single_atom_shifts import (  # type: ignore
+        DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
         TargetResult,
         collect_1d_f1_results,
-        load_allowed_targets,
+        target_basenames_passing_ca_shift_coverage,
     )
+    from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
 
 
 ATOM_ORDER: Tuple[str, str, str] = ("H", "N", "CA")
@@ -95,63 +100,29 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
     parser.add_argument(
         "--min-ca-coverage",
         type=float,
-        default=0.5,
+        default=DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
         help=(
             "Minimum fraction of residues in 1d_analysis.csv with both CA_apo "
             "and CA_holo populated for a target to be considered as having "
-            "CA shifts (default: %(default)s, i.e. >50%% coverage)."
+            "analyzable CA shifts (default: %(default)s, i.e. strictly >50%% when 0.5)."
         ),
     )
     return parser.parse_args(list(argv))
 
 
-def _ca_coverage_for_target(target_dir: Path) -> Optional[float]:
-    """Return the fraction of residues with both CA_apo and CA_holo populated.
-
-    Returns ``None`` if ``1d_analysis.csv`` is missing, unreadable, empty, or
-    lacks the required CA columns.
-    """
-    one_d_path = target_dir / "1d_analysis.csv"
-    if not one_d_path.exists():
-        return None
-    try:
-        df = pd.read_csv(one_d_path)
-    except Exception:
-        return None
-    if df.empty or "CA_apo" not in df.columns or "CA_holo" not in df.columns:
-        return None
-    total = int(len(df))
-    if total == 0:
-        return None
-    both = int((df["CA_apo"].notna() & df["CA_holo"].notna()).sum())
-    return both / total
-
-
-def _targets_with_ca_coverage(
+def _allowed_basenames_from_targets_csv(
+    targets_csv: Optional[Path],
     outputs_dir: Path,
-    min_coverage: float,
-    allowed_targets: Optional[dict],
-) -> Tuple[set, dict]:
-    """Enumerate target subdirectories and return the set meeting ``min_coverage``.
-
-    Also returns a mapping of ``target -> coverage`` for reporting.
-    """
-    passing: set = set()
-    coverages: dict = {}
-    if not outputs_dir.exists():
-        return passing, coverages
-    for path in sorted(outputs_dir.iterdir()):
-        if not path.is_dir() or path.name.startswith("."):
-            continue
-        if allowed_targets is not None and path.name not in allowed_targets:
-            continue
-        cov = _ca_coverage_for_target(path)
-        if cov is None:
-            continue
-        coverages[path.name] = cov
-        if cov > min_coverage:
-            passing.add(path.name)
-    return passing, coverages
+) -> Optional[Dict[str, bool]]:
+    """Map CSP_UBQ-style rows to canonical ``outputs/{HOLO}_{apo_bmrb}/`` basenames."""
+    if targets_csv is None:
+        return None
+    path = targets_csv.resolve()
+    if not path.exists():
+        raise FileNotFoundError(f"Targets CSV not found: {path}")
+    rows = load_target_rows(path)
+    resolved = resolve_target_rows(rows, outputs_dir.resolve(), log_warnings=False)
+    return {p.name: True for p in resolved}
 
 
 def _build_paired_arrays(
@@ -367,23 +338,39 @@ def _resolve_stats_csv(output_image: Path, stats_csv: Optional[Path]) -> Path:
     return output_image.with_name(f"{output_image.stem}_stats.csv")
 
 
-def main(argv: Optional[Iterable[str]] = None) -> int:
-    args = parse_args(sys.argv[1:] if argv is None else argv)
+def run_f1_1d_boxplot(
+    outputs_dir: Path,
+    *,
+    targets_csv: Optional[Path],
+    output_image: Path,
+    stats_csv: Optional[Path],
+    min_ca_coverage: float,
+) -> int:
+    """
+    Pairwise Wilcoxon-annotated boxplot of per-target F1 scores (1D H / N / Cα CSPs).
 
-    outputs_dir: Path = args.outputs_dir.resolve()
+    When ``targets_csv`` is given, rows are mapped to canonical ``outputs/`` subdirectory
+    names via :mod:`scripts.target_resolution`.
+    """
+    outputs_dir = outputs_dir.resolve()
     if not outputs_dir.exists():
         print(f"Outputs directory not found: {outputs_dir}", file=sys.stderr)
         return 1
 
-    allowed_targets = load_allowed_targets(args.targets_csv.resolve() if args.targets_csv else None)
+    try:
+        allowed_targets = _allowed_basenames_from_targets_csv(targets_csv, outputs_dir)
+    except (FileNotFoundError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
-    ca_passing, ca_coverages = _targets_with_ca_coverage(
+    ca_passing, ca_coverages = target_basenames_passing_ca_shift_coverage(
         outputs_dir,
-        min_coverage=float(args.min_ca_coverage),
-        allowed_targets=allowed_targets,
+        min_coverage=min_ca_coverage,
+        allowed_basenames=allowed_targets,
     )
+    thr = float(min_ca_coverage)
     print(
-        f"{len(ca_passing)} targets pass CA coverage > {args.min_ca_coverage:.0%} "
+        f"{len(ca_passing)} targets pass CA coverage > {thr:.0%} "
         f"(of {len(ca_coverages)} candidates inspected)"
     )
     if not ca_passing:
@@ -393,8 +380,6 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         )
         return 1
 
-    # Restrict F1 collection to the CA-coverage-passing subset so all three
-    # atom-type distributions are computed on the same set of targets.
     ca_allowed = {t: True for t in ca_passing}
     results_H, results_N, results_CA = collect_1d_f1_results(outputs_dir, ca_allowed)
     if not (results_H and results_N and results_CA):
@@ -414,17 +399,19 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
 
     stats_df = _paired_wilcoxon_table(h, n, ca)
 
-    output_image: Path = args.output_image
-    stats_csv = _resolve_stats_csv(output_image, args.stats_csv)
+    resolved_stats = stats_csv.resolve() if stats_csv is not None else _resolve_stats_csv(
+        output_image, None
+    )
 
+    output_image.parent.mkdir(parents=True, exist_ok=True)
     _render_boxplot(h, n, ca, stats_df, output_image, n_targets=len(common))
 
-    stats_csv.parent.mkdir(parents=True, exist_ok=True)
-    stats_df.to_csv(stats_csv, index=False)
+    resolved_stats.parent.mkdir(parents=True, exist_ok=True)
+    stats_df.to_csv(resolved_stats, index=False)
 
     print(f"n = {len(common)} targets with paired H/N/CA F1 scores")
     print(f"Wrote {output_image}")
-    print(f"Wrote {stats_csv}")
+    print(f"Wrote {resolved_stats}")
     for _, row in stats_df.iterrows():
         print(
             f"  {row['group_a']} vs {row['group_b']}: "
@@ -433,6 +420,21 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         )
 
     return 0
+
+
+def main(argv: Optional[Iterable[str]] = None) -> int:
+    args = parse_args(sys.argv[1:] if argv is None else argv)
+
+    output_image = args.output_image
+    tc = args.targets_csv.resolve() if args.targets_csv else None
+
+    return run_f1_1d_boxplot(
+        args.outputs_dir.resolve(),
+        targets_csv=tc,
+        output_image=output_image,
+        stats_csv=args.stats_csv,
+        min_ca_coverage=float(args.min_ca_coverage),
+    )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,221 @@
+#!/usr/bin/env python3
+"""
+
+SI Fig. S10 — CA-inclusive CSP confusion matrix histograms (two-panel image).
+
+- Panel A: stacked histogram of significant residues (TP/FP only)
+- Panel B: stacked confusion-matrix histogram (TN/FP/FN/TP)
+
+Output:
+- figures/SF10_ca_inclusive.png
+
+Target eligibility matches SI Fig. S11 / S14: CSV rows are resolved to
+``outputs/{HOLO}_{apo_bmrb}/``, then
+:func:`target_basenames_passing_ca_shift_coverage` keeps only targets whose
+``1d_analysis.csv`` has both ``CA_apo`` and ``CA_holo`` on strictly more than
+``--min-ca-coverage`` of rows (default ``DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE``).
+
+Default targets list: CSP_UBQ_ph0.5_temp5C.csv (buffer-filtered subset). Override with --targets-csv.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+import tempfile
+from pathlib import Path
+
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+
+try:
+    from .config import classification_colors
+except Exception:
+    _root = Path(__file__).resolve().parent.parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from scripts.config import classification_colors  # type: ignore
+
+try:
+    from .analyze_targets_ca import (
+        collect_results,
+        render_confusion_matrix_stacked_histogram,
+        render_stacked_histogram,
+    )
+    from .analyze_targets_single_atom_shifts import (
+        DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
+        target_basenames_passing_ca_shift_coverage,
+    )
+    from .target_resolution import load_target_rows, resolve_target_rows
+except Exception:
+    project_root = Path(__file__).resolve().parent.parent
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    from scripts.analyze_targets_ca import (  # type: ignore
+        collect_results,
+        render_confusion_matrix_stacked_histogram,
+        render_stacked_histogram,
+    )
+    from scripts.analyze_targets_single_atom_shifts import (  # type: ignore
+        DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
+        target_basenames_passing_ca_shift_coverage,
+    )
+    from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Create SI Fig. S10 (CA-inclusive CSP confusion matrix histograms)."
+    )
+    parser.add_argument(
+        "--outputs-dir",
+        type=Path,
+        default=Path("outputs"),
+        help="Root outputs directory containing per-target folders.",
+    )
+    parser.add_argument(
+        "--targets-csv",
+        type=Path,
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
+        help="CSV with holo_pdb target IDs (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
+    )
+    parser.add_argument("--output-image", type=Path, default=Path("figures") / "SF10_ca_inclusive.png")
+    parser.add_argument(
+        "--min-ca-coverage",
+        type=float,
+        default=DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
+        help=(
+            "Same as SI Fig. S11 / S14: require strictly more than this fraction of "
+            "1d_analysis.csv rows with both CA_apo and CA_holo (default: %(default)s)."
+        ),
+    )
+    return parser.parse_args()
+
+
+def compose_two_panel_figure(panel_a_path: Path, panel_b_path: Path, output_image: Path) -> None:
+    image_a = mpimg.imread(panel_a_path)
+    image_b = mpimg.imread(panel_b_path)
+
+    fig, axes = plt.subplots(2, 1, figsize=(10, 12))
+    for ax in axes:
+        ax.set_axis_off()
+
+    axes[0].imshow(image_a)
+    axes[1].imshow(image_b)
+
+    axes[0].text(
+        0.01,
+        0.99,
+        "A.",
+        transform=axes[0].transAxes,
+        va="top",
+        ha="left",
+        fontsize=20,
+        fontweight="bold",
+    )
+    axes[1].text(
+        0.01,
+        0.99,
+        "B.",
+        transform=axes[1].transAxes,
+        va="top",
+        ha="left",
+        fontsize=20,
+        fontweight="bold",
+    )
+
+    plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01, hspace=0.02)
+    output_image.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_image, dpi=300)
+    plt.close(fig)
+
+
+def main() -> int:
+    args = parse_args()
+    project_root = Path(__file__).resolve().parent.parent
+
+    outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
+    targets_csv = args.targets_csv if args.targets_csv.is_absolute() else project_root / args.targets_csv
+    output_image = (
+        args.output_image if args.output_image.is_absolute() else project_root / args.output_image
+    )
+
+    if not outputs_dir.exists():
+        print(f"Error: outputs directory does not exist: {outputs_dir}", file=sys.stderr)
+        return 1
+    if not targets_csv.exists():
+        print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
+        return 1
+
+    rows = load_target_rows(targets_csv)
+    allowed_targets = {p.name for p in resolve_target_rows(rows, outputs_dir)}
+    if not allowed_targets:
+        print("No targets resolved from CSV against outputs/", file=sys.stderr)
+        return 1
+
+    min_cov = float(args.min_ca_coverage)
+    eligible, coverage_map = target_basenames_passing_ca_shift_coverage(
+        outputs_dir,
+        min_coverage=min_cov,
+        allowed_basenames={k: True for k in allowed_targets},
+    )
+    print(
+        f"{len(eligible)} targets pass CA row coverage > {min_cov:.0%} "
+        f"(among {len(allowed_targets)} CSV-resolved; "
+        f"{len(coverage_map)} with readable 1d_analysis CA columns)"
+    )
+    if not eligible:
+        print(
+            "No targets left after CA shift coverage filter; cannot build SI Fig. S10.",
+            file=sys.stderr,
+        )
+        return 1
+
+    _, distances, confusion_records = collect_results(outputs_dir, eligible)
+
+    positive_count = sum(1 for record in distances if record.is_predicted_positive)
+    negative_count = sum(1 for record in distances if not record.is_predicted_positive)
+
+    output_image.parent.mkdir(parents=True, exist_ok=True)
+
+    with tempfile.TemporaryDirectory(prefix="si_fig_s13_") as tmp_dir:
+        tmp_dir_path = Path(tmp_dir)
+        panel_a_path = tmp_dir_path / "panel_a.png"
+        panel_b_path = tmp_dir_path / "panel_b.png"
+
+        render_stacked_histogram(
+            distances,
+            panel_a_path,
+            positive_count,
+            negative_count,
+            tp_color=classification_colors.TP,
+            show_title=False,
+            ylabel="Number of Residues",
+            bold_axes=False,
+            axis_label_fontsize=20,
+            legend_fontsize=14,
+        )
+        render_confusion_matrix_stacked_histogram(
+            confusion_records,
+            panel_b_path,
+            tp_color=classification_colors.TP,
+            show_title=False,
+            bold_axes=False,
+            axis_label_fontsize=20,
+            legend_fontsize=14,
+        )
+        if not panel_a_path.is_file() or not panel_b_path.is_file():
+            print(
+                "Cannot compose SI Fig. S10: one or both panel PNGs were not written "
+                "(no CA-distance data for selected targets / outputs).",
+                file=sys.stderr,
+            )
+            return 1
+        compose_two_panel_figure(panel_a_path, panel_b_path, output_image)
+
+    print(f"SI Fig. S10 saved to {output_image.resolve()}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

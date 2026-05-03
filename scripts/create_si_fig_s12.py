@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """
-Generator script filename (s15) ≠ SI index: this produces SI Fig. S12.
 
 SI Fig. S12 — CSP DB confusion matrix histograms by closest interchain N–N distance.
 

@@ -11,11 +11,9 @@ residue (TP+FP > 0), and the mean per-receptor F1 from the same definition as
 ``f1_score_reporter.py`` (``analyze_targets.compute_f1_score``).
 
 By default only targets listed in the given ``--targets-csv`` are included. Each row is
-resolved to the pipeline output folder using ``apo_bmrb``, ``holo_bmrb``, and ``holo_pdb``
-congruence with the first data row of ``outputs/<dir>/master_alignment.csv`` (including
-``{holo_pdb}_1``, ``_2``, … candidates); when multiple dirs match the same BMRB pair, the
-first by suffix order is used — same rule as ``scripts.target_resolution`` /
-figure-creation scripts.
+resolved to ``outputs/{HOLO_PDB}_{apo_bmrb}/`` via :mod:`scripts.target_resolution`
+(canonical basename lookup). Set ``CSP_LEGACY_OUTPUT_DIRS=1`` to also match older
+``outputs/<pdb>/`` or ``<pdb>_<n>/`` trees using ``master_alignment.csv`` BMRB pairs.
 """
 
 from __future__ import annotations

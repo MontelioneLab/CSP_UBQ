@@ -3,7 +3,8 @@
 Create publication-ready Figure 1 panels as two separate files:
 
 - figure_1_a.png: the chemical-shift offset grid-search heatmap for PDB 7JQ8,
-  copied from `outputs/7jq8/offset_grid_H_-0.12_0.12_0.01__N_-1.2_1.2_0.05__C_0.05.png`.
+  copied from the pipeline ``outputs/<HOLO>_<apo_bmrb>/offset_grid_*.png`` (resolved
+  from ``data/CSP_UBQ.csv`` when the legacy ``outputs/7jq8/`` path is absent).
 - figure_1_b.png: a 3x3 confusion-matrix table summarizing the TP/FP/FN/TN
   classification scheme used throughout the study, with colors pulled from
   `scripts/config.py` so they stay consistent with the rest of the project.
@@ -24,16 +25,41 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 
 try:
     from .config import classification_colors
+    from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.config import classification_colors
+    from scripts.target_resolution import load_target_rows, resolve_target_rows
 
+
+_FIG1_HOLO_PDB = "7jq8"
+_FIG1_OFFSET_GRID_BASENAME = "offset_grid_H_-0.12_0.12_0.01__N_-1.2_1.2_0.05__C_0.05.png"
 
 DEFAULT_PANEL_A = (
     _REPO_ROOT
-    / "outputs/7jq8/offset_grid_H_-0.12_0.12_0.01__N_-1.2_1.2_0.05__C_0.05.png"
+    / "outputs"
+    / "7jq8"
+    / _FIG1_OFFSET_GRID_BASENAME
 )
+
+
+def resolve_fig1_panel_a_from_pipeline(outputs_dir: Path, targets_csv: Path) -> Path | None:
+    """Locate Panel A PNG under canonical ``outputs/<HOLO>_<apo_bmrb>/`` for PDB 7JQ8."""
+    if not outputs_dir.is_dir() or not targets_csv.is_file():
+        return None
+    rows = [
+        r
+        for r in load_target_rows(targets_csv)
+        if r.holo_pdb.strip().lower() == _FIG1_HOLO_PDB
+    ]
+    if not rows:
+        return None
+    for out_path in resolve_target_rows(rows, outputs_dir, log_warnings=False):
+        cand = out_path / _FIG1_OFFSET_GRID_BASENAME
+        if cand.is_file():
+            return cand
+    return None
 
 
 def _draw_confusion_matrix(ax: plt.Axes) -> None:
@@ -139,7 +165,22 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
         "--panel-a",
         type=Path,
         default=DEFAULT_PANEL_A,
-        help="Path to the Panel A source PNG (default: outputs/7jq8/offset_grid_*.png).",
+        help=(
+            "Path to the Panel A source PNG (default: legacy outputs/7jq8/…; "
+            "if missing, resolved from --targets-csv under --outputs-dir)."
+        ),
+    )
+    parser.add_argument(
+        "--outputs-dir",
+        type=Path,
+        default=_REPO_ROOT / "outputs",
+        help="Pipeline outputs root for resolving Panel A (default: outputs).",
+    )
+    parser.add_argument(
+        "--targets-csv",
+        type=Path,
+        default=_REPO_ROOT / "data/CSP_UBQ.csv",
+        help="Study CSV with holo_pdb / apo_bmrb for resolving Panel A (default: data/CSP_UBQ.csv).",
     )
     parser.add_argument(
         "--output-a",
@@ -172,8 +213,19 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
 def main(argv: Iterable[str]) -> int:
     args = parse_args(argv)
     panel_a = args.panel_a if args.panel_a.is_absolute() else _REPO_ROOT / args.panel_a
+    outputs_dir = (
+        args.outputs_dir if args.outputs_dir.is_absolute() else _REPO_ROOT / args.outputs_dir
+    )
+    targets_csv = (
+        args.targets_csv if args.targets_csv.is_absolute() else _REPO_ROOT / args.targets_csv
+    )
     output_a = args.output_a if args.output_a.is_absolute() else _REPO_ROOT / args.output_a
     output_b = args.output_b if args.output_b.is_absolute() else _REPO_ROOT / args.output_b
+
+    if not panel_a.exists() and panel_a.resolve() == DEFAULT_PANEL_A.resolve():
+        alt = resolve_fig1_panel_a_from_pipeline(outputs_dir, targets_csv)
+        if alt is not None:
+            panel_a = alt
 
     save_panel_a(panel_a, output_a)
     save_panel_b(

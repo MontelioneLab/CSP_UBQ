@@ -758,9 +758,17 @@ def render_f1_comparison_scatterplot(
     # Set axis limits and labels
     ax.set_xlim([0, 1])
     ax.set_ylim([0, 1])
-    ax.set_xlabel("F1 Score (CA-inclusive CSPs)", fontsize=14, fontweight='bold')
-    ax.set_ylabel("F1 Score (N/H CSPs)", fontsize=14, fontweight='bold')
-    ax.set_title("Comparison of F1 Scores: CA-inclusive vs N/H CSPs (Same Last Author)", fontsize=16, fontweight='bold')
+    ax.set_xlabel(
+        r"F1 Score ($C_\alpha$-inclusive CSPs)",
+        fontsize=14,
+        fontweight="bold",
+    )
+    ax.set_ylabel("F1 Score (N/H CSPs)", fontsize=14, fontweight="bold")
+    ax.set_title(
+        r"Comparison of F1 Scores: $C_\alpha$-inclusive vs N/H CSPs (Same Last Author)",
+        fontsize=16,
+        fontweight="bold",
+    )
     
     # Add grid for better readability
     ax.grid(True, alpha=0.3, linestyle='--')

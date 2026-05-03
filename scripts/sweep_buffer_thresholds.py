@@ -12,11 +12,11 @@ statistics ``average_FP_percent.py`` reports:
   - pct_allosteric = mean over targets with TP+FP > 0 of FP / (TP+FP)
   - fp_pct         = mean over subset of 100 * FP / (TP+FP+TN+FN)
 
-Per-target metrics are computed once via a single pass over ``outputs/`` and the
-resolution logic from ``average_FP_percent.py`` is replayed cell-by-cell so that
-duplicate-suffix bookkeeping matches its default behaviour exactly. Writes one
-summary CSV plus four heatmap PNGs into ``outputs/buffer_threshold_sweep/``
-(configurable).
+Per-target metrics are computed once via a single pass over ``outputs/``. Each
+CSV row is resolved to ``outputs/{HOLO_PDB}_{apo_bmrb}/`` using the same rules as
+``scripts.target_resolution`` (optional legacy dirs when ``CSP_LEGACY_OUTPUT_DIRS``
+is set). Writes one summary CSV plus four heatmap PNGs into
+``outputs/buffer_threshold_sweep/`` (configurable).
 """
 
 from __future__ import annotations
@@ -43,16 +43,13 @@ from scripts.analyze_targets import (  # noqa: E402
     compute_f1_score,
     load_alignment,
 )
-from scripts.average_FP_percent import (  # noqa: E402
-    CLASSIFICATION_COLUMN,
-    VALID_CLASSIFICATIONS,
-    _build_holo_pdb_groups,
-    _build_outputs_index,
-    _candidate_dirs_for_holo,
-    _logical_output_dirname,
-)
+from scripts.average_FP_percent import CLASSIFICATION_COLUMN, VALID_CLASSIFICATIONS  # noqa: E402
 from scripts.config import Paths  # noqa: E402
 from scripts.filter_csp_ubq_by_buffer import row_meets  # noqa: E402
+from scripts.target_resolution import (  # noqa: E402
+    build_resolution_caches,
+    resolve_output_dir_from_csv_row,
+)
 
 
 @dataclass(frozen=True)
@@ -112,20 +109,6 @@ def _per_target_metrics(target_dir: Path) -> Optional[TargetMetrics]:
     return TargetMetrics(n_fp=n_fp, n_tp=n_tp, n_total=total, f1=f1)
 
 
-def _first_row_bmrb_pair_from_df(alignment_path: Path) -> Optional[Tuple[str, str]]:
-    """First non-empty (apo_bmrb, holo_bmrb) in a master_alignment.csv (cached use)."""
-    if not alignment_path.is_file():
-        return None
-    with alignment_path.open(newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            a = (row.get("apo_bmrb") or "").strip()
-            h = (row.get("holo_bmrb") or "").strip()
-            if a or h:
-                return a, h
-    return None
-
-
 def _build_outputs_caches(
     outputs_dir: Path,
 ) -> Tuple[
@@ -134,34 +117,11 @@ def _build_outputs_caches(
     Dict[Path, Optional[Tuple[str, str]]],
 ]:
     """Pre-compute (1) outputs_index, (2) per-dir metrics, (3) per-dir first BMRB pair."""
-    outputs_index = _build_outputs_index(outputs_dir)
+    outputs_index, bmrb_cache = build_resolution_caches(outputs_dir)
     metrics_cache: Dict[Path, Optional[TargetMetrics]] = {}
-    bmrb_cache: Dict[Path, Optional[Tuple[str, str]]] = {}
     for path in outputs_index.values():
         metrics_cache[path] = _per_target_metrics(path)
-        bmrb_cache[path] = _first_row_bmrb_pair_from_df(path / "master_alignment.csv")
     return outputs_index, metrics_cache, bmrb_cache
-
-
-def _resolve_with_caches(
-    outputs_index: Dict[str, Path],
-    bmrb_cache: Dict[Path, Optional[Tuple[str, str]]],
-    logical: str,
-    row: Dict[str, str],
-) -> Optional[Path]:
-    """Same logic as ``average_FP_percent._resolve_output_dir_path`` using cached BMRB pairs."""
-    direct = outputs_index.get(logical.lower())
-    if direct is not None:
-        return direct
-    raw_h = (row.get("holo_pdb") or "").strip()
-    apo = (row.get("apo_bmrb") or "").strip()
-    holo_b = (row.get("holo_bmrb") or "").strip()
-    want = (apo, holo_b)
-    candidates = _candidate_dirs_for_holo(outputs_index, raw_h)
-    matches = [p for p in candidates if bmrb_cache.get(p) == want]
-    if len(matches) == 1:
-        return matches[0]
-    return None
 
 
 def load_paired_rows(
@@ -196,7 +156,7 @@ def aggregate_grid(
     ph_values: np.ndarray,
     temp_values: np.ndarray,
 ) -> pd.DataFrame:
-    """Replay average_FP_percent's resolution + aggregation per (T, pH) cell."""
+    """Resolve each CSP row to ``outputs/{HOLO}_{apo}/`` and aggregate per (T, pH) cell."""
     records: List[dict] = []
     for t in temp_values:
         for p in ph_values:
@@ -207,15 +167,11 @@ def aggregate_grid(
                 if d is not None and d[0] <= ph_max and d[1] <= t_max
             ]
             subset_rows = [csp_rows[i] for i in kept_indices]
-            holo_groups = _build_holo_pdb_groups(subset_rows)
 
             seen_paths: set[str] = set()
             metrics: List[TargetMetrics] = []
             for row in subset_rows:
-                logical = _logical_output_dirname(row, holo_groups)
-                if not logical:
-                    continue
-                path = _resolve_with_caches(outputs_index, bmrb_cache, logical, row)
+                path = resolve_output_dir_from_csv_row(row, caches=(outputs_index, bmrb_cache))
                 if path is None:
                     continue
                 key = str(path.resolve())

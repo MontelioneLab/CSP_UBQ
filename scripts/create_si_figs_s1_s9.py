@@ -131,7 +131,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--csv", type=Path, default=Path("data/CSP_UBQ.csv"))
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
     parser.add_argument("--figures-dir", type=Path, default=Path("figures"))
-    parser.add_argument("--aux-dir", type=Path, default=Path("outputs") / "si_figs_s1_s12_aux")
+    parser.add_argument("--aux-dir", type=Path, default=Path("outputs") / "si_figs_s1_s9_aux")
     parser.add_argument("--python", default=sys.executable)
     return parser.parse_args()
 
@@ -230,12 +230,12 @@ def run_subset(
     targets_csv: Path,
 ) -> int:
     analyze_script = repo_root / "scripts" / "analyze_targets.py"
-    output_image = aux_dir / f"si_figs_s1_s12_{file_token}.png"
-    summary_csv = aux_dir / f"si_figs_s1_s12_{file_token}_summary.csv"
-    histogram_image = aux_dir / f"si_figs_s1_s12_{file_token}_hist.png"
+    output_image = aux_dir / f"si_figs_s1_s9_{file_token}.png"
+    summary_csv = aux_dir / f"si_figs_s1_s9_{file_token}_summary.csv"
+    histogram_image = aux_dir / f"si_figs_s1_s9_{file_token}_hist.png"
     stacked_histogram_image = figures_dir / f"{sf_id}_{file_token}_stacked_hist.png"
     confusion_histogram_image = figures_dir / f"{sf_id}_{file_token}_confusion_stacked_hist.png"
-    summary_dir = aux_dir / f"si_figs_s1_s12_{file_token}_summary_statistics"
+    summary_dir = aux_dir / f"si_figs_s1_s9_{file_token}_summary_statistics"
 
     cmd = [
         python_executable,
@@ -271,9 +271,9 @@ def run_subset(
     result = subprocess.run(cmd, cwd=str(repo_root))
     if result.returncode != 0:
         print(
-            f"[SI_FIGS_S1_S12] analyze_targets.py failed for {sf_id} / {file_token} "
+            f"[SI_FIGS_S1_S9] analyze_targets.py failed for {sf_id} / {file_token} "
             f"(exit {result.returncode}). "
-            "Ensure each target has outputs/<id>/master_alignment.csv (run the pipeline).",
+            "Ensure each target has outputs/{HOLO}_{apo_bmrb}/master_alignment.csv (run the pipeline).",
             file=sys.stderr,
         )
     return result.returncode
@@ -301,7 +301,7 @@ def main() -> int:
             targets_csv_override = (repo_root / targets_csv_override).resolve()
             if not targets_csv_override.exists():
                 print(
-                    f"[SI_FIGS_S1_S12] Skipping '{display_title}' "
+                    f"[SI_FIGS_S1_S9] Skipping '{display_title}' "
                     f"(missing targets CSV: {targets_csv_override})."
                 )
                 continue
@@ -311,18 +311,18 @@ def main() -> int:
             column = spec["column"]
             class_label = spec["class_label"]
             if column is None or class_label is None:
-                print(f"[SI_FIGS_S1_S12] Skipping '{display_title}' (invalid class spec).")
+                print(f"[SI_FIGS_S1_S9] Skipping '{display_title}' (invalid class spec).")
                 continue
             targets = collect_targets(csprank_csv, column, class_label)
             targets_csv = aux_dir / f"targets_{file_token}.csv"
             write_targets_csv(targets_csv, targets)
 
         if not targets:
-            print(f"[SI_FIGS_S1_S12] Skipping '{display_title}' (no targets found).")
+            print(f"[SI_FIGS_S1_S9] Skipping '{display_title}' (no targets found).")
             continue
 
         print(
-            f"[SI_FIGS_S1_S12] {st_id} / {sf_id} {display_title}: "
+            f"[SI_FIGS_S1_S9] {st_id} / {sf_id} {display_title}: "
             f"{len(targets)} targets"
         )
         rc = run_subset(
@@ -346,7 +346,7 @@ def main() -> int:
             compose_two_panel_figure(panel_a, panel_b, collated_path)
             print(f"  -> Collated: {collated_path.name}")
 
-    print("[SI_FIGS_S1_S12] Completed.")
+    print("[SI_FIGS_S1_S9] Completed.")
     return 0
 
 

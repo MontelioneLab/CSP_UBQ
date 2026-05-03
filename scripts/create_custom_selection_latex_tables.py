@@ -79,7 +79,7 @@ SELECTIONS = [
 
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create ST2–ST9 LaTeX tables (SI Table S10 is create_si_st14_fig_s13_dissimilar_conditions.py)."
+        description="Create ST2–ST9 LaTeX tables (SI Table S10 + SF9: create_si_st10_fig_s9_dissimilar_conditions.py)."
     )
     parser.add_argument(
         "--csp-csv",

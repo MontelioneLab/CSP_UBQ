@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """
-Generator script filename (s13) ≠ SI index: this produces SI Fig. S10.
 
-SI Fig. S10 — CA-inclusive CSP confusion matrix histograms (two-panel image).
+SI Fig. S13 — CSP DB confusion matrix histograms by closest interchain atom–atom distance.
 
-- Panel A: stacked histogram of significant residues (TP/FP only)
-- Panel B: stacked confusion-matrix histogram (TN/FP/FN/TP)
+Two-panel figure:
+- Panel A: stacked histogram of significant residues (TP vs FP only)
+- Panel B: stacked confusion-matrix histogram (TN, FP, FN, TP)
 
-Output:
-- figures/SF10_ca_inclusive.png
+Output: figures/SF13_any_atom_distance.png
 
 Default targets list: CSP_UBQ_ph0.5_temp5C.csv (buffer-filtered subset). Override with --targets-csv.
 """
@@ -19,55 +18,270 @@ import argparse
 import sys
 import tempfile
 from pathlib import Path
+from typing import Iterable, List, Optional, Sequence, Set
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import pandas as pd
 
 try:
-    from .config import classification_colors
-except Exception:
-    _root = Path(__file__).resolve().parent.parent
-    if str(_root) not in sys.path:
-        sys.path.insert(0, str(_root))
-    from scripts.config import classification_colors  # type: ignore
-
-try:
-    from .analyze_targets_ca import (
-        collect_results,
-        render_confusion_matrix_stacked_histogram,
-        render_stacked_histogram,
-    )
+    from .config import classification_colors, paths
+    from .interaction_analysis import compute_min_atom_distance_filter
+    from .rcsb_io import fetch_pdb
     from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
-    project_root = Path(__file__).resolve().parent.parent
-    if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))
-    from scripts.analyze_targets_ca import (  # type: ignore
-        collect_results,
-        render_confusion_matrix_stacked_histogram,
-        render_stacked_histogram,
-    )
-    from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
+    import os as _os
+    import sys as _sys
+    _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
+    from scripts.config import classification_colors, paths
+    from scripts.interaction_analysis import compute_min_atom_distance_filter
+    from scripts.rcsb_io import fetch_pdb
+    from scripts.target_resolution import load_target_rows, resolve_target_rows
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Create SI Fig. S10 (CA-inclusive CSP confusion matrix histograms)."
+SIGNIFICANT_COLUMN = "significant"
+DISTANCE_COLUMN = "min_any_atom_distance_any_atom"
+PREDICTOR_COLUMNS: Sequence[str] = (
+    "passes_filter_distance",
+    "has_charge_complement_interaction",
+    "has_pi_contact_interaction",
+    "has_hbond_interaction",
+    "is_occluded_occlusion",
+)
+
+
+def _as_bool(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    return str(value).strip().lower() in {"1", "true", "t", "yes", "y"}
+
+
+def _resolve_selected_dirs(
+    outputs_dir: Path,
+    targets_csv: Optional[Path],
+    targets_str: Optional[str],
+) -> Optional[Set[str]]:
+    """Resolve targets-CSV rows + comma-separated --targets to outputs/<dir> basenames.
+
+    Each row is matched to an outputs/ subdir by congruent ``apo_bmrb`` and
+    ``holo_bmrb`` (delegated to :mod:`scripts.target_resolution`); the first
+    matching dir wins when several share the same BMRB pair.
+    """
+    if targets_csv is None and not targets_str:
+        return None
+    extras: List[str] = []
+    if targets_str:
+        extras = [t for t in targets_str.split(",") if t.strip()]
+    rows = load_target_rows(targets_csv, extra_holo_pdbs=extras)
+    if not rows:
+        return set()
+    paths = resolve_target_rows(rows, outputs_dir)
+    return {p.name for p in paths}
+
+
+def _resolve_pdb_path(holo_pdb: str) -> Optional[str]:
+    import os
+    holo_pdb = str(holo_pdb).strip().lower()
+    if not holo_pdb:
+        return None
+    local_path = os.path.join(paths.pdb_cache_dir, f"{holo_pdb}.pdb")
+    if os.path.exists(local_path) and os.path.getsize(local_path) > 0:
+        return local_path
+    try:
+        return fetch_pdb(holo_pdb, cache_dir=paths.pdb_cache_dir)
+    except Exception:
+        return None
+
+
+def _compute_distances_for_target(
+    alignment_path: Path,
+    distance_key: str,
+) -> Optional[dict]:
+    df = pd.read_csv(alignment_path)
+    if "holo_pdb" not in df.columns or "pdb_residue_number" not in df.columns:
+        return None
+    holo_pdb = df["holo_pdb"].iloc[0]
+    if pd.isna(holo_pdb) or not str(holo_pdb).strip():
+        return None
+    holo_pdb = str(holo_pdb).strip().lower()
+    pdb_path = _resolve_pdb_path(holo_pdb)
+    if not pdb_path:
+        return None
+    result = compute_min_atom_distance_filter(pdb_path, distance_threshold=6.0)
+    if "error" in result or not result.get("residue_info"):
+        return None
+    return {info["residue_number"]: info[distance_key] for info in result["residue_info"]}
+
+
+def _get_bins(data: Sequence[float], bin_width: float, max_distance: Optional[float]) -> tuple[List[float], float]:
+    if not data:
+        raise ValueError("No inter-atomic distance data found for selected targets.")
+    data_max = max(data) if max_distance is None else max_distance
+    n_bins = max(1, int((data_max + bin_width) / bin_width))
+    bins = [i * bin_width for i in range(n_bins + 1)]
+    return bins, data_max
+
+
+def collect_distance_categories(
+    outputs_dir: Path,
+    selected_dir_names: Optional[Set[str]] = None,
+) -> tuple[List[float], List[float], List[float], List[float]]:
+    """Collect (TP, FP, FN, TN) min-inter-atomic distances across selected outputs/<dir> targets.
+
+    ``selected_dir_names`` is the set of resolved outputs basenames returned by
+    :func:`scripts.target_resolution.resolve_target_rows`. Pass ``None`` to
+    include every target subdirectory.
+    """
+    tp_distances: List[float] = []
+    fp_distances: List[float] = []
+    fn_distances: List[float] = []
+    tn_distances: List[float] = []
+
+    base_required = {SIGNIFICANT_COLUMN, *PREDICTOR_COLUMNS, "pdb_residue_number", "holo_pdb"}
+
+    for alignment_path in sorted(outputs_dir.glob("*/master_alignment.csv")):
+        target_name = alignment_path.parent.name
+        if selected_dir_names is not None and target_name not in selected_dir_names:
+            continue
+
+        df = pd.read_csv(alignment_path)
+        missing_base = [c for c in base_required if c not in df.columns]
+        if missing_base:
+            continue
+
+        is_significant = df[SIGNIFICANT_COLUMN].map(_as_bool)
+        is_binding = pd.DataFrame({c: df[c].map(_as_bool) for c in PREDICTOR_COLUMNS}).any(axis=1)
+
+        if DISTANCE_COLUMN in df.columns:
+            distances = pd.to_numeric(df[DISTANCE_COLUMN], errors="coerce")
+        else:
+            distance_map = _compute_distances_for_target(alignment_path, "min_any_atom_distance")
+            if distance_map is None:
+                continue
+            pdb_resi = pd.to_numeric(df["pdb_residue_number"], errors="coerce")
+            distances = pdb_resi.map(lambda x: distance_map.get(int(x), float("nan")) if pd.notna(x) else float("nan"))
+
+        valid = distances.notna()
+        if not valid.any():
+            continue
+
+        sig = is_significant[valid]
+        bind = is_binding[valid]
+        dist = distances[valid].astype(float)
+
+        tp_distances.extend(dist[sig & bind].tolist())
+        fp_distances.extend(dist[sig & ~bind].tolist())
+        fn_distances.extend(dist[~sig & bind].tolist())
+        tn_distances.extend(dist[~sig & ~bind].tolist())
+
+    return tp_distances, fp_distances, fn_distances, tn_distances
+
+
+def _set_plot_style(dpi: int) -> None:
+    plt.rcParams.update(
+        {
+            "font.size": 13,
+            "axes.titlesize": 13,
+            "axes.labelsize": 16,
+            "xtick.labelsize": 14,
+            "ytick.labelsize": 14,
+            "legend.fontsize": 14,
+            "figure.dpi": dpi,
+        }
     )
-    parser.add_argument(
-        "--outputs-dir",
-        type=Path,
-        default=Path("outputs"),
-        help="Root outputs directory containing per-target folders.",
+
+
+def plot_panel_a(
+    tp_distances: Sequence[float],
+    fp_distances: Sequence[float],
+    output_path: Path,
+    *,
+    bin_width: float,
+    max_distance: Optional[float],
+    dpi: int,
+    fig_width: float,
+    fig_height: float,
+) -> None:
+    all_distances = list(tp_distances) + list(fp_distances)
+    bins, x_max = _get_bins(all_distances, bin_width, max_distance)
+    _set_plot_style(dpi)
+
+    plt.figure(figsize=(fig_width, fig_height))
+    plt.hist(
+        [tp_distances, fp_distances],
+        bins=bins,
+        stacked=True,
+        color=[classification_colors.TP, classification_colors.FP],
+        edgecolor="black",
+        linewidth=0.8,
+        label=[
+            f"(TP) CSP -- in binding site ({len(tp_distances)})",
+            f"(FP) CSP -- not in binding site ({len(fp_distances)})",
+        ],
     )
-    parser.add_argument(
-        "--targets-csv",
-        type=Path,
-        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
-        help="CSV with holo_pdb target IDs (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
+    ax = plt.gca()
+    plt.xlabel("Minimum Inter-Atomic Distance (Å)")
+    plt.ylabel("Number of Residues")
+    ax.tick_params(axis="both", labelsize=14)
+    plt.legend(frameon=True, fontsize=14, title_fontsize=14)
+    plt.xlim(0, x_max)
+    plt.tight_layout()
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=dpi)
+    plt.close()
+
+
+def plot_panel_b(
+    tp_distances: Sequence[float],
+    fp_distances: Sequence[float],
+    fn_distances: Sequence[float],
+    tn_distances: Sequence[float],
+    output_path: Path,
+    *,
+    bin_width: float,
+    max_distance: Optional[float],
+    dpi: int,
+    fig_width: float,
+    fig_height: float,
+) -> None:
+    all_distances = list(tp_distances) + list(fp_distances) + list(fn_distances) + list(tn_distances)
+    bins, x_max = _get_bins(all_distances, bin_width, max_distance)
+    _set_plot_style(dpi)
+
+    plt.figure(figsize=(fig_width, fig_height))
+    plt.hist(
+        [tn_distances, fp_distances, fn_distances, tp_distances],
+        bins=bins,
+        stacked=True,
+        color=[
+            classification_colors.TN,
+            classification_colors.FP,
+            classification_colors.FN,
+            classification_colors.TP,
+        ],
+        edgecolor="black",
+        linewidth=0.8,
+        label=[
+            f"(TN) No CSP -- not in binding site ({len(tn_distances)})",
+            f"(FP) CSP -- not in binding site ({len(fp_distances)})",
+            f"(FN) No CSP -- in binding site ({len(fn_distances)})",
+            f"(TP) CSP -- in binding site ({len(tp_distances)})",
+        ],
     )
-    parser.add_argument("--output-image", type=Path, default=Path("figures") / "SF10_ca_inclusive.png")
-    return parser.parse_args()
+    ax = plt.gca()
+    plt.xlabel("Minimum Inter-Atomic Distance (Å)")
+    plt.ylabel("Number of Residues")
+    ax.tick_params(axis="both", labelsize=14)
+    plt.legend(frameon=True, fontsize=14, title_fontsize=14)
+    plt.xlim(0, x_max)
+    plt.tight_layout()
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=dpi)
+    plt.close()
 
 
 def compose_two_panel_figure(panel_a_path: Path, panel_b_path: Path, output_image: Path) -> None:
@@ -81,26 +295,8 @@ def compose_two_panel_figure(panel_a_path: Path, panel_b_path: Path, output_imag
     axes[0].imshow(image_a)
     axes[1].imshow(image_b)
 
-    axes[0].text(
-        0.01,
-        0.99,
-        "A.",
-        transform=axes[0].transAxes,
-        va="top",
-        ha="left",
-        fontsize=20,
-        fontweight="bold",
-    )
-    axes[1].text(
-        0.01,
-        0.99,
-        "B.",
-        transform=axes[1].transAxes,
-        va="top",
-        ha="left",
-        fontsize=20,
-        fontweight="bold",
-    )
+    axes[0].text(0.01, 0.99, "A.", transform=axes[0].transAxes, va="top", ha="left", fontsize=20, fontweight="bold")
+    axes[1].text(0.01, 0.99, "B.", transform=axes[1].transAxes, va="top", ha="left", fontsize=20, fontweight="bold")
 
     plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01, hspace=0.02)
     output_image.parent.mkdir(parents=True, exist_ok=True)
@@ -108,70 +304,74 @@ def compose_two_panel_figure(panel_a_path: Path, panel_b_path: Path, output_imag
     plt.close(fig)
 
 
-def main() -> int:
-    args = parse_args()
-    project_root = Path(__file__).resolve().parent.parent
-
-    outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
-    targets_csv = args.targets_csv if args.targets_csv.is_absolute() else project_root / args.targets_csv
-    output_image = (
-        args.output_image if args.output_image.is_absolute() else project_root / args.output_image
+def parse_args(argv: Iterable[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Create SI Fig. S13 (atom–atom distance confusion matrix histograms).")
+    parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
+    parser.add_argument("--figures-dir", type=Path, default=Path("figures"))
+    parser.add_argument("--output", type=Path, default=None, help="Output path for SF13_any_atom_distance.png")
+    parser.add_argument(
+        "--targets-csv",
+        type=Path,
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
+        help="CSV with 'holo_pdb' column (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
+    parser.add_argument("--targets", type=str, help="Optional comma-separated holo_pdb list.")
+    parser.add_argument("--bin-width", type=float, default=1.0)
+    parser.add_argument("--max-distance", type=float, default=None)
+    parser.add_argument("--dpi", type=int, default=600)
+    parser.add_argument("--fig-width", type=float, default=8.0)
+    parser.add_argument("--fig-height", type=float, default=5.0)
+    return parser.parse_args(list(argv))
 
-    if not outputs_dir.exists():
-        print(f"Error: outputs directory does not exist: {outputs_dir}", file=sys.stderr)
+
+def main(argv: Iterable[str]) -> int:
+    args = parse_args(argv)
+    project_root = Path(__file__).resolve().parent.parent
+    outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
+    figures_dir = args.figures_dir if args.figures_dir.is_absolute() else project_root / args.figures_dir
+    output_image = args.output or (figures_dir / "SF13_any_atom_distance.png")
+    if not output_image.is_absolute():
+        output_image = project_root / output_image
+
+    targets_csv = args.targets_csv
+    if targets_csv is not None and not targets_csv.is_absolute():
+        targets_csv = project_root / targets_csv
+    selected_dirs = _resolve_selected_dirs(outputs_dir, targets_csv, args.targets)
+    tp, fp, fn, tn = collect_distance_categories(outputs_dir, selected_dirs)
+    if not (tp or fp or fn or tn):
+        print(
+            "No inter-atomic distance data found for selected targets. "
+            "Run the pipeline so outputs/<id>/master_alignment.csv exists.",
+            file=sys.stderr,
+        )
         return 1
-    if not targets_csv.exists():
-        print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
+    if not (tp or fp):
+        print(
+            "No inter-atomic distance data for significant residues (TP/FP) for selected targets.",
+            file=sys.stderr,
+        )
         return 1
 
-    rows = load_target_rows(targets_csv)
-    allowed_targets = {p.name for p in resolve_target_rows(rows, outputs_dir)}
-    _, distances, confusion_records = collect_results(outputs_dir, allowed_targets)
-
-    positive_count = sum(1 for record in distances if record.is_predicted_positive)
-    negative_count = sum(1 for record in distances if not record.is_predicted_positive)
-
-    output_image.parent.mkdir(parents=True, exist_ok=True)
-
-    with tempfile.TemporaryDirectory(prefix="si_fig_s13_") as tmp_dir:
+    with tempfile.TemporaryDirectory(prefix="si_fig_s16_") as tmp_dir:
         tmp_dir_path = Path(tmp_dir)
         panel_a_path = tmp_dir_path / "panel_a.png"
         panel_b_path = tmp_dir_path / "panel_b.png"
 
-        render_stacked_histogram(
-            distances,
-            panel_a_path,
-            positive_count,
-            negative_count,
-            tp_color=classification_colors.TP,
-            show_title=False,
-            ylabel="Number of Residues",
-            bold_axes=False,
-            axis_label_fontsize=20,
-            legend_fontsize=14,
+        plot_panel_a(
+            tp, fp, panel_a_path,
+            bin_width=args.bin_width, max_distance=args.max_distance,
+            dpi=args.dpi, fig_width=args.fig_width, fig_height=args.fig_height,
         )
-        render_confusion_matrix_stacked_histogram(
-            confusion_records,
-            panel_b_path,
-            tp_color=classification_colors.TP,
-            show_title=False,
-            bold_axes=False,
-            axis_label_fontsize=20,
-            legend_fontsize=14,
+        plot_panel_b(
+            tp, fp, fn, tn, panel_b_path,
+            bin_width=args.bin_width, max_distance=args.max_distance,
+            dpi=args.dpi, fig_width=args.fig_width, fig_height=args.fig_height,
         )
-        if not panel_a_path.is_file() or not panel_b_path.is_file():
-            print(
-                "Cannot compose SI Fig. S10: one or both panel PNGs were not written "
-                "(no CA-distance data for selected targets / outputs).",
-                file=sys.stderr,
-            )
-            return 1
         compose_two_panel_figure(panel_a_path, panel_b_path, output_image)
 
-    print(f"SI Fig. S10 saved to {output_image.resolve()}")
+    print(f"SI Fig. S13 written to {output_image.resolve()}")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))

@@ -15,6 +15,7 @@ import csv
 import os
 import sys
 from contextlib import contextmanager, redirect_stderr, redirect_stdout
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from typing import List, Dict, Optional, Any, Callable, Iterator, TextIO
@@ -38,6 +39,7 @@ try:
     from .annotate_csp_csv_metadata import annotate_csv_with_ec_and_scope, _load_receptor_chain_map
     from .confusion_matrix_analysis import generate_confusion_matrix_per_system
     from .receptor_msa import try_write_receptor_alignment_png
+    from .target_resolution import canonical_output_dir_name
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
@@ -57,6 +59,7 @@ except Exception:
     from scripts.annotate_csp_csv_metadata import annotate_csv_with_ec_and_scope, _load_receptor_chain_map
     from scripts.confusion_matrix_analysis import generate_confusion_matrix_per_system
     from scripts.receptor_msa import try_write_receptor_alignment_png
+    from scripts.target_resolution import canonical_output_dir_name
 
 
 
@@ -100,7 +103,6 @@ def process_row_msa_png_only(
     row: Dict[str, str],
     out_dir: str,
     *,
-    directory_suffix: Optional[str] = None,
     bifurcation_basename: Optional[str] = None,
 ) -> None:
     """
@@ -116,10 +118,7 @@ def process_row_msa_png_only(
         _emit_warning("[PIPE] MSA-only: skip row (missing apo_bmrb, holo_bmrb, or holo_pdb)")
         return
 
-    if directory_suffix:
-        tgt_dir = os.path.join(out_dir, f"{holo_pdb}_{directory_suffix}")
-    else:
-        tgt_dir = os.path.join(out_dir, holo_pdb)
+    tgt_dir = os.path.join(out_dir, canonical_output_dir_name(holo_pdb, apo_bmrb))
     os.makedirs(tgt_dir, exist_ok=True)
     logs_dir = os.path.join(tgt_dir, "logs")
     os.makedirs(logs_dir, exist_ok=True)
@@ -196,7 +195,6 @@ def process_row(
     interaction_args: Dict = None,
     binary_mode: bool = False,
     include_alternative_thresholds: bool = False,
-    directory_suffix: Optional[str] = None,
     generate_case_study: bool = True,
     include_numeric_residue_ticks: bool = False,
     force_case_study_view_reset: bool = False,
@@ -210,14 +208,8 @@ def process_row(
     if not apo_bmrb or not holo_bmrb or not holo_pdb:
         return
 
-    # IO: ensure per-target output dir
-    # If directory_suffix is provided, append it to create unique directories (e.g., 2mur_1, 2mur_2)
-    # IMPORTANT: When duplicates exist, directory_suffix should ALWAYS be set by the caller
-    # to prevent creating non-suffixed directories
-    if directory_suffix:
-        tgt_dir = os.path.join(out_dir, f"{holo_pdb}_{directory_suffix}")
-    else:
-        tgt_dir = os.path.join(out_dir, holo_pdb)
+    # IO: ensure per-target output dir (canonical basename {HOLO}_{apo_bmrb})
+    tgt_dir = os.path.join(out_dir, canonical_output_dir_name(holo_pdb, apo_bmrb))
     os.makedirs(tgt_dir, exist_ok=True)
     logs_dir = os.path.join(tgt_dir, "logs")
     os.makedirs(logs_dir, exist_ok=True)
@@ -237,7 +229,7 @@ def process_row(
     }
     target_label = os.path.basename(tgt_dir)
     
-    # Normalize tgt_dir to be relative to project root for PyMOL scripts (e.g., "./outputs/2mur_1/")
+    # Normalize tgt_dir to be relative to project root for PyMOL scripts (e.g., "./outputs/2MUR_12345/")
     # Convert to relative path if it's absolute, ensure it starts with ./ and ends with /
     tgt_dir_for_pymol = tgt_dir
     if os.path.isabs(tgt_dir):
@@ -1545,87 +1537,60 @@ def main() -> None:
     ensure_directories(args.out)
 
     rows: List[Dict[str, str]] = []
-    row_suffixes: Dict[int, Optional[str]] = {}  # Map row index to directory suffix
-    
+
     if args.holo_pdb:
-        # Look up all entries with matching holo_pdb from CSP_UBQ.csv
         try:
             matching_rows = lookup_all_rows_from_holo_pdb(args.input, args.holo_pdb)
-            
-            # Check if there are duplicates
+            rows.extend(matching_rows)
+            verbose = os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")
             if len(matching_rows) > 1:
-                # Multiple entries found - create unique subdirectories for ALL entries
-                # IMPORTANT: When duplicates exist, we MUST use suffixes for all entries
-                print(f"[PIPE] Found {len(matching_rows)} entries for holo_pdb {args.holo_pdb}, creating unique subdirectories")
+                print(
+                    f"[PIPE] Found {len(matching_rows)} CSV rows for holo_pdb {args.holo_pdb} "
+                    "(one output folder per apo_bmrb)"
+                )
                 for idx, row in enumerate(matching_rows, start=1):
-                    rows.append(row)
-                    row_suffixes[len(rows) - 1] = str(idx)  # Always set suffix when duplicates exist
-                    print(f"[PIPE] Entry {idx}/{len(matching_rows)}: apo_bmrb={row['apo_bmrb']}, holo_bmrb={row['holo_bmrb']} -> {args.holo_pdb}_{idx}")
-            else:
-                # Single entry - use current behavior (no suffix)
-                rows.append(matching_rows[0])
-                row_suffixes[0] = None
-                if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
-                    print(f"[PIPE] Found single entry for holo_pdb {args.holo_pdb}: apo_bmrb={matching_rows[0]['apo_bmrb']}, holo_bmrb={matching_rows[0]['holo_bmrb']}")
+                    tgt = canonical_output_dir_name(row["holo_pdb"], row["apo_bmrb"])
+                    print(
+                        f"[PIPE] Entry {idx}/{len(matching_rows)}: apo_bmrb={row['apo_bmrb']}, "
+                        f"holo_bmrb={row['holo_bmrb']} -> {tgt}"
+                    )
+            elif verbose:
+                r0 = matching_rows[0]
+                print(
+                    f"[PIPE] Found single entry for holo_pdb {args.holo_pdb}: "
+                    f"apo_bmrb={r0['apo_bmrb']}, holo_bmrb={r0['holo_bmrb']} "
+                    f"-> {canonical_output_dir_name(r0['holo_pdb'], r0['apo_bmrb'])}"
+                )
         except ValueError as e:
             print(f"[PIPE] ERROR: {e}")
             return
     else:
-        # Original logic for --ids filtering
         filter_ids = None
         if args.ids:
             filter_ids = {s.strip() for s in args.ids.split(",") if s.strip()}
 
-        # First pass: collect all rows and build a mapping of holo_pdb to all matching rows
-        all_rows = []
-        holo_pdb_to_rows: Dict[str, List[Dict[str, str]]] = {}
-        
         with open(args.input, "r", newline="") as f:
             rdr = csv.DictReader(f)
             for row in rdr:
                 if filter_ids and row.get("apo_bmrb") not in filter_ids:
                     continue
-                all_rows.append(row)
-                holo_pdb = (row.get("holo_pdb") or "").strip()
-                if holo_pdb:
-                    if holo_pdb not in holo_pdb_to_rows:
-                        holo_pdb_to_rows[holo_pdb] = []
-                    holo_pdb_to_rows[holo_pdb].append(row)
-        
-        # Second pass: determine directory suffixes for rows with duplicates
-        # For each row, find its position among duplicates with the same holo_pdb
-        for row in all_rows:
-            holo_pdb = (row.get("holo_pdb") or "").strip()
-            apo_bmrb = (row.get("apo_bmrb") or "").strip()
-            holo_bmrb = (row.get("holo_bmrb") or "").strip()
-            
-            # Check if this holo_pdb has duplicates
-            matching_rows = holo_pdb_to_rows.get(holo_pdb, [])
-            if len(matching_rows) > 1:
-                # Has duplicates - find which duplicate this row is
-                # Match based on apo_bmrb and holo_bmrb to ensure correct identification
-                duplicate_index = None
-                for idx, match_row in enumerate(matching_rows, start=1):
-                    match_apo = (match_row.get("apo_bmrb") or "").strip()
-                    match_holo = (match_row.get("holo_bmrb") or "").strip()
-                    if match_apo == apo_bmrb and match_holo == holo_bmrb:
-                        duplicate_index = idx
-                        break
-                
-                if duplicate_index:
-                    rows.append(row)
-                    row_suffixes[len(rows) - 1] = str(duplicate_index)
-                else:
-                    # Shouldn't happen, but fallback to position-based matching
-                    rows.append(row)
-                    # Count how many rows with same holo_pdb we've already processed
-                    seen_count = sum(1 for i in range(len(rows) - 1) 
-                                   if (rows[i].get("holo_pdb") or "").strip() == holo_pdb)
-                    row_suffixes[len(rows) - 1] = str(seen_count + 1)
-            else:
-                # No duplicates - use current behavior (no suffix)
                 rows.append(row)
-                row_suffixes[len(rows) - 1] = None
+
+    canon_keys = [
+        canonical_output_dir_name(
+            (r.get("holo_pdb") or "").strip() or (r.get("holo_pdb_id") or "").strip(),
+            (r.get("apo_bmrb") or "").strip(),
+        )
+        for r in rows
+    ]
+    dup_counts = Counter(canon_keys)
+    collisions = sorted(k for k, c in dup_counts.items() if c > 1)
+    if collisions:
+        print(
+            "[PIPE] ERROR: Multiple CSV rows map to the same output directory "
+            f"(holo_pdb + apo_bmrb must be unique): {collisions}"
+        )
+        return
 
     if args.receptor_msa_png_only:
         if not rows:
@@ -1633,11 +1598,10 @@ def main() -> None:
             return
         if args.workers and args.workers > 1:
             print("[PIPE] WARNING: --receptor-msa-png-only runs serially (ignoring --workers > 1).")
-        for idx, row in enumerate(rows):
+        for row in rows:
             process_row_msa_png_only(
                 row,
                 args.out,
-                directory_suffix=row_suffixes.get(idx),
                 bifurcation_basename=args.bifurcation_basename,
             )
         _console_line(f"[PIPE] receptor-msa-png-only: finished {len(rows)} row(s).")
@@ -1676,8 +1640,8 @@ def main() -> None:
         else:
             print(f"[PIPE] Using default CSP thresholds")
     
-    # Matplotlib is not thread-safe. Use parallel only for single-target mode (--holo-pdb) with no duplicates.
-    # Batch mode (many targets) and duplicate holo_pdb entries must run serially.
+    # Matplotlib is not thread-safe. Use parallel only for single-target mode (--holo-pdb) with one row.
+    # Batch mode or multiple CSV rows for one --holo-pdb must run serially.
     has_duplicates = args.holo_pdb and len(rows) > 1
     use_parallel = args.workers and args.workers > 1 and args.holo_pdb and not has_duplicates
 
@@ -1696,14 +1660,13 @@ def main() -> None:
                     interaction_args,
                     args.binary_visualizations,
                     args.include_alternative_thresholds,
-                    row_suffixes.get(idx, None),
                     generate_case_study,
                     args.include_numeric_residue_ticks,
                     args.force_case_study_view_reset,
                     args.bifurcation_basename,
                     not args.no_receptor_msa_png,
                 )
-                for idx, row in enumerate(rows)
+                for row in rows
             ]
             for f in as_completed(futures):
                 f.result()  # Surface any exception from worker
@@ -1716,7 +1679,7 @@ def main() -> None:
             print(f"[PIPE] Processing {len(rows)} rows serially (batch mode; matplotlib is not thread-safe)")
         elif (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print(f"[PIPE] Processing {len(rows)} rows serially")
-        for idx, row in enumerate(rows):
+        for row in rows:
             process_row(
                 row,
                 args.out,
@@ -1725,7 +1688,6 @@ def main() -> None:
                 interaction_args,
                 args.binary_visualizations,
                 args.include_alternative_thresholds,
-                row_suffixes.get(idx, None),
                 generate_case_study,
                 args.include_numeric_residue_ticks,
                 args.force_case_study_view_reset,
@@ -1733,7 +1695,7 @@ def main() -> None:
                 not args.no_receptor_msa_png,
             )
 
-    # Generate confusion_matrix_per_system.csv for downstream scripts (create_si_fig_s20, etc.)
+    # Generate confusion_matrix_per_system.csv for downstream scripts (create_si_fig_s18, etc.)
     _console_line("[PIPE] Finalize: refresh confusion-matrix summary")
     run_logs_dir = os.path.join(args.out, "logs")
     os.makedirs(run_logs_dir, exist_ok=True)

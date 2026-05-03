@@ -45,6 +45,13 @@ PREDICTOR_COLUMNS: Sequence[str] = (
     "is_occluded_occlusion",
 )
 
+# Matplotlib mathtext: C with α subscript (not plaintext "CA"). Used by distance histogram x-axes (e.g. SI Fig. S10).
+MIN_CA_DISTANCE_XLABEL = r"Minimum $C_\alpha$ distance (Å)"
+
+# F1 scatter: Cα-inclusive vs N/H (e.g. SI Fig. S11 via create_si_fig_s11.py).
+F1_COMPARE_CA_INCLUSIVE_XLABEL = r"F1 Score ($C_\alpha$-inclusive CSPs)"
+F1_COMPARE_CA_INCLUSIVE_TITLE = r"Comparison of F1 Scores: $C_\alpha$-inclusive vs N/H CSPs"
+
 
 class AlignmentParsingError(RuntimeError):
     """Raised when a CSV file cannot be parsed."""
@@ -633,7 +640,7 @@ def render_histogram(distance_records: Sequence[DistanceRecord], output_image: P
 
     plt.figure(figsize=(8, 5))
     plt.hist(distances, bins=bins, edgecolor="black", color="#4c72b0")
-    plt.xlabel("Minimum CA Distance (Å)")
+    plt.xlabel(MIN_CA_DISTANCE_XLABEL)
     plt.ylabel("Number of Significant Residues")
     plt.title("Distribution of Significant Residues by Minimum CA Distance (CA-inclusive CSPs)")
     plt.tight_layout()
@@ -699,7 +706,7 @@ def render_stacked_histogram(
     if axis_label_fontsize is not None:
         xlabel_kw["fontsize"] = axis_label_fontsize
         ylabel_kw["fontsize"] = axis_label_fontsize
-    ax.set_xlabel("Minimum CA Distance (Å)", **xlabel_kw)
+    ax.set_xlabel(MIN_CA_DISTANCE_XLABEL, **xlabel_kw)
     ax.set_ylabel(y_label, **ylabel_kw)
     if bold_axes:
         for label in ax.get_xticklabels() + ax.get_yticklabels():
@@ -762,9 +769,9 @@ def render_f1_comparison_scatterplot(
     # Set axis limits and labels
     ax.set_xlim([0, 1])
     ax.set_ylim([0, 1])
-    ax.set_xlabel("F1 Score (CA-inclusive CSPs)", fontsize=14, fontweight='bold')
-    ax.set_ylabel("F1 Score (N/H CSPs)", fontsize=14, fontweight='bold')
-    ax.set_title("Comparison of F1 Scores: CA-inclusive vs N/H CSPs", fontsize=16, fontweight='bold')
+    ax.set_xlabel(F1_COMPARE_CA_INCLUSIVE_XLABEL, fontsize=14, fontweight="bold")
+    ax.set_ylabel("F1 Score (N/H CSPs)", fontsize=14, fontweight="bold")
+    ax.set_title(F1_COMPARE_CA_INCLUSIVE_TITLE, fontsize=16, fontweight="bold")
     
     # Add grid for better readability
     ax.grid(True, alpha=0.3, linestyle='--')
@@ -776,7 +783,7 @@ def render_f1_comparison_scatterplot(
     # Add text annotation with number of points and average delta
     annotation_text = f"n = {len(common_targets)} targets\n"
     annotation_text += f"Avg Δ = {average_delta:.4f}\n"
-    annotation_text += "(N/H F1 - CA F1)"
+    annotation_text += r"(N/H F1 - $C_\alpha$-inclusive F1)"
     ax.text(
         0.05,
         0.95,
@@ -788,7 +795,7 @@ def render_f1_comparison_scatterplot(
     )
     
     # Print average delta to console
-    print(f"Average delta (N/H F1 - CA F1): {average_delta:.4f}")
+    print(f"Average delta (N/H F1 - Cα-inclusive F1): {average_delta:.4f}")
     
     plt.tight_layout()
     
@@ -874,7 +881,7 @@ def render_confusion_matrix_stacked_histogram(
     if axis_label_fontsize is not None:
         xlabel_kw["fontsize"] = axis_label_fontsize
         ylabel_kw["fontsize"] = axis_label_fontsize
-    ax.set_xlabel("Minimum CA Distance (Å)", **xlabel_kw)
+    ax.set_xlabel(MIN_CA_DISTANCE_XLABEL, **xlabel_kw)
     ax.set_ylabel("Number of Residues", **ylabel_kw)
     if bold_axes:
         for label in ax.get_xticklabels() + ax.get_yticklabels():

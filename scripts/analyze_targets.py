@@ -44,6 +44,9 @@ PREDICTOR_COLUMNS: Sequence[str] = (
     "is_occluded_occlusion",
 )
 
+# Matplotlib mathtext: C with α subscript (not plaintext "CA"); shared with analyze_targets_ca / create_fig_3.
+MIN_CA_DISTANCE_XLABEL = r"Minimum $C_\alpha$ distance (Å)"
+
 
 class AlignmentParsingError(RuntimeError):
     """Raised when a `master_alignment.csv` file cannot be parsed."""
@@ -298,6 +301,30 @@ def load_targets_from_csv(csv_path: Path) -> Set[str]:
         raise ValueError(f"Failed to load targets from {csv_path}: {exc}") from exc
 
 
+def _output_dir_matches_allowed_targets(dirname: str, allowed_targets: Set[str]) -> bool:
+    """Return True if ``outputs/<dirname>/`` should be analyzed for the given allow-list.
+
+    ``--targets-csv`` / auxiliary scripts often list only bare ``holo_pdb`` (e.g. ``1d5g``),
+    while pipeline directories are canonical ``HOLO_apo_bmrb`` (e.g. ``1D5G_34688``).
+    Without this normalization, every directory is skipped and the script reports falsely
+    that no ``master_alignment.csv`` exists.
+    """
+    d_raw = dirname.strip()
+    if d_raw in allowed_targets:
+        return True
+    d_lower = d_raw.lower()
+    allowed_lower = {str(a).strip().lower() for a in allowed_targets if str(a).strip()}
+    if d_lower in allowed_lower:
+        return True
+    pdb_prefix = d_lower.split("_", 1)[0]
+    if pdb_prefix in allowed_lower:
+        return True
+    for holo in allowed_lower:
+        if d_lower == holo or d_lower.startswith(holo + "_"):
+            return True
+    return False
+
+
 def to_bool(value) -> bool:
     """Coerce assorted representations into booleans."""
     if pd.isna(value):
@@ -404,7 +431,9 @@ def collect_results(
 
     for target_dir in discover_targets(outputs_dir):
         # Filter by allowed targets if provided
-        if allowed_targets is not None and target_dir.name not in allowed_targets:
+        if allowed_targets is not None and not _output_dir_matches_allowed_targets(
+            target_dir.name, allowed_targets
+        ):
             continue
             
         alignment_path = target_dir / "master_alignment.csv"
@@ -499,7 +528,7 @@ def render_histogram(distance_records: Sequence[DistanceRecord], output_image: P
 
     plt.figure(figsize=(8, 5))
     plt.hist(distances, bins=bins, edgecolor="black", color="#4c72b0")
-    plt.xlabel("Minimum CA Distance (Å)")
+    plt.xlabel(MIN_CA_DISTANCE_XLABEL)
     plt.ylabel("Number of Significant Residues")
     plt.title("Distribution of Significant Residues by Minimum CA Distance")
     plt.tight_layout()
@@ -560,7 +589,7 @@ def render_stacked_histogram(
         edgecolor="black",
         label=labels,
     )
-    plt.xlabel("Minimum CA Distance (Å)", fontsize=axis_fontsize)
+    plt.xlabel(MIN_CA_DISTANCE_XLABEL, fontsize=axis_fontsize)
     plt.ylabel("Number of Residues", fontsize=axis_fontsize)
     # if show_title:
     #     plt.title("Predicted Outcomes for Significant Residues by Minimum CA Distance")
@@ -660,7 +689,7 @@ def render_confusion_matrix_stacked_histogram(
         edgecolor="black",
         label=labels,
     )
-    plt.xlabel("Minimum CA Distance (Å)", fontsize=axis_fontsize)
+    plt.xlabel(MIN_CA_DISTANCE_XLABEL, fontsize=axis_fontsize)
     plt.ylabel("Number of Residues", fontsize=axis_fontsize)
     # if show_title:
     #     plt.title("Confusion Matrix by Minimum CA Distance")

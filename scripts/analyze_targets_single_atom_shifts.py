@@ -11,6 +11,12 @@ For each target directory under outputs/ that has a csp_table.csv, this script:
   - Writes outputs/{holo_pdb}/1d_analysis.csv with one row per residue
     containing all single-atom 1D metrics for that residue.
 
+Shared helpers :func:`fraction_rows_with_both_ca_shifts_1d` and
+:func:`target_basenames_passing_ca_shift_coverage` define the CA-shift coverage
+rule for SI Fig. S10 / S11 / S14 and the standalone 1D F1 boxplot (default
+``DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE``: strictly more than half of rows with both
+``CA_apo`` and ``CA_holo``).
+
 No scaling coefficients are applied to the 1D CSPs; they are plain absolute
 differences in ppm for each atom type.
 """
@@ -22,7 +28,7 @@ import csv
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Mapping, Optional, Set, Tuple
 
 import statistics
 from math import ceil
@@ -44,6 +50,11 @@ except Exception:
     _sys.path.append(_os.path.dirname(_os.path.dirname(os.path.abspath(__file__))))
     from scripts.csp import compute_threshold_with_outlier_removal  # type: ignore
     from scripts.config import thresholds as _thresholds  # type: ignore
+
+
+# Default cutoff for SI figures pairing CA-inclusive analyses with the 1D table: strictly greater than
+# this fraction of ``1d_analysis.csv`` rows must have both CA_apo and CA_holo populated.
+DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE = 0.5
 
 
 @dataclass
@@ -106,6 +117,69 @@ def discover_targets(outputs_dir: Path) -> List[Path]:
     return sorted(
         path for path in outputs_dir.iterdir() if path.is_dir() and not path.name.startswith(".")
     )
+
+
+def fraction_rows_with_both_ca_shifts_1d(target_dir: Path) -> Optional[float]:
+    """Return the fraction of rows in ``1d_analysis.csv`` with both ``CA_apo`` and ``CA_holo``.
+
+    Uses the residue row count from ``1d_analysis.csv``. Returns ``None`` if the file is missing,
+    unreadable, empty, or lacks the CA columns.
+    """
+    one_d_path = target_dir / "1d_analysis.csv"
+    if not one_d_path.exists():
+        return None
+    try:
+        df = pd.read_csv(one_d_path)
+    except Exception:
+        return None
+    if df.empty or "CA_apo" not in df.columns or "CA_holo" not in df.columns:
+        return None
+    total = int(len(df))
+    if total == 0:
+        return None
+    both = int((df["CA_apo"].notna() & df["CA_holo"].notna()).sum())
+    return both / total
+
+
+def target_basenames_passing_ca_shift_coverage(
+    outputs_dir: Path,
+    *,
+    min_coverage: float = DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
+    allowed_basenames: Optional[Mapping[str, object]] = None,
+) -> Tuple[Set[str], Dict[str, float]]:
+    """Per-target dirs whose CA row fraction in ``1d_analysis.csv`` is **strictly** ``> min_coverage``.
+
+    Shared eligibility rule for SI Fig. S10 / S11 / S14 and the standalone 1D F1 boxplot so CA-shift
+    targets are gated identically from the pipeline 1D table.
+
+    Args:
+        outputs_dir: Pipeline ``outputs/`` root.
+        min_coverage: Exclusive lower bound (default 0.5 → strictly more than half the rows).
+        allowed_basenames: If set, only these subdirectory names are scanned.
+
+    Returns:
+        ``passing``: basenames above the cutoff.
+        ``coverage_by_basename``: all scanned targets that had a readable finite coverage fraction.
+    """
+    passing: Set[str] = set()
+    coverage_by_basename: Dict[str, float] = {}
+    if not outputs_dir.exists():
+        return passing, coverage_by_basename
+
+    outs = outputs_dir.resolve()
+    min_c = float(min_coverage)
+    for path in sorted(outs.iterdir()):
+        if not path.is_dir() or path.name.startswith("."):
+            continue
+        if allowed_basenames is not None and path.name not in allowed_basenames:
+            continue
+        frac = fraction_rows_with_both_ca_shifts_1d(path)
+        if frac is None:
+            continue
+        coverage_by_basename[path.name] = float(frac)
+        if frac > min_c:
+            passing.add(path.name)
+    return passing, coverage_by_basename
 
 
 def load_allowed_targets(targets_csv: Optional[Path]) -> Optional[Dict[str, bool]]:

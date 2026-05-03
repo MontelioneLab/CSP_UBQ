@@ -34,6 +34,39 @@ def format_case_study_metadata_header(
     )
 
 
+def _case_study_view_load_candidates(
+    pymol_views_dir: str, pdb_id: str, view_key: Optional[str]
+) -> List[str]:
+    """Paths to try when reusing a saved camera (canonical first, then legacy ``{pdb_id}_...``)."""
+    seen: set[str] = set()
+    out: List[str] = []
+    vk = (view_key or "").strip()
+    pdb = (pdb_id or "").strip()
+
+    def add(fname: str) -> None:
+        full = os.path.join(pymol_views_dir, fname)
+        if full not in seen:
+            seen.add(full)
+            out.append(full)
+
+    if vk:
+        add(f"{vk}_case_study_view.json")
+    if pdb:
+        add(f"{pdb}_case_study_view.json")
+        low = pdb.lower()
+        if low != pdb:
+            add(f"{low}_case_study_view.json")
+    return out
+
+
+def _case_study_view_save_path(pymol_views_dir: str, pdb_id: str, view_key: Optional[str]) -> str:
+    """Where to write the camera JSON after an interactive capture (canonical ``view_key`` when set)."""
+    vk = (view_key or "").strip()
+    pdb = (pdb_id or "").strip()
+    stem = vk or pdb
+    return os.path.join(pymol_views_dir, f"{stem}_case_study_view.json")
+
+
 def extract_hsqc_bottom_right_panel(hsqc_png_path: str):
     """
     Extract the bottom-right panel from the 2x2 HSQC comparison image.
@@ -298,27 +331,31 @@ def generate_case_study_figure(
     pymol_views_dir = paths.pymol_views_dir
     os.makedirs(pymol_views_dir, exist_ok=True)
     view_id = (view_key or os.path.basename(os.path.abspath(target_dir)) or pdb_id).strip()
-    view_path = os.path.join(pymol_views_dir, f"{view_id}_case_study_view.json")
+    view_path_save = _case_study_view_save_path(pymol_views_dir, pdb_id, view_key)
 
     assets_dir = os.path.join(target_dir, "case_study_assets")
     os.makedirs(assets_dir, exist_ok=True)
     view: Optional[List[float]] = None
     if force_view_reset:
         print(f"[CASE_STUDY] Forcing view recapture for {view_id}; ignoring saved view.")
-    elif os.path.exists(view_path):
-        try:
-            view = _load_view(view_path)
-            print(f"[CASE_STUDY] Reusing saved view: {view_path}")
-        except Exception as exc:
-            print(f"[CASE_STUDY] WARNING: Saved view is invalid ({exc}); recapturing.")
+    else:
+        for cand in _case_study_view_load_candidates(pymol_views_dir, pdb_id, view_key):
+            if not os.path.exists(cand):
+                continue
+            try:
+                view = _load_view(cand)
+                print(f"[CASE_STUDY] Reusing saved view: {cand}")
+                break
+            except Exception as exc:
+                print(f"[CASE_STUDY] WARNING: Saved view is invalid ({cand}): {exc}; trying next.")
 
     if view is None:
         capture_user_view_interactive(
             color_csp_mask_pml_path=color_csp_mask_pml,
-            view_output_path=view_path,
+            view_output_path=view_path_save,
             pdb_id=pdb_id,
         )
-        view = _load_view(view_path)
+        view = _load_view(view_path_save)
 
     rendered = {
         "left": os.path.join(assets_dir, "case_study_color_csp_mask.png"),

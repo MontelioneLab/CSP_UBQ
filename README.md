@@ -44,7 +44,7 @@ Targets were collected by manual scraping of the PDB, using advanced search filt
 
 CSPs are calculated by comparing chemical shifts between bound and free forms of the receptor. In each case, apo and holo chemical shifts were referenced by applying offsets to the holo shifts. The optimal offset was determined by a grid search over candidate 1H and 15N holo shifts, selecting the pair that **maximizes the count of aligned residues** whose offset-corrected amide CSP (same `sqrt(0.5 * (Δδ_H^2 + (0.14 * Δδ_N)^2))` form) is **below 0.05 ppm**; this cutoff is `Referencing.grid_cutoff` in `scripts/config.py`.
 
-Example grid-search heat maps for optimal N/H holo shift offsets can be written per target (e.g. the ET–TP system, PDB ID 7JQ8) as `offset_grid_*.png` under `outputs/<holo_pdb>/`. CSPs follow the weighted amide form used in prior work (citations in the publication). Offsets for processed targets are cached alongside those outputs.
+Example grid-search heat maps for optimal N/H holo shift offsets can be written per target (e.g. the ET–TP system, PDB ID 7JQ8) as `offset_grid_*.png` under `outputs/<HOLO_PDB>_<apo_bmrb>/`. CSPs follow the weighted amide form used in prior work (citations in the publication). Offsets for processed targets are cached alongside those outputs.
 
 The amide CSP implemented in this codebase is:
 
@@ -121,7 +121,7 @@ Run multiple selected holo targets by using a filtered input CSV (with only thos
 python scripts/pipeline.py --input data/CSP_UBQ_selected_holo.csv --out outputs
 ```
 
-By default, detailed runtime output is written to per-target logs in `outputs/<holo_pdb>/logs/*.txt` (or `outputs/<holo_pdb>_<n>/logs/*.txt` for duplicate entries), and stdout is kept concise with step progress plus warnings/errors.
+By default, detailed runtime output is written to per-target logs in `outputs/<HOLO_PDB>_<apo_bmrb>/logs/*.txt`, and stdout is kept concise with step progress plus warnings/errors.
 
 **Input CSV:** column definitions and optional flags (`--ids`, `--holo-pdb`, `--workers`, `--no-case-study`, metadata annotation, verbose logging) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).
 

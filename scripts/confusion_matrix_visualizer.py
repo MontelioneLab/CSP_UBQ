@@ -8,9 +8,12 @@ then automatically finds the first model (for multi-model PDBs) and generates a
 temporary .pse file with classification coloring and automatically loads it in PyMOL.
 
 Usage:
-    python scripts/confusion_matrix_visualizer.py -p 1cf4 -s occ -t sig
-    python scripts/confusion_matrix_visualizer.py -p 1d5g -s int -t 1sd
+    python scripts/confusion_matrix_visualizer.py -p 1cf4 --apo-bmrb 18251 -s occ -t sig
+    python scripts/confusion_matrix_visualizer.py -p 1d5g --apo-bmrb 34688 -s int -t 1sd
     python scripts/confusion_matrix_visualizer.py -p 1cf4 -s all -t 2sd -o my_viz.pse
+
+Per-target outputs live under ``outputs/{HOLO_PDB}_{apo_bmrb}/``. If ``--apo-bmrb`` is omitted
+and exactly one such subdirectory exists for that holo PDB, it is used automatically.
 """
 
 from __future__ import annotations
@@ -26,11 +29,13 @@ from dataclasses import dataclass
 try:
     from .confusion_matrix_analysis import ConfusionMatrix, compute_confusion_matrix, read_master_alignment
     from .config import classification_colors, hex_to_rgb01
+    from .target_resolution import TargetRow, build_resolution_caches, resolve_row
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.confusion_matrix_analysis import ConfusionMatrix, compute_confusion_matrix, read_master_alignment
     from scripts.config import classification_colors, hex_to_rgb01
+    from scripts.target_resolution import TargetRow, build_resolution_caches, resolve_row
 
 
 def find_medoid_model_simple(pdb_path: str) -> str:
@@ -105,27 +110,48 @@ class ClassificationResult:
     classification: str  # 'TP', 'FP', 'TN', 'FN'
 
 
-def find_system_directory(holo_pdb: str, outputs_dir: str) -> Optional[str]:
+def find_system_directory(
+    holo_pdb: str,
+    outputs_dir: str,
+    *,
+    apo_bmrb: Optional[str] = None,
+    holo_bmrb: Optional[str] = None,
+) -> Optional[str]:
     """
-    Find the system directory for a given holo PDB ID.
-    
-    Args:
-        holo_pdb: PDB ID (e.g., '1cf4')
-        outputs_dir: Path to outputs directory
-        
-    Returns:
-        Path to system directory or None if not found
+    Resolve ``outputs/<target>/`` for the pipeline canonical layout ``{HOLO}_{apo_bmrb}``.
+
+    Uses :mod:`scripts.target_resolution` (same as the pipeline), including optional
+    legacy dirs when ``CSP_LEGACY_OUTPUT_DIRS`` is set.
+
+    If ``apo_bmrb`` is omitted and resolution fails, returns the sole subdirectory whose
+    name starts with ``{holo_pdb}_`` when exactly one exists; otherwise ``None``.
     """
-    system_dir = os.path.join(outputs_dir, holo_pdb)
-    if os.path.exists(system_dir):
-        return system_dir
-    
-    # Try to find by searching subdirectories
-    for item in os.listdir(outputs_dir):
-        item_path = os.path.join(outputs_dir, item)
-        if os.path.isdir(item_path) and item == holo_pdb:
-            return item_path
-    
+    from pathlib import Path
+
+    holo_s = (holo_pdb or "").strip()
+    if not holo_s:
+        return None
+    root = Path(outputs_dir)
+    if not root.is_dir():
+        return None
+
+    apo_s = (apo_bmrb or "").strip()
+    holo_b_s = (holo_bmrb or "").strip()
+    outputs_index, bmrb_cache = build_resolution_caches(root)
+    tr = TargetRow(holo_pdb=holo_s, apo_bmrb=apo_s, holo_bmrb=holo_b_s)
+    hit = resolve_row(tr, outputs_index, bmrb_cache)
+    if hit is not None:
+        return str(hit)
+
+    hl = holo_s.lower()
+    prefix_matches = [
+        p
+        for p in root.iterdir()
+        if p.is_dir() and not p.name.startswith(".") and p.name.lower().startswith(hl + "_")
+    ]
+    if len(prefix_matches) == 1:
+        return str(prefix_matches[0])
+
     return None
 
 
@@ -498,7 +524,10 @@ def generate_pymol_visualization(holo_pdb: str,
                                 outputs_dir: str = "outputs",
                                 pdb_dir: str = "PDB_FILES",
                                 print_script: bool = False,
-                                no_auto_run: bool = False) -> bool:
+                                no_auto_run: bool = False,
+                                *,
+                                apo_bmrb: Optional[str] = None,
+                                holo_bmrb: Optional[str] = None) -> bool:
     """
     Generate PyMOL visualization based on confusion matrix analysis.
     
@@ -511,7 +540,9 @@ def generate_pymol_visualization(holo_pdb: str,
         pdb_dir: Path to PDB files directory
         print_script: If True, print PyMOL script to stdout instead of saving
         no_auto_run: If True, don't automatically run PyMOL
-        
+        apo_bmrb: Apo BMRB ID for canonical folder ``outputs/{HOLO}_{apo}`` (recommended if multiple apo exist).
+        holo_bmrb: Optional; helps legacy resolution when ``CSP_LEGACY_OUTPUT_DIRS`` is set.
+
     Returns:
         True if successful, False otherwise
     """
@@ -519,9 +550,14 @@ def generate_pymol_visualization(holo_pdb: str,
     print(f"[VISUALIZER] Strategy: {positive_strategy}, Threshold: {significance_threshold}")
     
     # Find system directory
-    system_dir = find_system_directory(holo_pdb, outputs_dir)
+    system_dir = find_system_directory(
+        holo_pdb, outputs_dir, apo_bmrb=apo_bmrb, holo_bmrb=holo_bmrb
+    )
     if not system_dir:
-        print(f"Error: Could not find system directory for {holo_pdb}")
+        print(
+            f"Error: Could not find system directory for {holo_pdb} under {outputs_dir}. "
+            "Use --apo-bmrb with the CSV apo_bmrb when multiple targets share the same PDB."
+        )
         return False
     
     # Read master alignment data
@@ -634,6 +670,16 @@ Note: PyMOL will automatically open with your visualization unless --no-auto-run
     
     parser.add_argument("-p", "--holo-pdb", required=True,
                        help="Holo PDB ID (e.g., '1cf4')")
+    parser.add_argument(
+        "--apo-bmrb",
+        default=None,
+        help="Apo BMRB ID matching CSP_UBQ.csv / canonical outputs folder (recommended).",
+    )
+    parser.add_argument(
+        "--holo-bmrb",
+        default=None,
+        help="Holo BMRB ID (optional; aids legacy dir resolution with CSP_LEGACY_OUTPUT_DIRS).",
+    )
     parser.add_argument("-s", "--strategy", required=True,
                        choices=['occluded_only', 'occluded_or_ca', 'occluded_or_interaction', 'occluded_or_ca_or_interaction', 
                                'occ', 'ca', 'int', 'all'],
@@ -683,7 +729,9 @@ Note: PyMOL will automatically open with your visualization unless --no-auto-run
         args.outputs_dir,
         args.pdb_dir,
         args.print_script,
-        args.no_auto_run
+        args.no_auto_run,
+        apo_bmrb=args.apo_bmrb,
+        holo_bmrb=args.holo_bmrb,
     )
     
     # Note: Automatic PyMOL execution is now handled within generate_pymol_visualization

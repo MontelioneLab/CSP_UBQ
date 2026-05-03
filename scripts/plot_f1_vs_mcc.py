@@ -55,7 +55,7 @@ def load_holo_pdb_ids_from_targets_csv(path: Path) -> Set[str]:
 def system_id_matches_holo_csv(
     system_id: str, holo_pdb_lower: Set[str]
 ) -> bool:
-    """True if system_id (outputs folder style, e.g. 2mur_1) matches holo_pdb set from CSP CSV."""
+    """True if system_id (outputs folder basename, e.g. 2MUR_12345) matches holo_pdb set from CSP CSV."""
     s = system_id.strip().lower()
     if not s:
         return False

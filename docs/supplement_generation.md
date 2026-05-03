@@ -23,8 +23,6 @@ python scripts/create_all_supplement_figures_and_tables.py \
   - Destination for generated figure/table assets.
 - `--csv` (default: `data/CSP_UBQ.csv`)
   - Main CSP input CSV path.
-- `--include-placeholders`
-  - Also run placeholder/optional scripts that may not yet emit final outputs.
 - `--stop-on-error`
   - Exit immediately on first failing sub-script (default behavior is continue and report all failures).
 
@@ -41,5 +39,5 @@ python scripts/create_all_supplement_figures_and_tables.py \
 - PyMOL is not required by the wrapper itself, but some upstream artifacts it depends on may require PyMOL during their own generation.
 - CSV-path behavior is mixed by design in the current wrapper:
   - `create_si_table_s1.py` always uses `data/CSP_UBQ_ph0.5_temp5C.csv` (the wrapper does not forward `--csv` to this script).
-  - `create_si_fig_s22.py` is called with output-image only, so its confusion-matrix CSV path falls back to that script's own default.
+  - `create_si_fig_s18.py` receives `--outputs-dir`, `--input` (`<outputs-dir>/confusion_matrix_per_system.csv`), and `--output-image`.
   - `create_custom_selection_latex_tables.py` is called with figures-dir only, so CSP/confusion CSV paths use that script's own defaults unless you run it directly with explicit flags.

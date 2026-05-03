@@ -53,7 +53,11 @@ def derive_dissimilar_df(full: pd.DataFrame, similar: pd.DataFrame) -> pd.DataFr
 
 
 def load_targets_holo_pdbs(dissimilar: pd.DataFrame) -> list[str]:
-    """PDB strings as in CSP_UBQ (strip only) so they match outputs/ directory names."""
+    """Unique holo PDB IDs from the subset (strip only); used with analyze_targets --targets-csv.
+
+    Canonical output folders are ``outputs/{HOLO}_{apo_bmrb}/``; matching uses ``master_alignment.csv``
+    holo_pdb, not the folder basename alone.
+    """
     seen: set[str] = set()
     ordered: list[str] = []
     for v in dissimilar["holo_pdb"].tolist():

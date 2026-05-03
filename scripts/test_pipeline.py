@@ -417,6 +417,26 @@ class TestComputeCspMultipleSaveframes:
         assert hasattr(r, "holo_index")
         assert hasattr(r, "significant")
 
+    def test_grid_referencing_paths_use_canonical_target_id(self, tmp_path):
+        """Grid offset caches live under output_root/target_id/ (matches pipeline target_label)."""
+        output_root = str(tmp_path)
+        target_id = "1CF4_18251"
+        slug = "h7_h10_n6_n12_c1"
+        output_base_dir = output_root
+        out_dir = os.path.join(output_base_dir, target_id) if target_id else None
+        csv_path = os.path.join(out_dir, f"offset_grid_{slug}.csv") if out_dir else None
+        assert csv_path == os.path.join(output_root, "1CF4_18251", f"offset_grid_{slug}.csv")
+
+
+class TestCaseStudyViewPaths:
+    def test_case_study_view_candidates_canonical_then_legacy_pdb(self, tmp_path):
+        from scripts.case_study import _case_study_view_load_candidates
+
+        d = str(tmp_path)
+        cands = _case_study_view_load_candidates(d, "1cf4", "1CF4_18251")
+        assert cands[0] == os.path.join(d, "1CF4_18251_case_study_view.json")
+        assert os.path.join(d, "1cf4_case_study_view.json") in cands
+
 
 # --- 5. SASA / Interaction / CA Distance Tests ---
 
@@ -593,7 +613,7 @@ class TestProcessRowIntegration:
             generate_case_study=False,
             receptor_msa_png=False,
         )
-        tgt_dir = os.path.join(temp_dir, "1cf4")
+        tgt_dir = os.path.join(temp_dir, "1CF4_18251")
         assert os.path.exists(tgt_dir)
         assert os.path.exists(os.path.join(tgt_dir, "csp_table.csv"))
         assert os.path.exists(os.path.join(tgt_dir, "occlusion_analysis.csv"))

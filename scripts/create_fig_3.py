@@ -41,6 +41,9 @@ PREDICTOR_COLUMNS: Sequence[str] = (
     "is_occluded_occlusion",
 )
 
+# Matplotlib mathtext: C with α subscript (not plaintext "CA").
+FIGURE_3_DISTANCE_XLABEL = r"Minimum $C_\alpha$ distance (Å)"
+
 
 def _as_bool(value: object) -> bool:
     if isinstance(value, bool):
@@ -173,7 +176,7 @@ def plot_figure_3a(
         ],
     )
     ax = plt.gca()
-    plt.xlabel("Minimum CA Distance (Å)")
+    plt.xlabel(FIGURE_3_DISTANCE_XLABEL)
     plt.ylabel("Number of Residues")
     if title.strip():
         plt.title(title)
@@ -226,7 +229,7 @@ def plot_figure_3b(
         ],
     )
     ax = plt.gca()
-    plt.xlabel("Minimum CA Distance (Å)")
+    plt.xlabel(FIGURE_3_DISTANCE_XLABEL)
     plt.ylabel("Number of Residues")
     if title.strip():
         plt.title(title)

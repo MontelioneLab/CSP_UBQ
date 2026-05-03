@@ -1,22 +1,16 @@
 #!/usr/bin/env python3
 """
-Shared helper for resolving --targets-csv rows to outputs/<holo_pdb> directories.
+Shared helper for resolving --targets-csv rows to ``outputs/<dir>`` directories.
 
-A "target row" carries ``holo_pdb`` plus optionally ``apo_bmrb`` and
-``holo_bmrb``. The resolver maps each row to a single ``outputs/<dir>`` by:
+**Canonical layout (default):** each pipeline target directory basename is
+``{HOLO_PDB.upper()}_{apo_bmrb}`` (for example ``1D5G_34688``). Resolution is a
+direct lookup on that basename (case-insensitive index key).
 
-1. Finding all candidate dirs whose lowercased basename equals ``holo_pdb`` or
-   ``holo_pdb_<n>`` (numeric suffix written by the pipeline for duplicate
-   ``holo_pdb`` rows).
-2. Filtering candidates to the ones whose ``master_alignment.csv`` first data
-   row's ``apo_bmrb``/``holo_bmrb`` pair equals the target row's pair.
-3. If more than one candidate matches, returning the first (sorted by suffix
-   number, then by directory name).
-4. If no candidate matches, returning ``None`` and logging a single ``[WARN]``.
-
-When the target row carries no BMRB info (e.g. a comma-separated ``--targets``
-flag) the resolver falls back to "first candidate by suffix order" so legacy
-CLI behavior is preserved.
+**Legacy layout:** older trees used ``holo_pdb`` only or ``holo_pdb_<n>`` for
+duplicate PDB codes, matched via ``master_alignment.csv`` BMRB pairs. Set
+environment variable ``CSP_LEGACY_OUTPUT_DIRS=1`` (or ``true``/``yes``) to
+fall back to that behaviour when the canonical dirname is missing or when a row
+has no ``apo_bmrb`` (holo-only CLI rows).
 
 Use ``resolve_target_rows`` from figure-creation scripts: it returns the
 deduplicated list of resolved ``Path``s, in input row order.
@@ -25,14 +19,26 @@ deduplicated list of resolved ``Path``s, in input row order.
 from __future__ import annotations
 
 import csv
+import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple
+from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Set, Tuple
 
 
 _REQUIRED_COL = "holo_pdb"
 _OPTIONAL_COLS = ("apo_bmrb", "holo_bmrb")
+
+
+def canonical_output_dir_name(holo_pdb: str, apo_bmrb: str) -> str:
+    """Return ``outputs`` subdirectory basename ``{HOLO_PDB.upper()}_{apo_bmrb}`` (stripped inputs)."""
+    h = (holo_pdb or "").strip()
+    a = (apo_bmrb or "").strip()
+    return f"{h.upper()}_{a}"
+
+
+def _legacy_output_dirs_enabled() -> bool:
+    return os.environ.get("CSP_LEGACY_OUTPUT_DIRS", "").lower() in ("1", "true", "yes")
 
 
 @dataclass(frozen=True)
@@ -56,9 +62,8 @@ def load_target_rows(
     """Read ``csv_path`` and any extra ``--targets`` holo_pdb strings into ``TargetRow``s.
 
     The CSV must contain a ``holo_pdb`` column; ``apo_bmrb`` / ``holo_bmrb`` are
-    optional but recommended (the resolver requires them to disambiguate
-    duplicate-suffix dirs). Extra holo_pdb strings are appended as BMRB-less
-    rows for backward compatibility with the comma-separated ``--targets`` flag.
+    optional. ``apo_bmrb`` is required for canonical dirname resolution unless
+    ``CSP_LEGACY_OUTPUT_DIRS`` is set.
     """
     rows: List[TargetRow] = []
     if csv_path is not None:
@@ -137,19 +142,19 @@ def _candidate_dirs_for_holo(
             scored.append((0, k, p))
             continue
         if k.startswith(pref):
-            rest = k[len(pref):]
+            rest = k[len(pref) :]
             if rest.isdigit():
                 scored.append((int(rest), k, p))
     scored.sort(key=lambda t: (t[0], t[1]))
     return [t[2] for t in scored]
 
 
-def resolve_row(
+def _legacy_resolve_row(
     row: TargetRow,
     outputs_index: Dict[str, Path],
     bmrb_cache: Dict[Path, Optional[Tuple[str, str]]],
 ) -> Optional[Path]:
-    """Map a single target row to one outputs/<dir>; ``None`` if no BMRB-congruent dir exists."""
+    """Resolve using pre-canonical directory naming and BMRB pair matching."""
     raw_h = row.holo_pdb.strip().lower()
     if not raw_h:
         return None
@@ -163,6 +168,71 @@ def resolve_row(
     if matches:
         return matches[0]
     return None
+
+
+def resolve_row(
+    row: TargetRow,
+    outputs_index: Dict[str, Path],
+    bmrb_cache: Dict[Path, Optional[Tuple[str, str]]],
+) -> Optional[Path]:
+    """Map a single target row to one outputs/<dir>; ``None`` if no matching dir exists."""
+    raw_h = row.holo_pdb.strip()
+    if not raw_h:
+        return None
+    apo = row.apo_bmrb.strip()
+    legacy = _legacy_output_dirs_enabled()
+
+    if apo:
+        want_key = canonical_output_dir_name(raw_h, apo).lower()
+        hit = outputs_index.get(want_key)
+        if hit is not None:
+            return hit
+        if legacy:
+            return _legacy_resolve_row(row, outputs_index, bmrb_cache)
+        return None
+
+    if legacy:
+        return _legacy_resolve_row(row, outputs_index, bmrb_cache)
+    return None
+
+
+def csv_row_to_target_row(row: Mapping[str, str]) -> TargetRow:
+    """Build a ``TargetRow`` from a CSP_UBQ-style dict (supports ``holo_pdb_id``)."""
+    holo = (row.get("holo_pdb") or row.get("holo_pdb_id") or "").strip()
+    return TargetRow(
+        holo_pdb=holo,
+        apo_bmrb=(row.get("apo_bmrb") or "").strip(),
+        holo_bmrb=(row.get("holo_bmrb") or "").strip(),
+    )
+
+
+def logical_output_dirname_for_manifest(row: Mapping[str, str]) -> str:
+    """Canonical ``outputs`` subdirectory basename for logging; empty if holo or apo missing."""
+    holo = (row.get("holo_pdb") or row.get("holo_pdb_id") or "").strip()
+    apo = (row.get("apo_bmrb") or "").strip()
+    if not holo or not apo:
+        return ""
+    return canonical_output_dir_name(holo, apo)
+
+
+def resolve_output_dir_from_csv_row(
+    row: Mapping[str, str],
+    outputs_dir: Optional[Path] = None,
+    *,
+    caches: Optional[Tuple[Dict[str, Path], Dict[Path, Optional[Tuple[str, str]]]]] = None,
+) -> Optional[Path]:
+    """Resolve one CSV row to an ``outputs/<dir>`` path (canonical lookup + optional legacy via env).
+
+    Pass ``outputs_dir`` alone, or ``caches`` from :func:`build_resolution_caches` for batch use.
+    """
+    tr = csv_row_to_target_row(row)
+    if caches is None:
+        if outputs_dir is None:
+            raise ValueError("resolve_output_dir_from_csv_row requires outputs_dir when caches is omitted")
+        outputs_index, bmrb_cache = build_resolution_caches(outputs_dir)
+    else:
+        outputs_index, bmrb_cache = caches
+    return resolve_row(tr, outputs_index, bmrb_cache)
 
 
 def resolve_target_rows(
