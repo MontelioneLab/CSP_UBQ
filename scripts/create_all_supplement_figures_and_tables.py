@@ -15,9 +15,10 @@ SI numbering (aligned with each script’s own docstring and default output path
   - SI Fig. S13: create_si_fig_s13.py → figures/SF13_any_atom_distance.png
   - SI Fig. S14: create_si_fig_s14.py → figures/SF14_1d_CSP_boxplot.png
         (per-target F1 scores for 1D H/N/Cα CSPs; Holm-adjusted pairwise Wilcoxon stats CSV alongside)
-  - SI Fig. S16: create_si_fig_s16.py → figures/SF16_ideal_offsets.png
-  - SI Fig. S17: create_si_fig_s17.py → figures/SF17_significance_threshold.png
-  - SI Fig. S18: create_si_fig_s18.py → figures/SF18_f1_vs_mcc.png
+  - SI Fig. S16: create_si_fig_s16.py → figures/SF16_buffer_sweep.png
+  - SI Fig. S17: create_si_fig_s17.py → figures/SF17_ideal_offsets.png
+  - SI Fig. S18: create_si_fig_s18.py → figures/SF18_significance_threshold.png
+  - SI Fig. S19: create_si_fig_s19.py → figures/SF19_f1_vs_mcc.png
   - SI Eqn. S1 / S2: create_si_eqn_1.py, create_si_eqn_2.py
         → figures/SE1_nh_csp.png, figures/SE2_nh_ca_csp.png
   - SI Tables S2–S9 LaTeX: create_custom_selection_latex_tables.py
@@ -134,14 +135,33 @@ def main() -> int:
                 str(Path(figures) / "SF14_1d_CSP_boxplot.png"),
             ],
         ),
-        ("create_si_fig_s16.py", ["--outputs-dir", outputs, "--figures-dir", figures]),
+        (
+            "create_si_fig_s16.py",
+            [
+                "--outputs-dir",
+                outputs,
+                "--sweep-out-dir",
+                str(Path(outputs) / "buffer_threshold_sweep"),
+                "--output",
+                str(Path(figures) / "SF16_buffer_sweep.png"),
+            ],
+        ),
         (
             "create_si_fig_s17.py",
             [
                 "--outputs-dir",
                 outputs,
+                "--figures-dir",
+                figures,
+            ],
+        ),
+        (
+            "create_si_fig_s18.py",
+            [
+                "--outputs-dir",
+                outputs,
                 "--output",
-                str(Path(figures) / "SF17_significance_threshold.png"),
+                str(Path(figures) / "SF18_significance_threshold.png"),
             ],
         ),
     ]
@@ -150,14 +170,14 @@ def main() -> int:
             ("create_si_eqn_1.py", ["--output", str(Path(figures) / "SE1_nh_csp.png")]),
             ("create_si_eqn_2.py", ["--output", str(Path(figures) / "SE2_nh_ca_csp.png")]),
             (
-                "create_si_fig_s18.py",
+                "create_si_fig_s19.py",
                 [
                     "--outputs-dir",
                     outputs,
                     "--input",
                     confusion_csv,
                     "--output-image",
-                    str(Path(figures) / "SF18_f1_vs_mcc.png"),
+                    str(Path(figures) / "SF19_f1_vs_mcc.png"),
                 ],
             ),
             ("create_custom_selection_latex_tables.py", ["--figures-dir", figures]),

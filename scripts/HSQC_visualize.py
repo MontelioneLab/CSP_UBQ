@@ -17,29 +17,29 @@ except Exception:
     _HAS_PLT = False
 
 try:
-    from .csp import CSPResult, run_offset_grid_search
+    from .csp import CSPResult, run_offset_grid_search, run_offset_grid_search_ha_ca
     from .config import Referencing as _Referencing, compute as _compute
 except Exception:
     import os as _os
     import sys as _sys
 
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
-    from scripts.csp import CSPResult, run_offset_grid_search  # type: ignore
+    from scripts.csp import CSPResult, run_offset_grid_search, run_offset_grid_search_ha_ca  # type: ignore
     from scripts.config import Referencing as _Referencing, compute as _compute  # type: ignore
 
 
 def _extract_shift_pairs(
     results: Sequence[CSPResult],
-    h_attr: str,
-    n_attr: str,
+    x_attr: str,
+    y_attr: str,
 ) -> List[Tuple[float, float]]:
-    """Collect (N, H) shift pairs from CSP results for plotting."""
+    """Collect (x, y) shift pairs from CSP results for plotting."""
     pairs: List[Tuple[float, float]] = []
     for res in results:
-        h_val = getattr(res, h_attr, None)
-        n_val = getattr(res, n_attr, None)
-        if h_val is not None and n_val is not None:
-            pairs.append((float(n_val), float(h_val)))
+        x_val = getattr(res, x_attr, None)
+        y_val = getattr(res, y_attr, None)
+        if x_val is not None and y_val is not None:
+            pairs.append((float(x_val), float(y_val)))
     return pairs
 
 
@@ -47,7 +47,7 @@ def _compute_grid_offsets(
     results: Sequence[CSPResult],
     grid_params: Optional[Dict[str, float]] = None,
 ) -> Tuple[float, float]:
-    """Run the grid search to obtain best (N, H) offsets."""
+    """Run the N/H grid search to obtain best (N, H) offsets."""
     params = grid_params or {}
     ref_cfg = _Referencing()
     h_min = params.get("h_min", ref_cfg.grid_h_min)
@@ -74,6 +74,54 @@ def _compute_grid_offsets(
     )
 
 
+def _compute_grid_offsets_ha_ca(
+    results: Sequence[CSPResult],
+    grid_params: Optional[Dict[str, float]] = None,
+) -> Tuple[float, float]:
+    """Run the HA/CA grid search to obtain best (CA, HA) offsets."""
+    params = grid_params or {}
+    ref_cfg = _Referencing()
+    ha_min = params.get("ha_min", ref_cfg.grid_ha_min)
+    ha_max = params.get("ha_max", ref_cfg.grid_ha_max)
+    ha_step = params.get("ha_step", ref_cfg.grid_ha_step)
+    ca_min = params.get("ca_min", ref_cfg.grid_ca_min)
+    ca_max = params.get("ca_max", ref_cfg.grid_ca_max)
+    ca_step = params.get("ca_step", ref_cfg.grid_ca_step)
+    cutoff = float(params.get("cutoff", ref_cfg.grid_cutoff))
+
+    points: List[Tuple[float, float, float, float]] = []
+    for res in results:
+        if (
+            getattr(res, "HA_apo", None) is not None
+            and getattr(res, "CA_apo", None) is not None
+            and getattr(res, "HA_holo_original", None) is not None
+            and getattr(res, "CA_holo_original", None) is not None
+        ):
+            points.append(
+                (
+                    float(res.HA_apo),  # type: ignore[arg-type]
+                    float(res.CA_apo),  # type: ignore[arg-type]
+                    float(res.HA_holo_original),  # type: ignore[arg-type]
+                    float(res.CA_holo_original),  # type: ignore[arg-type]
+                )
+            )
+
+    grid_result = run_offset_grid_search_ha_ca(
+        points,
+        ha_min=ha_min,
+        ha_max=ha_max,
+        ha_step=ha_step,
+        ca_min=ca_min,
+        ca_max=ca_max,
+        ca_step=ca_step,
+        cutoff=cutoff,
+    )
+    return (
+        float(grid_result.get("best_ca_offset", 0.0)),
+        float(grid_result.get("best_ha_offset", 0.0)),
+    )
+
+
 def plot_hsqc_variants(
     results: Sequence[CSPResult],
     out_path: str,
@@ -82,6 +130,8 @@ def plot_hsqc_variants(
     grid_params: Optional[Dict[str, float]] = None,
     apo_label: str = "Apo",
     holo_label: str = "Holo",
+    x_atom: str = "N",
+    y_atom: str = "H",
 ) -> None:
     """
     Generate a four-panel HSQC-like visualization comparing apo and holo shifts.
@@ -97,23 +147,28 @@ def plot_hsqc_variants(
     if not results:
         raise ValueError("No CSP results were provided for HSQC plotting.")
 
-    apo_pairs = _extract_shift_pairs(results, "H_apo", "N_apo")
-    holo_pairs_raw = _extract_shift_pairs(results, "H_holo_original", "N_holo_original")
+    x_atom = x_atom.upper()
+    y_atom = y_atom.upper()
+    apo_pairs = _extract_shift_pairs(results, f"{x_atom}_apo", f"{y_atom}_apo")
+    holo_pairs_raw = _extract_shift_pairs(results, f"{x_atom}_holo_original", f"{y_atom}_holo_original")
 
     if not holo_pairs_raw:
         # Fall back to referenced shifts if originals are absent
-        holo_pairs_raw = _extract_shift_pairs(results, "H_holo", "N_holo")
+        holo_pairs_raw = _extract_shift_pairs(results, f"{x_atom}_holo", f"{y_atom}_holo")
 
     # Determine offsets via grid search when possible
-    n_offset = 0.0
-    h_offset = 0.0
+    x_offset = 0.0
+    y_offset = 0.0
     apply_offsets = bool(apo_pairs and holo_pairs_raw)
     if apply_offsets:
-        n_offset, h_offset = _compute_grid_offsets(results, grid_params)
+        if (x_atom, y_atom) == ("N", "H"):
+            x_offset, y_offset = _compute_grid_offsets(results, grid_params)
+        elif (x_atom, y_atom) == ("CA", "HA"):
+            x_offset, y_offset = _compute_grid_offsets_ha_ca(results, grid_params)
     holo_pairs_offset: List[Tuple[float, float]] = []
     if apply_offsets:
-        for n_val, h_val in holo_pairs_raw:
-            holo_pairs_offset.append((n_val + n_offset, h_val + h_offset))
+        for x_val, y_val in holo_pairs_raw:
+            holo_pairs_offset.append((x_val + x_offset, y_val + y_offset))
 
     # Shared axis limits for consistent comparison across panels
     axis_points: List[Tuple[float, float]] = []
@@ -122,12 +177,12 @@ def plot_hsqc_variants(
     axis_points.extend(holo_pairs_offset)
 
     if axis_points:
-        n_values = [n for n, _ in axis_points]
-        h_values = [h for _, h in axis_points]
-        n_margin = 0.05 * (max(n_values) - min(n_values) or 1.0)
-        h_margin = 0.05 * (max(h_values) - min(h_values) or 1.0)
-        n_limits = (min(n_values) - n_margin, max(n_values) + n_margin)
-        h_limits = (min(h_values) - h_margin, max(h_values) + h_margin)
+        x_values = [x for x, _ in axis_points]
+        y_values = [y for _, y in axis_points]
+        x_margin = 0.05 * (max(x_values) - min(x_values) or 1.0)
+        y_margin = 0.05 * (max(y_values) - min(y_values) or 1.0)
+        n_limits = (min(x_values) - x_margin, max(x_values) + x_margin)
+        h_limits = (min(y_values) - y_margin, max(y_values) + y_margin)
     else:
         n_limits = (0.0, 1.0)
         h_limits = (0.0, 1.0)
@@ -136,8 +191,14 @@ def plot_hsqc_variants(
     panels = axes.flatten()
 
     def _setup_axis(ax):
-        ax.set_xlabel(r"$^{15}$N $\delta$ (ppm)", fontsize=14)
-        ax.set_ylabel(r"$^{1}$H $\delta$ (ppm)", fontsize=14)
+        labels = {
+            "N": r"$^{15}$N $\delta$ (ppm)",
+            "H": r"$^{1}$H $\delta$ (ppm)",
+            "CA": r"$C_\alpha$ $\delta$ (ppm)",
+            "HA": r"$H_\alpha$ $\delta$ (ppm)",
+        }
+        ax.set_xlabel(labels.get(x_atom, f"{x_atom} shift (ppm)"), fontsize=14)
+        ax.set_ylabel(labels.get(y_atom, f"{y_atom} shift (ppm)"), fontsize=14)
         ax.tick_params(axis="both", labelsize=12)
         ax.set_xlim(*n_limits)
         ax.set_ylim(*h_limits)
@@ -244,14 +305,14 @@ def plot_hsqc_variants(
                 alpha=0.6,
                 edgecolors="none",
                 label=f"{holo_label} (offset)"
-                if (h_offset or n_offset)
+                if (x_offset or y_offset)
                 else holo_label,
             )
         if panels[3].has_data():
             legend = panels[3].legend()
-            if legend and (h_offset or n_offset):
+            if legend and (x_offset or y_offset):
                 legend.set_title(
-                    f"Offsets: ΔH={h_offset:.3f}, ΔN={n_offset:.3f}"
+                    f"Offsets: Δ{y_atom}={y_offset:.3f}, Δ{x_atom}={x_offset:.3f}"
                 )
     else:
         panels[3].text(
@@ -271,5 +332,4 @@ def plot_hsqc_variants(
     fig.tight_layout(rect=[0, 0, 1, 0.97] if title else None)
     fig.savefig(out_path, dpi=300, bbox_inches="tight")
     plt.close(fig)
-
 

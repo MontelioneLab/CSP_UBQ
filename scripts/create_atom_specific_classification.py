@@ -92,6 +92,11 @@ def _load_csp_results(path: Path) -> List[CSPResult]:
             CA_holo_original=_as_float(row.get("CA_holo_original")) or _as_float(row.get("CA_holo")),
             CA_offset=_as_float(row.get("CA_offset")),
             dCA=_as_float(row.get("dCA")),
+            HA_apo=_as_float(row.get("HA_apo")),
+            HA_holo=_as_float(row.get("HA_holo")),
+            HA_holo_original=_as_float(row.get("HA_holo_original")) or _as_float(row.get("HA_holo")),
+            HA_offset=_as_float(row.get("HA_offset")),
+            dHA=_as_float(row.get("dHA")),
         )
         results.append(csp_result)
     return results
@@ -230,6 +235,7 @@ def main(argv: Iterable[str]) -> int:
 
     csp_hn_path = target_dir / "csp_table.csv"
     csp_ca_path = target_dir / "csp_table_CA.csv"
+    csp_ha_ca_path = target_dir / "csp_table_HA_CA.csv"
     interaction_path = target_dir / "interaction_filter.csv"
     occlusion_path = target_dir / "occlusion_analysis.csv"
     ca_distance_path = target_dir / "ca_distance_filter.csv"
@@ -241,6 +247,7 @@ def main(argv: Iterable[str]) -> int:
 
     results_hn = _load_csp_results(csp_hn_path)
     results_ca = _load_csp_results(csp_ca_path)
+    results_ha_ca = _load_csp_results(csp_ha_ca_path) if csp_ha_ca_path.exists() else None
     binding_results = _build_union_binding_results(interaction_path, occlusion_path, ca_distance_path)
 
     output_path = args.output or (args.figures_dir / "suppl_fig_4.png")
@@ -250,6 +257,7 @@ def main(argv: Iterable[str]) -> int:
     plot_per_atom_classification_panels(
         results_hn=results_hn,
         results_ca=results_ca,
+        results_ha_ca=results_ha_ca,
         binding_results=binding_results,
         out_png=str(output_path),
         title=title,

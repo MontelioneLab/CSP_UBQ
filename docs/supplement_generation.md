@@ -39,5 +39,6 @@ python scripts/create_all_supplement_figures_and_tables.py \
 - PyMOL is not required by the wrapper itself, but some upstream artifacts it depends on may require PyMOL during their own generation.
 - CSV-path behavior is mixed by design in the current wrapper:
   - `create_si_table_s1.py` always uses `data/CSP_UBQ_ph0.5_temp5C.csv` (the wrapper does not forward `--csv` to this script).
-  - `create_si_fig_s18.py` receives `--outputs-dir`, `--input` (`<outputs-dir>/confusion_matrix_per_system.csv`), and `--output-image`.
+  - `create_si_fig_s16.py` regenerates `outputs/buffer_threshold_sweep/sweep_metrics.csv` plus the `heatmap_n.png` and `heatmap_pct_allosteric.png` panel assets before composing `figures/SF16_buffer_sweep.png`.
+  - `create_si_fig_s19.py` receives `--outputs-dir`, `--input` (`<outputs-dir>/confusion_matrix_per_system.csv`), and `--output-image`.
   - `create_custom_selection_latex_tables.py` is called with figures-dir only, so CSP/confusion CSV paths use that script's own defaults unless you run it directly with explicit flags.

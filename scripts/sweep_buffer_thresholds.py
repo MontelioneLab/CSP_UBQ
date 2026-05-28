@@ -11,12 +11,21 @@ statistics ``average_FP_percent.py`` reports:
   - mean_F1        = mean per-target F1 (same definition as analyze_targets.py)
   - pct_allosteric = mean over targets with TP+FP > 0 of FP / (TP+FP)
   - fp_pct         = mean over subset of 100 * FP / (TP+FP+TN+FN)
+  - tp_rate        = mean over subset of TP / (TP+FP+FN+TN)
 
 Per-target metrics are computed once via a single pass over ``outputs/``. Each
 CSV row is resolved to ``outputs/{HOLO_PDB}_{apo_bmrb}/`` using the same rules as
 ``scripts.target_resolution`` (optional legacy dirs when ``CSP_LEGACY_OUTPUT_DIRS``
-is set). Writes one summary CSV plus four heatmap PNGs into
+is set). Writes one summary CSV plus five heatmap PNGs into
 ``outputs/buffer_threshold_sweep/`` (configurable).
+
+The heatmap cell ``n`` is the number of **distinct** ``outputs/{holo}_{apo}/`` directories
+with a parsable ``master_alignment.csv`` and residue classifications, among **rows of the
+``--csp`` file** (default: full ``data/CSP_UBQ.csv``) whose paired ``--exp`` row satisfies
+the cell's |ΔpH| and |ΔT| tolerances. It is **not** tied to the row count of
+``CSP_UBQ_ph0.5_temp5C.csv`` unless you pass that file as ``--csp`` and keep ``--exp`` row
+alignment; regenerate that subset with ``scripts/filter_csp_ubq_by_buffer.py`` when inputs
+change.
 """
 
 from __future__ import annotations
@@ -32,18 +41,23 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.axes import Axes
+
+# Default heatmap title size (pt); SI composite panel letters scale from this in create_si_fig_s16.
+SWEEP_HEATMAP_TITLE_FONTSIZE: float = 17.0
 
 _REPO = Path(__file__).resolve().parent.parent
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from scripts.analyze_targets import (  # noqa: E402
+    CLASSIFICATION_COLUMN,
     AlignmentParsingError,
     PREDICTOR_COLUMNS,
+    VALID_CLASSIFICATIONS,
     compute_f1_score,
     load_alignment,
 )
-from scripts.average_FP_percent import CLASSIFICATION_COLUMN, VALID_CLASSIFICATIONS  # noqa: E402
 from scripts.config import Paths  # noqa: E402
 from scripts.filter_csp_ubq_by_buffer import row_meets  # noqa: E402
 from scripts.target_resolution import (  # noqa: E402
@@ -56,6 +70,8 @@ from scripts.target_resolution import (  # noqa: E402
 class TargetMetrics:
     n_fp: int
     n_tp: int
+    n_fn: int
+    n_tn: int
     n_total: int
     f1: float
 
@@ -84,7 +100,7 @@ def _exp_diffs(exp_row: Dict[str, str]) -> Optional[Tuple[float, float]]:
 
 
 def _per_target_metrics(target_dir: Path) -> Optional[TargetMetrics]:
-    """Return (n_fp, n_tp, n_total, f1) for a target dir; None if unusable."""
+    """Return per-target confusion counts plus F1; None if unusable."""
     alignment_path = target_dir / "master_alignment.csv"
     if not alignment_path.is_file():
         return None
@@ -104,9 +120,11 @@ def _per_target_metrics(target_dir: Path) -> Optional[TargetMetrics]:
     cls_upper = classified[CLASSIFICATION_COLUMN].astype(str).str.strip().str.upper()
     n_fp = int((cls_upper == "FP").sum())
     n_tp = int((cls_upper == "TP").sum())
+    n_fn = int((cls_upper == "FN").sum())
+    n_tn = int((cls_upper == "TN").sum())
     predicted = df[list(PREDICTOR_COLUMNS)].any(axis=1)
     f1 = compute_f1_score(df, predicted).f1
-    return TargetMetrics(n_fp=n_fp, n_tp=n_tp, n_total=total, f1=f1)
+    return TargetMetrics(n_fp=n_fp, n_tp=n_tp, n_fn=n_fn, n_tn=n_tn, n_total=total, f1=f1)
 
 
 def _build_outputs_caches(
@@ -193,16 +211,20 @@ def aggregate_grid(
                         "mean_F1": np.nan,
                         "pct_allosteric": np.nan,
                         "fp_pct": np.nan,
+                        "tp_rate": np.nan,
                     }
                 )
                 continue
             f1_arr = np.array([m.f1 for m in metrics])
             n_fp_arr = np.array([m.n_fp for m in metrics])
             n_tp_arr = np.array([m.n_tp for m in metrics])
+            n_fn_arr = np.array([m.n_fn for m in metrics])
+            n_tn_arr = np.array([m.n_tn for m in metrics])
             n_total_arr = np.array([m.n_total for m in metrics])
             sig_denom = n_tp_arr + n_fp_arr
             mean_f1 = float(np.mean(f1_arr))
             fp_pct = float(np.mean(100.0 * n_fp_arr / n_total_arr))
+            tp_rate = float(np.mean(n_tp_arr / (n_tp_arr + n_fp_arr + n_fn_arr + n_tn_arr)))
             sig_mask = sig_denom > 0
             if sig_mask.any():
                 pct_allosteric = float(np.mean(n_fp_arr[sig_mask] / sig_denom[sig_mask]))
@@ -216,9 +238,115 @@ def aggregate_grid(
                     "mean_F1": mean_f1,
                     "pct_allosteric": pct_allosteric,
                     "fp_pct": fp_pct,
+                    "tp_rate": tp_rate,
                 }
             )
     return pd.DataFrame.from_records(records)
+
+
+def compute_sweep_metrics(
+    csp_path: Path,
+    exp_path: Path,
+    outputs_dir: Path,
+    ph_values: np.ndarray,
+    temp_values: np.ndarray,
+) -> pd.DataFrame:
+    """Compute the full buffer-threshold sweep dataframe."""
+    print("Pre-caching outputs/ metrics...")
+    outputs_index, metrics_cache, bmrb_cache = _build_outputs_caches(outputs_dir)
+    n_with_metrics = sum(1 for m in metrics_cache.values() if m is not None)
+    print(
+        f"Indexed {len(outputs_index)} outputs subdirs "
+        f"({n_with_metrics} with classifications)."
+    )
+
+    print(f"Loading paired rows from {csp_path.name} and {exp_path.name}...")
+    csp_rows, exp_rows, diffs = load_paired_rows(csp_path, exp_path)
+    n_with_diffs = sum(1 for d in diffs if d is not None)
+    print(f"Paired rows: {len(csp_rows)} ({n_with_diffs} with complete buffer metadata).")
+
+    print(
+        f"Aggregating {len(ph_values)} pH x {len(temp_values)} T "
+        f"= {len(ph_values) * len(temp_values)} cells..."
+    )
+    df = aggregate_grid(
+        csp_rows,
+        exp_rows,
+        diffs,
+        outputs_index,
+        metrics_cache,
+        bmrb_cache,
+        ph_values,
+        temp_values,
+    )
+    return df.sort_values(["temp_allowance", "ph_allowance"]).reset_index(drop=True)
+
+
+def pivot_sweep_metric(df: pd.DataFrame, value_col: str) -> pd.DataFrame:
+    """Pivot one sweep metric into the heatmap layout used in plots."""
+    pivot = df.pivot(index="ph_allowance", columns="temp_allowance", values=value_col)
+    pivot = pivot.sort_index(ascending=False)
+    return pivot.reindex(sorted(pivot.columns), axis=1)
+
+
+def draw_sweep_heatmap(
+    ax: Axes,
+    df: pd.DataFrame,
+    value_col: str,
+    title: str,
+    cbar_label: str,
+    fmt: str,
+    cmap: str,
+    annotate: bool,
+    *,
+    title_fontsize: float = SWEEP_HEATMAP_TITLE_FONTSIZE,
+    axis_label_fontsize: float = 14.0,
+    tick_fontsize: float = 13.0,
+) -> None:
+    """Draw one sweep heatmap onto an existing matplotlib axis."""
+    pivot = pivot_sweep_metric(df, value_col)
+    annot_fontsize = max(9.0, tick_fontsize - 2.0)
+
+    if value_col == "n":
+        plot_data = pivot.fillna(0).astype(int)
+        annot_data = plot_data if annotate else False
+    else:
+        plot_data = pivot
+        annot_data = annotate
+
+    heatmap_kwargs: Dict[str, object] = {
+        "data": plot_data,
+        "annot": annot_data,
+        "fmt": fmt if annotate else "",
+        "cmap": cmap,
+        "cbar_kws": {"label": cbar_label},
+        "linewidths": 0.3,
+        "linecolor": "white",
+        "square": False,
+        "ax": ax,
+    }
+    if annotate:
+        heatmap_kwargs["annot_kws"] = {"size": annot_fontsize}
+
+    sns.heatmap(**heatmap_kwargs)
+
+    ax.set_xlabel("Temperature allowance (°C)", fontsize=axis_label_fontsize)
+    ax.set_ylabel("pH allowance", fontsize=axis_label_fontsize)
+    ax.set_title(title, fontsize=title_fontsize, fontweight="bold", pad=14)
+    ax.tick_params(axis="both", labelsize=tick_fontsize)
+    plt.setp(ax.get_xticklabels(), rotation=0)
+    plt.setp(ax.get_yticklabels(), rotation=0)
+
+    for cax in ax.figure.axes:
+        if cax is ax:
+            continue
+        cax.tick_params(labelsize=tick_fontsize)
+        yl = cax.get_ylabel()
+        if yl:
+            cax.yaxis.label.set_fontsize(axis_label_fontsize)
+        xl = cax.get_xlabel()
+        if xl:
+            cax.xaxis.label.set_fontsize(axis_label_fontsize)
 
 
 def _save_heatmap(
@@ -230,38 +358,26 @@ def _save_heatmap(
     fmt: str,
     cmap: str,
     annotate: bool,
+    *,
+    dpi: int = 200,
 ) -> None:
-    pivot = df.pivot(index="ph_allowance", columns="temp_allowance", values=value_col)
-    pivot = pivot.sort_index(ascending=False)
-    pivot = pivot.reindex(sorted(pivot.columns), axis=1)
-
+    pivot = pivot_sweep_metric(df, value_col)
     fig_w = max(8.0, 0.5 * pivot.shape[1] + 3.5)
     fig_h = max(6.0, 0.35 * pivot.shape[0] + 2.5)
-    plt.figure(figsize=(fig_w, fig_h))
-
-    if value_col == "n":
-        plot_data = pivot.fillna(0).astype(int)
-        annot_data = plot_data if annotate else False
-    else:
-        plot_data = pivot
-        annot_data = annotate
-
-    ax = sns.heatmap(
-        plot_data,
-        annot=annot_data,
-        fmt=fmt if annotate else "",
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
+    draw_sweep_heatmap(
+        ax=ax,
+        df=df,
+        value_col=value_col,
+        title=title,
+        cbar_label=cbar_label,
+        fmt=fmt,
         cmap=cmap,
-        cbar_kws={"label": cbar_label},
-        linewidths=0.3,
-        linecolor="white",
-        square=False,
+        annotate=annotate,
     )
-    ax.set_xlabel("Temperature allowance (°C)")
-    ax.set_ylabel("pH allowance")
-    ax.set_title(title)
-    plt.tight_layout()
-    plt.savefig(out_path, dpi=200)
-    plt.close()
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=dpi)
+    plt.close(fig)
 
 
 def main() -> int:
@@ -329,34 +445,13 @@ def main() -> int:
         6,
     )
 
-    print(f"Pre-caching outputs/ metrics...")
-    outputs_index, metrics_cache, bmrb_cache = _build_outputs_caches(outputs_dir)
-    n_with_metrics = sum(1 for m in metrics_cache.values() if m is not None)
-    print(
-        f"Indexed {len(outputs_index)} outputs subdirs "
-        f"({n_with_metrics} with classifications)."
+    df = compute_sweep_metrics(
+        csp_path=csp_path,
+        exp_path=exp_path,
+        outputs_dir=outputs_dir,
+        ph_values=ph_values,
+        temp_values=temp_values,
     )
-
-    print(f"Loading paired rows from {csp_path.name} and {exp_path.name}...")
-    csp_rows, exp_rows, diffs = load_paired_rows(csp_path, exp_path)
-    n_with_diffs = sum(1 for d in diffs if d is not None)
-    print(f"Paired rows: {len(csp_rows)} ({n_with_diffs} with complete buffer metadata).")
-
-    print(
-        f"Aggregating {len(ph_values)} pH x {len(temp_values)} T "
-        f"= {len(ph_values) * len(temp_values)} cells..."
-    )
-    df = aggregate_grid(
-        csp_rows,
-        exp_rows,
-        diffs,
-        outputs_index,
-        metrics_cache,
-        bmrb_cache,
-        ph_values,
-        temp_values,
-    )
-    df = df.sort_values(["temp_allowance", "ph_allowance"]).reset_index(drop=True)
 
     csv_path = out_dir / "sweep_metrics.csv"
     df.to_csv(csv_path, index=False)
@@ -390,7 +485,7 @@ def main() -> int:
         title="Mean FP / (TP + FP)  (% allosteric CSPs)",
         cbar_label="FP / (TP + FP)",
         fmt=".3f",
-        cmap="rocket_r",
+        cmap="viridis",
         annotate=annotate,
     )
     _save_heatmap(
@@ -400,10 +495,20 @@ def main() -> int:
         title="Mean FP / (TP + FP + TN + FN)  (FP %)",
         cbar_label="FP % of classified residues",
         fmt=".1f",
-        cmap="rocket_r",
+        cmap="viridis",
         annotate=annotate,
     )
-    print(f"Wrote 4 heatmap PNGs to {out_dir}.")
+    _save_heatmap(
+        df,
+        value_col="tp_rate",
+        out_path=out_dir / "heatmap_tp_rate.png",
+        title="Mean TP / (TP + FP + TN + FN)",
+        cbar_label="TP / all classified residues",
+        fmt=".3f",
+        cmap="viridis",
+        annotate=annotate,
+    )
+    print(f"Wrote 5 heatmap PNGs to {out_dir}.")
     return 0
 
 

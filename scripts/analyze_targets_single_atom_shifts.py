@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Per-target single-atom (H, N, CA) 1D shift perturbation analysis.
+Per-target single-atom (H, N, CA, HA) 1D shift perturbation analysis.
 
 For each target directory under outputs/ that has a csp_table.csv, this script:
   - Loads csp_table.csv (and csp_table_CA.csv if present)
   - Computes per-residue 1D shift metrics for each available atom type:
-      ΔH = H_holo - H_apo, ΔN = N_holo - N_apo, ΔCA = CA_holo - CA_apo
-      CSP_H_1d = |ΔH|, CSP_N_1d = |ΔN|, CSP_CA_1d = |ΔCA|
+      ΔH = H_holo - H_apo, ΔN = N_holo - N_apo, ΔCA = CA_holo - CA_apo, ΔHA = HA_holo - HA_apo
+      CSP_H_1d = |ΔH|, CSP_N_1d = |ΔN|, CSP_CA_1d = |ΔCA|, CSP_HA_1d = |ΔHA|
       z-scores per atom type, using target-specific mean and SD of CSP_X_1d
   - Writes outputs/{holo_pdb}/1d_analysis.csv with one row per residue
     containing all single-atom 1D metrics for that residue.
@@ -68,7 +68,7 @@ class Atom1DStats:
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Compute per-residue 1D single-atom shift perturbations (H, N, CA) "
+            "Compute per-residue 1D single-atom shift perturbations (H, N, CA, HA) "
             "from csp_table.csv and csp_table_CA.csv and write 1d_analysis.csv "
             "for each target, then compute per-target F1 scores for each atom type "
             "and render summary heatmaps/statistics."
@@ -372,11 +372,12 @@ def _compute_f1_for_atom(
 def collect_1d_f1_results(
     outputs_dir: Path,
     allowed_targets: Optional[Dict[str, bool]],
-) -> Tuple[List[TargetResult], List[TargetResult], List[TargetResult]]:
-    """Collect per-target F1 scores for H, N, and CA 1D CSPs."""
+) -> Tuple[List[TargetResult], List[TargetResult], List[TargetResult], List[TargetResult]]:
+    """Collect per-target F1 scores for H, N, CA, and HA 1D CSPs."""
     results_H: List[TargetResult] = []
     results_N: List[TargetResult] = []
     results_CA: List[TargetResult] = []
+    results_HA: List[TargetResult] = []
 
     for target_dir in discover_targets(outputs_dir):
         target_name = target_dir.name
@@ -387,36 +388,39 @@ def collect_1d_f1_results(
         if merged is None:
             continue
 
-        for atom, bucket in (("H", results_H), ("N", results_N), ("CA", results_CA)):
+        for atom, bucket in (("H", results_H), ("N", results_N), ("CA", results_CA), ("HA", results_HA)):
             res = _compute_f1_for_atom(merged, atom, target_name=target_name)
             if res is not None:
                 res.target = target_name
                 bucket.append(res)
 
-    return results_H, results_N, results_CA
+    return results_H, results_N, results_CA, results_HA
 
 
 def render_1d_f1_heatmaps(
     results_H: List[TargetResult],
     results_N: List[TargetResult],
     results_CA: List[TargetResult],
+    results_HA: List[TargetResult],
     output_image: Path,
 ) -> None:
-    """Render a 1x3 panel of F1 heatmaps for H, N, and CA 1D CSPs."""
+    """Render a 1x4 panel of F1 heatmaps for H, N, CA, and HA 1D CSPs."""
     atom_to_results = {
         "H": results_H,
         "N": results_N,
         "CA": results_CA,
+        "HA": results_HA,
     }
     titles = {
         "H": "F1 Scores (H 1D CSPs)",
         "N": "F1 Scores (N 1D CSPs)",
         "CA": "F1 Scores (CA 1D CSPs)",
+        "HA": "F1 Scores (HA 1D CSPs)",
     }
 
-    fig, axes = plt.subplots(1, 3, figsize=(12, max(3, len(results_H) + len(results_N) + len(results_CA)) * 0.15))
+    fig, axes = plt.subplots(1, 4, figsize=(16, max(3, len(results_H) + len(results_N) + len(results_CA) + len(results_HA)) * 0.15))
 
-    for idx, (atom, ax) in enumerate(zip(["H", "N", "CA"], axes)):
+    for idx, (atom, ax) in enumerate(zip(["H", "N", "CA", "HA"], axes)):
         res_list = atom_to_results[atom]
         if not res_list:
             ax.text(
@@ -441,7 +445,7 @@ def render_1d_f1_heatmaps(
             cmap="viridis",
             vmin=0.0,
             vmax=1.0,
-            cbar=(idx == 2),
+            cbar=(idx == 3),
             ax=ax,
         )
         ax.set_xlabel("Metric", fontsize=10)
@@ -460,6 +464,7 @@ def write_1d_f1_summary_csv(
     results_H: List[TargetResult],
     results_N: List[TargetResult],
     results_CA: List[TargetResult],
+    results_HA: List[TargetResult],
     output_csv: Path,
 ) -> None:
     """Write summary statistics for 1D F1 score distributions per atom type."""
@@ -494,6 +499,7 @@ def write_1d_f1_summary_csv(
         _summarize("H", results_H),
         _summarize("N", results_N),
         _summarize("CA", results_CA),
+        _summarize("HA", results_HA),
     ]
     df = pd.DataFrame(rows)
     output_csv.parent.mkdir(parents=True, exist_ok=True)
@@ -504,9 +510,10 @@ def render_1d_f1_boxplot(
     results_H: List[TargetResult],
     results_N: List[TargetResult],
     results_CA: List[TargetResult],
+    results_HA: List[TargetResult],
     output_image: Path,
 ) -> None:
-    """Render a boxplot comparing F1 score distributions for H, N, and CA 1D CSPs."""
+    """Render a boxplot comparing F1 score distributions for H, N, CA, and HA 1D CSPs."""
     # Prepare data for boxplot
     data_for_plot = []
     labels = []
@@ -522,6 +529,10 @@ def render_1d_f1_boxplot(
     if results_CA:
         data_for_plot.append([r.f1 for r in results_CA])
         labels.append("CA")
+
+    if results_HA:
+        data_for_plot.append([r.f1 for r in results_HA])
+        labels.append("HA")
     
     if not data_for_plot:
         return
@@ -537,7 +548,7 @@ def render_1d_f1_boxplot(
     )
     
     # Customize boxplot colors
-    colors = ["#66c2a5", "#fc8d62", "#8da0cb"]
+    colors = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3"]
     for patch, color in zip(bp["boxes"], colors[:len(bp["boxes"])]):
         patch.set_facecolor(color)
         patch.set_alpha(0.7)
@@ -570,6 +581,7 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
     """
     csp_table_path = target_dir / "csp_table.csv"
     csp_table_ca_path = target_dir / "csp_table_CA.csv"
+    csp_table_ha_ca_path = target_dir / "csp_table_HA_CA.csv"
 
     # Prefer csp_table_CA.csv when available so that H, N, and CA 1D CSPs all
     # use the same 3D-grid-search-derived offsets.
@@ -602,6 +614,18 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
                 if key[0] and key[1]:
                     ca_lookup[key] = dict(ca_row)
 
+    ha_lookup: Dict[Tuple[str, str], Dict[str, str]] = {}
+    if csp_table_ha_ca_path.exists():
+        with open(csp_table_ha_ca_path, "r", newline="") as f_ha_ca:
+            ha_reader = csv.DictReader(f_ha_ca)
+            for ha_row in ha_reader:
+                key = (
+                    (ha_row.get("holo_resi") or "").strip(),
+                    (ha_row.get("holo_aa") or "").strip(),
+                )
+                if key[0] and key[1]:
+                    ha_lookup[key] = dict(ha_row)
+
     if not rows:
         return
 
@@ -609,6 +633,7 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
     h_csp_vals: List[float] = []
     n_csp_vals: List[float] = []
     ca_csp_vals: List[float] = []
+    ha_csp_vals: List[float] = []
 
     per_row_stats: List[Dict[str, Atom1DStats]] = []
 
@@ -686,6 +711,42 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         else:
             stats_for_row["CA"] = Atom1DStats(delta=None, csp_1d=None, z_1d=None)
 
+        # HA: sourced from HA/CA analysis table when available
+        HA_apo = _get_float("HA_apo")
+        HA_holo = _get_float("HA_holo")
+        if HA_apo is None or HA_holo is None:
+            key = (
+                (row.get("holo_resi") or "").strip(),
+                (row.get("holo_aa") or "").strip(),
+            )
+            ha_row = ha_lookup.get(key)
+            if ha_row is not None:
+                ha_apo_raw = (ha_row.get("HA_apo") or "").strip()
+                ha_holo_raw = (ha_row.get("HA_holo") or "").strip()
+                try:
+                    if HA_apo is None and ha_apo_raw:
+                        HA_apo = float(ha_apo_raw)
+                        row["HA_apo"] = ha_apo_raw
+                except ValueError:
+                    HA_apo = None
+                try:
+                    if HA_holo is None and ha_holo_raw:
+                        HA_holo = float(ha_holo_raw)
+                        row["HA_holo"] = ha_holo_raw
+                except ValueError:
+                    HA_holo = None
+
+                ha_offset_raw = (ha_row.get("HA_offset") or "").strip()
+                if ha_offset_raw and not row.get("HA_offset"):
+                    row["HA_offset"] = ha_offset_raw
+        if HA_apo is not None and HA_holo is not None:
+            dHA = HA_holo - HA_apo
+            csp_HA_1d = abs(dHA)
+            stats_for_row["HA"] = Atom1DStats(delta=dHA, csp_1d=csp_HA_1d, z_1d=None)
+            ha_csp_vals.append(csp_HA_1d)
+        else:
+            stats_for_row["HA"] = Atom1DStats(delta=None, csp_1d=None, z_1d=None)
+
         per_row_stats.append(stats_for_row)
 
     # Compute per-target mean/sd (full data, used for informative z-scores)
@@ -696,6 +757,7 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
     h_mean, h_sd = compute_atom_stats(h_csp_vals)
     n_mean, n_sd = compute_atom_stats(n_csp_vals)
     ca_mean, ca_sd = compute_atom_stats(ca_csp_vals)
+    ha_mean, ha_sd = compute_atom_stats(ha_csp_vals)
 
     h_threshold_info = compute_threshold_with_outlier_removal(
         h_csp_vals,
@@ -718,10 +780,18 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         _thresholds.max_outlier_iterations,
         _thresholds.max_outlier_fraction,
     )
+    ha_threshold_info = compute_threshold_with_outlier_removal(
+        ha_csp_vals,
+        _thresholds.outlier_z_score,
+        _thresholds.significance_z_score,
+        _thresholds.max_outlier_iterations,
+        _thresholds.max_outlier_fraction,
+    )
 
     h_cutoff = float(h_threshold_info.threshold) if h_csp_vals else None
     n_cutoff = float(n_threshold_info.threshold) if n_csp_vals else None
     ca_cutoff = float(ca_threshold_info.threshold) if ca_csp_vals else None
+    ha_cutoff = float(ha_threshold_info.threshold) if ha_csp_vals else None
 
     for stats_for_row in per_row_stats:
         # H
@@ -747,6 +817,14 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
             stats_for_row["CA"].z_1d = 0.0
         if stats_for_row["CA"].csp_1d is not None and ca_cutoff is not None:
             stats_for_row["CA"].significant = bool(stats_for_row["CA"].csp_1d >= ca_cutoff)
+
+        # HA
+        if stats_for_row["HA"].csp_1d is not None and ha_sd > 0.0:
+            stats_for_row["HA"].z_1d = (stats_for_row["HA"].csp_1d - ha_mean) / ha_sd
+        elif stats_for_row["HA"].csp_1d is not None:
+            stats_for_row["HA"].z_1d = 0.0
+        if stats_for_row["HA"].csp_1d is not None and ha_cutoff is not None:
+            stats_for_row["HA"].significant = bool(stats_for_row["HA"].csp_1d >= ha_cutoff)
 
     # Write per-target 1d_analysis.csv
     output_path = target_dir / "1d_analysis.csv"
@@ -786,6 +864,14 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         "CSP_CA_1d",
         "z_CA_1d",
         "csp_CA_1d_significant",
+        # HA metrics
+        "HA_apo",
+        "HA_holo",
+        "HA_offset",
+        "dHA_1d",
+        "CSP_HA_1d",
+        "z_HA_1d",
+        "csp_HA_1d_significant",
     ]
 
     with open(output_path, "w", newline="") as f_out:
@@ -843,6 +929,18 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
                 "True" if ca_stats.significant is True else ("False" if ca_stats.significant is False else "")
             )
 
+            # HA
+            out_row["HA_apo"] = row.get("HA_apo", "")
+            out_row["HA_holo"] = row.get("HA_holo", "")
+            out_row["HA_offset"] = row.get("HA_offset", "")
+            ha_stats = stats_for_row["HA"]
+            out_row["dHA_1d"] = f"{ha_stats.delta:.4f}" if ha_stats.delta is not None else ""
+            out_row["CSP_HA_1d"] = f"{ha_stats.csp_1d:.4f}" if ha_stats.csp_1d is not None else ""
+            out_row["z_HA_1d"] = f"{ha_stats.z_1d:.4f}" if ha_stats.z_1d is not None else ""
+            out_row["csp_HA_1d_significant"] = (
+                "True" if ha_stats.significant is True else ("False" if ha_stats.significant is False else "")
+            )
+
             writer.writerow(out_row)
 
 
@@ -870,13 +968,13 @@ def main(argv: Iterable[str]) -> int:
             print(f"[WARN] Failed to compute 1D metrics for {target_name}: {exc}")
 
     # Collect F1 results across targets
-    results_H, results_N, results_CA = collect_1d_f1_results(outputs_dir, allowed_targets)
-    if not results_H and not results_N and not results_CA:
+    results_H, results_N, results_CA, results_HA = collect_1d_f1_results(outputs_dir, allowed_targets)
+    if not results_H and not results_N and not results_CA and not results_HA:
         return 0
 
-    render_1d_f1_heatmaps(results_H, results_N, results_CA, output_image)
-    write_1d_f1_summary_csv(results_H, results_N, results_CA, summary_csv)
-    render_1d_f1_boxplot(results_H, results_N, results_CA, boxplot_image)
+    render_1d_f1_heatmaps(results_H, results_N, results_CA, results_HA, output_image)
+    write_1d_f1_summary_csv(results_H, results_N, results_CA, results_HA, summary_csv)
+    render_1d_f1_boxplot(results_H, results_N, results_CA, results_HA, boxplot_image)
 
     return 0
 
@@ -885,5 +983,3 @@ if __name__ == "__main__":
     import sys as _sys
 
     raise SystemExit(main(_sys.argv[1:]))
-
-

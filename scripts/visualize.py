@@ -2656,6 +2656,7 @@ def _build_per_atom_classification_data(
 def plot_per_atom_classification_panels(
     results_hn: List[CSPResult],
     results_ca: Optional[List[CSPResult]],
+    results_ha_ca: Optional[List[CSPResult]],
     binding_results: dict,
     out_png: str,
     title: Optional[str] = None,
@@ -2666,7 +2667,7 @@ def plot_per_atom_classification_panels(
 ) -> None:
     """
     Create a multi-panel bar plot showing per-atom perturbation classifications
-    (H-only, N-only, CA-only) using TP/FP/TN/FN coloring.
+    (H-only, N-only, CA-only, HA-only when available) using TP/FP/TN/FN coloring.
     """
     if not _HAS_PLT:
         return
@@ -2688,6 +2689,11 @@ def plot_per_atom_classification_panels(
         ca_data = _build_per_atom_classification_data(results_ca, binding_results, "CA", threshold_config)
         if ca_data is not None and ca_data.get("values"):
             atom_data_list.append(ca_data)
+
+    if results_ha_ca:
+        ha_data = _build_per_atom_classification_data(results_ha_ca, binding_results, "HA", threshold_config)
+        if ha_data is not None and ha_data.get("values"):
+            atom_data_list.append(ha_data)
 
     if not atom_data_list:
         return

@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """
-Boxplot of per-target F1 scores for 1D H/N/CA CSPs with paired significance
-annotations.
+Boxplot of per-target F1 scores for configurable 1D atom CSPs (default H/N/CA/HA)
+with paired significance annotations.
 
-For each target directory under ``outputs/``, the F1 scores for 1D H, N, and
-CA CSPs are computed (reusing :func:`collect_1d_f1_results` from
-:mod:`analyze_targets_single_atom_shifts`). The figure is then restricted to
-the intersection of targets that yield a valid F1 for all three atom types -
-which coincide with targets whose ``1d_analysis.csv`` shows sufficient per-row CA
-coverage (same rule as SI Fig. S10 / S11; see
-:func:`target_basenames_passing_ca_shift_coverage`).
+For each target directory under ``outputs/``, the F1 scores for 1D H, N, CA,
+and optionally HA CSPs are computed (reusing :func:`collect_1d_f1_results` from
+:mod:`analyze_targets_single_atom_shifts`). Targets are gated by CA row
+coverage (:func:`target_basenames_passing_ca_shift_coverage`, same rule as SI
+Fig. S10 / S11). The plot uses the intersection of targets that yield a valid
+F1 for every atom in the chosen ``atom_order`` (SI Fig. S14 uses H/N/CA only so
+*n* matches the CA-gated cohort without requiring HA F1).
 
-Inter-group comparisons are performed with paired Wilcoxon signed-rank tests
-(H vs N, H vs CA, N vs CA) and the three raw p-values are adjusted with
-Holm-Bonferroni. Significance is overlaid on the boxplot (ns / * / ** / ***)
-and the pairwise results are written to a companion CSV.
+Inter-group comparisons use paired Wilcoxon signed-rank tests for all
+unordered atom pairs, with Holm-Bonferroni–adjusted *p*-values overlaid on the
+figure and written to a companion CSV.
 """
 
 from __future__ import annotations
@@ -22,6 +21,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from itertools import combinations
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -50,18 +50,24 @@ except Exception:
     from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
 
 
-ATOM_ORDER: Tuple[str, str, str] = ("H", "N", "CA")
+ATOM_ORDER: Tuple[str, ...] = ("H", "N", "CA", "HA")
 ATOM_COLORS = {
     "H": "#66c2a5",
     "N": "#fc8d62",
     "CA": "#8da0cb",
+    "HA": "#e78ac3",
 }
+
+_VALID_ATOMS = frozenset(ATOM_ORDER)
+
+# SI Fig. S14: N/H/Cα only (same CA gate as S10/S11; omit Hα so n matches CA cohort).
+SF14_ATOM_ORDER: Tuple[str, ...] = ("H", "N", "CA")
 
 
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Plot F1 score distributions for 1D H/N/CA CSPs on the subset of "
+            "Plot F1 score distributions for 1D H/N/CA/HA CSPs on the subset of "
             "targets with CA shifts, annotated with paired Wilcoxon signed-rank "
             "significance (Holm-Bonferroni corrected)."
         )
@@ -125,21 +131,32 @@ def _allowed_basenames_from_targets_csv(
     return {p.name: True for p in resolved}
 
 
-def _build_paired_arrays(
+def _results_by_atom(
     results_H: Sequence[TargetResult],
     results_N: Sequence[TargetResult],
     results_CA: Sequence[TargetResult],
-) -> Tuple[List[str], np.ndarray, np.ndarray, np.ndarray]:
-    """Intersect on target names and return paired F1 arrays for H, N, CA."""
-    by_target_h = {r.target: r.f1 for r in results_H}
-    by_target_n = {r.target: r.f1 for r in results_N}
-    by_target_ca = {r.target: r.f1 for r in results_CA}
+    results_HA: Sequence[TargetResult],
+) -> Dict[str, Sequence[TargetResult]]:
+    return {"H": results_H, "N": results_N, "CA": results_CA, "HA": results_HA}
 
-    common = sorted(set(by_target_h) & set(by_target_n) & set(by_target_ca))
-    h = np.array([by_target_h[t] for t in common], dtype=float)
-    n = np.array([by_target_n[t] for t in common], dtype=float)
-    ca = np.array([by_target_ca[t] for t in common], dtype=float)
-    return common, h, n, ca
+
+def _build_paired_arrays(
+    results_by_atom: Dict[str, Sequence[TargetResult]],
+    atom_order: Tuple[str, ...],
+) -> Tuple[List[str], Dict[str, np.ndarray]]:
+    """Intersect on target names; one F1 vector per atom in ``atom_order``."""
+    by_target = {atom: {r.target: r.f1 for r in results_by_atom[atom]} for atom in atom_order}
+
+    common: set[str] = set(by_target[atom_order[0]])
+    for atom in atom_order[1:]:
+        common &= set(by_target[atom])
+
+    sorted_targets = sorted(common)
+    arrays = {
+        atom: np.array([by_target[atom][t] for t in sorted_targets], dtype=float)
+        for atom in atom_order
+    }
+    return sorted_targets, arrays
 
 
 def _holm_bonferroni(pvals: Sequence[float]) -> List[float]:
@@ -170,16 +187,10 @@ def _significance_label(p: float) -> str:
     return "ns"
 
 
-def _paired_wilcoxon_table(
-    h: np.ndarray,
-    n: np.ndarray,
-    ca: np.ndarray,
-) -> pd.DataFrame:
-    """Compute paired Wilcoxon signed-rank for the three atom-type pairs."""
+def _paired_wilcoxon_table(atom_order: Tuple[str, ...], arrays: Dict[str, np.ndarray]) -> pd.DataFrame:
+    """Compute paired Wilcoxon signed-rank for all unordered atom-type pairs."""
     pairs: List[Tuple[str, str, np.ndarray, np.ndarray]] = [
-        ("H", "N", h, n),
-        ("H", "CA", h, ca),
-        ("N", "CA", n, ca),
+        (a, b, arrays[a], arrays[b]) for a, b in combinations(atom_order, 2)
     ]
 
     rows: List[dict] = []
@@ -218,23 +229,23 @@ def _paired_wilcoxon_table(
     return pd.DataFrame(rows, columns=["group_a", "group_b", "n", "statistic", "p_raw", "p_adj_holm", "signif"])
 
 
-def _atom_positions() -> dict:
-    return {atom: i + 1 for i, atom in enumerate(ATOM_ORDER)}
+def _atom_positions(atom_order: Tuple[str, ...]) -> Dict[str, int]:
+    return {atom: i + 1 for i, atom in enumerate(atom_order)}
 
 
 def _render_boxplot(
-    h: np.ndarray,
-    n: np.ndarray,
-    ca: np.ndarray,
+    atom_order: Tuple[str, ...],
+    arrays: Dict[str, np.ndarray],
     stats_df: pd.DataFrame,
     output_image: Path,
     n_targets: int,
 ) -> None:
     """Draw the annotated boxplot and save to ``output_image``."""
-    data_for_plot = [h, n, ca]
-    positions = list(_atom_positions().values())
+    data_for_plot = [arrays[atom] for atom in atom_order]
+    positions = list(_atom_positions(atom_order).values())
 
-    fig, ax = plt.subplots(figsize=(7, 6))
+    fig_w = 6.0 + 0.7 * (len(atom_order) - 3)
+    fig, ax = plt.subplots(figsize=(fig_w, 6.5))
 
     bp = ax.boxplot(
         data_for_plot,
@@ -247,13 +258,13 @@ def _render_boxplot(
         medianprops=dict(color="black", linewidth=1.5),
         meanprops=dict(color="black", linestyle="--", linewidth=1.2),
     )
-    for patch, atom in zip(bp["boxes"], ATOM_ORDER):
+    for patch, atom in zip(bp["boxes"], atom_order):
         patch.set_facecolor(ATOM_COLORS[atom])
         patch.set_alpha(0.7)
         patch.set_edgecolor("black")
 
     rng = np.random.default_rng(seed=0)
-    for pos, values, atom in zip(positions, data_for_plot, ATOM_ORDER):
+    for pos, values, atom in zip(positions, data_for_plot, atom_order):
         if len(values) == 0:
             continue
         jitter = rng.uniform(-0.12, 0.12, size=len(values))
@@ -269,7 +280,7 @@ def _render_boxplot(
         )
 
     ax.set_xticks(positions)
-    ax.set_xticklabels(list(ATOM_ORDER))
+    ax.set_xticklabels(list(atom_order))
     ax.set_ylabel("F1 Score", fontsize=12)
     ax.set_xlabel("Atom Type (1D CSP)", fontsize=12)
     ax.set_title(
@@ -281,7 +292,7 @@ def _render_boxplot(
     ax.grid(axis="y", alpha=0.3, linestyle="--")
     ax.set_ylim(0.0, 1.0)
 
-    _annotate_significance(ax, stats_df)
+    _annotate_significance(ax, stats_df, atom_order)
 
     fig.tight_layout()
     output_image.parent.mkdir(parents=True, exist_ok=True)
@@ -289,16 +300,22 @@ def _render_boxplot(
     plt.close(fig)
 
 
-def _annotate_significance(ax: plt.Axes, stats_df: pd.DataFrame) -> None:
+def _annotate_significance(
+    ax: plt.Axes,
+    stats_df: pd.DataFrame,
+    atom_order: Tuple[str, ...],
+) -> None:
     """Draw stacked significance bars over the boxes (within y in [0, 1])."""
-    pos = _atom_positions()
-    # Bracket stack fits below y=1 when axis is [0, 1] (was above 1 for ylim 1.3).
-    base_y = 0.82
-    step = 0.045
+    pos = _atom_positions(atom_order)
+    base_y = 0.68
+    step = 0.04
     bar_height = 0.012
 
-    # Order bars so shorter spans sit beneath the longer one.
-    ordering = [("H", "N"), ("N", "CA"), ("H", "CA")]
+    pairs_all = list(combinations(atom_order, 2))
+    ordering = sorted(
+        pairs_all,
+        key=lambda ab: (abs(pos[ab[0]] - pos[ab[1]]), ab[0], ab[1]),
+    )
 
     for level, (a, b) in enumerate(ordering):
         row = stats_df[(stats_df["group_a"] == a) & (stats_df["group_b"] == b)]
@@ -345,13 +362,25 @@ def run_f1_1d_boxplot(
     output_image: Path,
     stats_csv: Optional[Path],
     min_ca_coverage: float,
+    atom_order: Tuple[str, ...] = ATOM_ORDER,
 ) -> int:
     """
-    Pairwise Wilcoxon-annotated boxplot of per-target F1 scores (1D H / N / Cα CSPs).
+    Pairwise Wilcoxon-annotated boxplot of per-target F1 scores for ``atom_order`` 1D CSPs.
 
     When ``targets_csv`` is given, rows are mapped to canonical ``outputs/`` subdirectory
     names via :mod:`scripts.target_resolution`.
     """
+    if not atom_order:
+        print("atom_order must be non-empty.", file=sys.stderr)
+        return 1
+    if not frozenset(atom_order) <= _VALID_ATOMS or len(atom_order) != len(set(atom_order)):
+        print(
+            f"Invalid atom_order={atom_order!r}; "
+            "use a tuple of distinct keys from {'H','N','CA','HA'}.",
+            file=sys.stderr,
+        )
+        return 1
+
     outputs_dir = outputs_dir.resolve()
     if not outputs_dir.exists():
         print(f"Outputs directory not found: {outputs_dir}", file=sys.stderr)
@@ -381,35 +410,36 @@ def run_f1_1d_boxplot(
         return 1
 
     ca_allowed = {t: True for t in ca_passing}
-    results_H, results_N, results_CA = collect_1d_f1_results(outputs_dir, ca_allowed)
-    if not (results_H and results_N and results_CA):
-        print(
-            "No 1D F1 results found for one or more atom types; cannot render boxplot.",
-            file=sys.stderr,
-        )
-        return 1
+    results_H, results_N, results_CA, results_HA = collect_1d_f1_results(outputs_dir, ca_allowed)
+    results_by = _results_by_atom(results_H, results_N, results_CA, results_HA)
+    for atom in atom_order:
+        if not results_by[atom]:
+            print(
+                f"No 1D F1 results for atom {atom!r}; cannot render boxplot.",
+                file=sys.stderr,
+            )
+            return 1
 
-    common, h, n, ca = _build_paired_arrays(results_H, results_N, results_CA)
+    common, arrays = _build_paired_arrays(results_by, atom_order)
     if len(common) == 0:
-        print(
-            "No targets produce F1 scores for all of H, N, and CA; nothing to plot.",
-            file=sys.stderr,
-        )
+        labels = "/".join(atom_order)
+        print(f"No targets produce F1 scores for all of {labels}; nothing to plot.", file=sys.stderr)
         return 1
 
-    stats_df = _paired_wilcoxon_table(h, n, ca)
+    stats_df = _paired_wilcoxon_table(atom_order, arrays)
 
     resolved_stats = stats_csv.resolve() if stats_csv is not None else _resolve_stats_csv(
         output_image, None
     )
 
     output_image.parent.mkdir(parents=True, exist_ok=True)
-    _render_boxplot(h, n, ca, stats_df, output_image, n_targets=len(common))
+    _render_boxplot(atom_order, arrays, stats_df, output_image, n_targets=len(common))
 
     resolved_stats.parent.mkdir(parents=True, exist_ok=True)
     stats_df.to_csv(resolved_stats, index=False)
 
-    print(f"n = {len(common)} targets with paired H/N/CA F1 scores")
+    joined = "/".join(atom_order)
+    print(f"n = {len(common)} targets with paired {joined} F1 scores")
     print(f"Wrote {output_image}")
     print(f"Wrote {resolved_stats}")
     for _, row in stats_df.iterrows():
@@ -434,6 +464,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         output_image=output_image,
         stats_csv=args.stats_csv,
         min_ca_coverage=float(args.min_ca_coverage),
+        atom_order=ATOM_ORDER,
     )
 
 

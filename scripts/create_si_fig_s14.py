@@ -2,11 +2,11 @@
 """
 SI Fig. S14 — Per-target **F1 scores** for 1D H / N / Cα CSPs (boxplots + paired Wilcoxon).
 
-Implements publication SI Fig. S14 by delegating to
-:func:`run_f1_1d_boxplot` in ``create_si_fig_f1_1d_boxplot`` (same F1 /
-significance logic as ``SF_f1_1d_boxplot.png``). Targets are filtered with
-:class:`scripts.target_resolution` so canonical ``outputs/{HOLO}_{apo_bmrb}/``
-directories match ``CSP_UBQ``-style rows.
+Hα is omitted so the paired cohort matches the CA–shift coverage gate (*n* = 119 with
+default ``data/CSP_UBQ_ph0.5_temp5C.csv`` and default ``--min-ca-coverage``), without
+requiring an Hα F1 for every target. Implements SI Fig. S14 via
+:func:`run_f1_1d_boxplot` in ``create_si_fig_f1_1d_boxplot`` with
+:data:`SF14_ATOM_ORDER`.
 
 Older versions of this script incorrectly plotted summarized **|1D CSP|**
 magnitudes on the *y*-axis rather than classifier **F1** scores derived from the
@@ -30,7 +30,7 @@ from pathlib import Path
 
 try:
     from .analyze_targets_single_atom_shifts import DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE
-    from .create_si_fig_f1_1d_boxplot import run_f1_1d_boxplot
+    from .create_si_fig_f1_1d_boxplot import SF14_ATOM_ORDER, run_f1_1d_boxplot
 except Exception:
     project_root = Path(__file__).resolve().parent.parent
     if str(project_root) not in sys.path:
@@ -38,7 +38,10 @@ except Exception:
     from scripts.analyze_targets_single_atom_shifts import (  # type: ignore
         DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
     )
-    from scripts.create_si_fig_f1_1d_boxplot import run_f1_1d_boxplot  # type: ignore
+    from scripts.create_si_fig_f1_1d_boxplot import (  # type: ignore
+        SF14_ATOM_ORDER,
+        run_f1_1d_boxplot,
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -100,6 +103,7 @@ def main() -> int:
         output_image=output_image,
         stats_csv=stats_csv,
         min_ca_coverage=float(args.min_ca_coverage),
+        atom_order=SF14_ATOM_ORDER,
     )
     if rc == 0:
         print(f"SI Fig. S14 saved to {output_image.resolve()}")

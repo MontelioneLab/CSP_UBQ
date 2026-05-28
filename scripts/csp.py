@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
 import os
+import sys
 import math
 import statistics
 
@@ -21,6 +22,11 @@ except Exception:
 def _csp_n_term(d_n: float) -> float:
     w = compute.csp_delta_n_scale
     return (d_n * w) ** 2
+
+
+def _csp_ha_term(d_ha: float) -> float:
+    w = getattr(compute, "csp_delta_ha_scale", 1.0)
+    return (d_ha * w) ** 2
 
 
 def _csp_ca_term(d_ca: float) -> float:
@@ -170,6 +176,12 @@ class CSPResult:
     H_offset: Optional[float] = None
     N_offset: Optional[float] = None
     z_score: Optional[float] = None
+    # Optional HA-related fields (used for HA-inclusive CSP analysis)
+    HA_apo: Optional[float] = None
+    HA_holo: Optional[float] = None
+    HA_holo_original: Optional[float] = None
+    HA_offset: Optional[float] = None
+    dHA: Optional[float] = None
     # Optional CA-related fields (used for CA-inclusive CSP analysis)
     CA_apo: Optional[float] = None
     CA_holo: Optional[float] = None
@@ -346,6 +358,73 @@ def run_offset_grid_search(
     }
 
 
+def run_offset_grid_search_ha_ca(
+    points: List[Tuple[float, float, float, float]],
+    *,
+    ha_min: float,
+    ha_max: float,
+    ha_step: float,
+    ca_min: float,
+    ca_max: float,
+    ca_step: float,
+    cutoff: float,
+) -> Dict[str, object]:
+    """
+    Grid search for HA/CA offsets that maximize the number of HA/CA CSPs < cutoff.
+
+    Each point is a tuple:
+      (HA_apo, CA_apo, HA_holo_orig, CA_holo_orig)
+    using the HA/CA CSP formula:
+      CSP = sqrt(1/2*((wHA*dHA)^2 + (wCA*dCA)^2))
+    """
+    ha_decimals = max(0, min(6, len(str(ha_step).split(".")[-1]) if "." in str(ha_step) else 0))
+    ca_decimals = max(0, min(6, len(str(ca_step).split(".")[-1]) if "." in str(ca_step) else 0))
+
+    ha_values = _frange(ha_min, ha_max, ha_step, ha_decimals)
+    ca_values = _frange(ca_min, ca_max, ca_step, ca_decimals)
+
+    count_matrix: List[List[int]] = []
+    best_count = -1
+    best_pairs: List[Tuple[float, float]] = []
+
+    cutoff_sq = cutoff * cutoff
+    for ha_off in ha_values:
+        row: List[int] = []
+        for ca_off in ca_values:
+            count_lt = 0
+            for ha_a, ca_a, ha_h_orig, ca_h_orig in points:
+                dHA = (ha_h_orig + ha_off) - ha_a
+                dCA = (ca_h_orig + ca_off) - ca_a
+                inner = _csp_ha_term(dHA) + _csp_ca_term(dCA)
+                if inner < 2.0 * cutoff_sq:
+                    count_lt += 1
+            row.append(count_lt)
+
+            if count_lt > best_count:
+                best_count = count_lt
+                best_pairs = [(ca_off, ha_off)]
+            elif count_lt == best_count:
+                best_pairs.append((ca_off, ha_off))
+        count_matrix.append(row)
+
+    if best_pairs:
+        best_ca_offset, best_ha_offset = min(
+            best_pairs,
+            key=lambda p: (abs(p[0]) + abs(p[1]), abs(p[0]), abs(p[1])),
+        )
+    else:
+        best_ca_offset, best_ha_offset = 0.0, 0.0
+
+    return {
+        "ha_values": ha_values,
+        "ca_values": ca_values,
+        "count_matrix": count_matrix,
+        "best_ha_offset": best_ha_offset,
+        "best_ca_offset": best_ca_offset,
+        "best_count": best_count if best_count >= 0 else 0,
+    }
+
+
 def run_offset_grid_search_3d(
     points: List[Tuple[float, float, float, float, float, float]],
     *,
@@ -439,7 +518,7 @@ def compute_atom_deltas_with_offset(
     standard outlier-based thresholding on |Δatom|.
     """
     atom_upper = atom.upper()
-    if atom_upper not in ("H", "N", "CA"):
+    if atom_upper not in ("H", "N", "CA", "HA"):
         raise ValueError(f"Unsupported atom type for per-atom analysis: {atom}")
 
     # Collect apo/original holo shift pairs for this atom
@@ -451,9 +530,12 @@ def compute_atom_deltas_with_offset(
         elif atom_upper == "N":
             apo = r.N_apo
             holo_orig = r.N_holo_original
-        else:  # "CA"
+        elif atom_upper == "CA":
             apo = getattr(r, "CA_apo", None)
             holo_orig = getattr(r, "CA_holo_original", None)
+        else:  # "HA"
+            apo = getattr(r, "HA_apo", None)
+            holo_orig = getattr(r, "HA_holo_original", None)
         if apo is not None and holo_orig is not None:
             points.append((float(apo), float(holo_orig)))
 
@@ -476,10 +558,14 @@ def compute_atom_deltas_with_offset(
         min_offset = (grid_params or {}).get("n_min", cfg.grid_n_min)
         max_offset = (grid_params or {}).get("n_max", cfg.grid_n_max)
         step = (grid_params or {}).get("n_step", cfg.grid_n_step)
-    else:  # "CA"
+    elif atom_upper == "CA":
         min_offset = (grid_params or {}).get("ca_min", cfg.grid_ca_min)
         max_offset = (grid_params or {}).get("ca_max", cfg.grid_ca_max)
         step = (grid_params or {}).get("ca_step", cfg.grid_ca_step)
+    else:  # "HA"
+        min_offset = (grid_params or {}).get("ha_min", cfg.grid_ha_min)
+        max_offset = (grid_params or {}).get("ha_max", cfg.grid_ha_max)
+        step = (grid_params or {}).get("ha_step", cfg.grid_ha_step)
 
     gs_cutoff = (grid_params or {}).get("cutoff", cfg.grid_cutoff)
 
@@ -503,9 +589,12 @@ def compute_atom_deltas_with_offset(
         elif atom_upper == "N":
             apo = r.N_apo
             holo_orig = r.N_holo_original
-        else:
+        elif atom_upper == "CA":
             apo = getattr(r, "CA_apo", None)
             holo_orig = getattr(r, "CA_holo_original", None)
+        else:
+            apo = getattr(r, "HA_apo", None)
+            holo_orig = getattr(r, "HA_holo_original", None)
 
         if apo is None or holo_orig is None:
             continue
@@ -582,6 +671,16 @@ def _build_param_slug(*, h_min: float, h_max: float, h_step: float, n_min: float
     )
 
 
+def _build_param_slug_ha_ca(*, ha_min: float, ha_max: float, ha_step: float, ca_min: float, ca_max: float, ca_step: float, cutoff: float) -> str:
+    def fmt(v: float, decimals: int) -> str:
+        return (f"{v:.{decimals}f}").rstrip('0').rstrip('.') if '.' in f"{v:.{decimals}f}" else f"{v:.{decimals}f}"
+    return (
+        f"HA_{fmt(ha_min, 3)}_{fmt(ha_max, 3)}_{fmt(ha_step, 3)}__"
+        f"CA_{fmt(ca_min, 3)}_{fmt(ca_max, 3)}_{fmt(ca_step, 3)}__"
+        f"C_{fmt(cutoff, 3)}"
+    )
+
+
 def _ensure_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
 
@@ -644,6 +743,61 @@ def save_grid_heatmap_png(output_png: str, grid_result: Dict[str, object], title
     plt.close(fig)
 
 
+def save_grid_heatmap_png_ha_ca(output_png: str, grid_result: Dict[str, object], title: str) -> None:
+    try:
+        import matplotlib.pyplot as plt  # type: ignore
+        import numpy as np  # type: ignore
+    except Exception:
+        return
+    ha_values = np.array(grid_result["ha_values"])  # type: ignore
+    ca_values = np.array(grid_result["ca_values"])  # type: ignore
+    matrix = grid_result["count_matrix"]  # type: ignore
+    data = np.array(matrix, dtype=float)
+    best_ha = float(grid_result["best_ha_offset"])  # type: ignore
+    best_ca = float(grid_result["best_ca_offset"])  # type: ignore
+
+    fig, ax = plt.subplots(figsize=(4, 3.5))
+    im = ax.imshow(data, origin='lower', aspect='auto', cmap='viridis')
+    cbar = plt.colorbar(im, ax=ax, orientation='horizontal', pad=0.25, shrink=0.8, aspect=25)
+    cbar.set_label(r'Number of aligned peaks ($\Delta\delta$ < 0.05 ppm)', fontsize=10)
+    cbar.ax.tick_params(labelsize=8)
+    ax.set_xlabel('Cα Offset (ppm)', fontsize=10)
+    ax.set_ylabel('Hα Offset (ppm)', fontsize=10)
+    ax.set_title(title, fontsize=11)
+
+    best_ha_idx = int(np.argmin(np.abs(ha_values - best_ha)))
+    best_ca_idx = int(np.argmin(np.abs(ca_values - best_ca)))
+    ax.scatter(best_ca_idx, best_ha_idx, marker='*', s=150, c='black', zorder=5, edgecolors='white', linewidths=0.5)
+
+    num_ticks = 5
+    ca_idx = np.linspace(0, len(ca_values) - 1, num=num_ticks).astype(int)
+    ha_idx = np.linspace(0, len(ha_values) - 1, num=num_ticks).astype(int)
+    ax.set_xticks(ca_idx)
+    _tick_fs = 6
+    ax.set_xticklabels(
+        [f"{ca_values[i]:.2f}" for i in ca_idx],
+        fontsize=_tick_fs,
+        rotation=45,
+        ha='right',
+    )
+    ax.set_yticks(ha_idx)
+    ax.set_yticklabels([f"{ha_values[i]:.2f}" for i in ha_idx], fontsize=_tick_fs)
+    ax.text(
+        0.02,
+        0.98,
+        f"(Cα offset, Hα offset) = ({best_ca:.2f}, {best_ha:.2f}) ppm",
+        transform=ax.transAxes,
+        fontsize=9,
+        va='top',
+        ha='left',
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8),
+    )
+    plt.tight_layout(pad=1.5)
+    _ensure_dir(os.path.dirname(output_png))
+    fig.savefig(output_png, dpi=200, bbox_inches='tight')
+    plt.close(fig)
+
+
 def save_grid_csv(output_csv: str, grid_result: Dict[str, object], *,
                   h_min: float, h_max: float, h_step: float,
                   n_min: float, n_max: float, n_step: float,
@@ -672,6 +826,36 @@ def save_grid_csv(output_csv: str, grid_result: Dict[str, object], *,
             f.write(str(h) + "," + ",".join(str(c) for c in row) + "\n")
         f.write(f"best_n_offset,{best_n}\n")
         f.write(f"best_h_offset,{best_h}\n")
+        f.write(f"best_count,{best_count}\n")
+
+
+def save_grid_csv_ha_ca(output_csv: str, grid_result: Dict[str, object], *,
+                        ha_min: float, ha_max: float, ha_step: float,
+                        ca_min: float, ca_max: float, ca_step: float,
+                        cutoff: float) -> None:
+    _ensure_dir(os.path.dirname(output_csv))
+    ha_values: List[float] = grid_result["ha_values"]  # type: ignore
+    ca_values: List[float] = grid_result["ca_values"]  # type: ignore
+    matrix: List[List[int]] = grid_result["count_matrix"]  # type: ignore
+    best_ha: float = grid_result["best_ha_offset"]  # type: ignore
+    best_ca: float = grid_result["best_ca_offset"]  # type: ignore
+    best_count: int = grid_result["best_count"]  # type: ignore
+
+    with open(output_csv, 'w') as f:
+        f.write(f"# ha_min,{ha_min}\n")
+        f.write(f"# ha_max,{ha_max}\n")
+        f.write(f"# ha_step,{ha_step}\n")
+        f.write(f"# ca_min,{ca_min}\n")
+        f.write(f"# ca_max,{ca_max}\n")
+        f.write(f"# ca_step,{ca_step}\n")
+        f.write(f"# cutoff,{cutoff}\n")
+        f.write("ha_values," + ",".join(str(v) for v in ha_values) + "\n")
+        f.write("ca_values," + ",".join(str(v) for v in ca_values) + "\n")
+        for i, ha in enumerate(ha_values):
+            row = matrix[i]
+            f.write(str(ha) + "," + ",".join(str(c) for c in row) + "\n")
+        f.write(f"best_ca_offset,{best_ca}\n")
+        f.write(f"best_ha_offset,{best_ha}\n")
         f.write(f"best_count,{best_count}\n")
 
 
@@ -724,6 +908,58 @@ def load_grid_csv(input_csv: str) -> Optional[Dict[str, object]]:
             "count_matrix": matrix,
             "best_h_offset": best_h,
             "best_n_offset": best_n,
+            "best_count": best_count,
+        }
+    except Exception:
+        return None
+
+
+def load_grid_csv_ha_ca(input_csv: str) -> Optional[Dict[str, object]]:
+    if not os.path.exists(input_csv):
+        return None
+    try:
+        ha_values: List[float] = []
+        ca_values: List[float] = []
+        matrix: List[List[int]] = []
+        best_ha = 0.0
+        best_ca = 0.0
+        best_count = 0
+        stage = 'meta'
+        with open(input_csv, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith('#'):
+                    continue
+                parts = line.split(',')
+                if parts[0] == 'ha_values':
+                    ha_values = [float(x) for x in parts[1:] if x]
+                    continue
+                if parts[0] == 'ca_values':
+                    ca_values = [float(x) for x in parts[1:] if x]
+                    stage = 'matrix'
+                    continue
+                if parts[0] == 'best_ca_offset':
+                    best_ca = float(parts[1])
+                    continue
+                if parts[0] == 'best_ha_offset':
+                    best_ha = float(parts[1])
+                    continue
+                if parts[0] == 'best_count':
+                    best_count = int(float(parts[1]))
+                    continue
+                if stage == 'matrix':
+                    row_counts = [int(float(x)) for x in parts[1:] if x]
+                    matrix.append(row_counts)
+        if not ha_values or not ca_values or not matrix:
+            return None
+        return {
+            "ha_values": ha_values,
+            "ca_values": ca_values,
+            "count_matrix": matrix,
+            "best_ha_offset": best_ha,
+            "best_ca_offset": best_ca,
             "best_count": best_count,
         }
     except Exception:
@@ -1849,3 +2085,447 @@ def compute_csp_multiple_saveframes_ca(
     return results
 
 
+def compute_csp_from_aligned_sequences_ha_ca(
+    aligned_apo: str,
+    aligned_holo: str,
+    HA_apo: Dict[int, float],
+    CA_apo: Dict[int, float],
+    HA_holo: Dict[int, float],
+    CA_holo: Dict[int, float],
+    threshold_config: Optional[Dict] = None,
+    enable_referencing: bool = True,
+    referencing_method: Optional[str] = None,
+    grid_params: Optional[Dict] = None,
+    target_id: Optional[str] = None,
+    output_root: Optional[str] = None,
+) -> List[CSPResult]:
+    """Compute HA/CA CSPs from aligned sequences, handling gaps."""
+    results: List[CSPResult] = []
+    values: List[float] = []
+
+    import os as _os
+    _verbose = (_os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes"))
+
+    HA_holo_original = HA_holo.copy()
+    CA_holo_original = CA_holo.copy()
+
+    apo_pos = 0
+    holo_pos = 0
+    grid_points: List[Tuple[float, float, float, float]] = []
+
+    for aa_apo, aa_holo in zip(aligned_apo, aligned_holo):
+        if aa_apo != "-":
+            apo_pos += 1
+        if aa_holo != "-":
+            holo_pos += 1
+
+        if aa_apo != "-" and aa_holo != "-":
+            ha_a = HA_apo.get(apo_pos)
+            ca_a = CA_apo.get(apo_pos)
+            ha_h = HA_holo.get(holo_pos)
+            ca_h = CA_holo.get(holo_pos)
+
+            dHA = (ha_h - ha_a) if (ha_h is not None and ha_a is not None) else None
+            dCA = (ca_h - ca_a) if (ca_h is not None and ca_a is not None) else None
+
+            csp_val: Optional[float] = None
+            if dHA is not None and dCA is not None:
+                csp_val = math.sqrt(0.5 * (_csp_ha_term(dHA) + _csp_ca_term(dCA)))
+                values.append(csp_val)
+                grid_points.append(
+                    (
+                        float(ha_a),
+                        float(ca_a),
+                        float(HA_holo_original.get(holo_pos, ha_h)),
+                        float(CA_holo_original.get(holo_pos, ca_h)),
+                    )
+                )
+
+            if _verbose and (dHA is not None or dCA is not None):
+                _dHA = f"{dHA:.3f}" if dHA is not None else "NA"
+                _dCA = f"{dCA:.3f}" if dCA is not None else "NA"
+                _C = f"{csp_val:.3f}" if csp_val is not None else "NA"
+                print(f"[CSP-HA-CA] apo {apo_pos}{aa_apo} ↔ holo {holo_pos}{aa_holo} : dHA={_dHA} dCA={_dCA} C={_C}")
+
+            results.append(
+                CSPResult(
+                    apo_index=apo_pos,
+                    holo_index=holo_pos,
+                    apo_aa=aa_apo,
+                    holo_aa=aa_holo,
+                    H_apo=None,
+                    N_apo=None,
+                    H_holo=None,
+                    N_holo=None,
+                    dH=None,
+                    dN=None,
+                    csp_A=csp_val,
+                    significant=None,
+                    significant_1sd=None,
+                    significant_2sd=None,
+                    HA_apo=ha_a,
+                    HA_holo=ha_h,
+                    HA_holo_original=HA_holo_original.get(holo_pos),
+                    HA_offset=None,
+                    dHA=dHA,
+                    CA_apo=ca_a,
+                    CA_holo=ca_h,
+                    CA_holo_original=CA_holo_original.get(holo_pos),
+                    CA_offset=None,
+                    dCA=dCA,
+                )
+            )
+
+    threshold_info: Optional[ThresholdComputation] = None
+    threshold_info_ref: Optional[ThresholdComputation] = None
+    final_stats: Optional[ThresholdComputation] = None
+    values_referenced: List[float] = []
+
+    if values:
+        if threshold_config:
+            outlier_z = threshold_config.get('outlier_z_score', thresholds.outlier_z_score)
+            significance_z = threshold_config.get('significance_z_score', thresholds.significance_z_score)
+            max_iterations = threshold_config.get('max_outlier_iterations', thresholds.max_outlier_iterations)
+            max_fraction = threshold_config.get('max_outlier_fraction', thresholds.max_outlier_fraction)
+            absolute_cutoff = threshold_config.get('absolute_cutoff', thresholds.absolute_cutoff)
+        else:
+            outlier_z = thresholds.outlier_z_score
+            significance_z = thresholds.significance_z_score
+            max_iterations = thresholds.max_outlier_iterations
+            max_fraction = thresholds.max_outlier_fraction
+            absolute_cutoff = thresholds.absolute_cutoff
+
+        if absolute_cutoff is not None:
+            threshold_info = _make_absolute_threshold(values, float(absolute_cutoff))
+            cutoff = threshold_info.threshold
+            if _verbose:
+                print(f"[CSP-HA-CA] Using absolute cutoff: {cutoff:.3f}")
+        else:
+            threshold_info = compute_threshold_with_outlier_removal(
+                values,
+                outlier_z,
+                significance_z,
+                max_iterations,
+                max_fraction,
+            )
+            cutoff = threshold_info.threshold
+            if _verbose:
+                print(f"[CSP-HA-CA] values={len(values)} mean={threshold_info.mean:.3f} sd={threshold_info.sd:.3f}")
+                print(f"[CSP-HA-CA] outlier removal: {threshold_info.iterations} iterations, {threshold_info.outliers_removed} outliers removed")
+                print(f"[CSP-HA-CA] final threshold: {cutoff:.3f}")
+
+        final_stats = threshold_info
+
+        if enable_referencing and grid_points:
+            if _verbose:
+                print("[CSP-HA-CA] Computing referencing offsets (2D grid)")
+
+            method = (referencing_method or getattr(_Referencing, 'method', 'grid'))
+            ha_offset = 0.0
+            ca_offset = 0.0
+
+            if method == 'grid':
+                cfg = _Referencing()
+                ha_min = (grid_params or {}).get('ha_min', cfg.grid_ha_min)
+                ha_max = (grid_params or {}).get('ha_max', cfg.grid_ha_max)
+                ha_step = (grid_params or {}).get('ha_step', cfg.grid_ha_step)
+                ca_min = (grid_params or {}).get('ca_min', cfg.grid_ca_min)
+                ca_max = (grid_params or {}).get('ca_max', cfg.grid_ca_max)
+                ca_step = (grid_params or {}).get('ca_step', cfg.grid_ca_step)
+                gs_cutoff = (grid_params or {}).get('cutoff', cfg.grid_cutoff)
+
+                if _verbose:
+                    print(
+                        f"[CSP-HA-CA] Grid search over HA[{ha_min},{ha_max},{ha_step}] "
+                        f"and CA[{ca_min},{ca_max},{ca_step}] with cutoff={gs_cutoff}"
+                    )
+
+                slug = _build_param_slug_ha_ca(
+                    ha_min=ha_min,
+                    ha_max=ha_max,
+                    ha_step=ha_step,
+                    ca_min=ca_min,
+                    ca_max=ca_max,
+                    ca_step=ca_step,
+                    cutoff=float(gs_cutoff),
+                )
+                output_base_dir = output_root or paths.outputs_dir
+                out_dir = os.path.join(output_base_dir, target_id) if target_id else None
+                csv_path = os.path.join(out_dir, f"offset_grid_{slug}.csv") if out_dir else None
+                png_path = os.path.join(out_dir, f"offset_grid_{slug}.png") if out_dir else None
+                use_cache = bool(getattr(cfg, 'cache_results', True) and target_id and out_dir)
+
+                loaded = False
+                if use_cache and csv_path and os.path.exists(csv_path):
+                    loaded_result = load_grid_csv_ha_ca(csv_path)
+                    if loaded_result is not None:
+                        grid_result = loaded_result
+                        loaded = True
+                        if _verbose:
+                            print(f"[CSP-HA-CA] Loaded grid result from cache: {csv_path}")
+                if not loaded:
+                    grid_result = run_offset_grid_search_ha_ca(
+                        grid_points,
+                        ha_min=ha_min,
+                        ha_max=ha_max,
+                        ha_step=ha_step,
+                        ca_min=ca_min,
+                        ca_max=ca_max,
+                        ca_step=ca_step,
+                        cutoff=float(gs_cutoff),
+                    )
+                    if use_cache and csv_path:
+                        save_grid_csv_ha_ca(
+                            csv_path,
+                            grid_result,
+                            ha_min=ha_min, ha_max=ha_max, ha_step=ha_step,
+                            ca_min=ca_min, ca_max=ca_max, ca_step=ca_step,
+                            cutoff=float(gs_cutoff),
+                        )
+                        if _verbose:
+                            print(f"[CSP-HA-CA] Saved grid result to: {csv_path}")
+
+                if bool(getattr(cfg, 'save_heatmap', True)) and png_path:
+                    title = f"Grid Search for Optimal Hα/Cα Offsets\n(PDB {target_id.upper()})" if target_id else "Grid Search for Optimal Hα/Cα Offsets"
+                    save_grid_heatmap_png_ha_ca(png_path, grid_result, title)
+
+                ha_offset = float(grid_result["best_ha_offset"])  # type: ignore
+                ca_offset = float(grid_result["best_ca_offset"])  # type: ignore
+                if _verbose:
+                    print(
+                        f"[CSP-HA-CA] Grid best offsets: "
+                        f"CA_offset={ca_offset:.3f}, HA_offset={ha_offset:.3f} "
+                        f"(count={grid_result['best_count']})"
+                    )
+            else:
+                if _verbose:
+                    print("[CSP-HA-CA] Mean-based referencing not implemented for HA/CA; skipping referencing")
+
+            if ha_offset != 0.0 or ca_offset != 0.0:
+                if _verbose:
+                    print(
+                        f"[CSP-HA-CA] Applying offsets: "
+                        f"CA_offset={ca_offset:.3f}, HA_offset={ha_offset:.3f}"
+                    )
+
+                HA_holo_referenced = {pos: shift + ha_offset for pos, shift in HA_holo_original.items()}
+                CA_holo_referenced = {pos: shift + ca_offset for pos, shift in CA_holo_original.items()}
+
+                values_referenced = []
+                for r in results:
+                    if r.HA_holo_original is None or r.CA_holo_original is None:
+                        continue
+
+                    ha_h_ref = HA_holo_referenced.get(r.holo_index)
+                    ca_h_ref = CA_holo_referenced.get(r.holo_index)
+                    if ha_h_ref is None or ca_h_ref is None or r.HA_apo is None or r.CA_apo is None:
+                        continue
+
+                    dHA_ref = ha_h_ref - r.HA_apo
+                    dCA_ref = ca_h_ref - r.CA_apo
+                    csp_val_ref = math.sqrt(0.5 * (_csp_ha_term(dHA_ref) + _csp_ca_term(dCA_ref)))
+                    values_referenced.append(csp_val_ref)
+
+                    r.HA_holo = ha_h_ref
+                    r.CA_holo = ca_h_ref
+                    r.dHA = dHA_ref
+                    r.dCA = dCA_ref
+                    r.csp_A = csp_val_ref
+                    r.HA_offset = ha_offset
+                    r.CA_offset = ca_offset
+
+                if values_referenced:
+                    if absolute_cutoff is not None:
+                        threshold_info_ref = _make_absolute_threshold(values_referenced, float(absolute_cutoff))
+                    else:
+                        threshold_info_ref = compute_threshold_with_outlier_removal(
+                            values_referenced,
+                            outlier_z,
+                            significance_z,
+                            max_iterations,
+                            max_fraction,
+                        )
+                    if threshold_info_ref:
+                        cutoff = threshold_info_ref.threshold
+                        final_stats = threshold_info_ref
+                        if _verbose:
+                            print(
+                                f"[CSP-HA-CA] Referenced CSPs: {len(values_referenced)} "
+                                f"mean={threshold_info_ref.mean:.3f} sd={threshold_info_ref.sd:.3f}"
+                            )
+                            print(f"[CSP-HA-CA] Referenced threshold: {cutoff:.3f}")
+
+    threshold_1sd: Optional[float] = None
+    threshold_2sd: Optional[float] = None
+
+    if final_stats and final_stats.cleaned_values:
+        threshold_1sd = final_stats.mean + 1.0 * final_stats.sd
+        threshold_2sd = final_stats.mean + 2.0 * final_stats.sd
+        if _verbose:
+            print(f"[CSP-HA-CA] Additional thresholds: 1SD={threshold_1sd:.3f}, 2SD={threshold_2sd:.3f}")
+
+    for r in results:
+        r.significant = (r.csp_A is not None and final_stats is not None and r.csp_A >= cutoff) if values else None
+        if final_stats and r.csp_A is not None:
+            r.z_score = (r.csp_A - final_stats.mean) / final_stats.sd if final_stats.sd > 0.0 else 0.0
+        else:
+            r.z_score = None
+
+        r.significant_1sd = (r.csp_A >= threshold_1sd) if (threshold_1sd is not None and r.csp_A is not None) else None
+        r.significant_2sd = (r.csp_A >= threshold_2sd) if (threshold_2sd is not None and r.csp_A is not None) else None
+
+    return results
+
+
+def _ha_ca_shift_pair_coverage_for_alignment(
+    aligned_apo: str,
+    aligned_holo: str,
+    HA_apo: Dict[int, float],
+    CA_apo: Dict[int, float],
+    HA_holo: Dict[int, float],
+    CA_holo: Dict[int, float],
+) -> Tuple[float, int, int]:
+    """
+    Fraction of matched (non-gap) alignment columns where apo and holo each have
+    both HA and CA chemical shifts — the positions that can produce a full HA-CA CSP.
+
+    Returns (coverage, n_columns_with_full_ha_ca, n_matched_alignment_columns).
+    Mirrors the position walk in ``compute_csp_from_aligned_sequences_ha_ca``.
+    """
+    apo_pos = 0
+    holo_pos = 0
+    n_matched = 0
+    n_full_pair = 0
+    for aa_apo, aa_holo in zip(aligned_apo, aligned_holo):
+        if aa_apo != "-":
+            apo_pos += 1
+        if aa_holo != "-":
+            holo_pos += 1
+        if aa_apo != "-" and aa_holo != "-":
+            n_matched += 1
+            ha_a = HA_apo.get(apo_pos)
+            ca_a = CA_apo.get(apo_pos)
+            ha_h = HA_holo.get(holo_pos)
+            ca_h = CA_holo.get(holo_pos)
+            if (
+                ha_a is not None
+                and ca_a is not None
+                and ha_h is not None
+                and ca_h is not None
+            ):
+                n_full_pair += 1
+    cov = (n_full_pair / n_matched) if n_matched else 0.0
+    return cov, n_full_pair, n_matched
+
+
+def compute_csp_multiple_saveframes_ha_ca(
+    apo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], str]],
+    holo_sequences: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], str]],
+    apo_bmrb: str,
+    holo_bmrb: str,
+    holo_pdb: str,
+    threshold_config: Optional[Dict] = None,
+    *,
+    referencing_method: Optional[str] = None,
+    grid_params: Optional[Dict] = None,
+    target_id: Optional[str] = None,
+    output_root: Optional[str] = None,
+) -> List[CSPResult]:
+    """Compute HA/CA CSPs for all possible apo-holo sequence pairs from multiple saveframes."""
+    from .align import align_global
+
+    import os as _os
+    _verbose = (_os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes"))
+
+    if _verbose:
+        print(f"[CSP-HA-CA] Found {len(apo_sequences)} apo sequences, {len(holo_sequences)} holo sequences")
+
+    best_alignment_score = float('-inf')
+    best_alignment_info = None
+
+    for apo_seq, _H_apo, _N_apo, CA_apo, HA_apo, apo_saveframe in apo_sequences:
+        for holo_seq, _H_holo, _N_holo, CA_holo, HA_holo, holo_saveframe in holo_sequences:
+            if _verbose:
+                print(f"[CSP-HA-CA] Aligning apo({apo_saveframe}) vs holo({holo_saveframe})")
+
+            aligned_apo, aligned_holo, mapping, alignment_score = align_global(apo_seq, holo_seq)
+
+            if _verbose:
+                print(f"[CSP-HA-CA] Alignment score: {alignment_score}, mapped pairs: {len(mapping)}")
+
+            if alignment_score > best_alignment_score:
+                best_alignment_score = alignment_score
+                best_alignment_info = (
+                    aligned_apo,
+                    aligned_holo,
+                    HA_apo,
+                    CA_apo,
+                    HA_holo,
+                    CA_holo,
+                    apo_saveframe,
+                    holo_saveframe,
+                )
+
+    if best_alignment_info is None:
+        if _verbose:
+            print("[CSP-HA-CA] No valid alignment found for HA/CA CSPs")
+        return []
+
+    aligned_apo, aligned_holo, HA_apo, CA_apo, HA_holo, CA_holo, apo_saveframe, holo_saveframe = best_alignment_info
+
+    min_cov = float(compute.ha_ca_min_shift_coverage)
+    env_mc = os.environ.get("CSP_HA_CA_MIN_COVERAGE")
+    if env_mc is not None:
+        try:
+            min_cov = float(env_mc)
+        except ValueError:
+            pass
+
+    cov, n_pair, n_match = _ha_ca_shift_pair_coverage_for_alignment(
+        aligned_apo,
+        aligned_holo,
+        HA_apo,
+        CA_apo,
+        HA_holo,
+        CA_holo,
+    )
+    if n_match > 0 and cov < min_cov:
+        tid = target_id or holo_pdb
+        print(
+            f"[CSP-HA-CA] Skipping HA/CA CSP for {tid}: HA+CA shift coverage on aligned "
+            f"sequence is {cov:.1%} ({n_pair}/{n_match} columns), minimum {min_cov:.1%}",
+            file=sys.stderr,
+        )
+        return []
+    if _verbose and n_match > 0:
+        print(
+            f"[CSP-HA-CA] HA+CA shift coverage {cov:.1%} ({n_pair}/{n_match} columns), "
+            f"minimum {min_cov:.1%}"
+        )
+
+    if _verbose:
+        print(
+            f"[CSP-HA-CA] Computing HA/CA CSPs for best alignment: "
+            f"apo({apo_saveframe}) vs holo({holo_saveframe}) with score {best_alignment_score}"
+        )
+
+    results = compute_csp_from_aligned_sequences_ha_ca(
+        aligned_apo,
+        aligned_holo,
+        HA_apo,
+        CA_apo,
+        HA_holo,
+        CA_holo,
+        threshold_config,
+        enable_referencing=True,
+        referencing_method=referencing_method,
+        grid_params=grid_params,
+        target_id=(target_id or holo_pdb),
+        output_root=output_root,
+    )
+
+    if _verbose:
+        valid_csps = sum(1 for r in results if r.csp_A is not None)
+        print(f"[CSP-HA-CA] Valid HA/CA CSPs: {valid_csps}")
+
+    return results

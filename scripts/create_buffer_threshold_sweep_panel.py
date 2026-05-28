@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Arrange the four buffer-threshold sweep heatmaps into one 2×2 figure.
+Arrange the buffer-threshold sweep heatmaps into one composite figure.
 
 Expects PNGs written by ``scripts/sweep_buffer_thresholds.py``:
 
-  heatmap_n.png, heatmap_mean_f1.png, heatmap_pct_allosteric.png, heatmap_fp_pct.png
+  heatmap_n.png, heatmap_mean_f1.png, heatmap_pct_allosteric.png,
+  heatmap_fp_pct.png, and optionally heatmap_tp_rate.png
 
 Uses Pillow only (no NumPy/Matplotlib) so compositing works in minimal environments.
 """
@@ -32,6 +33,7 @@ PANEL_FILENAMES = (
     "heatmap_mean_f1.png",
     "heatmap_pct_allosteric.png",
     "heatmap_fp_pct.png",
+    "heatmap_tp_rate.png",
 )
 
 
@@ -51,7 +53,7 @@ def main() -> int:
         "--input-dir",
         type=Path,
         default=Path("outputs/buffer_threshold_sweep"),
-        help="Directory containing the four heatmap PNGs.",
+        help="Directory containing the sweep heatmap PNGs.",
     )
     parser.add_argument(
         "--output",
@@ -78,15 +80,17 @@ def main() -> int:
         print(f"Error: --input-dir not found: {in_dir}", file=sys.stderr)
         return 1
 
-    paths = [in_dir / name for name in PANEL_FILENAMES]
-    for p in paths:
-        if not p.is_file():
+    paths = [in_dir / name for name in PANEL_FILENAMES if (in_dir / name).is_file()]
+    if len(paths) < 4:
+        missing = [str(in_dir / name) for name in PANEL_FILENAMES[:4] if not (in_dir / name).is_file()]
+        for p in missing:
             print(f"Error: missing expected file: {p}", file=sys.stderr)
-            return 1
+        return 1
 
     out_path = args.output
     if out_path is None:
-        out_path = in_dir / "buffer_threshold_sweep_4panel.png"
+        suffix = "5panel" if len(paths) == 5 else "4panel"
+        out_path = in_dir / f"buffer_threshold_sweep_{suffix}.png"
     elif not out_path.is_absolute():
         out_path = repo_root / out_path
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -107,17 +111,23 @@ def main() -> int:
         return out
 
     fitted_imgs = [fitted(im) for im in images]
-    composite = Image.new("RGB", (cell_w * 2, cell_h * 2), color="white")
-    composite.paste(fitted_imgs[0], (0, 0))
-    composite.paste(fitted_imgs[1], (cell_w, 0))
-    composite.paste(fitted_imgs[2], (0, cell_h))
-    composite.paste(fitted_imgs[3], (cell_w, cell_h))
+    n_cols = 2
+    n_rows = (len(fitted_imgs) + n_cols - 1) // n_cols
+    composite = Image.new("RGB", (cell_w * n_cols, cell_h * n_rows), color="white")
+    for idx, image in enumerate(fitted_imgs):
+        row = idx // n_cols
+        col = idx % n_cols
+        composite.paste(image, (col * cell_w, row * cell_h))
 
     if not args.no_panel_labels:
         draw = ImageDraw.Draw(composite)
         font = _load_font(max(14, cell_w // 55))
-        labels = ("(a)", "(b)", "(c)", "(d)")
-        offsets = ((8, 8), (cell_w + 8, 8), (8, cell_h + 8), (cell_w + 8, cell_h + 8))
+        labels = ("(a)", "(b)", "(c)", "(d)", "(e)")
+        offsets = []
+        for idx in range(len(fitted_imgs)):
+            row = idx // n_cols
+            col = idx % n_cols
+            offsets.append((col * cell_w + 8, row * cell_h + 8))
         for label, (ox, oy) in zip(labels, offsets):
             draw.text((ox, oy), label, fill=(0, 0, 0), font=font)
 

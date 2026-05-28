@@ -68,8 +68,14 @@ class Compute:
     # Combined CSP uses multipliers on Δδ (ppm) before squaring, same form as legacy (1/7, 1/4):
     # N/H: sqrt(1/2 * (Δδ_H^2 + (wN*Δδ_N)^2))
     # N/H/CA: sqrt(1/3 * (Δδ_H^2 + (wN*Δδ_N)^2 + (wCA*Δδ_Cα)^2))
+    # HA/CA: sqrt(1/2 * ((wHA*Δδ_HA)^2 + (wCA*Δδ_Cα)^2))
     csp_delta_n_scale: float = 0.14
+    csp_delta_ha_scale: float = 1.0
     csp_delta_ca_scale: float = 0.3
+    # Skip HA/CA CSP unless at least this fraction of aligned (non-gap) columns have
+    # both CA and HA shifts on apo and holo (union of “coverage” for the pair CSP).
+    # Optional override: environment variable CSP_HA_CA_MIN_COVERAGE (0–1).
+    ha_ca_min_shift_coverage: float = 0.5
 
 
 @dataclass(frozen=True)
@@ -81,6 +87,10 @@ class Referencing:
     grid_h_min: float = -0.12
     grid_h_max: float = 0.12
     grid_h_step: float = 0.01
+
+    grid_ha_min: float = -0.12
+    grid_ha_max: float = 0.12
+    grid_ha_step: float = 0.01
 
     grid_n_min: float = -1.2
     grid_n_max: float = 1.2
@@ -163,5 +173,4 @@ def ensure_directories(base_output: Optional[str] = None) -> None:
     os.makedirs(paths.pdb_cache_dir, exist_ok=True)
     os.makedirs(paths.pymol_views_dir, exist_ok=True)
     os.makedirs(base_output or paths.outputs_dir, exist_ok=True)
-
 

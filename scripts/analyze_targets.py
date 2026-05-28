@@ -4,9 +4,10 @@ Analyze master alignment outputs and visualize per-target F1 scores.
 
 When invoked, this script now also orchestrates additional analyses:
 - N/H CSP F1 summary from `master_alignment.csv` (this module).
-- CA-inclusive CSP F1 summary from `csp_table_CA.csv` (via analyze_targets_ca).
-- CA-inclusive CSP F1 summary restricted to same-author pairs (via analyze_targets_same_author).
-- Optional single-atom (H, N, CA) 1D shift analysis helper (via analyze_targets_single_atom_shifts).
+- N-H-CA CSP F1 summary from `csp_table_CA.csv` (via analyze_targets_ca).
+- HA-CA CSP F1 summary from `csp_table_HA_CA.csv` (via analyze_targets_ca).
+- Same-author subsets for both N-H-CA and HA-CA (via analyze_targets_same_author).
+- Optional single-atom (H, N, CA, HA) 1D shift analysis helper (via analyze_targets_single_atom_shifts).
 
 All top-level summary artifacts are written into `outputs/summary_statistics`
 by default (configurable via --summary-dir).
@@ -35,6 +36,8 @@ except Exception:
 
 
 SIGNIFICANT_COLUMN = "significant"
+CLASSIFICATION_COLUMN = "classification"
+VALID_CLASSIFICATIONS: frozenset[str] = frozenset({"TP", "FP", "TN", "FN"})
 CA_DISTANCE_COLUMN = "min_ca_distance_distance"
 PREDICTOR_COLUMNS: Sequence[str] = (
     "passes_filter_distance",
@@ -197,62 +200,108 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
 
 
 def _run_ca_analysis(summary_root: Path, outputs_dir: Path, targets_csv: Optional[Path]) -> None:
-    """Invoke analyze_targets_ca.main with outputs routed into summary_root."""
+    """Invoke analyze_targets_ca.main for both N-H-CA and HA-CA outputs."""
     if targets_csv is None:
-        print("[ORCH] Skipping CA-inclusive F1 analysis (analyze_targets_ca): --targets-csv not provided")
+        print("[ORCH] Skipping N-H-CA / HA-CA F1 analyses (analyze_targets_ca): --targets-csv not provided")
         return
     try:
         try:
             from . import analyze_targets_ca as at_ca  # type: ignore
         except Exception:
             import analyze_targets_ca as at_ca  # type: ignore
-        ca_args = [
-            "--outputs-dir",
-            str(outputs_dir),
-            "--targets-csv",
-            str(targets_csv),
-            "--output-image",
-            str(summary_root / "f1_heatmap_ca.png"),
-            "--histogram-image",
-            str(summary_root / "significant_ca_distance_hist_ca.png"),
-            "--stacked-histogram-image",
-            str(summary_root / "significant_ca_distance_stacked_hist_ca.png"),
-            "--scatterplot-image",
-            str(summary_root / "f1_comparison_scatterplot_ca_vs_nh.png"),
-            "--summary-csv",
-            str(summary_root / "f1_summary_ca.csv"),
+        analyses = [
+            (
+                "nh_ca",
+                "N-H-CA",
+                summary_root / "f1_heatmap_ca.png",
+                summary_root / "significant_ca_distance_hist_ca.png",
+                summary_root / "significant_ca_distance_stacked_hist_ca.png",
+                summary_root / "f1_comparison_scatterplot_ca_vs_nh.png",
+                summary_root / "f1_summary_ca.csv",
+            ),
+            (
+                "ha_ca",
+                "HA-CA",
+                summary_root / "f1_heatmap_ha_ca.png",
+                summary_root / "significant_ca_distance_hist_ha_ca.png",
+                summary_root / "significant_ca_distance_stacked_hist_ha_ca.png",
+                summary_root / "f1_comparison_scatterplot_ha_ca_vs_nh.png",
+                summary_root / "f1_summary_ha_ca.csv",
+            ),
         ]
-        print("[ORCH] Running CA-inclusive F1 analysis (analyze_targets_ca)")
-        at_ca.main(ca_args)
+        for mode_key, label, heatmap, hist, stacked, scatter, summary in analyses:
+            ca_args = [
+                "--outputs-dir",
+                str(outputs_dir),
+                "--targets-csv",
+                str(targets_csv),
+                "--csp-mode",
+                mode_key,
+                "--output-image",
+                str(heatmap),
+                "--histogram-image",
+                str(hist),
+                "--stacked-histogram-image",
+                str(stacked),
+                "--scatterplot-image",
+                str(scatter),
+                "--summary-csv",
+                str(summary),
+            ]
+            print(f"[ORCH] Running {label} F1 analysis (analyze_targets_ca)")
+            at_ca.main(ca_args)
     except Exception as exc:  # pragma: no cover - orchestration best-effort
         print(f"[ORCH] WARNING: analyze_targets_ca failed: {exc}", file=sys.stderr)
 
 
 def _run_same_author_analysis(summary_root: Path, outputs_dir: Path) -> None:
-    """Invoke analyze_targets_same_author.main with outputs routed into summary_root."""
+    """Invoke analyze_targets_same_author.main for both N-H-CA and HA-CA outputs."""
     try:
         try:
             from . import analyze_targets_same_author as at_same  # type: ignore
         except Exception:
             import analyze_targets_same_author as at_same  # type: ignore
-        same_args = [
-            "--outputs-dir",
-            str(outputs_dir),
-            "--csprank-csv",
-            "data/CSP_UBQ.csv",
-            "--output-image",
-            str(summary_root / "f1_heatmap_same_author.png"),
-            "--histogram-image",
-            str(summary_root / "significant_ca_distance_hist_same_author.png"),
-            "--stacked-histogram-image",
-            str(summary_root / "significant_ca_distance_stacked_hist_same_author.png"),
-            "--scatterplot-image",
-            str(summary_root / "f1_comparison_scatterplot_same_author_ca_vs_nh.png"),
-            "--summary-csv",
-            str(summary_root / "f1_summary_same_author.csv"),
+        analyses = [
+            (
+                "nh_ca",
+                "same-author N-H-CA",
+                summary_root / "f1_heatmap_same_author.png",
+                summary_root / "significant_ca_distance_hist_same_author.png",
+                summary_root / "significant_ca_distance_stacked_hist_same_author.png",
+                summary_root / "f1_comparison_scatterplot_same_author_ca_vs_nh.png",
+                summary_root / "f1_summary_same_author.csv",
+            ),
+            (
+                "ha_ca",
+                "same-author HA-CA",
+                summary_root / "f1_heatmap_same_author_ha_ca.png",
+                summary_root / "significant_ca_distance_hist_same_author_ha_ca.png",
+                summary_root / "significant_ca_distance_stacked_hist_same_author_ha_ca.png",
+                summary_root / "f1_comparison_scatterplot_same_author_ha_ca_vs_nh.png",
+                summary_root / "f1_summary_same_author_ha_ca.csv",
+            ),
         ]
-        print("[ORCH] Running same-author CA-inclusive F1 analysis (analyze_targets_same_author)")
-        at_same.main(same_args)
+        for mode_key, label, heatmap, hist, stacked, scatter, summary in analyses:
+            same_args = [
+                "--outputs-dir",
+                str(outputs_dir),
+                "--csprank-csv",
+                "data/CSP_UBQ.csv",
+                "--csp-mode",
+                mode_key,
+                "--output-image",
+                str(heatmap),
+                "--histogram-image",
+                str(hist),
+                "--stacked-histogram-image",
+                str(stacked),
+                "--scatterplot-image",
+                str(scatter),
+                "--summary-csv",
+                str(summary),
+            ]
+            print(f"[ORCH] Running {label} F1 analysis (analyze_targets_same_author)")
+            at_same.main(same_args)
     except Exception as exc:  # pragma: no cover
         print(f"[ORCH] WARNING: analyze_targets_same_author failed: {exc}", file=sys.stderr)
 
@@ -930,4 +979,3 @@ def main(argv: Iterable[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
-

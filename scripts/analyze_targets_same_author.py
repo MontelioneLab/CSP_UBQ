@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """
-Analyze CA-inclusive CSP outputs for targets with matching last authors.
+Analyze non-N/H CSP outputs for targets with matching last authors.
 
-This script is similar to analyze_targets_ca.py but:
-1. Identifies targets from CSP_UBQ.csv where apo and holo citation info have the same last author
-2. Uses csp_table_CA.csv as the base (instead of master_alignment.csv)
-3. Uses csp_CA_significant instead of significant
-4. Merges CA CSP data with other analysis files (occlusion, interaction, distance)
+Supported CSP families:
+1. N-H-CA via ``csp_table_CA.csv`` / ``csp_CA_significant``
+2. HA-CA via ``csp_table_HA_CA.csv`` / ``csp_HA_CA_significant``
 """
 
 from __future__ import annotations
@@ -34,7 +32,6 @@ except Exception:
     from scripts.align import align_global
 
 
-SIGNIFICANT_COLUMN = "csp_CA_significant"
 CA_DISTANCE_COLUMN = "min_ca_distance_distance"
 PREDICTOR_COLUMNS: Sequence[str] = (
     "passes_filter_distance",
@@ -84,6 +81,12 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
         type=Path,
         default=Path("data/CSP_UBQ.csv"),
         help="Path to CSP_UBQ.csv file (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--csp-mode",
+        choices=sorted(MODE_CONFIGS),
+        default="nh_ca",
+        help="Which non-N/H CSP family to analyze (default: %(default)s).",
     )
     parser.add_argument(
         "--output-image",
@@ -328,7 +331,7 @@ def to_bool(value) -> bool:
     raise AlignmentParsingError(f"Unable to interpret value {value!r} as boolean.")
 
 
-def load_ca_alignment(target_dir: Path) -> pd.DataFrame:
+def load_ca_alignment(target_dir: Path, mode_key: str) -> pd.DataFrame:
     """
     Load and merge CA CSP data with other analysis files.
     
@@ -339,14 +342,15 @@ def load_ca_alignment(target_dir: Path) -> pd.DataFrame:
         DataFrame with merged CA CSP and analysis data
     """
     # Load CA CSP table as reference
-    csp_table_path = target_dir / "csp_table_CA.csv"
+    cfg = MODE_CONFIGS[mode_key]
+    csp_table_path = target_dir / cfg["table"]
     if not csp_table_path.exists():
-        raise AlignmentParsingError(f"CA CSP table not found: {csp_table_path}")
+        raise AlignmentParsingError(f"{cfg['label']} CSP table not found: {csp_table_path}")
     
     ref_sequence, ref_positions, csp_data = load_ca_csp_reference(csp_table_path)
     
     if not ref_sequence:
-        raise AlignmentParsingError("No valid CA CSP reference sequence found")
+        raise AlignmentParsingError(f"No valid {cfg['label']} CSP reference sequence found")
     
     # Load and align other CSV files
     csv_types = {
@@ -385,8 +389,9 @@ def load_ca_alignment(target_dir: Path) -> pd.DataFrame:
     df = pd.DataFrame(rows)
     
     # Convert boolean columns
-    if SIGNIFICANT_COLUMN in df.columns:
-        df[SIGNIFICANT_COLUMN] = df[SIGNIFICANT_COLUMN].apply(to_bool)
+    significant_column = cfg["significant"]
+    if significant_column in df.columns:
+        df[significant_column] = df[significant_column].apply(to_bool)
     
     for col in PREDICTOR_COLUMNS:
         if col in df.columns:
@@ -399,8 +404,8 @@ def load_ca_alignment(target_dir: Path) -> pd.DataFrame:
     return df
 
 
-def compute_f1_score(df: pd.DataFrame, predicted: pd.Series | None = None) -> TargetResult:
-    actual = df[SIGNIFICANT_COLUMN]
+def compute_f1_score(df: pd.DataFrame, mode_key: str, predicted: pd.Series | None = None) -> TargetResult:
+    actual = df[MODE_CONFIGS[mode_key]["significant"]]
     if predicted is None:
         # Only use predictor columns that exist in the dataframe
         available_predictors = [col for col in PREDICTOR_COLUMNS if col in df.columns]
@@ -547,8 +552,9 @@ def collect_nh_results(
 
 
 def collect_results(
-    outputs_dir: Path, 
-    allowed_targets: Set[str]
+    outputs_dir: Path,
+    allowed_targets: Set[str],
+    mode_key: str,
 ) -> Tuple[List[TargetResult], List[DistanceRecord]]:
     results: List[TargetResult] = []
     distances: List[DistanceRecord] = []
@@ -558,19 +564,21 @@ def collect_results(
         if target_dir.name not in allowed_targets:
             continue
         
-        csp_table_path = target_dir / "csp_table_CA.csv"
+        cfg = MODE_CONFIGS[mode_key]
+        significant_column = cfg["significant"]
+        csp_table_path = target_dir / cfg["table"]
         if not csp_table_path.exists():
             continue
 
         try:
-            df = load_ca_alignment(target_dir)
+            df = load_ca_alignment(target_dir, mode_key)
         except AlignmentParsingError as exc:
             print(f"[WARN] Skipping {target_dir}: {exc}", file=sys.stderr)
             continue
         
         # Check required columns
-        if SIGNIFICANT_COLUMN not in df.columns:
-            print(f"[WARN] Skipping {target_dir}: missing {SIGNIFICANT_COLUMN} column", file=sys.stderr)
+        if significant_column not in df.columns:
+            print(f"[WARN] Skipping {target_dir}: missing {significant_column} column", file=sys.stderr)
             continue
 
         # Get available predictor columns
@@ -580,13 +588,13 @@ def collect_results(
             continue
         
         predicted = df[available_predictors].any(axis=1)
-        metrics = compute_f1_score(df, predicted)
+        metrics = compute_f1_score(df, mode_key, predicted)
         metrics.target = target_dir.name
         results.append(metrics)
 
         # Collect distance records for significant residues
         if CA_DISTANCE_COLUMN in df.columns:
-            significant_mask = df[SIGNIFICANT_COLUMN] & df[CA_DISTANCE_COLUMN].notna()
+            significant_mask = df[significant_column] & df[CA_DISTANCE_COLUMN].notna()
             if significant_mask.any():
                 selected_distances = df.loc[significant_mask, CA_DISTANCE_COLUMN]
                 selected_predictions = predicted.loc[significant_mask]
@@ -603,7 +611,7 @@ def collect_results(
     return results, distances
 
 
-def render_heatmap(results: Sequence[TargetResult], output_image: Path) -> None:
+def render_heatmap(results: Sequence[TargetResult], output_image: Path, mode_key: str) -> None:
     dataframe = pd.DataFrame([result.__dict__ for result in results]).set_index("target")
     dataframe = dataframe.sort_values("f1", ascending=False)
     heatmap_data = dataframe[["f1"]]
@@ -621,7 +629,7 @@ def render_heatmap(results: Sequence[TargetResult], output_image: Path) -> None:
     # set larger font sizes for labels and title
     ax.set_xlabel("Metric", fontsize=16)
     ax.set_ylabel("Target", fontsize=16)
-    ax.set_title("Per-target F1 Scores (CA-inclusive CSPs, Same Last Author)", fontsize=18)
+    ax.set_title(MODE_CONFIGS[mode_key]["heatmap_title"], fontsize=18)
     ax.tick_params(axis='x', labelsize=13)
     ax.tick_params(axis='y', labelsize=13)
     cbar = ax.collections[0].colorbar
@@ -634,7 +642,7 @@ def render_heatmap(results: Sequence[TargetResult], output_image: Path) -> None:
     plt.close()
 
 
-def render_histogram(distance_records: Sequence[DistanceRecord], output_image: Path) -> None:
+def render_histogram(distance_records: Sequence[DistanceRecord], output_image: Path, mode_key: str) -> None:
     distances = [record.distance for record in distance_records]
     if not distances:
         print("No significant residues with CA distances available; skipping histogram.", file=sys.stderr)
@@ -648,7 +656,7 @@ def render_histogram(distance_records: Sequence[DistanceRecord], output_image: P
     plt.hist(distances, bins=bins, edgecolor="black", color="#4c72b0")
     plt.xlabel("Minimum CA Distance (Å)")
     plt.ylabel("Number of Significant Residues")
-    plt.title("Distribution of Significant Residues by Minimum CA Distance (CA-inclusive CSPs, Same Last Author)")
+    plt.title(MODE_CONFIGS[mode_key]["hist_title"])
     plt.tight_layout()
 
     output_image.parent.mkdir(parents=True, exist_ok=True)
@@ -661,6 +669,7 @@ def render_stacked_histogram(
     output_image: Path,
     positive_count: int,
     negative_count: int,
+    mode_key: str,
 ) -> None:
     if not distance_records:
         print(
@@ -695,7 +704,7 @@ def render_stacked_histogram(
     )
     plt.xlabel("Minimum CA Distance (Å)")
     plt.ylabel("Number of Significant Residues")
-    plt.title("Predicted Outcomes for Significant Residues by Minimum CA Distance (CA-inclusive CSPs, Same Last Author)")
+    plt.title(MODE_CONFIGS[mode_key]["stacked_title"])
     plt.legend()
     ax.text(
         0.98,
@@ -721,6 +730,7 @@ def render_f1_comparison_scatterplot(
     ca_results: Sequence[TargetResult],
     nh_results: Sequence[TargetResult],
     output_image: Path,
+    mode_key: str,
 ) -> None:
     """
     Create a scatterplot comparing F1 scores from CA-inclusive vs N/H CSPs.
@@ -758,17 +768,9 @@ def render_f1_comparison_scatterplot(
     # Set axis limits and labels
     ax.set_xlim([0, 1])
     ax.set_ylim([0, 1])
-    ax.set_xlabel(
-        r"F1 Score ($C_\alpha$-inclusive CSPs)",
-        fontsize=14,
-        fontweight="bold",
-    )
+    ax.set_xlabel(MODE_CONFIGS[mode_key]["scatter_xlabel"], fontsize=14, fontweight="bold")
     ax.set_ylabel("F1 Score (N/H CSPs)", fontsize=14, fontweight="bold")
-    ax.set_title(
-        r"Comparison of F1 Scores: $C_\alpha$-inclusive vs N/H CSPs (Same Last Author)",
-        fontsize=16,
-        fontweight="bold",
-    )
+    ax.set_title(MODE_CONFIGS[mode_key]["scatter_title"], fontsize=16, fontweight="bold")
     
     # Add grid for better readability
     ax.grid(True, alpha=0.3, linestyle='--')
@@ -803,6 +805,7 @@ def main(argv: Iterable[str]) -> int:
     histogram_image = args.histogram_image.resolve()
     stacked_histogram_image = args.stacked_histogram_image.resolve()
     scatterplot_image = args.scatterplot_image.resolve()
+    mode_key = args.csp_mode
 
     # Load targets with matching last authors from CSP_UBQ.csv
     allowed_targets = load_targets_with_same_last_author(args.csprank_csv.resolve())
@@ -811,14 +814,14 @@ def main(argv: Iterable[str]) -> int:
         print(f"Targets: {', '.join(sorted(allowed_targets))}")
 
     # Collect CA CSP results
-    results, distances = collect_results(outputs_dir, allowed_targets)
+    results, distances = collect_results(outputs_dir, allowed_targets, mode_key)
     
     # Collect N/H CSP results for comparison
     nh_results = collect_nh_results(outputs_dir, allowed_targets)
     
     if not results:
         print(
-            f"No valid CA CSP data found for targets with matching last authors",
+            f"No valid {MODE_CONFIGS[mode_key]['label']} CSP data found for targets with matching last authors",
             file=sys.stderr,
         )
         return 1
@@ -831,13 +834,13 @@ def main(argv: Iterable[str]) -> int:
     positive_count = sum(1 for record in distances if record.is_predicted_positive)
     negative_count = sum(1 for record in distances if not record.is_predicted_positive)
 
-    print(f"Significant CA CSPs predicted significant: {positive_count}")
-    print(f"Significant CA CSPs missed: {negative_count}")
+    print(f"Significant {MODE_CONFIGS[mode_key]['label']} CSPs predicted significant: {positive_count}")
+    print(f"Significant {MODE_CONFIGS[mode_key]['label']} CSPs missed: {negative_count}")
 
-    render_heatmap(results, output_image)
-    render_histogram(distances, histogram_image)
-    render_stacked_histogram(distances, stacked_histogram_image, positive_count, negative_count)
-    render_f1_comparison_scatterplot(results, nh_results, scatterplot_image)
+    render_heatmap(results, output_image, mode_key)
+    render_histogram(distances, histogram_image, mode_key)
+    render_stacked_histogram(distances, stacked_histogram_image, positive_count, negative_count, mode_key)
+    render_f1_comparison_scatterplot(results, nh_results, scatterplot_image, mode_key)
     print(f"Heatmap saved to {output_image}")
     print(f"Histogram saved to {histogram_image}")
     print(f"Stacked histogram saved to {stacked_histogram_image}")
@@ -850,4 +853,25 @@ def main(argv: Iterable[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
-
+MODE_CONFIGS: Dict[str, Dict[str, str]] = {
+    "nh_ca": {
+        "label": "CA-inclusive",
+        "table": "csp_table_CA.csv",
+        "significant": "csp_CA_significant",
+        "heatmap_title": "Per-target F1 Scores (CA-inclusive CSPs, Same Last Author)",
+        "hist_title": "Distribution of Significant Residues by Minimum CA Distance (CA-inclusive CSPs, Same Last Author)",
+        "stacked_title": "Predicted Outcomes for Significant Residues by Minimum CA Distance (CA-inclusive CSPs, Same Last Author)",
+        "scatter_xlabel": r"F1 Score ($C_\alpha$-inclusive CSPs)",
+        "scatter_title": r"Comparison of F1 Scores: $C_\alpha$-inclusive vs N/H CSPs (Same Last Author)",
+    },
+    "ha_ca": {
+        "label": "HA/CA",
+        "table": "csp_table_HA_CA.csv",
+        "significant": "csp_HA_CA_significant",
+        "heatmap_title": "Per-target F1 Scores (HA/CA CSPs, Same Last Author)",
+        "hist_title": "Distribution of Significant Residues by Minimum CA Distance (HA/CA CSPs, Same Last Author)",
+        "stacked_title": "Predicted Outcomes for Significant Residues by Minimum CA Distance (HA/CA CSPs, Same Last Author)",
+        "scatter_xlabel": "F1 Score (HA/CA CSPs)",
+        "scatter_title": "Comparison of F1 Scores: HA/CA vs N/H CSPs (Same Last Author)",
+    },
+}

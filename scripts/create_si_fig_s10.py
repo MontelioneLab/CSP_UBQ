@@ -171,7 +171,7 @@ def main() -> int:
         )
         return 1
 
-    _, distances, confusion_records = collect_results(outputs_dir, eligible)
+    _, distances, confusion_records = collect_results(outputs_dir, eligible, "nh_ca")
 
     positive_count = sum(1 for record in distances if record.is_predicted_positive)
     negative_count = sum(1 for record in distances if not record.is_predicted_positive)
@@ -188,6 +188,7 @@ def main() -> int:
             panel_a_path,
             positive_count,
             negative_count,
+            "nh_ca",
             tp_color=classification_colors.TP,
             show_title=False,
             ylabel="Number of Residues",
@@ -198,6 +199,7 @@ def main() -> int:
         render_confusion_matrix_stacked_histogram(
             confusion_records,
             panel_b_path,
+            "nh_ca",
             tp_color=classification_colors.TP,
             show_title=False,
             bold_axes=False,

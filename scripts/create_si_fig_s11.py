@@ -124,7 +124,7 @@ def main() -> int:
         )
         return 1
 
-    ca_results, _, _ = collect_results(outputs_dir, eligible)
+    ca_results, _, _ = collect_results(outputs_dir, eligible, "nh_ca")
     nh_results = collect_nh_results(outputs_dir, eligible)
 
     if not ca_results:
@@ -135,7 +135,7 @@ def main() -> int:
         return 1
 
     output_image.parent.mkdir(parents=True, exist_ok=True)
-    render_f1_comparison_scatterplot(ca_results, nh_results, output_image)
+    render_f1_comparison_scatterplot(ca_results, nh_results, output_image, "nh_ca")
     print(f"SI Fig. S11 saved to {output_image.resolve()}")
     return 0
 

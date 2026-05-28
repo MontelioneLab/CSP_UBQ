@@ -26,7 +26,7 @@ try:
     from .config import paths, concurrency, ensure_directories, sasa_analysis, ca_distance_analysis, Referencing as _Referencing  # type: ignore
     from .bmrb_io import fetch_bmrb, parse_sequence_and_shifts, parse_sequence_and_shifts_from_saveframes
     from .align import align_global
-    from .csp import compute_csp_A, compute_csp_multiple_saveframes, compute_csp_from_aligned_sequences, compute_csp_multiple_saveframes_ca
+    from .csp import compute_csp_A, compute_csp_multiple_saveframes, compute_csp_from_aligned_sequences, compute_csp_multiple_saveframes_ca, compute_csp_multiple_saveframes_ha_ca
     from .rcsb_io import fetch_pdb, parse_pdb_sequences
     from .visualize import write_pymol_color_csp_mask_script, plot_csp_histogram, write_pymol_occlusion_script, write_pymol_combined_script, write_pymol_delta_sasa_script, write_pymol_session_file, create_pdb_with_delta_sasa_bfactors, write_pymol_csp_heatmap_script, write_pymol_csp_session_file, plot_csp_classification_bars, write_pymol_csp_classification_script, write_pymol_csp_classification_session_file, plot_per_atom_classification_panels
     from .HSQC_visualize import plot_hsqc_variants
@@ -46,7 +46,7 @@ except Exception:
     from scripts.config import paths, concurrency, ensure_directories, sasa_analysis, ca_distance_analysis, Referencing as _Referencing  # type: ignore
     from scripts.bmrb_io import fetch_bmrb, parse_sequence_and_shifts, parse_sequence_and_shifts_from_saveframes
     from scripts.align import align_global
-    from scripts.csp import compute_csp_A, compute_csp_multiple_saveframes, compute_csp_from_aligned_sequences, compute_csp_multiple_saveframes_ca
+    from scripts.csp import compute_csp_A, compute_csp_multiple_saveframes, compute_csp_from_aligned_sequences, compute_csp_multiple_saveframes_ca, compute_csp_multiple_saveframes_ha_ca
     from scripts.rcsb_io import fetch_pdb, parse_pdb_sequences
     from scripts.visualize import write_pymol_color_csp_mask_script, plot_csp_histogram, write_pymol_occlusion_script, write_pymol_combined_script, write_pymol_delta_sasa_script, write_pymol_session_file, create_pdb_with_delta_sasa_bfactors, write_pymol_csp_heatmap_script, write_pymol_csp_session_file, plot_csp_classification_bars, write_pymol_csp_classification_script, write_pymol_csp_classification_session_file, plot_per_atom_classification_panels
     from scripts.HSQC_visualize import plot_hsqc_variants
@@ -302,6 +302,8 @@ def process_row(
     # Check if CA shifts are available in both apo and holo
     has_apo_ca = any(len(seq[3]) > 0 for seq in apo_sequences)  # CA_shifts is at index 3
     has_holo_ca = any(len(seq[3]) > 0 for seq in holo_sequences)  # CA_shifts is at index 3
+    has_apo_ha = any(len(seq[4]) > 0 for seq in apo_sequences)  # HA_shifts is at index 4
+    has_holo_ha = any(len(seq[4]) > 0 for seq in holo_sequences)  # HA_shifts is at index 4
     
     # Compute CA-inclusive CSPs (separate analysis) only if CA shifts are available in both
     results_ca = []
@@ -330,6 +332,29 @@ def process_row(
                 print("[PIPE] No CA shifts found in apo, skipping CA-inclusive CSP analysis")
             else:
                 print("[PIPE] No CA shifts found in holo, skipping CA-inclusive CSP analysis")
+
+    # Compute HA/CA CSPs only if both HA and CA shifts are available in apo and holo
+    results_ha_ca = []
+    if has_apo_ca and has_holo_ca and has_apo_ha and has_holo_ha:
+        if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
+            print("[PIPE] HA and CA shifts found in both apo and holo, computing HA/CA CSPs")
+        results_ha_ca = _run_logged(
+            log_files["compute_csp"],
+            compute_csp_multiple_saveframes_ha_ca,
+            apo_sequences,
+            holo_sequences,
+            apo_bmrb,
+            holo_bmrb,
+            holo_pdb,
+            csp_threshold_args,
+            referencing_method=ref_method,
+            grid_params=None,
+            target_id=target_label,
+            output_root=out_dir,
+        )
+    else:
+        if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
+            print("[PIPE] Missing HA and/or CA shifts in apo/holo, skipping HA/CA CSP analysis")
 
     # Download holo PDB (in parallel with above in future; simple now)
     _console_line(f"[PIPE] [{target_label}] Step 3/5 Structure + interaction analyses")
@@ -707,6 +732,22 @@ def process_row(
             "CA_offset": getattr(r, "CA_offset", None),
         }
 
+    # Build a quick lookup for HA/CA data by holo_index (if available)
+    ha_ca_by_holo_index: Dict[int, Dict[str, Optional[float]]] = {}
+    for r in results_ha_ca or []:
+        try:
+            idx = int(r.holo_index)
+        except Exception:
+            continue
+        ha_ca_by_holo_index[idx] = {
+            "HA_apo": getattr(r, "HA_apo", None),
+            "HA_holo": getattr(r, "HA_holo", None),
+            "HA_offset": getattr(r, "HA_offset", None),
+            "CA_apo": getattr(r, "CA_apo", None),
+            "CA_holo": getattr(r, "CA_holo", None),
+            "CA_offset": getattr(r, "CA_offset", None),
+        }
+
     _console_line(f"[PIPE] [{target_label}] Step 4/5 Write tables + visualizations")
 
     # Write outputs for H/N-only CSPs, now including CA columns (when available)
@@ -715,10 +756,10 @@ def process_row(
         w = csv.writer(f)
         w.writerow([
             "apo_bmrb","holo_bmrb","holo_pdb","chain","apo_resi","apo_aa","holo_resi","holo_aa",
-            "H_apo","N_apo","CA_apo",
-            "H_holo","N_holo","CA_holo",
+            "H_apo","N_apo","CA_apo","HA_apo",
+            "H_holo","N_holo","CA_holo","HA_holo",
             "H_holo_original","N_holo_original",
-            "H_offset","N_offset","CA_offset",
+            "H_offset","N_offset","CA_offset","HA_offset",
             "dH","dN","csp_A","csp_z","significant","significant_1sd","significant_2sd",
             "delta_sasa","occluded",
         ])
@@ -741,20 +782,27 @@ def process_row(
             CA_apo = ca_info.get("CA_apo")
             CA_holo = ca_info.get("CA_holo")
             CA_offset = ca_info.get("CA_offset")
+            ha_info = ha_ca_by_holo_index.get(int(r.holo_index), {}) if r.holo_index is not None else {}
+            HA_apo = ha_info.get("HA_apo")
+            HA_holo = ha_info.get("HA_holo")
+            HA_offset = ha_info.get("HA_offset")
 
             w.writerow([
                 apo_bmrb, holo_bmrb, holo_pdb, receptor_chain or "?", r.apo_index, r.apo_aa, r.holo_index, r.holo_aa,
                 f"{r.H_apo:.4f}" if r.H_apo is not None else "",
                 f"{r.N_apo:.4f}" if r.N_apo is not None else "",
                 f"{CA_apo:.4f}" if CA_apo is not None else "",
+                f"{HA_apo:.4f}" if HA_apo is not None else "",
                 f"{r.H_holo:.4f}" if r.H_holo is not None else "",
                 f"{r.N_holo:.4f}" if r.N_holo is not None else "",
                 f"{CA_holo:.4f}" if CA_holo is not None else "",
+                f"{HA_holo:.4f}" if HA_holo is not None else "",
                 f"{r.H_holo_original:.4f}" if r.H_holo_original is not None else "",
                 f"{r.N_holo_original:.4f}" if r.N_holo_original is not None else "",
                 f"{r.H_offset:.4f}" if r.H_offset is not None else "",
                 f"{r.N_offset:.4f}" if r.N_offset is not None else "",
                 f"{CA_offset:.4f}" if CA_offset is not None else "",
+                f"{HA_offset:.4f}" if HA_offset is not None else "",
                 f"{r.dH:.4f}" if r.dH is not None else "",
                 f"{r.dN:.4f}" if r.dN is not None else "",
                 f"{r.csp_A:.4f}" if r.csp_A is not None else "",
@@ -773,10 +821,10 @@ def process_row(
             w_ca = csv.writer(f_ca)
             w_ca.writerow([
                 "apo_bmrb","holo_bmrb","holo_pdb","chain","apo_resi","apo_aa","holo_resi","holo_aa",
-                "H_apo","N_apo","CA_apo",
-                "H_holo","N_holo","CA_holo",
+                "H_apo","N_apo","CA_apo","HA_apo",
+                "H_holo","N_holo","CA_holo","HA_holo",
                 "H_holo_original","N_holo_original","CA_holo_original",
-                "H_offset","N_offset","CA_offset",
+                "H_offset","N_offset","CA_offset","HA_offset",
                 "dH","dN","dCA",
                 "csp_CA","csp_CA_z","csp_CA_significant","csp_CA_significant_1sd","csp_CA_significant_2sd",
                 "delta_sasa","occluded",
@@ -793,22 +841,74 @@ def process_row(
                 else:
                     occlusion_data = occlusion_map.get(pdb_residue_number, {'delta_sasa': '', 'is_occluded': False})
 
+                ha_info = ha_ca_by_holo_index.get(int(r.holo_index), {}) if r.holo_index is not None else {}
+
                 w_ca.writerow([
                     apo_bmrb, holo_bmrb, holo_pdb, receptor_chain or "?", r.apo_index, r.apo_aa, r.holo_index, r.holo_aa,
                     f"{r.H_apo:.4f}" if r.H_apo is not None else "",
                     f"{r.N_apo:.4f}" if r.N_apo is not None else "",
                     f"{r.CA_apo:.4f}" if getattr(r, "CA_apo", None) is not None else "",
+                    f"{ha_info.get('HA_apo'):.4f}" if ha_info.get("HA_apo") is not None else "",
                     f"{r.H_holo:.4f}" if r.H_holo is not None else "",
                     f"{r.N_holo:.4f}" if r.N_holo is not None else "",
                     f"{r.CA_holo:.4f}" if getattr(r, "CA_holo", None) is not None else "",
+                    f"{ha_info.get('HA_holo'):.4f}" if ha_info.get("HA_holo") is not None else "",
                     f"{r.H_holo_original:.4f}" if r.H_holo_original is not None else "",
                     f"{r.N_holo_original:.4f}" if r.N_holo_original is not None else "",
                     f"{r.CA_holo_original:.4f}" if getattr(r, "CA_holo_original", None) is not None else "",
                     f"{r.H_offset:.4f}" if r.H_offset is not None else "",
                     f"{r.N_offset:.4f}" if r.N_offset is not None else "",
                     f"{r.CA_offset:.4f}" if getattr(r, "CA_offset", None) is not None else "",
+                    f"{ha_info.get('HA_offset'):.4f}" if ha_info.get("HA_offset") is not None else "",
                     f"{r.dH:.4f}" if r.dH is not None else "",
                     f"{r.dN:.4f}" if r.dN is not None else "",
+                    f"{r.dCA:.4f}" if getattr(r, "dCA", None) is not None else "",
+                    f"{r.csp_A:.4f}" if r.csp_A is not None else "",
+                    f"{r.z_score:.4f}" if r.z_score is not None else "",
+                    int(bool(r.significant)) if r.significant is not None else "",
+                    int(bool(r.significant_1sd)) if r.significant_1sd is not None else "",
+                    int(bool(r.significant_2sd)) if r.significant_2sd is not None else "",
+                    f"{occlusion_data['delta_sasa']:.4f}" if occlusion_data['delta_sasa'] != '' else "",
+                    int(bool(occlusion_data['is_occluded'])) if occlusion_data['is_occluded'] is not None else "",
+                ])
+
+    if results_ha_ca:
+        table_ha_ca_path = os.path.join(tgt_dir, "csp_table_HA_CA.csv")
+        with open(table_ha_ca_path, "w", newline="") as f_ha_ca:
+            w_ha_ca = csv.writer(f_ha_ca)
+            w_ha_ca.writerow([
+                "apo_bmrb","holo_bmrb","holo_pdb","chain","apo_resi","apo_aa","holo_resi","holo_aa",
+                "HA_apo","CA_apo",
+                "HA_holo","CA_holo",
+                "HA_holo_original","CA_holo_original",
+                "HA_offset","CA_offset",
+                "dHA","dCA",
+                "csp_HA_CA","csp_HA_CA_z","csp_HA_CA_significant","csp_HA_CA_significant_1sd","csp_HA_CA_significant_2sd",
+                "delta_sasa","occluded",
+            ])
+            for r in results_ha_ca:
+                pdb_residue_number = sequential_to_pdb_map.get(r.holo_index)
+                if pdb_residue_number is None:
+                    if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
+                        _emit_warning(
+                            f"[PIPE WARNING] (HA/CA) No alignment found for sequential position {r.holo_index}",
+                            log_files["tables_outputs"],
+                        )
+                    occlusion_data = {'delta_sasa': '', 'is_occluded': False}
+                else:
+                    occlusion_data = occlusion_map.get(pdb_residue_number, {'delta_sasa': '', 'is_occluded': False})
+
+                w_ha_ca.writerow([
+                    apo_bmrb, holo_bmrb, holo_pdb, receptor_chain or "?", r.apo_index, r.apo_aa, r.holo_index, r.holo_aa,
+                    f"{r.HA_apo:.4f}" if getattr(r, "HA_apo", None) is not None else "",
+                    f"{r.CA_apo:.4f}" if getattr(r, "CA_apo", None) is not None else "",
+                    f"{r.HA_holo:.4f}" if getattr(r, "HA_holo", None) is not None else "",
+                    f"{r.CA_holo:.4f}" if getattr(r, "CA_holo", None) is not None else "",
+                    f"{r.HA_holo_original:.4f}" if getattr(r, "HA_holo_original", None) is not None else "",
+                    f"{r.CA_holo_original:.4f}" if getattr(r, "CA_holo_original", None) is not None else "",
+                    f"{r.HA_offset:.4f}" if getattr(r, "HA_offset", None) is not None else "",
+                    f"{r.CA_offset:.4f}" if getattr(r, "CA_offset", None) is not None else "",
+                    f"{r.dHA:.4f}" if getattr(r, "dHA", None) is not None else "",
                     f"{r.dCA:.4f}" if getattr(r, "dCA", None) is not None else "",
                     f"{r.csp_A:.4f}" if r.csp_A is not None else "",
                     f"{r.z_score:.4f}" if r.z_score is not None else "",
@@ -847,6 +947,16 @@ def process_row(
             results_ca,
             os.path.join(tgt_dir, "hsqc_scatter_CA.png"),
             title=f"{holo_pdb} HSQC comparison (CA-inclusive CSPs)",
+        )
+    if results_ha_ca:
+        _run_logged(
+            log_files["tables_outputs"],
+            plot_hsqc_variants,
+            results_ha_ca,
+            os.path.join(tgt_dir, "hsqc_scatter_HA_CA.png"),
+            title=f"{holo_pdb} HSQC comparison (HA/CA CSPs)",
+            x_atom="CA",
+            y_atom="HA",
         )
     
     # Generate CSP classification bar plots and PyMOL visualizations for each threshold
@@ -1152,6 +1262,71 @@ def process_row(
                     f"[PIPE] ✗ Failed to generate PyMOL CSP classification session (CA) for {threshold_suffix}: {e}",
                     log_files["tables_outputs"],
                 )
+
+        if results_ha_ca:
+            try:
+                csp_classification_plot_ha_ca_path = os.path.join(
+                    tgt_dir, f"csp_classification_bars_{threshold_suffix}_HA_CA.png"
+                )
+                _run_logged(
+                    log_files["tables_outputs"],
+                    plot_csp_classification_bars,
+                    results_ha_ca,
+                    interaction_results,
+                    csp_classification_plot_ha_ca_path,
+                    title=f"{holo_pdb} CSP Classification (HA/CA, {threshold_suffix})",
+                    significance_field=significance_field,
+                    include_numeric_residue_ticks=include_numeric_residue_ticks,
+                )
+            except Exception as e:
+                _emit_warning(
+                    f"[PIPE] ✗ Failed to generate CSP classification bar plot (HA/CA) for {threshold_suffix}: {e}",
+                    log_files["tables_outputs"],
+                )
+
+            try:
+                csp_classification_script_ha_ca_path = os.path.join(
+                    tgt_dir, f"csp_classification_{threshold_suffix}_HA_CA.pml"
+                )
+                _run_logged(
+                    log_files["tables_outputs"],
+                    write_pymol_csp_classification_script,
+                    results_ha_ca,
+                    interaction_results,
+                    holo_pdb,
+                    csp_classification_script_ha_ca_path,
+                    significance_field,
+                    receptor_chain=receptor_chain,
+                    ligand_chain=ligand_chain,
+                    output_dir=tgt_dir_for_pymol,
+                )
+            except Exception as e:
+                _emit_warning(
+                    f"[PIPE] ✗ Failed to generate PyMOL CSP classification script (HA/CA) for {threshold_suffix}: {e}",
+                    log_files["tables_outputs"],
+                )
+
+            try:
+                csp_classification_session_ha_ca_path = os.path.join(
+                    tgt_dir, f"csp_classification_{threshold_suffix}_HA_CA.pse"
+                )
+                _run_logged(
+                    log_files["tables_outputs"],
+                    write_pymol_csp_classification_session_file,
+                    results_ha_ca,
+                    interaction_results,
+                    holo_pdb,
+                    csp_classification_session_ha_ca_path,
+                    significance_field,
+                    receptor_chain=receptor_chain,
+                    ligand_chain=ligand_chain,
+                    output_dir=tgt_dir_for_pymol,
+                )
+            except Exception as e:
+                _emit_warning(
+                    f"[PIPE] ✗ Failed to generate PyMOL CSP classification session (HA/CA) for {threshold_suffix}: {e}",
+                    log_files["tables_outputs"],
+                )
     
     # Per-atom (H, N, CA) perturbation classification panels
     try:
@@ -1161,6 +1336,7 @@ def process_row(
             plot_per_atom_classification_panels,
             results_hn=results,
             results_ca=results_ca if results_ca else None,
+            results_ha_ca=results_ha_ca if results_ha_ca else None,
             binding_results=interaction_results,
             out_png=per_atom_panels_path,
             title=f"{holo_pdb} per-atom perturbations",
@@ -1710,5 +1886,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
