@@ -36,9 +36,22 @@ class Thresholds:
     
     # Final significance threshold settings
     significance_z_score: float = 0.0  # Z-score for final threshold (mean + z*SD)
+
+    # Exclude residues from TP/FP/TN/FN when cleaned-mean CSP z-score exceeds this.
+    # Extreme outliers (assignment/referencing artifacts) are left unclassified.
+    max_classification_csp_z: float = 100.0
     
     # Legacy option: absolute cutoff overrides everything
     absolute_cutoff: Optional[float] = None
+
+    # Alternate HN CSP significance masks (boolean columns in csp_table.csv)
+    # Rank-based: top K% ↔ CSP >= (100-K)th percentile of that target's HN CSP values
+    top_10_percentile_fraction: float = 0.10  # top 10% → 90th percentile
+    top_5_percentile_fraction: float = 0.05   # top 5%  → 95th percentile
+    # Fixed absolute cutoffs (ppm) applied to combined N/H CSP (csp_A)
+    cutoff_03_ppm: float = 0.03
+    cutoff_05_ppm: float = 0.05
+    cutoff_10_ppm: float = 0.10
 
 
 @dataclass(frozen=True)
@@ -72,6 +85,8 @@ class Compute:
     csp_delta_n_scale: float = 0.14
     csp_delta_ha_scale: float = 1.0
     csp_delta_ca_scale: float = 0.3
+    # Exclude residues from CSP recording / significance when |ΔN_raw| exceeds this (ppm).
+    max_abs_delta_n_ppm: float = 15.0
     # Skip HA/CA CSP unless at least this fraction of aligned (non-gap) columns have
     # both CA and HA shifts on apo and holo (union of “coverage” for the pair CSP).
     # Optional override: environment variable CSP_HA_CA_MIN_COVERAGE (0–1).
@@ -84,16 +99,16 @@ class Referencing:
     method: str = "grid"
 
     # Grid search parameters for offsets
-    grid_h_min: float = -0.12
-    grid_h_max: float = 0.12
+    grid_h_min: float = -0.2
+    grid_h_max: float = 0.2
     grid_h_step: float = 0.01
 
     grid_ha_min: float = -0.12
     grid_ha_max: float = 0.12
     grid_ha_step: float = 0.01
 
-    grid_n_min: float = -1.2
-    grid_n_max: float = 1.2
+    grid_n_min: float = -1.5
+    grid_n_max: float = 1.5
     grid_n_step: float = 0.05
 
     # CA grid search parameters (scaled similarly to N range)
@@ -125,6 +140,8 @@ class CADistanceAnalysis:
     ca_distance_threshold: float = 6.0
     # Min inter-chain atom-atom distance for direct binding site (Å)
     direct_contact_threshold: float = 2.0
+    # Any-atom distance to binding-site residues for exclusive second shell (Å, inclusive)
+    second_shell_threshold: float = 6.0
 
 
 @dataclass(frozen=True)

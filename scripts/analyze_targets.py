@@ -29,13 +29,16 @@ import seaborn as sns
 
 try:
     from .config import classification_colors
+    from .merge_csv import filter_recorded_csp_dataframe
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.config import classification_colors
+    from scripts.merge_csv import filter_recorded_csp_dataframe
 
 
 SIGNIFICANT_COLUMN = "significant"
+CSP_COLUMN = "csp_A"
 CLASSIFICATION_COLUMN = "classification"
 VALID_CLASSIFICATIONS: frozenset[str] = frozenset({"TP", "FP", "TN", "FN"})
 CA_DISTANCE_COLUMN = "min_ca_distance_distance"
@@ -412,6 +415,11 @@ def load_alignment(alignment_path: Path) -> pd.DataFrame:
             f"Alignment file {alignment_path} is missing required columns: "
             f"{', '.join(missing_columns)}"
         )
+
+    # Residues without a recorded CSP must not enter TP/FP/TN/FN or F1 denominators
+    df = filter_recorded_csp_dataframe(
+        df, csp_column=CSP_COLUMN, significant_column=SIGNIFICANT_COLUMN
+    )
 
     for column in (SIGNIFICANT_COLUMN, *PREDICTOR_COLUMNS):
         df[column] = df[column].apply(to_bool)

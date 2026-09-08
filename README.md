@@ -15,21 +15,21 @@ This repository hosts analysis scripts and figures related to the publication:
 
 ## Figure 1
 
-![Figure 1: stacked histograms of confusion-matrix classes vs minimum interchain Cα distance](figure_1.jpg)
+![Figure 1: stacked histograms of confusion-matrix classes vs minimum interchain Cα distance](figures/figure_3.png)
 
-*Fig. 1. Stacked histograms summarizing the confusion matrix across the CSPdb. In both panels, the x-axis shows the minimum interchain Cα–Cα distance for residues in the receptor chain. (A) Significant CSPs. Green bars: residues within the binding site (TPs); purple bars: residues outside the binding site (FPs). Overall, 74% of significant CSPs occur outside the binding site. (B) All residues. In addition to the significant CSPs shown in (A), residues with no (significant) CSPs are included: blue bars: residues outside the binding site (TNs); orange bars: residues within the binding site (FNs). Calculating CSPs using Cα shifts yields similar results in complementary analyses in this repository; additional summaries using minimum interchain N–N distances and minimum interatomic distances are produced by the same analysis framework. CSP and binding-site residues are defined in **Methods** below. Colors used throughout correspond to the confusion matrix classification: TP (green), FP (purple), TN (blue), and FN (orange); aggregate counts per quadrant are in parentheses.*
+*Fig. 1. Stacked histograms summarizing the confusion matrix across the CSPdb. In both panels, the x-axis shows the minimum interchain Cα–Cα distance for residues in the receptor chain. (A) Significant CSPs. Green bars: residues within the binding site (TPs); purple bars: residues outside the binding site (FPs). Overall, 69% of significant CSPs occur outside the binding site. (B) All residues. In addition to the significant CSPs shown in (A), residues with no (significant) CSPs are included: blue bars: residues outside the binding site (TNs); orange bars: residues within the binding site (FNs). Calculating CSPs using Cα shifts yields similar results in complementary analyses in this repository; additional summaries using minimum interchain N–N distances and minimum interatomic distances are produced by the same analysis framework. CSP and binding-site residues are defined in **Methods** below. Colors used throughout correspond to the confusion matrix classification: TP (green), FP (purple), TN (blue), and FN (orange); aggregate counts per quadrant are in parentheses.*
 
 ---
 
 ## Figure 2
 
-![Figure 2: representative case studies — sequence CSPs and PyMOL panels](case_study_figure.jpg)
+![Figure 2: representative case studies — sequence CSPs and PyMOL panels](figures/figure_2.png)
 
 *Fig. 2. Representative case studies. (Left) Calculated CSPs for receptor residues along the sequence, bars colored by confusion matrix classification (see Fig. 1 for color key). Dashed horizontal lines indicate the significance threshold (**Methods**), and gray shading highlights binding-site residues. Molecular graphics panels (left to right) show PyMOL renderings of receptor structures colored by (i) the mask of significant CSPs, with significant CSPs in red and residues without CSP measurements or insignificant CSPs shown in gray, (ii) the binding-site residues (**Methods**) in red and residues outside of the binding site in gray, and (iii) the confusion matrix classification projected onto the structure; ligands are colored cyan.*
 
 - **(A)** holo PDB 7JQ8; apo BMRB 30782; holo BMRB 30786.  
 - **(B)** holo PDB 2M14; apo BMRB 6225; holo BMRB 18842.  
-- **(C)** holo PDB 2RS9; apo BMRB 19125; holo BMRB 11463.  
+- **(C)** holo PDB 6FDT; apo BMRB 19757; holo BMRB 34224.  
 - **(D)** holo PDB 2KWV; apo BMRB 17769; holo BMRB 16885.
 
 ---
@@ -56,20 +56,20 @@ Significance thresholds follow the spirit of established protocols (citation in 
 
 1. Compute the list of CSP values for aligned residues (see standard CSP literature for the treatment of missing data and alignment).
 2. Iteratively remove outlier CSPs with a Z-score greater than 3 (\(\sigma > 3\)) until a stable subset with no outliers remains.
-3. Define the final cutoff as the **mean** CSP of that outlier-free subset.
+3. Define the final cutoff as the **maximum** of the mean CSP of that outlier-free subset and **0.05 ppm**.
 
-A histogram summarizing CSP thresholds across the dataset can be regenerated with the figure-generation scripts; the average significance cutoff across the CSPdb was **0.0834 ppm**. This is somewhat higher than typical reported reproducibility of chemical shifts (~0.020 ppm), likely reflecting small residual differences between apo and holo NMR studies. Lower thresholds would flag more long-range CSPs; the chosen procedure is therefore a comparatively conservative estimate.
+A histogram summarizing CSP thresholds across the dataset can be regenerated with the figure-generation scripts; the average significance cutoff across the targets in `data/CSP_UBQ_ph0.5_temp5C.csv` was **0.0804 ppm**. This is somewhat higher than typical reported reproducibility of chemical shifts (~0.020 ppm), likely reflecting small residual differences between apo and holo NMR studies. Lower thresholds would flag more long-range CSPs; the chosen procedure is therefore a comparatively conservative estimate.
 
 ### Defining the binding site
 
 A residue is considered part of the binding site if it satisfies **any** of:
 
-- H-bonds to the ligand (Baker-Hubbard criteria: theta > 120°, H···A < 2.5 Å).
-- Charge complementarity with the ligand (opposite charged groups within 4.5 Å).
-- π contacts (NH-to-aromatic within 6 Å).
-- SASA occlusion: non-negligible change in solvent-accessible surface area (Shrake–Rupley) for backbone N and H atoms on the medoid holo model with versus without ligand atoms.
-- Interchain Cα-Cα distance < 6.0 Å.
-- Any interchain atom-atom distance < 2.0 Å.
+- H-bonds to the ligand (Baker–Hubbard, then H···A ≤ 2.5 Å and θ ≥ 120°).
+- Charge complementarity with the ligand (opposite-charged side chains Lys/Arg/His vs Asp/Glu within 4.5 Å).
+- π contacts (receptor backbone NH midpoint to a ligand aromatic-ring center ≤ 6 Å).
+- SASA occlusion: residue-level solvent-accessible surface area (Shrake–Rupley) larger without the ligand than in the medoid holo complex (ΔSASA > 0 Å²).
+- Interchain Cα–Cα distance < 6.0 Å.
+- Any interchain atom–atom distance < 2.0 Å.
 
 ### Binary classification
 
@@ -123,7 +123,7 @@ python scripts/pipeline.py --input data/CSP_UBQ_selected_holo.csv --out outputs
 
 By default, detailed runtime output is written to per-target logs in `outputs/<HOLO_PDB>_<apo_bmrb>/logs/*.txt`, and stdout is kept concise with step progress plus warnings/errors.
 
-**Input CSV:** column definitions and optional flags (`--ids`, `--holo-pdb`, `--workers`, `--no-case-study`, metadata annotation, verbose logging) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).
+**Input CSV:** column definitions and optional flags (`--ids`, `--holo-pdb`, `--workers`, `--no-case-study`, `--no-interactive-view`, metadata annotation, verbose logging) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).
 
 ## Repository layout 
 

@@ -1,161 +1,107 @@
 #!/usr/bin/env python3
 """
-SI Fig. S18 — CSP significance threshold histogram.
+SI Fig. S18 — ideal N/H offsets (offset grid heatmap from grid search).
 
-For each target, recomputes the significance threshold from csp_A values using
-the same logic as the pipeline (compute_threshold_with_outlier_removal with
-default config). Plots a histogram of these per-target thresholds.
+Reads grid search CSV files from outputs/, creates the heatmap, and saves to
+./figures/SF18_ideal_offsets.png.
 
-Output: figures/SF18_significance_threshold.png
-
-By default only targets listed in CSP_UBQ_ph0.5_temp5C.csv are included; each row is
-resolved to ``outputs/<dir>`` via ``apo_bmrb``/``holo_bmrb`` congruence with
-``master_alignment.csv`` (see ``scripts.target_resolution``). Override with --targets-csv.
+By default only targets listed in CSP_UBQ_ph0.5_temp5C.csv (holo_pdb) are included.
+Override with --targets-csv.
 """
 
 from __future__ import annotations
 
 import argparse
-import statistics
+import os
 import sys
 from pathlib import Path
-from typing import List, Optional, Set
-
-import matplotlib.pyplot as plt
-import pandas as pd
-
 try:
-    from .config import thresholds
-    from .csp import compute_threshold_with_outlier_removal
+    from .analyze_offsets import collect_best_grid_offsets, create_grid_heatmap
     from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
-    import os as _os
-    import sys as _sys
-    _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
-    from scripts.config import thresholds
-    from scripts.csp import compute_threshold_with_outlier_removal
-    from scripts.target_resolution import load_target_rows, resolve_target_rows
-
-
-def collect_thresholds(outputs_dir: Path, selected_dir_names: Optional[Set[str]]) -> List[tuple[str, float]]:
-    """Collect (target_name, threshold) for each target with valid csp_A data.
-
-    ``selected_dir_names`` is the set of resolved ``outputs/<dir>`` basenames;
-    pass ``None`` to scan every subdirectory.
-    """
-    results: List[tuple[str, float]] = []
-
-    for alignment_path in sorted(outputs_dir.glob("*/master_alignment.csv")):
-        target_name = alignment_path.parent.name
-        if selected_dir_names is not None and target_name not in selected_dir_names:
-            continue
-        df = pd.read_csv(alignment_path)
-
-        if "csp_A" not in df.columns:
-            continue
-
-        csp_vals = pd.to_numeric(df["csp_A"], errors="coerce")
-        valid = csp_vals.notna()
-        values = csp_vals[valid].astype(float).tolist()
-
-        if len(values) < 2:
-            continue
-
-        info = compute_threshold_with_outlier_removal(
-            values,
-            outlier_z=thresholds.outlier_z_score,
-            significance_z=thresholds.significance_z_score,
-            max_iterations=thresholds.max_outlier_iterations,
-            max_outlier_fraction=thresholds.max_outlier_fraction,
-        )
-        results.append((target_name, info.threshold))
-
-    return results
+    project_root = Path(__file__).resolve().parent.parent
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    from scripts.analyze_offsets import collect_best_grid_offsets, create_grid_heatmap  # type: ignore
+    from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Create SI Fig. S18 (CSP significance threshold histogram)"
-    )
-    parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
+    parser = argparse.ArgumentParser(description="Create SI Fig. S18 (ideal N/H offsets heatmap).")
+    parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"), help="Path to outputs directory")
+    parser.add_argument("--figures-dir", type=Path, default=Path("figures"), help="Path to figures directory")
     parser.add_argument(
         "--targets-csv",
         type=Path,
         default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
-        help=(
-            "CSV with holo_pdb plus apo_bmrb/holo_bmrb (default: data/CSP_UBQ_ph0.5_temp5C.csv)."
-        ),
+        help="CSV with holo_pdb column (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
-    parser.add_argument("--output", type=Path, default=Path("figures") / "SF18_significance_threshold.png")
-    parser.add_argument("--bin-width", type=float, default=0.02)
-    parser.add_argument("--dpi", type=int, default=300)
-    parser.add_argument("--fig-width", type=float, default=8.0)
-    parser.add_argument("--fig-height", type=float, default=5.0)
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parent.parent
-    outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
+    outputs_dir = project_root / args.outputs_dir if not args.outputs_dir.is_absolute() else args.outputs_dir
+    figures_dir = project_root / args.figures_dir if not args.figures_dir.is_absolute() else args.figures_dir
+
     targets_csv = args.targets_csv
     if not targets_csv.is_absolute():
         targets_csv = project_root / targets_csv
-    output_path = args.output if args.output.is_absolute() else project_root / args.output
 
     if not outputs_dir.exists():
-        print(f"Error: outputs directory does not exist: {outputs_dir}", file=sys.stderr)
+        print(f"Error: outputs directory '{outputs_dir}' does not exist")
         return 1
     if not targets_csv.exists():
         print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
         return 1
 
     rows = load_target_rows(targets_csv)
-    selected = {p.name for p in resolve_target_rows(rows, outputs_dir)}
-    data = collect_thresholds(outputs_dir, selected)
-    if not data:
-        print("No threshold data found.", file=sys.stderr)
+    selected_dir_names = {p.name for p in resolve_target_rows(rows, outputs_dir)}
+
+    (
+        _all_h,
+        _all_n,
+        h_by_target,
+        n_by_target,
+        h_grid_values,
+        n_grid_values,
+    ) = collect_best_grid_offsets(str(outputs_dir))
+
+    keys = sorted(
+        k for k in h_by_target if k in n_by_target and k in selected_dir_names
+    )
+    best_h_offsets = [h_by_target[k] for k in keys]
+    best_n_offsets = [n_by_target[k] for k in keys]
+
+    if not best_h_offsets or not best_n_offsets:
+        print(
+            "No grid offset data found for selected targets. Run the pipeline and/or check --targets-csv.",
+            file=sys.stderr,
+        )
         return 1
 
-    sorted_data = sorted(data, key=lambda x: x[1], reverse=True)
-    _, thresh_vals = zip(*sorted_data)
-    thresholds_list = list(thresh_vals)
-
-    print(f"Collected {len(thresholds_list)} thresholds")
-    print("\nHolo PDBs by decreasing significance threshold:")
-    for target, thresh in sorted_data:
-        print(f"  {target}: {thresh:.4f}")
-    mean_val = statistics.mean(thresholds_list)
-    median_val = statistics.median(thresholds_list)
-    print(f"  Min: {min(thresholds_list):.4f}")
-    print(f"  Max: {max(thresholds_list):.4f}")
-    print(f"  Mean: {mean_val:.4f}")
-    print(f"  Median: {median_val:.4f}")
-
-    bin_width = args.bin_width
-    t_min, t_max = min(thresholds_list), max(thresholds_list)
-    n_bins = max(1, int((t_max - t_min) / bin_width) + 1)
-    bins = [t_min + i * bin_width for i in range(n_bins + 1)]
-
-    plt.figure(figsize=(args.fig_width, args.fig_height))
-    plt.hist(
-        thresholds_list,
-        bins=bins,
-        edgecolor="black",
-        linewidth=0.8,
+    print(
+        f"[SF17] Aggregating ideal N/H offsets for n={len(keys)} targets "
+        f"from {targets_csv.name} (resolved {len(selected_dir_names)} dirs)"
     )
-    plt.axvline(mean_val, color="red", linestyle="--", linewidth=2, label=f"Mean: {mean_val:.4f}")
-    plt.axvline(median_val, color="blue", linestyle="--", linewidth=2, label=f"Median: {median_val:.4f}")
-    plt.xlabel("CSP Significance Threshold (ppm)")
-    plt.ylabel("Number of Targets")
-    plt.title("Distribution of CSP Significance Thresholds Across Dataset")
-    plt.legend()
-    plt.tight_layout()
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(output_path, dpi=args.dpi)
-    plt.close()
+    figures_dir.mkdir(parents=True, exist_ok=True)
+    temp_dir = str(figures_dir)
+    heatmap_path = create_grid_heatmap(
+        best_h_offsets,
+        best_n_offsets,
+        temp_dir,
+        h_grid_values=h_grid_values,
+        n_grid_values=n_grid_values,
+    )
 
-    print(f"SI Fig. S18 written to {output_path.resolve()}")
+    if not heatmap_path:
+        print("Failed to create heatmap.")
+        return 1
+
+    suppl_path = figures_dir / "SF18_ideal_offsets.png"
+    os.rename(heatmap_path, suppl_path)
+    print(f"SI Fig. S18 saved to {suppl_path.resolve()}")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

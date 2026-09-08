@@ -29,12 +29,14 @@ from dataclasses import dataclass
 try:
     from .confusion_matrix_analysis import ConfusionMatrix, compute_confusion_matrix, read_master_alignment
     from .config import classification_colors, hex_to_rgb01
+    from .merge_csv import exceeds_max_classification_csp_z
     from .target_resolution import TargetRow, build_resolution_caches, resolve_row
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.confusion_matrix_analysis import ConfusionMatrix, compute_confusion_matrix, read_master_alignment
     from scripts.config import classification_colors, hex_to_rgb01
+    from scripts.merge_csv import exceeds_max_classification_csp_z
     from scripts.target_resolution import TargetRow, build_resolution_caches, resolve_row
 
 
@@ -188,6 +190,10 @@ def classify_residues_from_master_alignment(master_alignment_rows: List[Dict[str
         
         # Skip prolines (residues without NH groups)
         if holo_aa == 'P':
+            continue
+
+        # Extreme CSP z-scores are left unclassified (same as merge_csv)
+        if exceeds_max_classification_csp_z(row.get("csp_z", "")):
             continue
         
         # Get occlusion status

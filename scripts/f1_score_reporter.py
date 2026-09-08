@@ -29,7 +29,8 @@ try:
         compute_f1_score,
         PREDICTOR_COLUMNS,
     )
-    from .analyze_targets_ca import to_bool
+    from .analyze_targets_ca import load_ca_alignment, to_bool
+    from .merge_csv import filter_recorded_csp_dataframe
     from .target_resolution import TargetRow, load_target_rows, resolve_target_rows
 except ImportError:
     from analyze_targets import (
@@ -39,13 +40,24 @@ except ImportError:
         compute_f1_score,
         PREDICTOR_COLUMNS,
     )
-    from analyze_targets_ca import to_bool
+    from analyze_targets_ca import load_ca_alignment, to_bool
+    from merge_csv import filter_recorded_csp_dataframe
     from target_resolution import TargetRow, load_target_rows, resolve_target_rows
 
 MODE_CONFIGS: Dict[str, Dict[str, str]] = {
-    "nh": {"label": "N-H", "csv": "master_alignment.csv", "significant": "significant"},
-    "nh_ca": {"label": "N-H-CA", "csv": "csp_table_CA.csv", "significant": "csp_CA_significant"},
-    "ha_ca": {"label": "HA-CA", "csv": "csp_table_HA_CA.csv", "significant": "csp_HA_CA_significant"},
+    "nh": {"label": "N-H", "csv": "master_alignment.csv", "csp": "csp_A", "significant": "significant"},
+    "nh_ca": {
+        "label": "N-H-CA",
+        "csv": "csp_table_CA.csv",
+        "csp": "csp_CA",
+        "significant": "csp_CA_significant",
+    },
+    "ha_ca": {
+        "label": "HA-CA",
+        "csv": "csp_table_HA_CA.csv",
+        "csp": "csp_HA_CA",
+        "significant": "csp_HA_CA_significant",
+    },
 }
 
 
@@ -132,17 +144,31 @@ def _load_mode_dataframe(target_dir: Path, mode_key: str) -> pd.DataFrame:
     if mode_key == "nh":
         return load_alignment(csv_path)
 
-    df = pd.read_csv(csv_path)
-    significant_col = cfg["significant"]
-    required_columns = (significant_col, *PREDICTOR_COLUMNS)
-    missing_columns = [column for column in required_columns if column not in df.columns]
-    if missing_columns:
-        raise AlignmentParsingError(
-            f"Alignment file {csv_path} is missing required columns: {', '.join(missing_columns)}"
+    # Prefer merged CA/HA-CA alignment (includes binding-site predictors)
+    try:
+        df = load_ca_alignment(target_dir, mode_key)
+    except Exception:
+        df = pd.read_csv(csv_path)
+        significant_col = cfg["significant"]
+        required_columns = (significant_col, *PREDICTOR_COLUMNS)
+        missing_columns = [column for column in required_columns if column not in df.columns]
+        if missing_columns:
+            raise AlignmentParsingError(
+                f"Alignment file {csv_path} is missing required columns: {', '.join(missing_columns)}"
+            )
+        df = filter_recorded_csp_dataframe(
+            df, csp_column=cfg["csp"], significant_column=significant_col
         )
-    for column in (significant_col, *PREDICTOR_COLUMNS):
-        if column in df.columns:
-            df[column] = df[column].apply(to_bool)
+        for column in (significant_col, *PREDICTOR_COLUMNS):
+            if column in df.columns:
+                df[column] = df[column].apply(to_bool)
+        return df
+
+    significant_col = cfg["significant"]
+    if significant_col not in df.columns:
+        raise AlignmentParsingError(
+            f"Alignment file {csv_path} is missing required columns: {significant_col}"
+        )
     return df
 
 

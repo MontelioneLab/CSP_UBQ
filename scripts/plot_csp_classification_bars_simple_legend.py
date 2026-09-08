@@ -19,6 +19,7 @@ import argparse
 import csv
 import sys
 from pathlib import Path
+from typing import Optional, Sequence, Tuple
 
 try:
     import matplotlib
@@ -46,12 +47,27 @@ def _get_colors():
     }
 
 
+DEFAULT_YLABEL = r"$\Delta\delta_{\mathrm{NH}}$ (ppm)"
+
+
 def plot_csp_classification_bars_simple_legend(
     target_dir: Path,
     output_path: Path,
+    *,
+    ylabel: Optional[str] = DEFAULT_YLABEL,
+    xlabel: Optional[str] = None,
+    ylabel_fontsize: float = 22,
+    xlabel_fontsize: float = 18,
+    dpi: int = 200,
+    figsize: Tuple[float, float] = (14, 8),
+    hide_yticks: Optional[Sequence[float]] = None,
 ) -> bool:
     """
     Create CSP classification bar plot with simple legend (color, quadrant, count).
+
+    Legend entries are ``TP (n)`` / ``FP (n)`` / ``TN (n)`` / ``FN (n)`` only.
+    Pass ``xlabel=None`` (default) to omit a baked-in x-axis title so a composite
+    figure can label the column once.
 
     Returns True on success, False otherwise.
     """
@@ -105,7 +121,7 @@ def plot_csp_classification_bars_simple_legend(
     sig_csps = [csp_values[i] for i, c in enumerate(classifications) if c in ("TP", "FP")]
     threshold = min(sig_csps) if sig_csps else 0.0
 
-    plt.figure(figsize=(14, 8))
+    plt.figure(figsize=figsize)
     ax = plt.gca()
 
     # Light gray backing for binding-site residues (TP and FN)
@@ -135,12 +151,23 @@ def plot_csp_classification_bars_simple_legend(
     ax.set_xticks(residue_numbers)
     ax.set_xticklabels(aa_labels, fontsize=14)
     ax.tick_params(axis="x", which="major", pad=2, labelsize=14)
-    ax.tick_params(axis="y", which="major", labelsize=22)
+    ax.tick_params(axis="y", which="major", labelsize=ylabel_fontsize)
+    if ylabel:
+        ax.set_ylabel(ylabel, fontsize=ylabel_fontsize)
+    if xlabel:
+        ax.set_xlabel(xlabel, fontsize=xlabel_fontsize)
     plt.grid(True, alpha=0.3, axis="y")
+
+    if hide_yticks:
+        ylim = ax.get_ylim()
+        hidden = {round(float(v), 6) for v in hide_yticks}
+        kept = [t for t in ax.get_yticks() if round(float(t), 6) not in hidden]
+        ax.set_yticks(kept)
+        ax.set_ylim(ylim)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     plt.tight_layout()
-    plt.savefig(output_path, dpi=200, bbox_inches="tight")
+    plt.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close()
 
     print(f"Saved: {output_path}")
@@ -163,6 +190,17 @@ def main() -> int:
         default=None,
         help="Output path (default: <target_dir>/csp_classification_bars_simple_legend.png)",
     )
+    parser.add_argument(
+        "--xlabel",
+        type=str,
+        default=None,
+        help="Optional x-axis title (default: none).",
+    )
+    parser.add_argument(
+        "--no-ylabel",
+        action="store_true",
+        help="Omit the default Δδ_NH (ppm) y-axis label.",
+    )
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parent.parent
@@ -173,7 +211,12 @@ def main() -> int:
     else:
         output_path = target_dir / "csp_classification_bars_simple_legend.png"
 
-    success = plot_csp_classification_bars_simple_legend(target_dir, output_path)
+    success = plot_csp_classification_bars_simple_legend(
+        target_dir,
+        output_path,
+        ylabel=None if args.no_ylabel else DEFAULT_YLABEL,
+        xlabel=args.xlabel,
+    )
     return 0 if success else 1
 
 

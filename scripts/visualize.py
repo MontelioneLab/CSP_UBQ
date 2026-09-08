@@ -21,11 +21,13 @@ except Exception:
 try:
     from .csp import CSPResult, compute_atom_deltas_with_offset
     from .config import classification_colors, hex_to_rgb01 as _config_hex_to_rgb01
+    from .merge_csv import exceeds_max_classification_csp_z
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.csp import CSPResult, compute_atom_deltas_with_offset
     from scripts.config import classification_colors, hex_to_rgb01 as _config_hex_to_rgb01
+    from scripts.merge_csv import exceeds_max_classification_csp_z
 
 
 AA_THREE_TO_ONE: Dict[str, str] = {
@@ -263,36 +265,11 @@ def _compute_dssp_secondary_structure(pdb_path: str, receptor_chain: Optional[st
     """
     Compute residue secondary structure with DSSP and return {residue_number -> H/E/C}.
     """
-    ss_map: Dict[int, str] = {}
-    if not pdb_path or not os.path.exists(pdb_path):
-        return ss_map
     try:
-        from Bio.PDB import PDBParser  # type: ignore
-        from Bio.PDB.DSSP import DSSP  # type: ignore
+        from .secondary_structure import compute_dssp_secondary_structure
     except Exception:
-        return ss_map
-
-    reduce_ss = {"H": "H", "G": "H", "I": "H", "B": "E", "E": "E", "T": "C", "S": "C", "-": "C", "C": "C"}
-    chain_filter = (receptor_chain or "").strip()
-    try:
-        parser = PDBParser(QUIET=True)
-        structure = parser.get_structure("ss_model", pdb_path)
-        model = structure[0]
-        dssp = DSSP(model, pdb_path, dssp="mkdssp")
-        for key in dssp.keys():
-            chain_id = key[0]
-            res_id = key[1]
-            if chain_filter and chain_id != chain_filter:
-                continue
-            try:
-                resseq = int(res_id[1])
-            except Exception:
-                continue
-            ss_raw = str(dssp[key][2]).strip() if dssp[key] is not None else "C"
-            ss_map[resseq] = reduce_ss.get(ss_raw, "C")
-    except Exception:
-        return {}
-    return ss_map
+        from scripts.secondary_structure import compute_dssp_secondary_structure
+    return compute_dssp_secondary_structure(pdb_path, receptor_chain)
 
 
 def _resolve_secondary_structure_by_holo_index(
@@ -1976,88 +1953,124 @@ def write_pymol_interaction_union_script(
     print(f"[DEBUG] Total PyMOL commands generated: {len(lines)}")
 
 
-def plot_csp_distribution(results: List[CSPResult], out_png: str, title: Optional[str] = None) -> None:
+def plot_csp_distribution(
+    results: List[CSPResult],
+    out_png: str,
+    title: Optional[str] = None,
+    threshold: Optional[float] = None,
+    ylabel: Optional[str] = None,
+) -> None:
     if not _HAS_PLT:
         return
-    
+
     # Filter results with valid CSP values
     valid_results = [r for r in results if r.csp_A is not None]
     if not valid_results:
         return
-    
+
     # Ensure we're using non-interactive backend
     import matplotlib
     matplotlib.use('Agg', force=True)
-    
+
     # Extract data for plotting
     positions = []
     csp_values = []
     significant_values = []
     significant_positions = []
-    
+
     for r in valid_results:
         # Use apo_index as the sequence position (1-based)
         positions.append(r.apo_index)
         csp_values.append(r.csp_A)
-        
-        # Separate significant CSPs for highlighting
-        if r.significant:
+
+        if threshold is not None:
+            if r.csp_A >= threshold:
+                significant_positions.append(r.apo_index)
+                significant_values.append(r.csp_A)
+        elif r.significant:
             significant_positions.append(r.apo_index)
             significant_values.append(r.csp_A)
-    
-    # Create the plot
-    plt.figure(figsize=(12, 6))
-    
-    # Plot all CSPs as a line
-    plt.plot(positions, csp_values, 'o-', color='#4C78A8', markersize=4, linewidth=1, alpha=0.7, label='All CSPs')
-    
-    # Highlight significant CSPs
+
+    # Use an explicit Figure/Axes — never plt.savefig() on the global current
+    # figure (race-prone when offset-grid heatmaps are drawn elsewhere).
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    ax.plot(
+        positions,
+        csp_values,
+        'o-',
+        color='#4C78A8',
+        markersize=4,
+        linewidth=1,
+        alpha=0.7,
+        label='All CSPs',
+    )
+
     if significant_values:
-        plt.scatter(significant_positions, significant_values, color='red', s=20, alpha=0.8, label='Significant CSPs', zorder=5)
-    
-    # Add horizontal line at significance threshold (if we can determine it)
-    if significant_values:
-        # Estimate threshold as the minimum significant CSP value
-        threshold = min(significant_values)
-        plt.axhline(y=threshold, color='red', linestyle='--', alpha=0.5, label=f'Threshold ≈ {threshold:.3f}')
-    
-    # Set x-axis ticks with amino acid sequence
-    plt.xticks(positions, [r.apo_aa for r in valid_results], fontsize=8)
-    plt.xlabel("Sequence Position (Apo)")
-    plt.ylabel("CSP Magnitude")
-    plt.title(title or "Chemical Shift Perturbations Along Sequence")
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    
-    # Create three-row residue index system
+        ax.scatter(
+            significant_positions,
+            significant_values,
+            color='red',
+            s=20,
+            alpha=0.8,
+            label='Significant CSPs',
+            zorder=5,
+        )
+    line_y = threshold if threshold is not None else (
+        min(significant_values) if significant_values else None
+    )
+    if line_y is not None:
+        ax.axhline(
+            y=line_y,
+            color='red',
+            linestyle='--',
+            alpha=0.5,
+            label=f'Threshold = {line_y:.3f}' if threshold is not None else f'Threshold ≈ {line_y:.3f}',
+        )
+
+    ax.set_xticks(positions)
+    ax.set_xticklabels([r.apo_aa for r in valid_results], fontsize=8)
+    ax.set_ylabel(ylabel if ylabel is not None else "CSP Magnitude")
+    if title is None:
+        ax.set_title("Chemical Shift Perturbations Along Sequence")
+    elif title:
+        ax.set_title(title)
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
     residue_indices = [r.apo_index for r in valid_results]
     ones_ticks, tens_ticks, hundreds_ticks = create_three_row_residue_ticks(residue_indices)
-    
-    # Add three secondary x-axes for different digit places
-    ax2 = plt.gca().secondary_xaxis('bottom')
-    ax3 = plt.gca().secondary_xaxis('bottom')
-    ax4 = plt.gca().secondary_xaxis('bottom')
-    
-    # Row 1: Ones place (closest to main axis)
+
+    ax2 = ax.secondary_xaxis('bottom')
+    ax3 = ax.secondary_xaxis('bottom')
+    ax4 = ax.secondary_xaxis('bottom')
+
     ax2.set_xticks([pos for pos, _ in ones_ticks])
     ax2.set_xticklabels([label for _, label in ones_ticks], fontsize=5)
     ax2.spines['bottom'].set_position(('outward', 15))
-    
-    # Row 2: Tens place (middle)
+
+    outermost = ax2
     if tens_ticks:
         ax3.set_xticks([pos for pos, _ in tens_ticks])
         ax3.set_xticklabels([label for _, label in tens_ticks], fontsize=5)
         ax3.spines['bottom'].set_position(('outward', 30))
-    
-    # Row 3: Hundreds place (furthest from main axis)
+        outermost = ax3
+
     if hundreds_ticks:
         ax4.set_xticks([pos for pos, _ in hundreds_ticks])
         ax4.set_xticklabels([label for _, label in hundreds_ticks], fontsize=5)
         ax4.spines['bottom'].set_position(('outward', 45))
-    
-    plt.tight_layout()
-    plt.savefig(out_png, dpi=200)
-    plt.close()
+        outermost = ax4
+
+    # Place axis title below the multi-row residue ticks (not on the main axis).
+    # Secondary-axis labelpad is relative to that spine; use a large pad so the
+    # title clears ones/tens/hundreds digit rows.
+    outermost.set_xlabel("Sequence Position (Apo)", fontsize=11, labelpad=22)
+
+    fig.tight_layout()
+    fig.subplots_adjust(bottom=0.28)
+    fig.savefig(out_png, dpi=200, bbox_inches="tight")
+    plt.close(fig)
 
 
 def write_pymol_csp_classification_script(results: List[CSPResult], binding_results: dict, pdb_id: str, out_path: str, significance_field: str = 'significant', receptor_chain: Optional[str] = None, ligand_chain: Optional[str] = None, output_dir: Optional[str] = None) -> None:
@@ -2141,6 +2154,10 @@ def write_pymol_csp_classification_script(results: List[CSPResult], binding_resu
                 continue  # Skip residues without alignment
             
             residues_with_csp.add(pdb_residue_number)
+
+            # Extreme CSP z-scores: keep as having CSP but leave uncolored (unclassified)
+            if exceeds_max_classification_csp_z(getattr(r, "z_score", None)):
+                continue
             
             # Get binding status for this PDB residue
             is_binding = binding_lookup.get(pdb_residue_number, False)
@@ -2458,9 +2475,15 @@ def plot_csp_classification_bars(
     # Color scheme
     colors = _get_classification_colors()
     
+    plotted_results: List[CSPResult] = []
     for r in valid_results:
+        # Extreme CSP z-scores: omit the bar entirely (unclassified)
+        if exceeds_max_classification_csp_z(getattr(r, "z_score", None)):
+            continue
+
         residue_numbers.append(r.holo_index)
         csp_values.append(r.csp_A)
+        plotted_results.append(r)
         
         # Get corresponding PDB residue number from alignment
         pdb_residue_number = position_map.get(r.holo_index)
@@ -2483,9 +2506,16 @@ def plot_csp_classification_bars(
             classifications.append('TN')  # True Negative
         else:  # not is_significant and is_binding
             classifications.append('FN')  # False Negative
+
+    if not residue_numbers:
+        return
     
     # Calculate significance threshold (minimum significant CSP value)
-    significant_csps = [r.csp_A for r in valid_results if getattr(r, significance_field, False)]
+    significant_csps = [
+        r.csp_A
+        for r in plotted_results
+        if getattr(r, significance_field, False) and r.csp_A is not None
+    ]
     threshold = min(significant_csps) if significant_csps else 0.0
     
     # Create the plot
@@ -2522,7 +2552,7 @@ def plot_csp_classification_bars(
     
     # Set x-axis ticks with amino acid sequence (letters only on first row).
     ax_main = plt.gca()
-    aa_labels = [str(r.holo_aa)[0] if r.holo_aa else '' for r in valid_results]
+    aa_labels = [str(r.holo_aa)[0] if r.holo_aa else '' for r in plotted_results]
     ax_main.set_xticks(residue_numbers)
     ax_main.set_xticklabels(aa_labels, fontsize=14)
     ax_main.tick_params(axis='x', which='major', pad=2, labelsize=14)
@@ -2530,7 +2560,7 @@ def plot_csp_classification_bars(
     
     if include_numeric_residue_ticks:
         # Create three-row residue index system
-        residue_indices = [r.holo_index for r in valid_results]
+        residue_indices = [r.holo_index for r in plotted_results]
         ones_ticks, tens_ticks, hundreds_ticks = create_three_row_residue_ticks(residue_indices)
 
         # Add secondary x-axes for digit-place rows.
