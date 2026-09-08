@@ -1,0 +1,829 @@
+data_26686
+
+#######################
+#  Entry information  #
+#######################
+
+save_entry_information
+   _Saveframe_category      entry_information
+
+   _Entry_title
+;
+Chemical shifts of calcium saturated CaM34 (CaM D93A, D129A)
+;
+   _BMRB_accession_number   26686
+   _BMRB_flat_file_name     bmr26686.str
+   _Entry_type              original
+   _Submission_date         2015-10-07
+   _Accession_date          2015-10-07
+   _Entry_origination       author
+   _NMR_STAR_version        2.1.1
+   _Experimental_method     NMR
+   _Details                 .
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+      1 Piazza    Michael  . .
+      2 Dieckmann Thorsten . .
+
+   stop_
+
+   loop_
+      _Saveframe_category_type
+      _Saveframe_category_type_count
+
+      assigned_chemical_shifts 1
+
+   stop_
+
+   loop_
+      _Data_type
+      _Data_type_count
+
+      "1H chemical shifts"  135
+      "15N chemical shifts" 135
+
+   stop_
+
+   loop_
+      _Revision_date
+      _Revision_keyword
+      _Revision_author
+      _Revision_detail
+
+      2016-07-08 update   BMRB   'update entry citation'
+      2016-02-12 original author 'original release'
+
+   stop_
+
+   loop_
+      _Related_BMRB_accession_number
+      _Relationship
+
+      26681 'CaM1234 (apo form)'
+      26682 'CaM12 (apo form)'
+      26683 'CaM34 (apo form)'
+      26685 'CaM12 (complex with Ca)'
+      26687 'CaM34 (complex with iNOS'
+
+   stop_
+
+   _Original_release_date   2016-02-12
+
+save_
+
+
+#############################
+#  Citation for this entry  #
+#############################
+
+save_entry_citation
+   _Saveframe_category           entry_citation
+
+   _Citation_full                .
+   _Citation_title
+;
+Chemical shift assignments of calmodulin constructs with EF hand mutations
+;
+   _Citation_status              published
+   _Citation_type                journal
+   _CAS_abstract_code            .
+   _MEDLINE_UI_code              .
+   _PubMed_ID                    26743203
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+      1 Piazza      Michael  . .
+      2 Guillemette Guy      . .
+      3 Dieckmann   Thorsten . .
+
+   stop_
+
+   _Journal_abbreviation        'Biomol. NMR Assign.'
+   _Journal_volume               10
+   _Journal_issue                1
+   _Journal_CSD                  .
+   _Book_chapter_title           .
+   _Book_volume                  .
+   _Book_series                  .
+   _Book_ISBN                    .
+   _Conference_state_province    .
+   _Conference_abstract_number   .
+   _Page_first                   193
+   _Page_last                    198
+   _Year                         2016
+   _Details                      .
+
+save_
+
+
+##################################
+#  Molecular system description  #
+##################################
+
+save_assembly
+   _Saveframe_category         molecular_system
+
+   _Mol_system_name            CaM34
+   _Enzyme_commission_number   .
+
+   loop_
+      _Mol_system_component_name
+      _Mol_label
+
+       CaM34        $CaM34
+      'CALCIUM ION' $entity_CA
+
+   stop_
+
+   _System_molecular_weight    .
+   _System_physical_state      native
+   _System_oligomer_state      ?
+   _System_paramagnetic        no
+   _System_thiol_state         .
+   _Database_query_date        .
+   _Details                    .
+
+save_
+
+
+    ########################
+    #  Monomeric polymers  #
+    ########################
+
+save_CaM34
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                 CaM34
+   _Molecular_mass                              .
+   _Mol_thiol_state                            'not present'
+   _Details                                     .
+
+   	##############################
+   	#  Polymer residue sequence  #
+   	##############################
+
+      _Residue_count                               148
+   _Mol_residue_sequence
+;
+ADQLTEEQIAEFKEAFSLFD
+KDGDGTITTKELGTVMRSLG
+QNPTEAELQDMINEVDADGN
+GTIDFPEFLTMMARKMKDTD
+SEEEIREAFRVFAKDGNGYI
+SAAELRHVMTNLGEKLTDEE
+VDEMIREAAIDGDGQVNYEE
+FVQMMTAK
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+
+        1 ALA    2 ASP    3 GLN    4 LEU    5 THR
+        6 GLU    7 GLU    8 GLN    9 ILE   10 ALA
+       11 GLU   12 PHE   13 LYS   14 GLU   15 ALA
+       16 PHE   17 SER   18 LEU   19 PHE   20 ASP
+       21 LYS   22 ASP   23 GLY   24 ASP   25 GLY
+       26 THR   27 ILE   28 THR   29 THR   30 LYS
+       31 GLU   32 LEU   33 GLY   34 THR   35 VAL
+       36 MET   37 ARG   38 SER   39 LEU   40 GLY
+       41 GLN   42 ASN   43 PRO   44 THR   45 GLU
+       46 ALA   47 GLU   48 LEU   49 GLN   50 ASP
+       51 MET   52 ILE   53 ASN   54 GLU   55 VAL
+       56 ASP   57 ALA   58 ASP   59 GLY   60 ASN
+       61 GLY   62 THR   63 ILE   64 ASP   65 PHE
+       66 PRO   67 GLU   68 PHE   69 LEU   70 THR
+       71 MET   72 MET   73 ALA   74 ARG   75 LYS
+       76 MET   77 LYS   78 ASP   79 THR   80 ASP
+       81 SER   82 GLU   83 GLU   84 GLU   85 ILE
+       86 ARG   87 GLU   88 ALA   89 PHE   90 ARG
+       91 VAL   92 PHE   93 ALA   94 LYS   95 ASP
+       96 GLY   97 ASN   98 GLY   99 TYR  100 ILE
+      101 SER  102 ALA  103 ALA  104 GLU  105 LEU
+      106 ARG  107 HIS  108 VAL  109 MET  110 THR
+      111 ASN  112 LEU  113 GLY  114 GLU  115 LYS
+      116 LEU  117 THR  118 ASP  119 GLU  120 GLU
+      121 VAL  122 ASP  123 GLU  124 MET  125 ILE
+      126 ARG  127 GLU  128 ALA  129 ALA  130 ILE
+      131 ASP  132 GLY  133 ASP  134 GLY  135 GLN
+      136 VAL  137 ASN  138 TYR  139 GLU  140 GLU
+      141 PHE  142 VAL  143 GLN  144 MET  145 MET
+      146 THR  147 ALA  148 LYS
+
+   stop_
+
+   _Sequence_homology_query_date                .
+   _Sequence_homology_query_revised_last_date   .
+
+save_
+
+
+    #############
+    #  Ligands  #
+    #############
+
+save_CA
+   _Saveframe_category             ligand
+
+   _Mol_type                      "non-polymer (NON-POLYMER)"
+   _Name_common                   "entity_CA (CALCIUM ION)"
+   _BMRB_code                      CA
+   _PDB_code                       CA
+   _Molecular_mass                 40.078
+   _Mol_charge                     2
+   _Mol_paramagnetic               .
+   _Mol_aromatic                   no
+   _Details                        .
+
+   loop_
+      _Atom_name
+      _PDB_atom_name
+      _Atom_type
+      _Atom_chirality
+      _Atom_charge
+      _Atom_oxidation_number
+      _Atom_unpaired_electrons
+
+      CA CA CA . 2 . ?
+
+   stop_
+
+   _Mol_thiol_state                .
+   _Sequence_homology_query_date   .
+
+save_
+
+
+    ####################
+    #  Natural source  #
+    ####################
+
+save_natural_source
+   _Saveframe_category   natural_source
+
+
+   loop_
+      _Mol_label
+      _Organism_name_common
+      _NCBI_taxonomy_ID
+      _Superkingdom
+      _Kingdom
+      _Genus
+      _Species
+
+      $CaM34 Human 9606 Eukaryota Metazoa Homo sapiens
+
+   stop_
+
+save_
+
+
+    #########################
+    #  Experimental source  #
+    #########################
+
+save_experimental_source
+   _Saveframe_category   experimental_source
+
+
+   loop_
+      _Mol_label
+      _Production_method
+      _Host_organism_name_common
+      _Genus
+      _Species
+      _Strain
+      _Vector_name
+
+      $CaM34 'recombinant technology' . Escherichia coli . pET28a
+
+   stop_
+
+save_
+
+
+#####################################
+#  Sample contents and methodology  #
+#####################################
+
+    ########################
+    #  Sample description  #
+    ########################
+
+save_sample_1
+   _Saveframe_category   sample
+
+   _Sample_type          solution
+   _Details              .
+
+   loop_
+      _Mol_label
+      _Concentration_value
+      _Concentration_value_units
+      _Isotopic_labeling
+
+      $CaM34                 1   mM '[U-99% 13C; U-99% 15N]'
+      'potassium chloride' 100   mM 'natural abundance'
+      'calcium chloride'     1   mM 'natural abundance'
+      'sodium azide'         0.2 mM 'natural abundance'
+
+   stop_
+
+save_
+
+
+############################
+#  Computer software used  #
+############################
+
+save_CARA
+   _Saveframe_category   software
+
+   _Name                 CARA
+   _Version              .
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      'Keller and Wuthrich' . .
+
+   stop_
+
+   loop_
+      _Task
+
+      'chemical shift assignment'
+
+   stop_
+
+   _Details              .
+
+save_
+
+
+#########################
+#  Experimental detail  #
+#########################
+
+    ##################################
+    #  NMR Spectrometer definitions  #
+    ##################################
+
+save_spectrometer_1
+   _Saveframe_category   NMR_spectrometer
+
+   _Manufacturer         Bruker
+   _Model                DRX
+   _Field_strength       600
+   _Details              .
+
+save_
+
+
+    #############################
+    #  NMR applied experiments  #
+    #############################
+
+save_2D_1H-15N_HSQC_1
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '2D 1H-15N HSQC'
+   _Sample_label        $sample_1
+
+save_
+
+
+#######################
+#  Sample conditions  #
+#######################
+
+save_sample_conditions_1
+   _Saveframe_category   sample_conditions
+
+   _Details              .
+
+   loop_
+      _Variable_type
+      _Variable_value
+      _Variable_value_error
+      _Variable_value_units
+
+      'ionic strength'   0.150 . M
+       pH                6.5   . pH
+       pressure          1     . atm
+       temperature     298     . K
+
+   stop_
+
+save_
+
+
+####################
+#  NMR parameters  #
+####################
+
+    ##############################
+    #  Assigned chemical shifts  #
+    ##############################
+
+	################################
+	#  Chemical shift referencing  #
+	################################
+
+save_chemical_shift_reference_1
+   _Saveframe_category   chemical_shift_reference
+
+   _Details              .
+
+   loop_
+      _Mol_common_name
+      _Atom_type
+      _Atom_isotope_number
+      _Atom_group
+      _Chem_shift_units
+      _Chem_shift_value
+      _Reference_method
+      _Reference_type
+      _External_reference_sample_geometry
+      _External_reference_location
+      _External_reference_axis
+      _Indirect_shift_ratio
+
+      DSS H  1 'methyl protons' ppm 0.00 internal direct   . . . 1.000000000
+      DSS N 15 'methyl protons' ppm 0.00 na       indirect . . . 0.101329118
+
+   stop_
+
+save_
+
+
+	###################################
+	#  Assigned chemical shift lists  #
+	###################################
+
+###################################################################
+#       Chemical Shift Ambiguity Index Value Definitions          #
+#                                                                 #
+# The values other than 1 are used for those atoms with different #
+# chemical shifts that cannot be assigned to stereospecific atoms #
+# or to specific residues or chains.                              #
+#                                                                 #
+#   Index Value            Definition                             #
+#                                                                 #
+#      1             Unique (including isolated methyl protons,   #
+#                         geminal atoms, and geminal methyl       #
+#                         groups with identical chemical shifts)  #
+#                         (e.g. ILE HD11, HD12, HD13 protons)     #
+#      2             Ambiguity of geminal atoms or geminal methyl #
+#                         proton groups (e.g. ASP HB2 and HB3     #
+#                         protons, LEU CD1 and CD2 carbons, or    #
+#                         LEU HD11, HD12, HD13 and HD21, HD22,    #
+#                         HD23 methyl protons)                    #
+#      3             Aromatic atoms on opposite sides of          #
+#                         symmetrical rings (e.g. TYR HE1 and HE2 #
+#                         protons)                                #
+#      4             Intraresidue ambiguities (e.g. LYS HG and    #
+#                         HD protons or TRP HZ2 and HZ3 protons)  #
+#      5             Interresidue ambiguities (LYS 12 vs. LYS 27) #
+#      6             Intermolecular ambiguities (e.g. ASP 31 CA   #
+#                         in monomer 1 and ASP 31 CA in monomer 2 #
+#                         of an asymmetrical homodimer, duplex    #
+#                         DNA assignments, or other assignments   #
+#                         that may apply to atoms in one or more  #
+#                         molecule in the molecular assembly)     #
+#      9             Ambiguous, specific ambiguity not defined    #
+#                                                                 #
+###################################################################
+save_assigned_chem_shift_list_1
+   _Saveframe_category               assigned_chemical_shifts
+
+   _Details                          .
+
+   loop_
+      _Software_label
+
+      $CARA
+
+   stop_
+
+   loop_
+      _Experiment_label
+
+      '2D 1H-15N HSQC'
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1
+
+   stop_
+
+   _Sample_conditions_label         $sample_conditions_1
+   _Chem_shift_reference_set_label  $chemical_shift_reference_1
+   _Mol_system_component_name        CaM34
+   _Text_data_format                 .
+   _Text_data                        .
+
+   loop_
+      _Atom_shift_assign_ID
+      _Residue_author_seq_code
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _Atom_type
+      _Chem_shift_value
+      _Chem_shift_value_error
+      _Chem_shift_ambiguity_code
+
+        1   1   1 ALA H H   8.380 0.020 1
+        2   1   1 ALA N N 123.171 0.3   1
+        3   2   2 ASP H H   7.998 0.020 1
+        4   2   2 ASP N N 117.408 0.3   1
+        5   3   3 GLN H H   7.829 0.020 1
+        6   3   3 GLN N N 118.016 0.3   1
+        7   5   5 THR H H   8.634 0.020 1
+        8   5   5 THR N N 112.609 0.3   1
+        9   6   6 GLU H H   8.972 0.020 1
+       10   6   6 GLU N N 120.150 0.3   1
+       11   7   7 GLU H H   8.669 0.020 1
+       12   7   7 GLU N N 119.200 0.3   1
+       13   8   8 GLN H H   7.675 0.020 1
+       14   8   8 GLN N N 119.767 0.3   1
+       15   9   9 ILE H H   8.347 0.020 1
+       16   9   9 ILE N N 119.371 0.3   1
+       17  10  10 ALA H H   7.939 0.020 1
+       18  10  10 ALA N N 120.709 0.3   1
+       19  11  11 GLU H H   7.716 0.020 1
+       20  11  11 GLU N N 119.268 0.3   1
+       21  12  12 PHE H H   8.507 0.020 1
+       22  12  12 PHE N N 119.555 0.3   1
+       23  13  13 LYS H H   9.112 0.020 1
+       24  13  13 LYS N N 123.203 0.3   1
+       25  14  14 GLU H H   7.690 0.020 1
+       26  14  14 GLU N N 119.954 0.3   1
+       27  15  15 ALA H H   7.904 0.020 1
+       28  15  15 ALA N N 122.354 0.3   1
+       29  16  16 PHE H H   8.736 0.020 1
+       30  16  16 PHE N N 118.654 0.3   1
+       31  17  17 SER H H   7.892 0.020 1
+       32  17  17 SER N N 112.667 0.3   1
+       33  18  18 LEU H H   7.319 0.020 1
+       34  18  18 LEU N N 120.064 0.3   1
+       35  19  19 PHE H H   7.186 0.020 1
+       36  19  19 PHE N N 114.443 0.3   1
+       37  20  20 ASP H H   7.752 0.020 1
+       38  20  20 ASP N N 117.819 0.3   1
+       39  21  21 LYS H H   7.522 0.020 1
+       40  21  21 LYS N N 124.068 0.3   1
+       41  22  22 ASP H H   7.943 0.020 1
+       42  22  22 ASP N N 113.338 0.3   1
+       43  23  23 GLY H H   7.626 0.020 1
+       44  23  23 GLY N N 108.959 0.3   1
+       45  24  24 ASP H H   8.338 0.020 1
+       46  24  24 ASP N N 120.323 0.3   1
+       47  25  25 GLY H H  10.546 0.020 1
+       48  25  25 GLY N N 112.826 0.3   1
+       49  26  26 THR H H   8.084 0.020 1
+       50  26  26 THR N N 112.231 0.3   1
+       51  27  27 ILE H H   9.788 0.020 1
+       52  27  27 ILE N N 126.653 0.3   1
+       53  28  28 THR H H   8.362 0.020 1
+       54  28  28 THR N N 116.324 0.3   1
+       55  29  29 THR H H   9.097 0.020 1
+       56  29  29 THR N N 112.410 0.3   1
+       57  30  30 LYS H H   7.395 0.020 1
+       58  30  30 LYS N N 120.326 0.3   1
+       59  31  31 GLU H H   7.593 0.020 1
+       60  31  31 GLU N N 120.720 0.3   1
+       61  32  32 LEU H H   8.656 0.020 1
+       62  32  32 LEU N N 120.383 0.3   1
+       63  33  33 GLY H H   8.647 0.020 1
+       64  33  33 GLY N N 105.992 0.3   1
+       65  34  34 THR H H   7.770 0.020 1
+       66  34  34 THR N N 118.049 0.3   1
+       67  35  35 VAL H H   7.510 0.020 1
+       68  35  35 VAL N N 121.826 0.3   1
+       69  36  36 MET H H   8.418 0.020 1
+       70  36  36 MET N N 119.254 0.3   1
+       71  37  37 ARG H H   8.476 0.020 1
+       72  37  37 ARG N N 119.136 0.3   1
+       73  38  38 SER H H   7.887 0.020 1
+       74  38  38 SER N N 118.704 0.3   1
+       75  39  39 LEU H H   7.289 0.020 1
+       76  39  39 LEU N N 119.966 0.3   1
+       77  40  40 GLY H H   7.799 0.020 1
+       78  40  40 GLY N N 106.590 0.3   1
+       79  41  41 GLN H H   7.749 0.020 1
+       80  41  41 GLN N N 118.152 0.3   1
+       81  42  42 ASN H H   8.655 0.020 1
+       82  42  42 ASN N N 115.970 0.3   1
+       83  44  44 THR H H   8.656 0.020 1
+       84  44  44 THR N N 112.731 0.3   1
+       85  45  45 GLU H H   8.746 0.020 1
+       86  45  45 GLU N N 120.395 0.3   1
+       87  46  46 ALA H H   8.214 0.020 1
+       88  46  46 ALA N N 120.693 0.3   1
+       89  47  47 GLU H H   7.633 0.020 1
+       90  47  47 GLU N N 118.445 0.3   1
+       91  48  48 LEU H H   8.093 0.020 1
+       92  48  48 LEU N N 120.526 0.3   1
+       93  49  49 GLN H H   8.183 0.020 1
+       94  49  49 GLN N N 118.049 0.3   1
+       95  50  50 ASP H H   8.001 0.020 1
+       96  50  50 ASP N N 119.950 0.3   1
+       97  51  51 MET H H   7.807 0.020 1
+       98  51  51 MET N N 118.732 0.3   1
+       99  52  52 ILE H H   7.661 0.020 1
+      100  52  52 ILE N N 117.690 0.3   1
+      101  53  53 ASN H H   8.544 0.020 1
+      102  53  53 ASN N N 117.436 0.3   1
+      103  54  54 GLU H H   7.460 0.020 1
+      104  54  54 GLU N N 116.047 0.3   1
+      105  55  55 VAL H H   7.142 0.020 1
+      106  55  55 VAL N N 109.529 0.3   1
+      107  56  56 ASP H H   7.544 0.020 1
+      108  56  56 ASP N N 121.765 0.3   1
+      109  57  57 ALA H H   8.267 0.020 1
+      110  57  57 ALA N N 131.278 0.3   1
+      111  58  58 ASP H H   8.124 0.020 1
+      112  58  58 ASP N N 113.547 0.3   1
+      113  59  59 GLY H H   7.518 0.020 1
+      114  59  59 GLY N N 108.146 0.3   1
+      115  60  60 ASN H H   8.051 0.020 1
+      116  60  60 ASN N N 118.310 0.3   1
+      117  61  61 GLY H H  10.509 0.020 1
+      118  61  61 GLY N N 112.999 0.3   1
+      119  62  62 THR H H   7.594 0.020 1
+      120  62  62 THR N N 108.394 0.3   1
+      121  63  63 ILE H H   8.732 0.020 1
+      122  63  63 ILE N N 123.051 0.3   1
+      123  64  64 ASP H H   8.833 0.020 1
+      124  64  64 ASP N N 128.003 0.3   1
+      125  65  65 PHE H H   8.879 0.020 1
+      126  65  65 PHE N N 118.422 0.3   1
+      127  68  68 PHE H H   8.682 0.020 1
+      128  68  68 PHE N N 123.255 0.3   1
+      129  69  69 LEU H H   8.249 0.020 1
+      130  69  69 LEU N N 119.108 0.3   1
+      131  70  70 THR H H   7.401 0.020 1
+      132  70  70 THR N N 116.545 0.3   1
+      133  71  71 MET H H   7.601 0.020 1
+      134  71  71 MET N N 121.166 0.3   1
+      135  73  73 ALA H H   8.038 0.020 1
+      136  73  73 ALA N N 122.383 0.3   1
+      137  74  74 ARG H H   7.468 0.020 1
+      138  74  74 ARG N N 116.585 0.3   1
+      139  75  75 LYS H H   7.614 0.020 1
+      140  75  75 LYS N N 118.371 0.3   1
+      141  76  76 MET H H   7.931 0.020 1
+      142  76  76 MET N N 114.667 0.3   1
+      143  77  77 LYS H H   7.669 0.020 1
+      144  77  77 LYS N N 120.132 0.3   1
+      145  78  78 ASP H H   8.229 0.020 1
+      146  78  78 ASP N N 121.253 0.3   1
+      147  79  79 THR H H   7.988 0.020 1
+      148  79  79 THR N N 113.486 0.3   1
+      149  80  80 ASP H H   8.295 0.020 1
+      150  80  80 ASP N N 122.305 0.3   1
+      151  81  81 SER H H   8.336 0.020 1
+      152  81  81 SER N N 116.217 0.3   1
+      153  82  82 GLU H H   8.328 0.020 1
+      154  82  82 GLU N N 121.891 0.3   1
+      155  83  83 GLU H H   8.125 0.020 1
+      156  83  83 GLU N N 119.864 0.3   1
+      157  84  84 GLU H H   7.901 0.020 1
+      158  84  84 GLU N N 118.873 0.3   1
+      159  85  85 ILE H H   7.949 0.020 1
+      160  85  85 ILE N N 121.398 0.3   1
+      161  87  87 GLU H H   8.287 0.020 1
+      162  87  87 GLU N N 119.285 0.3   1
+      163  88  88 ALA H H   7.897 0.020 1
+      164  88  88 ALA N N 122.007 0.3   1
+      165  89  89 PHE H H   7.900 0.020 1
+      166  89  89 PHE N N 116.274 0.3   1
+      167  94  94 LYS H H   8.068 0.020 1
+      168  94  94 LYS N N 120.302 0.3   1
+      169  95  95 ASP H H   8.253 0.020 1
+      170  95  95 ASP N N 119.390 0.3   1
+      171  96  96 GLY H H   8.143 0.020 1
+      172  96  96 GLY N N 107.709 0.3   1
+      173  97  97 ASN H H   8.232 0.020 1
+      174  97  97 ASN N N 117.894 0.3   1
+      175  98  98 GLY H H   8.259 0.020 1
+      176  98  98 GLY N N 107.748 0.3   1
+      177  99  99 TYR H H   7.848 0.020 1
+      178  99  99 TYR N N 118.619 0.3   1
+      179 101 101 SER H H   8.508 0.020 1
+      180 101 101 SER N N 119.086 0.3   1
+      181 102 102 ALA H H   8.706 0.020 1
+      182 102 102 ALA N N 125.209 0.3   1
+      183 103 103 ALA H H   8.201 0.020 1
+      184 103 103 ALA N N 118.096 0.3   1
+      185 104 104 GLU H H   7.757 0.020 1
+      186 104 104 GLU N N 118.609 0.3   1
+      187 105 105 LEU H H   8.078 0.020 1
+      188 105 105 LEU N N 120.754 0.3   1
+      189 106 106 ARG H H   8.019 0.020 1
+      190 106 106 ARG N N 117.472 0.3   1
+      191 107 107 HIS H H   7.679 0.020 1
+      192 107 107 HIS N N 117.567 0.3   1
+      193 108 108 VAL H H   7.958 0.020 1
+      194 108 108 VAL N N 118.951 0.3   1
+      195 109 109 MET H H   8.140 0.020 1
+      196 109 109 MET N N 117.489 0.3   1
+      197 110 110 THR H H   7.927 0.020 1
+      198 110 110 THR N N 112.825 0.3   1
+      199 111 111 ASN H H   7.906 0.020 1
+      200 111 111 ASN N N 119.669 0.3   1
+      201 112 112 LEU H H   7.737 0.020 1
+      202 112 112 LEU N N 119.890 0.3   1
+      203 113 113 GLY H H   8.176 0.020 1
+      204 113 113 GLY N N 107.894 0.3   1
+      205 114 114 GLU H H   8.019 0.020 1
+      206 114 114 GLU N N 119.572 0.3   1
+      207 115 115 LYS H H   8.216 0.020 1
+      208 115 115 LYS N N 120.422 0.3   1
+      209 116 116 LEU H H   7.876 0.020 1
+      210 116 116 LEU N N 121.897 0.3   1
+      211 117 117 THR H H   8.722 0.020 1
+      212 117 117 THR N N 112.559 0.3   1
+      213 118 118 ASP H H   8.699 0.020 1
+      214 118 118 ASP N N 120.382 0.3   1
+      215 119 119 GLU H H   8.419 0.020 1
+      216 119 119 GLU N N 117.571 0.3   1
+      217 120 120 GLU H H   7.750 0.020 1
+      218 120 120 GLU N N 120.199 0.3   1
+      219 121 121 VAL H H   8.099 0.020 1
+      220 121 121 VAL N N 121.002 0.3   1
+      221 122 122 ASP H H   8.296 0.020 1
+      222 122 122 ASP N N 119.741 0.3   1
+      223 123 123 GLU H H   8.196 0.020 1
+      224 123 123 GLU N N 119.994 0.3   1
+      225 124 124 MET H H   7.853 0.020 1
+      226 124 124 MET N N 119.225 0.3   1
+      227 125 125 ILE H H   8.171 0.020 1
+      228 125 125 ILE N N 119.223 0.3   1
+      229 126 126 ARG H H   7.885 0.020 1
+      230 126 126 ARG N N 120.199 0.3   1
+      231 127 127 GLU H H   8.050 0.020 1
+      232 127 127 GLU N N 117.926 0.3   1
+      233 128 128 ALA H H   7.628 0.020 1
+      234 128 128 ALA N N 120.980 0.3   1
+      235 129 129 ALA H H   8.010 0.020 1
+      236 129 129 ALA N N 121.756 0.3   1
+      237 130 130 ILE H H   7.788 0.020 1
+      238 130 130 ILE N N 118.823 0.3   1
+      239 131 131 ASP H H   8.250 0.020 1
+      240 131 131 ASP N N 122.876 0.3   1
+      241 132 132 GLY H H   8.304 0.020 1
+      242 132 132 GLY N N 108.650 0.3   1
+      243 133 133 ASP H H   8.169 0.020 1
+      244 133 133 ASP N N 119.581 0.3   1
+      245 134 134 GLY H H   8.190 0.020 1
+      246 134 134 GLY N N 108.876 0.3   1
+      247 135 135 GLN H H   8.055 0.020 1
+      248 135 135 GLN N N 118.740 0.3   1
+      249 137 137 ASN H H   8.507 0.020 1
+      250 137 137 ASN N N 123.293 0.3   1
+      251 138 138 TYR H H   8.228 0.020 1
+      252 138 138 TYR N N 122.875 0.3   1
+      253 139 139 GLU H H   8.177 0.020 1
+      254 139 139 GLU N N 119.799 0.3   1
+      255 141 141 PHE H H   7.957 0.020 1
+      256 141 141 PHE N N 120.866 0.3   1
+      257 142 142 VAL H H   8.065 0.020 1
+      258 142 142 VAL N N 119.038 0.3   1
+      259 143 143 GLN H H   7.735 0.020 1
+      260 143 143 GLN N N 119.597 0.3   1
+      261 144 144 MET H H   7.712 0.020 1
+      262 144 144 MET N N 117.192 0.3   1
+      263 145 145 MET H H   7.593 0.020 1
+      264 145 145 MET N N 114.946 0.3   1
+      265 146 146 THR H H   7.734 0.020 1
+      266 146 146 THR N N 112.376 0.3   1
+      267 147 147 ALA H H   7.809 0.020 1
+      268 147 147 ALA N N 125.720 0.3   1
+      269 148 148 LYS H H   7.749 0.020 1
+      270 148 148 LYS N N 125.508 0.3   1
+
+   stop_
+
+save_
+

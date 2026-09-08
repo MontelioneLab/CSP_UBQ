@@ -4,11 +4,15 @@ Build apo/holo experimental-condition summary from BMRB NMR-STAR files.
 
 Reads CSP_UBQ.csv (apo_bmrb, holo_bmrb, apo_pdb, holo_pdb), loads cached STAR
 files from CS_Lists/{id}_21.str or {id}_3.str, extracts pH, temperature (°C),
-ionic strength (mM), and explicit NaCl (mM, NMR-STAR 3 sample components only).
+ionic strength (mM), spectrometer field strength (MHz), and explicit NaCl
+(mM, NMR-STAR 3 sample components only).
 
 Output: apo_holo_exp_conditions.csv with conditions_similar True only when
 both sides report NaCl and |ΔNaCl| <= NACL_TOLERANCE_MM, |ΔpH| <= 0.5, and
 |ΔT_C| <= 5. Missing pH, temperature, or NaCl on either side yields False.
+
+Also writes ionic_similar (|ΔI| <= IONIC_TOLERANCE_MM when both present) and
+spectrometer_similar (exact primary field-strength MHz match when both present).
 
 Many legacy (_21) entries lack NaCl component rows; conditions_similar is then
 usually False even when ionic strength is present.
@@ -27,6 +31,7 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 # --- Tunable comparison thresholds ---
 NACL_TOLERANCE_MM = 50.0
+IONIC_TOLERANCE_MM = 50.0
 PH_TOLERANCE = 0.5
 TEMP_TOLERANCE_C = 5.0
 
@@ -93,6 +98,10 @@ class ExtractedConditions:
     temperature_C: Optional[float] = None
     ionic_strength_mM: Optional[float] = None
     nacl_mM: Optional[float] = None
+    field_strength_MHz: Optional[float] = None
+    pressure: Optional[float] = None
+    pressure_units: Optional[str] = None
+    pressure_atm: Optional[float] = None
 
 
 def _parse_float_token(tok: str) -> Optional[float]:
@@ -113,17 +122,72 @@ def _normalize_condition_key(type_str: str) -> Optional[str]:
         return "temperature"
     if "ionic" in s and "strength" in s:
         return "ionic_strength"
+    if "pressure" in s:
+        return "pressure"
     return None
 
 
 def _temp_to_celsius(val: float, units: str) -> Optional[float]:
-    u = units.strip().strip("'\"").lower()
-    if u in ("k", "kelvin"):
-        return val - 273.15
-    if u in ("c", "celsius", "°c", "degc"):
+    """
+    Convert a deposited sample-condition temperature to °C.
+
+    BMRB entries almost always label temperature as Kelvin. Many depositors
+    store integer Kelvin as °C+273 (e.g. 298 → 25 °C, 273 → 0 °C) rather than
+    the thermodynamic °C+273.15, which would otherwise yield values like
+    24.85 °C or -0.15 °C. Non-integer Kelvin (e.g. 298.15) uses 273.15.
+
+    If a value is labeled Kelvin but the converted result is outside a
+    plausible NMR range while the raw value looks like °C, keep the raw
+    value (mislabeled units).
+    """
+    u = units.strip().strip("'\"").lower().replace("°", "")
+    u = (
+        u.replace("degrees", " ")
+        .replace("degree", " ")
+        .replace("deg.", "deg")
+        .strip()
+    )
+    u = " ".join(u.split())
+
+    if u in ("k", "kelvin", "kelvins", "deg k", "degk"):
+        if abs(val - round(val)) < 1e-6:
+            # Integer Kelvin: BMRB convention is typically °C + 273.
+            tc = float(round(val) - 273)
+        else:
+            tc = val - 273.15
+        # Guard against Celsius values mislabeled as Kelvin (e.g. 25 K).
+        if (tc < -20.0 or tc > 120.0) and -20.0 <= val <= 120.0:
+            return val
+        return tc
+    if u in ("c", "celsius", "degc", "deg c", "centigrade"):
         return val
-    if u in ("f", "fahrenheit"):
+    if u in ("f", "fahrenheit", "degf", "deg f"):
         return (val - 32.0) * 5.0 / 9.0
+    return None
+
+
+def _pressure_to_atm(val: float, units: str) -> Optional[float]:
+    """Convert a deposited sample-condition pressure to atmospheres."""
+    u = (units or "").strip().strip("'\"").lower().replace("°", "")
+    u = " ".join(u.replace(".", " ").split())
+    if u in ("atm", "atms", "atmosphere", "atmospheres"):
+        return val
+    if u in ("bar", "bars"):
+        return val * 0.9869232667160128
+    if u in ("pa", "pascal", "pascals"):
+        return val / 101325.0
+    if u in ("kpa",):
+        return val / 101.325
+    if u in ("mpa",):
+        return val / 0.101325
+    if u in ("psi",):
+        return val / 14.6959487755134
+    if u in ("torr", "mmhg", "mm hg"):
+        return val / 760.0
+    # Missing/unknown units: ambient-like values are almost always atm.
+    if not u or u in ("?",):
+        if 0.5 <= val <= 2.0:
+            return val
     return None
 
 
@@ -230,6 +294,45 @@ def _is_sample_saveframe_v3(body: str) -> bool:
     )
 
 
+def _is_nmr_spectrometer_saveframe_v21(body: str) -> bool:
+    return bool(
+        re.search(r"^\s*_Saveframe_category\s+NMR_spectrometer\s*$", body, re.MULTILINE)
+    )
+
+
+def _is_nmr_spectrometer_saveframe_v3(body: str) -> bool:
+    return bool(
+        re.search(
+            r"^\s*_NMR_spectrometer\.Sf_category\s+NMR_spectrometer\s*$",
+            body,
+            re.MULTILINE,
+        )
+    )
+
+
+def _primary_field_strength_from_star(lines: List[str], fmt: str) -> Optional[float]:
+    """Return field strength (MHz) from the first NMR_spectrometer saveframe."""
+    for start, save_end, _name in _iter_saveframes(lines):
+        body = _saveframe_body(lines, start, save_end)
+        if fmt == "3":
+            if not _is_nmr_spectrometer_saveframe_v3(body):
+                continue
+            m = re.search(
+                r"^\s*_NMR_spectrometer\.Field_strength\s+(\S+)",
+                body,
+                re.MULTILINE,
+            )
+            if m:
+                return _parse_float_token(m.group(1))
+        else:
+            if not _is_nmr_spectrometer_saveframe_v21(body):
+                continue
+            m = re.search(r"^\s*_Field_strength\s+(\S+)", body, re.MULTILINE)
+            if m:
+                return _parse_float_token(m.group(1))
+    return None
+
+
 def _merge_condition_row(
     acc: Dict[str, Tuple[float, str]], row: Dict[str, str], tag_type: str, tag_val: str, tag_units: str
 ) -> None:
@@ -316,6 +419,12 @@ def extract_conditions_from_star(star_path: str) -> ExtractedConditions:
         im = _ionic_to_mM(val, units)
         if im is not None:
             out.ionic_strength_mM = im
+    if "pressure" in merged:
+        val, units = merged["pressure"]
+        out.pressure = val
+        u = (units or "").strip().strip("'\"")
+        out.pressure_units = u if u and u != "." else None
+        out.pressure_atm = _pressure_to_atm(val, units)
 
     # NaCl: NMR-STAR 3 sample components only
     if fmt == "3":
@@ -371,7 +480,109 @@ def extract_conditions_from_star(star_path: str) -> ExtractedConditions:
                         nacl_done = True
                         break
 
+    out.field_strength_MHz = _primary_field_strength_from_star(lines, fmt)
     return out
+
+
+def _clean_star_token(tok: str) -> str:
+    t = (tok or "").strip().strip("'\"")
+    if t in (".", "?", ""):
+        return ""
+    return t
+
+
+def _parse_sample_details_from_body(body: str) -> str:
+    """Extract _Sample.Details (quoted or semicolon-delimited block)."""
+    m = re.search(r"_Sample\.Details\s*\n;\n(.*?)\n;", body, re.DOTALL)
+    if m:
+        return " ".join(m.group(1).split()).strip()
+    m = re.search(r"_Sample\.Details\s+'([^']*)'", body)
+    if m:
+        return m.group(1).strip()
+    m = re.search(r'_Sample\.Details\s+"([^"]*)"', body)
+    if m:
+        return m.group(1).strip()
+    m = re.search(r"_Sample\.Details\s+(\S+)", body)
+    if m:
+        return _clean_star_token(m.group(1))
+    return ""
+
+
+def _format_component_entry(name: str, conc: Optional[float], units: str) -> str:
+    if conc is None:
+        return name
+    u = units.strip() if units else ""
+    c = f"{conc:g}"
+    return f"{name} {c} {u}".strip() if u else f"{name} {c}"
+
+
+def extract_sample_components_from_star(star_path: str) -> str:
+    """
+    Return a short sample-composition string from NMR-STAR.
+
+    Prefers the first sample saveframe with a Sample_component loop
+    (Mol_common_name + concentration). Falls back to Sample.Details from the
+    first sample that has it. Empty string if neither is available.
+    """
+    with open(star_path, "r", encoding="utf-8", errors="ignore") as f:
+        text = f.read()
+    lines = _tokenize_star_lines(text)
+    fmt = _detect_bmrb_format(star_path)
+
+    first_details = ""
+    if fmt == "3":
+        for start, save_end, _name in _iter_saveframes(lines):
+            body = _saveframe_body(lines, start, save_end)
+            if not _is_sample_saveframe_v3(body):
+                continue
+            if not first_details:
+                first_details = _parse_sample_details_from_body(body)
+            i = start + 1
+            while i < save_end:
+                parsed = _parse_loop_at(lines, i, save_end)
+                if not parsed:
+                    i += 1
+                    continue
+                tags, rows, ni = parsed
+                i = ni
+                tag_stripped = [t.strip() for t in tags]
+                if not any("Sample_component.Mol_common_name" in t for t in tag_stripped):
+                    continue
+                t_name = next(
+                    (t for t in tags if "Sample_component.Mol_common_name" in t), ""
+                )
+                t_conc = next(
+                    (
+                        t
+                        for t in tags
+                        if "Sample_component.Concentration_val" in t
+                        and "min" not in t.lower()
+                        and "max" not in t.lower()
+                        and "err" not in t.lower()
+                    ),
+                    "",
+                )
+                t_units = next(
+                    (t for t in tags if "Sample_component.Concentration_val_units" in t),
+                    "",
+                )
+                if not t_name:
+                    continue
+                parts: List[str] = []
+                for toks in rows:
+                    row = {tags[j]: toks[j] for j in range(min(len(tags), len(toks)))}
+                    name = _clean_star_token(row.get(t_name, ""))
+                    if not name:
+                        continue
+                    conc = _parse_float_token(row.get(t_conc, "")) if t_conc else None
+                    units = _clean_star_token(row.get(t_units, "")) if t_units else ""
+                    parts.append(_format_component_entry(name, conc, units))
+                if parts:
+                    return "; ".join(parts)
+        return first_details
+
+    # NMR-STAR 2.1: Details-like tags are uncommon; return empty for now.
+    return ""
 
 
 def resolve_star_path(bmrb_id: str, cs_dir: Path) -> Optional[Path]:
@@ -403,6 +614,20 @@ def _similar_salt(a: Optional[float], b: Optional[float]) -> bool:
     return abs(a - b) <= NACL_TOLERANCE_MM
 
 
+def _similar_ionic(
+    a: Optional[float], b: Optional[float], *, tol_mm: float = IONIC_TOLERANCE_MM
+) -> bool:
+    if a is None or b is None:
+        return False
+    return abs(a - b) <= tol_mm
+
+
+def _similar_spectrometer(a: Optional[float], b: Optional[float]) -> bool:
+    if a is None or b is None:
+        return False
+    return a == b
+
+
 def _similar_ph(a: Optional[float], b: Optional[float]) -> bool:
     if a is None or b is None:
         return False
@@ -429,6 +654,7 @@ def row_to_csv_values(ec: ExtractedConditions) -> Dict[str, Any]:
         "temperature_C": fmt(ec.temperature_C, 2),
         "NaCl_mM": fmt(ec.nacl_mM, 4),
         "ionic_strength_mM": fmt(ec.ionic_strength_mM, 4),
+        "field_strength_MHz": fmt(ec.field_strength_MHz, 1),
     }
 
 
@@ -475,13 +701,17 @@ def main() -> None:
         "apo_temperature_C",
         "apo_NaCl_mM",
         "apo_ionic_strength_mM",
+        "apo_field_strength_MHz",
         "holo_pH",
         "holo_temperature_C",
         "holo_NaCl_mM",
         "holo_ionic_strength_mM",
+        "holo_field_strength_MHz",
         "salt_similar",
         "ph_similar",
         "temp_similar",
+        "ionic_similar",
+        "spectrometer_similar",
         "conditions_similar",
     ]
 
@@ -501,6 +731,10 @@ def main() -> None:
         salt_ok = _similar_salt(apo_ec.nacl_mM, holo_ec.nacl_mM)
         ph_ok = _similar_ph(apo_ec.pH, holo_ec.pH)
         temp_ok = _similar_temp(apo_ec.temperature_C, holo_ec.temperature_C)
+        ionic_ok = _similar_ionic(apo_ec.ionic_strength_mM, holo_ec.ionic_strength_mM)
+        spec_ok = _similar_spectrometer(
+            apo_ec.field_strength_MHz, holo_ec.field_strength_MHz
+        )
         all_ok = salt_ok and ph_ok and temp_ok
 
         av = row_to_csv_values(apo_ec)
@@ -517,13 +751,17 @@ def main() -> None:
                 "apo_temperature_C": av["temperature_C"],
                 "apo_NaCl_mM": av["NaCl_mM"],
                 "apo_ionic_strength_mM": av["ionic_strength_mM"],
+                "apo_field_strength_MHz": av["field_strength_MHz"],
                 "holo_pH": hv["pH"],
                 "holo_temperature_C": hv["temperature_C"],
                 "holo_NaCl_mM": hv["NaCl_mM"],
                 "holo_ionic_strength_mM": hv["ionic_strength_mM"],
+                "holo_field_strength_MHz": hv["field_strength_MHz"],
                 "salt_similar": salt_ok,
                 "ph_similar": ph_ok,
                 "temp_similar": temp_ok,
+                "ionic_similar": ionic_ok,
+                "spectrometer_similar": spec_ok,
                 "conditions_similar": all_ok,
             }
         )

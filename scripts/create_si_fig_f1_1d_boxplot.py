@@ -7,8 +7,8 @@ For each target directory under ``outputs/``, the F1 scores for 1D H, N, CA,
 and optionally HA CSPs are computed (reusing :func:`collect_1d_f1_results` from
 :mod:`analyze_targets_single_atom_shifts`). Targets are gated by CA row
 coverage (:func:`target_basenames_passing_ca_shift_coverage`, same rule as SI
-Fig. S10 / S11). The plot uses the intersection of targets that yield a valid
-F1 for every atom in the chosen ``atom_order`` (SI Fig. S14 uses H/N/CA only so
+Fig. S11 / S12). The plot uses the intersection of targets that yield a valid
+F1 for every atom in the chosen ``atom_order`` (SI Fig. S15 uses H/N/CA only so
 *n* matches the CA-gated cohort without requiring HA F1).
 
 Inter-group comparisons use paired Wilcoxon signed-rank tests for all
@@ -60,8 +60,8 @@ ATOM_COLORS = {
 
 _VALID_ATOMS = frozenset(ATOM_ORDER)
 
-# SI Fig. S14: N/H/Cα only (same CA gate as S10/S11; omit Hα so n matches CA cohort).
-SF14_ATOM_ORDER: Tuple[str, ...] = ("H", "N", "CA")
+# SI Fig. S15: N/H/Cα only (same CA gate as S11/S12; omit Hα so n matches CA cohort).
+SF15_ATOM_ORDER: Tuple[str, ...] = ("H", "N", "CA")
 
 
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:

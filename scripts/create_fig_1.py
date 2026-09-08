@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create publication-ready Figure 1 panels as two separate files:
+Create publication-ready Figure 1 panels and a stacked combined figure:
 
 - figure_1_a.png: the chemical-shift offset grid-search heatmap for PDB 7JQ8,
   copied from the pipeline ``outputs/<HOLO>_<apo_bmrb>/offset_grid_*.png`` (resolved
@@ -8,6 +8,7 @@ Create publication-ready Figure 1 panels as two separate files:
 - figure_1_b.png: a 3x3 confusion-matrix table summarizing the TP/FP/FN/TN
   classification scheme used throughout the study, with colors pulled from
   `scripts/config.py` so they stay consistent with the rest of the project.
+- figure_1.png: panel A above panel B, labeled ``A.`` and ``B.``.
 """
 
 from __future__ import annotations
@@ -18,23 +19,42 @@ import sys
 from pathlib import Path
 from typing import Iterable
 
+import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 
 try:
-    from .config import classification_colors
+    from .config import Referencing, classification_colors
+    from .csp import _build_param_slug
     from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
-    from scripts.config import classification_colors
+    from scripts.config import Referencing, classification_colors
+    from scripts.csp import _build_param_slug
     from scripts.target_resolution import load_target_rows, resolve_target_rows
 
 
 _FIG1_HOLO_PDB = "7jq8"
-_FIG1_OFFSET_GRID_BASENAME = "offset_grid_H_-0.12_0.12_0.01__N_-1.2_1.2_0.05__C_0.05.png"
+
+
+def _default_hn_offset_grid_basename(*, ext: str = "png") -> str:
+    cfg = Referencing()
+    slug = _build_param_slug(
+        h_min=cfg.grid_h_min,
+        h_max=cfg.grid_h_max,
+        h_step=cfg.grid_h_step,
+        n_min=cfg.grid_n_min,
+        n_max=cfg.grid_n_max,
+        n_step=cfg.grid_n_step,
+        cutoff=float(cfg.grid_cutoff),
+    )
+    return f"offset_grid_{slug}.{ext}"
+
+
+_FIG1_OFFSET_GRID_BASENAME = _default_hn_offset_grid_basename(ext="png")
 
 DEFAULT_PANEL_A = (
     _REPO_ROOT
@@ -129,7 +149,8 @@ def save_panel_a(panel_a_path: Path, output_path: Path) -> None:
     if not panel_a_path.exists():
         raise FileNotFoundError(f"Panel A image not found: {panel_a_path}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(panel_a_path, output_path)
+    if panel_a_path.resolve() != output_path.resolve():
+        shutil.copyfile(panel_a_path, output_path)
 
 
 def save_panel_b(
@@ -157,9 +178,51 @@ def save_panel_b(
     plt.close(fig)
 
 
+def compose_two_panel_figure(
+    panel_a_path: Path,
+    panel_b_path: Path,
+    output_image: Path,
+    *,
+    dpi: int,
+) -> None:
+    """Stack existing Panel A/B PNGs with ``A.`` / ``B.`` labels."""
+    image_a = mpimg.imread(panel_a_path)
+    image_b = mpimg.imread(panel_b_path)
+    aspect_a = image_a.shape[0] / max(image_a.shape[1], 1)
+    aspect_b = image_b.shape[0] / max(image_b.shape[1], 1)
+    fig_width = 8.0
+    fig_height = fig_width * (aspect_a + aspect_b) + 0.6
+
+    fig, axes = plt.subplots(
+        2,
+        1,
+        figsize=(fig_width, fig_height),
+        gridspec_kw={"height_ratios": [aspect_a, aspect_b]},
+    )
+    for ax, image, label in ((axes[0], image_a, "A."), (axes[1], image_b, "B.")):
+        ax.imshow(image)
+        ax.set_axis_off()
+        ax.text(
+            0.01,
+            1.02,
+            label,
+            transform=ax.transAxes,
+            va="bottom",
+            ha="left",
+            fontsize=20,
+            fontweight="bold",
+            clip_on=False,
+        )
+
+    plt.subplots_adjust(left=0.04, right=0.98, top=0.96, bottom=0.02, hspace=0.08)
+    output_image.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_image, dpi=dpi)
+    plt.close(fig)
+
+
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create Figure 1A (offset-grid heatmap) and Figure 1B (confusion-matrix table) as separate PNGs."
+        description="Create Figure 1A, Figure 1B, and stacked figure_1.png (A. above B.)."
     )
     parser.add_argument(
         "--panel-a",
@@ -194,6 +257,12 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
         default=_REPO_ROOT / "figures/figure_1_b.png",
         help="Output path for Panel B (default: figures/figure_1_b.png).",
     )
+    parser.add_argument(
+        "--output-combined",
+        type=Path,
+        default=_REPO_ROOT / "figures/figure_1.png",
+        help="Stacked combined figure path (default: figures/figure_1.png).",
+    )
     parser.add_argument("--dpi", type=int, default=600)
     parser.add_argument(
         "--fig-width",
@@ -221,6 +290,11 @@ def main(argv: Iterable[str]) -> int:
     )
     output_a = args.output_a if args.output_a.is_absolute() else _REPO_ROOT / args.output_a
     output_b = args.output_b if args.output_b.is_absolute() else _REPO_ROOT / args.output_b
+    output_c = (
+        args.output_combined
+        if args.output_combined.is_absolute()
+        else _REPO_ROOT / args.output_combined
+    )
 
     if not panel_a.exists() and panel_a.resolve() == DEFAULT_PANEL_A.resolve():
         alt = resolve_fig1_panel_a_from_pipeline(outputs_dir, targets_csv)
@@ -235,8 +309,11 @@ def main(argv: Iterable[str]) -> int:
         fig_height=args.fig_height,
     )
 
+    compose_two_panel_figure(output_a, output_b, output_c, dpi=args.dpi)
+
     print(f"Figure 1A written to {output_a.resolve()}")
     print(f"Figure 1B written to {output_b.resolve()}")
+    print(f"Figure 1 written to {output_c.resolve()}")
     return 0
 
 

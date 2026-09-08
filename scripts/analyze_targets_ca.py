@@ -26,11 +26,13 @@ import seaborn as sns
 try:
     from .align import align_global
     from .config import classification_colors
+    from .merge_csv import filter_recorded_csp_dataframe
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.align import align_global
     from scripts.config import classification_colors
+    from scripts.merge_csv import filter_recorded_csp_dataframe
 
 
 CA_DISTANCE_COLUMN = "min_ca_distance_distance"
@@ -42,13 +44,14 @@ PREDICTOR_COLUMNS: Sequence[str] = (
     "is_occluded_occlusion",
 )
 
-# Matplotlib mathtext: C with α subscript (not plaintext "CA"). Used by distance histogram x-axes (e.g. SI Fig. S10).
+# Matplotlib mathtext: C with α subscript (not plaintext "CA"). Used by distance histogram x-axes (e.g. SI Fig. S11).
 MIN_CA_DISTANCE_XLABEL = r"Minimum $C_\alpha$ distance (Å)"
 
 MODE_CONFIGS: Dict[str, Dict[str, str]] = {
     "nh_ca": {
         "label": "CA-inclusive",
         "table": "csp_table_CA.csv",
+        "csp": "csp_CA",
         "significant": "csp_CA_significant",
         "heatmap_title": "Per-target F1 Scores (CA-inclusive CSPs)",
         "hist_title": "Distribution of Significant Residues by Minimum CA Distance (CA-inclusive CSPs)",
@@ -61,6 +64,7 @@ MODE_CONFIGS: Dict[str, Dict[str, str]] = {
     "ha_ca": {
         "label": "HA/CA",
         "table": "csp_table_HA_CA.csv",
+        "csp": "csp_HA_CA",
         "significant": "csp_HA_CA_significant",
         "heatmap_title": "Per-target F1 Scores (HA/CA CSPs)",
         "hist_title": "Distribution of Significant Residues by Minimum CA Distance (HA/CA CSPs)",
@@ -394,7 +398,12 @@ def load_ca_alignment(target_dir: Path, mode_key: str) -> pd.DataFrame:
     
     # Convert boolean columns
     significant_column = cfg["significant"]
+    csp_column = cfg["csp"]
     if significant_column in df.columns:
+        # Residues without a recorded CSP must not enter TP/FP/TN/FN or F1 denominators
+        df = filter_recorded_csp_dataframe(
+            df, csp_column=csp_column, significant_column=significant_column
+        )
         df[significant_column] = df[significant_column].apply(to_bool)
     
     for col in PREDICTOR_COLUMNS:
@@ -474,6 +483,10 @@ def load_nh_alignment(alignment_path: Path) -> pd.DataFrame:
             f"Alignment file {alignment_path} is missing required columns: "
             f"{', '.join(missing_columns)}"
         )
+
+    df = filter_recorded_csp_dataframe(
+        df, csp_column="csp_A", significant_column=nh_significant_col
+    )
 
     for column in (nh_significant_col, *PREDICTOR_COLUMNS):
         if column in df.columns:

@@ -126,6 +126,7 @@ def generate_case_study_2_figure(
     force_view_reset: bool = False,
     panel_labels: Optional[Sequence[str]] = None,
     view_key: Optional[str] = None,
+    allow_interactive_view: bool = True,
 ) -> str:
     csp_bars_path = os.path.join(target_dir, "csp_classification_bars_original.png")
     color_csp_mask_pml = os.path.join(target_dir, "color_csp_mask.pml")
@@ -171,6 +172,10 @@ def generate_case_study_2_figure(
                 print(f"[CASE_STUDY_2] WARNING: Saved view is invalid ({cand}): {exc}; trying next.")
 
     if view is None:
+        if not allow_interactive_view:
+            raise RuntimeError(
+                f"No saved PyMOL view for {view_id} and interactive capture is disabled."
+            )
         capture_user_view_interactive(
             color_csp_mask_pml_path=color_csp_mask_pml,
             view_output_path=view_path_save,

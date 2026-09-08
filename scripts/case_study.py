@@ -4,11 +4,12 @@ Utilities for assembling per-target case-study figures.
 
 from __future__ import annotations
 
+import csv
 import json
 import os
 import subprocess
 import tempfile
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import matplotlib
 
@@ -32,6 +33,35 @@ def format_case_study_metadata_header(
         f"holo_pdb: {holo_s} | apo_pdb: {apo_s} | "
         f"apo_bmrb: {apo_bmrb or 'N/A'} | holo_bmrb: {holo_bmrb or 'N/A'}"
     )
+
+
+def read_applied_hn_offsets_from_csp_table(
+    target_dir: str,
+) -> Optional[Tuple[float, float]]:
+    """Return (H_offset, N_offset) from the first non-empty pair in csp_table.csv."""
+    csp_table_path = os.path.join(target_dir, "csp_table.csv")
+    if not os.path.exists(csp_table_path):
+        return None
+    with open(csp_table_path, newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            h_raw = (row.get("H_offset") or "").strip()
+            n_raw = (row.get("N_offset") or "").strip()
+            if not h_raw or not n_raw:
+                continue
+            try:
+                return float(h_raw), float(n_raw)
+            except ValueError:
+                continue
+    return None
+
+
+def format_hsqc_offset_panel_title(
+    h_offset: Optional[float] = None,
+    n_offset: Optional[float] = None,
+) -> str:
+    """Case-study panel A title. Offsets are shown in the HSQC legend, not here."""
+    return "Apo/Holo HSQC Offset"
 
 
 def _case_study_view_load_candidates(
@@ -190,6 +220,7 @@ def compose_case_study_figure(
     rendered_panels: Dict[str, str],
     output_path: str,
     case_study_header: Optional[str] = None,
+    hsqc_panel_title: Optional[str] = None,
 ) -> None:
     """
     Build case-study figure:
@@ -247,7 +278,12 @@ def compose_case_study_figure(
     ax_bottom_right.set_box_aspect(panel_right.shape[0] / panel_right.shape[1])
 
     ax_top_left.imshow(hsqc_panel)
-    ax_top_left.set_title("Apo/Holo HSQC Offset", fontsize=14, fontweight="bold", pad=4)
+    ax_top_left.set_title(
+        hsqc_panel_title or "Apo/Holo HSQC Offset",
+        fontsize=14,
+        fontweight="bold",
+        pad=4,
+    )
     ax_top_right.imshow(csp_plot)
     ax_top_right.set_title("CSP Classification", fontsize=14, fontweight="bold", pad=4)
     ax_top_right.set_xlabel("Sequence", fontsize=14)
@@ -300,6 +336,7 @@ def generate_case_study_figure(
     apo_pdb: Optional[str] = None,
     force_view_reset: bool = False,
     view_key: Optional[str] = None,
+    allow_interactive_view: bool = True,
 ) -> str:
     """
     Generate <pdb_id>_case_study.png in a target output directory.
@@ -350,6 +387,10 @@ def generate_case_study_figure(
                 print(f"[CASE_STUDY] WARNING: Saved view is invalid ({cand}): {exc}; trying next.")
 
     if view is None:
+        if not allow_interactive_view:
+            raise RuntimeError(
+                f"No saved PyMOL view for {view_id} and interactive capture is disabled."
+            )
         capture_user_view_interactive(
             color_csp_mask_pml_path=color_csp_mask_pml,
             view_output_path=view_path_save,
@@ -370,5 +411,12 @@ def generate_case_study_figure(
     hsqc_panel = extract_hsqc_bottom_right_panel(hsqc_scatter_path)
     out_path = os.path.join(target_dir, f"{pdb_id}_case_study.png")
     header = format_case_study_metadata_header(pdb_id, apo_bmrb, holo_bmrb, apo_pdb)
-    compose_case_study_figure(hsqc_panel, csp_bars_path, rendered, out_path, case_study_header=header)
+    compose_case_study_figure(
+        hsqc_panel,
+        csp_bars_path,
+        rendered,
+        out_path,
+        case_study_header=header,
+        hsqc_panel_title="Apo/Holo HSQC Offset",
+    )
     return out_path

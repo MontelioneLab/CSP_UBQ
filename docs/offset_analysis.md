@@ -5,8 +5,9 @@ This document describes `scripts/analyze_offsets.py`, which summarizes holo refe
 The script pulls two data sources from `outputs/`:
 
 - Per-target `csp_table.csv` files (`H_offset`, `N_offset`)
-- Per-target grid-search summary CSV files named:
-  `offset_grid_H_-0.12_0.12_0.01__N_-1.2_1.2_0.05__C_0.05.csv`
+- Per-target grid-search summary CSV files named from the current
+  `Referencing` defaults (e.g.
+  `offset_grid_H_-0.2_0.2_0.01__N_-1.5_1.5_0.05__C_0.05.csv`)
 
 For duplicate systems, suffixed target directories (for example `2K7A_1`, `2K7A_2`) are treated as separate targets.
 

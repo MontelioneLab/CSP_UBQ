@@ -1,0 +1,1870 @@
+data_25034
+
+#######################
+#  Entry information  #
+#######################
+
+save_entry_information
+   _Saveframe_category      entry_information
+
+   _Entry_title            
+;
+Amide 1H and 15N chemical shift assignments and 15N relaxation parameters of the troponin C-troponin I hybrid proteins cChimera 
+;
+   _BMRB_accession_number   25034
+   _BMRB_flat_file_name     bmr25034.str
+   _Entry_type              original
+   _Submission_date         2014-06-20
+   _Accession_date          2014-06-20
+   _Entry_origination       author
+   _NMR_STAR_version        2.1.1
+   _Experimental_method     NMR
+   _Details                 .
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+      1 'Pineda Sanabria' Sandra  E. . 
+      2  Sykes            Brian   D. . 
+      3  Julien           Olivier .  . 
+
+   stop_
+
+   loop_
+      _Saveframe_category_type
+      _Saveframe_category_type_count
+
+      assigned_chemical_shifts 1 
+      heteronucl_NOE           2 
+      T1_relaxation            2 
+      T2_relaxation            2 
+
+   stop_
+
+   loop_
+      _Data_type
+      _Data_type_count
+
+      "1H chemical shifts"   171 
+      "15N chemical shifts"   95 
+      "T1 relaxation values" 181 
+      "T2 relaxation values" 182 
+
+   stop_
+
+   loop_
+      _Revision_date
+      _Revision_keyword
+      _Revision_author
+      _Revision_detail
+
+      2014-09-26 update   BMRB   'update entry citation' 
+      2014-09-18 original author 'original release'      
+
+   stop_
+
+   loop_
+      _Related_BMRB_accession_number
+      _Relationship
+
+      25035 'troponin C-troponin I hybrid proteins cChimeraX' 
+
+   stop_
+
+save_
+
+
+#############################
+#  Citation for this entry  #
+#############################
+
+save_entry_citation
+   _Saveframe_category           entry_citation
+
+   _Citation_full                .
+   _Citation_title              'Versatile cardiac troponin chimera for muscle protein structural biology and drug discovery.'
+   _Citation_status              published
+   _Citation_type                journal
+   _CAS_abstract_code            .
+   _MEDLINE_UI_code              .
+   _PubMed_ID                    25010113
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+      1 Pineda-Sanabria Sandra  E. . 
+      2 Julien          Olivier .  . 
+      3 Sykes           Brian   D. . 
+
+   stop_
+
+   _Journal_abbreviation        'ACS Chem. Biol.'
+   _Journal_name_full           'ACS chemical biology'
+   _Journal_volume               9
+   _Journal_issue                9
+   _Journal_ISSN                 1554-8937
+   _Journal_CSD                  .
+   _Book_chapter_title           .
+   _Book_volume                  .
+   _Book_series                  .
+   _Book_ISBN                    .
+   _Conference_state_province    .
+   _Conference_abstract_number   .
+   _Page_first                   2121
+   _Page_last                    2130
+   _Year                         2014
+   _Details                      .
+
+save_
+
+
+##################################
+#  Molecular system description  #
+##################################
+
+save_assembly
+   _Saveframe_category         molecular_system
+
+   _Mol_system_name           'cChimera Ca2+ bound'
+   _Enzyme_commission_number   .
+
+   loop_
+      _Mol_system_component_name
+      _Mol_label
+
+       cChimera     $cChimera  
+      'CALCIUM ION' $entity_CA 
+
+   stop_
+
+   _System_molecular_weight    15977
+   _System_physical_state      native
+   _System_oligomer_state      ?
+   _System_paramagnetic        no
+   _System_thiol_state         .
+   _Database_query_date        .
+   _Details                    .
+
+save_
+
+
+    ########################
+    #  Monomeric polymers  #
+    ########################
+
+save_cChimera
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                 cChimera
+   _Molecular_mass                              15937
+   _Mol_thiol_state                            'all free'
+
+   loop_
+      _Biological_function
+
+      'Cardiac muscle contraction' 
+
+   stop_
+
+   _Details                                     .
+
+   	##############################
+   	#  Polymer residue sequence  #
+   	##############################
+   
+      _Residue_count                               141
+   _Mol_residue_sequence                       
+;
+MHHHHHHGGENLYFQGMDDI
+YKAAVEQLTEEQKNEFKAAF
+DIFVLGAEDGSISTKELGKV
+MRMLGQNPTPEELQEMIDEV
+DEDGSGTVDFDEFLVMMVRC
+MKDDSLVPPGSRRVRISADA
+MMQALLGARAKESLDLRAHL
+K
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_author_seq_code
+      _Residue_label
+
+        1 -16 MET    2 -15 HIS    3 -14 HIS    4 -13 HIS    5 -12 HIS 
+        6 -11 HIS    7 -10 HIS    8  -9 GLY    9  -8 GLY   10  -7 GLU 
+       11  -6 ASN   12  -5 LEU   13  -4 TYR   14  -3 PHE   15  -2 GLN 
+       16  -1 GLY   17   1 MET   18   2 ASP   19   3 ASP   20   4 ILE 
+       21   5 TYR   22   6 LYS   23   7 ALA   24   8 ALA   25   9 VAL 
+       26  10 GLU   27  11 GLN   28  12 LEU   29  13 THR   30  14 GLU 
+       31  15 GLU   32  16 GLN   33  17 LYS   34  18 ASN   35  19 GLU 
+       36  20 PHE   37  21 LYS   38  22 ALA   39  23 ALA   40  24 PHE 
+       41  25 ASP   42  26 ILE   43  27 PHE   44  28 VAL   45  29 LEU 
+       46  30 GLY   47  31 ALA   48  32 GLU   49  33 ASP   50  34 GLY 
+       51  35 SER   52  36 ILE   53  37 SER   54  38 THR   55  39 LYS 
+       56  40 GLU   57  41 LEU   58  42 GLY   59  43 LYS   60  44 VAL 
+       61  45 MET   62  46 ARG   63  47 MET   64  48 LEU   65  49 GLY 
+       66  50 GLN   67  51 ASN   68  52 PRO   69  53 THR   70  54 PRO 
+       71  55 GLU   72  56 GLU   73  57 LEU   74  58 GLN   75  59 GLU 
+       76  60 MET   77  61 ILE   78  62 ASP   79  63 GLU   80  64 VAL 
+       81  65 ASP   82  66 GLU   83  67 ASP   84  68 GLY   85  69 SER 
+       86  70 GLY   87  71 THR   88  72 VAL   89  73 ASP   90  74 PHE 
+       91  75 ASP   92  76 GLU   93  77 PHE   94  78 LEU   95  79 VAL 
+       96  80 MET   97  81 MET   98  82 VAL   99  83 ARG  100  84 CYS 
+      101  85 MET  102  86 LYS  103  87 ASP  104  88 ASP  105  89 SER 
+      106  90 LEU  107  91 VAL  108  92 PRO  109  93 PRO  110  94 GLY 
+      111  95 SER  112 144 ARG  113 145 ARG  114 146 VAL  115 147 ARG 
+      116 148 ILE  117 149 SER  118 150 ALA  119 151 ASP  120 152 ALA 
+      121 153 MET  122 154 MET  123 155 GLN  124 156 ALA  125 157 LEU 
+      126 158 LEU  127 159 GLY  128 160 ALA  129 161 ARG  130 162 ALA 
+      131 163 LYS  132 164 GLU  133 165 SER  134 166 LEU  135 167 ASP 
+      136 168 LEU  137 169 ARG  138 170 ALA  139 171 HIS  140 172 LEU 
+      141 173 LYS 
+
+   stop_
+
+   _Sequence_homology_query_date                .
+   _Sequence_homology_query_revised_last_date   2015-11-25
+
+   loop_
+      _Database_name
+      _Database_accession_code
+      _Database_entry_mol_name
+      _Sequence_query_to_submitted_percentage
+      _Sequence_subject_length
+      _Sequence_identity
+      _Sequence_positive
+      _Sequence_homology_expectation_value
+
+      BMRB        15385  F104W                                                                                                                            63.12 161 98.88 98.88 1.34e-53 
+      BMRB        15388  F153W                                                                                                                            63.12 161 98.88 98.88 1.34e-53 
+      BMRB        15400  F153(FTR)                                                                                                                        63.12 161 98.88 98.88 1.56e-53 
+      BMRB        15427  F104(FTR)                                                                                                                        63.12 161 98.88 98.88 1.34e-53 
+      BMRB        16190  cNTnC                                                                                                                            63.12  89 98.88 98.88 2.23e-54 
+      BMRB        16752  TnC                                                                                                                              63.12 161 98.88 98.88 5.38e-54 
+      BMRB        17103  cNTnC                                                                                                                            63.12  89 98.88 98.88 5.48e-55 
+      BMRB        19789  cNTnC                                                                                                                            63.12  89 98.88 98.88 5.48e-55 
+      BMRB        25120  cTnC                                                                                                                             63.12 161 98.88 98.88 1.76e-53 
+      BMRB        25495  cNTnC                                                                                                                            63.12  89 98.88 98.88 5.48e-55 
+      BMRB        25797  entity_1                                                                                                                         63.12  89 97.75 97.75 2.26e-53 
+      PDB  1AJ4          "Structure Of Calcium-Saturated Cardiac Troponin C, Nmr, 1 Structure"                                                             61.70 161 98.85 98.85 4.90e-52 
+      PDB  1AP4          "Regulatory Domain Of Human Cardiac Troponin C In The Calcium-Saturated State, Nmr, 40 Structures"                                63.12  89 98.88 98.88 5.48e-55 
+      PDB  1DTL          "Crystal Structure Of Calcium-Saturated (3ca2+) Cardiac Troponin C Complexed With The Calcium Sensitizer Bepridil At 2.15 A Reso" 63.12 161 98.88 98.88 1.74e-53 
+      PDB  1J1D          "Crystal Structure Of The 46kda Domain Of Human Cardiac Troponin In The Ca2+ Saturated Form"                                      63.12 161 98.88 98.88 1.74e-53 
+      PDB  1J1E          "Crystal Structure Of The 52kda Domain Of Human Cardiac Troponin In The Ca2+ Saturated Form"                                      63.12 161 98.88 98.88 1.74e-53 
+      PDB  1LA0          "Solution Structure Of Calcium Saturated Cardiac Troponin C In The Troponin C-Troponin I Complex"                                 63.12 161 98.88 98.88 5.38e-54 
+      PDB  1LXF          "Structure Of The Regulatory N-Domain Of Human Cardiac Troponin C In Complex With Human Cardiac Troponin-I(147- 163) And Bepridi" 63.12  89 98.88 98.88 5.48e-55 
+      PDB  1MXL          "Structure Of Cardiac Troponin C-troponin I Complex"                                                                              63.12  89 98.88 98.88 5.48e-55 
+      PDB  1SPY          "Regulatory Domain Of Human Cardiac Troponin C In The Calcium-Free State, Nmr, 40 Structures"                                     63.12  89 98.88 98.88 5.48e-55 
+      PDB  1WRK          "Crystal Structure Of The N-Terminal Domain Of Human Cardiac Troponin C In Complex With Trifluoperazine (Orthrombic Crystal Form" 62.41  88 98.86 98.86 1.41e-53 
+      PDB  1WRL          "Crystal Structure Of The N-Terminal Domain Of Human Cardiac Troponin C In Complex With Trifluoperazine (Monoclinic Crystal Form" 62.41  88 98.86 98.86 1.41e-53 
+      PDB  2CTN          "Structure Of Calcium-Saturated Cardiac Troponin C, Nmr, 30 Structures"                                                           61.70  89 98.85 98.85 4.64e-53 
+      PDB  2JT0          "Solution Structure Of F104w Cardiac Troponin C"                                                                                  63.12 161 98.88 98.88 1.34e-53 
+      PDB  2JT3          "Solution Structure Of F153w Cardiac Troponin C"                                                                                  63.12 161 98.88 98.88 1.34e-53 
+      PDB  2JT8          "Solution Structure Of The F153-To-5-Flurotryptophan Mutant Of Human Cardiac Troponin C"                                          63.12 161 98.88 98.88 1.56e-53 
+      PDB  2JTZ          "Solution Structure And Chemical Shift Assignments Of The F104-To-5-Flurotryptophan Mutant Of Cardiac Troponin C"                 63.12 161 98.88 98.88 1.56e-53 
+      PDB  2KFX          "Structure Of The N-Terminal Domain Of Human Cardiac Troponin C Bound To Calcium Ion And To The Inhibitor W7"                     63.12  89 98.88 98.88 2.23e-54 
+      PDB  2KGB          "Nmr Solution Of The Regulatory Domain Cardiac F77w-Troponin C In Complex With The Cardiac Troponin I 144-163 Switch Peptide"     63.12  89 97.75 98.88 1.63e-54 
+      PDB  2KRD          "Solution Structure Of The Regulatory Domain Of Human Cardiac C In Complex With The Switch Region Of Cardiac Troponin I A"        63.12  89 98.88 98.88 5.48e-55 
+      PDB  2L1R          "The Structure Of The Calcium-Sensitizer, Dfbp-O, In Complex With The N-Domain Of Troponin C And The Switch Region Of Troponin I" 63.12  89 98.88 98.88 5.48e-55 
+      PDB  2MKP          "N Domain Of Cardiac Troponin C Bound To The Switch Fragment Of Fast Skeletal Troponin I At Ph 6"                                 63.12  89 98.88 98.88 5.48e-55 
+      PDB  2MZP          "Structure And Dynamics Of The Acidosis-resistant A162h Mutant Of The Switch Region Of Troponin I Bound To The Regulatory Domain" 63.12  89 98.88 98.88 5.48e-55 
+      PDB  3SD6          "Crystal Structure Of The Amino-terminal Domain Of Human Cardiac Troponin C In Complex With Cadmium At 1.4 Resolution."           63.12  89 98.88 98.88 5.48e-55 
+      PDB  3SWB          "Crystal Structure Of The Amino-terminal Domain Of Human Cardiac Troponin C In Complex With Cadmium At 1.7 A Resolution"          63.12  89 98.88 98.88 5.48e-55 
+      PDB  4GJE          "Crystal Structure Of The Refolded Amino-terminal Domain Of Human Cardiac Troponin C In Complex With Cadmium"                     63.12  89 98.88 98.88 5.48e-55 
+      PDB  4GJF          "Crystal Structure Of The Amino-terminal Domain Of Human Cardiac Troponin C Mutant L29q In Complex With Cadmium"                  63.12  89 97.75 97.75 5.68e-54 
+      DBJ  BAA02369      "cardiac troponin C [Gallus gallus]"                                                                                              63.12 161 98.88 98.88 5.38e-54 
+      DBJ  BAG36483      "unnamed protein product [Homo sapiens]"                                                                                          63.12 161 98.88 98.88 5.87e-54 
+      EMBL CAA30736      "unnamed protein product [Homo sapiens]"                                                                                          63.12 161 98.88 98.88 5.87e-54 
+      EMBL CAG46663      "TNNC1 [Homo sapiens]"                                                                                                            63.12 161 98.88 98.88 5.87e-54 
+      EMBL CAG46683      "TNNC1 [Homo sapiens]"                                                                                                            63.12 161 98.88 98.88 5.87e-54 
+      GB   AAA36772      "slow twitch skeletal/cardiac muscle troponin C [Homo sapiens]"                                                                   63.12 161 98.88 98.88 5.87e-54 
+      GB   AAA37492      "slow/cardiac troponin C, partial [Mus musculus]"                                                                                 63.12 161 98.88 98.88 5.81e-54 
+      GB   AAA37493      "slow/cardiac troponin C [Mus musculus]"                                                                                          63.12 161 98.88 98.88 5.81e-54 
+      GB   AAA48654      "slow muscle troponin C [Gallus gallus]"                                                                                          63.12 161 98.88 98.88 5.38e-54 
+      GB   AAB91994      "cardiac ventricular troponin C [Homo sapiens]"                                                                                   63.12 160 98.88 98.88 5.69e-54 
+      PIR  S07450        "troponin C - quail [Phasianidae gen. sp.]"                                                                                       63.12 161 97.75 98.88 1.27e-53 
+      PIR  TPHUCC        "troponin C, cardiac and slow skeletal muscle - human"                                                                            63.12 161 98.88 98.88 5.87e-54 
+      PRF  1403394A      "slow/cardiac troponin C [Phasianidae gen. sp.]"                                                                                  63.12 161 97.75 98.88 1.27e-53 
+      PRF  1510257A      "troponin C"                                                                                                                      63.12 161 98.88 98.88 5.21e-54 
+      PRF  750650A       "troponin c,cardiac"                                                                                                              63.12 161 98.88 98.88 5.21e-54 
+      REF  NP_001029277  "troponin C, slow skeletal and cardiac muscles [Rattus norvegicus]"                                                               63.12 161 98.88 98.88 5.81e-54 
+      REF  NP_001029523  "troponin C, slow skeletal and cardiac muscles [Bos taurus]"                                                                      63.12 161 98.88 98.88 5.21e-54 
+      REF  NP_001123715  "troponin C, slow skeletal and cardiac muscles [Sus scrofa]"                                                                      63.12 161 98.88 98.88 5.21e-54 
+      REF  NP_001272501  "troponin C, slow skeletal and cardiac muscles [Capra hircus]"                                                                    63.12 161 98.88 98.88 5.21e-54 
+      REF  NP_001291793  "troponin C type 1 (slow) [Ailuropoda melanoleuca]"                                                                               63.12 161 98.88 98.88 6.20e-54 
+      SP   P02591        "RecName: Full=Troponin C, slow skeletal and cardiac muscles; Short=TN-C"                                                         63.12 161 98.88 98.88 5.87e-54 
+      SP   P05936        "RecName: Full=Troponin C, slow skeletal and cardiac muscles; Short=TN-C"                                                         63.12 161 97.75 98.88 1.27e-53 
+      SP   P09860        "RecName: Full=Troponin C, slow skeletal and cardiac muscles; Short=TN-C"                                                         63.12 161 98.88 98.88 5.38e-54 
+      SP   P19123        "RecName: Full=Troponin C, slow skeletal and cardiac muscles; Short=TN-C"                                                         63.12 161 98.88 98.88 5.81e-54 
+      SP   P63315        "RecName: Full=Troponin C, slow skeletal and cardiac muscles; Short=TN-C"                                                         63.12 161 98.88 98.88 5.21e-54 
+      TPG  DAA16908      "TPA: troponin C, slow skeletal and cardiac muscles [Bos taurus]"                                                                 63.12 161 98.88 98.88 5.21e-54 
+
+   stop_
+
+save_
+
+
+    #############
+    #  Ligands  #
+    #############
+
+save_CA
+   _Saveframe_category             ligand
+
+   _Mol_type                      "non-polymer (NON-POLYMER)"
+   _Name_common                   "entity_CA (CALCIUM ION)"
+   _BMRB_code                      CA
+   _PDB_code                       CA
+   _Molecular_mass                 40.078
+   _Mol_charge                     2
+   _Mol_paramagnetic               .
+   _Mol_aromatic                   no
+   _Details                        .
+
+   loop_
+      _Atom_name
+      _PDB_atom_name
+      _Atom_type
+      _Atom_chirality
+      _Atom_charge
+      _Atom_oxidation_number
+      _Atom_unpaired_electrons
+
+      CA CA CA . 2 . ? 
+
+   stop_
+
+   _Mol_thiol_state                .
+   _Sequence_homology_query_date   .
+
+save_
+
+
+    ####################
+    #  Natural source  #
+    ####################
+
+save_natural_source
+   _Saveframe_category   natural_source
+
+
+   loop_
+      _Mol_label
+      _Organism_name_common
+      _NCBI_taxonomy_ID
+      _Superkingdom
+      _Kingdom
+      _Genus
+      _Species
+
+      $cChimera 'E. coli' 562 Bacteria . Escherichia coli 
+
+   stop_
+
+save_
+
+
+    #########################
+    #  Experimental source  #
+    #########################
+
+save_experimental_source
+   _Saveframe_category   experimental_source
+
+
+   loop_
+      _Mol_label
+      _Production_method
+      _Host_organism_name_common
+      _Genus
+      _Species
+      _Strain
+      _Vector_name
+
+      $cChimera 'recombinant technology' . Escherichia coli . pet3a 
+
+   stop_
+
+save_
+
+
+#####################################
+#  Sample contents and methodology  #
+#####################################
+	 
+    ########################
+    #  Sample description  #
+    ########################
+
+save_sample_1
+   _Saveframe_category   sample
+
+   _Sample_type          solution
+   _Details             'pH 6.9'
+
+   loop_
+      _Mol_label
+      _Concentration_value
+      _Concentration_value_units
+      _Concentration_min_value
+      _Concentration_max_value
+      _Isotopic_labeling
+
+      $cChimera               . mM 0.5 0.8 '[U-100% 15N]'      
+      $entity_CA             2 mM  .   .  'natural abundance' 
+       DTT                  10 mM  .   .  'natural abundance' 
+      'potassium chloride' 100 mM  .   .  'natural abundance' 
+       imidazole            10 mM  .   .  'natural abundance' 
+       D2O                   5 %   .   .  'natural abundance' 
+
+   stop_
+
+save_
+
+
+############################
+#  Computer software used  #
+############################
+
+save_NMRView
+   _Saveframe_category   software
+
+   _Name                 NMRView
+   _Version              8.2.33
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      'Johnson, One Moon Scientific' . . 
+
+   stop_
+
+   loop_
+      _Task
+
+      'chemical shift assignment' 
+      'data analysis'             
+      'peak picking'              
+
+   stop_
+
+   _Details              .
+
+save_
+
+
+save_VNMRJ
+   _Saveframe_category   software
+
+   _Name                 VNMRJ
+   _Version              .
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      Varian . . 
+
+   stop_
+
+   loop_
+      _Task
+
+      collection 
+
+   stop_
+
+   _Details              .
+
+save_
+
+
+save_NMRPipe
+   _Saveframe_category   software
+
+   _Name                 NMRPipe
+   _Version              .
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      'Delaglio, Grzesiek, Vuister, Zhu, Pfeifer and Bax' . . 
+
+   stop_
+
+   loop_
+      _Task
+
+      processing 
+
+   stop_
+
+   _Details              .
+
+save_
+
+
+save_NMRDraw
+   _Saveframe_category   software
+
+   _Name                 NMRDraw
+   _Version              .
+
+   loop_
+      _Vendor
+      _Address
+      _Electronic_address
+
+      'Delaglio, Grzesiek, Vuister, Zhu, Pfeifer and Bax' . . 
+
+   stop_
+
+   loop_
+      _Task
+
+      processing 
+
+   stop_
+
+   _Details              .
+
+save_
+
+
+#########################
+#  Experimental detail  #
+#########################
+
+    ##################################
+    #  NMR Spectrometer definitions  #
+    ##################################
+
+save_spectrometer_1
+   _Saveframe_category   NMR_spectrometer
+
+   _Manufacturer         Varian
+   _Model                INOVA
+   _Field_strength       800
+   _Details              .
+
+save_
+
+
+save_spectrometer_2
+   _Saveframe_category   NMR_spectrometer
+
+   _Manufacturer         Varian
+   _Model                INOVA
+   _Field_strength       500
+   _Details              .
+
+save_
+
+
+save_spectrometer_3
+   _Saveframe_category   NMR_spectrometer
+
+   _Manufacturer         Varian
+   _Model                INOVA
+   _Field_strength       600
+   _Details              .
+
+save_
+
+
+    #############################
+    #  NMR applied experiments  #
+    #############################
+
+save_2D_1H-15N_HSQC_1
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '2D 1H-15N HSQC'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_1H-15N_NOESY_2
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D 1H-15N NOESY'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_1H-15N_TOCSY_3
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D 1H-15N TOCSY'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_HNHA_4
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D HNHA'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_HNCACB_5
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D HNCACB'
+   _Sample_label        $sample_1
+
+save_
+
+
+save_3D_CBCA(CO)NH_6
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     '3D CBCA(CO)NH'
+   _Sample_label        $sample_1
+
+save_
+
+
+#######################
+#  Sample conditions  #
+#######################
+
+save_sample_conditions_1
+   _Saveframe_category   sample_conditions
+
+   _Details              .
+
+   loop_
+      _Variable_type
+      _Variable_value
+      _Variable_value_error
+      _Variable_value_units
+
+       temperature     273   . K   
+       pH                6.9 . pH  
+       pressure          1   . atm 
+      'ionic strength'   0.1 . M   
+
+   stop_
+
+save_
+
+
+####################
+#  NMR parameters  #
+####################
+
+    ##############################
+    #  Assigned chemical shifts  #
+    ##############################
+
+	################################
+	#  Chemical shift referencing  #
+	################################
+
+save_chemical_shift_reference_1
+   _Saveframe_category   chemical_shift_reference
+
+   _Details              .
+
+   loop_
+      _Mol_common_name
+      _Atom_type
+      _Atom_isotope_number
+      _Atom_group
+      _Chem_shift_units
+      _Chem_shift_value
+      _Reference_method
+      _Reference_type
+      _External_reference_sample_geometry
+      _External_reference_location
+      _External_reference_axis
+      _Indirect_shift_ratio
+
+      DSS H  1 'methyl protons' ppm 0.00 internal direct   . . . 1.000000000 
+      DSS N 15 'methyl protons' ppm 0.00 na       indirect . . . 0.101329118 
+
+   stop_
+
+save_
+
+
+	###################################
+	#  Assigned chemical shift lists  #
+	###################################
+
+###################################################################
+#       Chemical Shift Ambiguity Index Value Definitions          #
+#                                                                 #
+# The values other than 1 are used for those atoms with different #
+# chemical shifts that cannot be assigned to stereospecific atoms #
+# or to specific residues or chains.                              #
+#                                                                 #
+#   Index Value            Definition                             #
+#                                                                 #
+#      1             Unique (including isolated methyl protons,   #
+#                         geminal atoms, and geminal methyl       #
+#                         groups with identical chemical shifts)  #
+#                         (e.g. ILE HD11, HD12, HD13 protons)     #
+#      2             Ambiguity of geminal atoms or geminal methyl #
+#                         proton groups (e.g. ASP HB2 and HB3     #
+#                         protons, LEU CD1 and CD2 carbons, or    #
+#                         LEU HD11, HD12, HD13 and HD21, HD22,    #
+#                         HD23 methyl protons)                    #
+#      3             Aromatic atoms on opposite sides of          #
+#                         symmetrical rings (e.g. TYR HE1 and HE2 #
+#                         protons)                                #
+#      4             Intraresidue ambiguities (e.g. LYS HG and    #
+#                         HD protons or TRP HZ2 and HZ3 protons)  #
+#      5             Interresidue ambiguities (LYS 12 vs. LYS 27) #
+#      6             Intermolecular ambiguities (e.g. ASP 31 CA   #
+#                         in monomer 1 and ASP 31 CA in monomer 2 #
+#                         of an asymmetrical homodimer, duplex    #
+#                         DNA assignments, or other assignments   #
+#                         that may apply to atoms in one or more  #
+#                         molecule in the molecular assembly)     #
+#      9             Ambiguous, specific ambiguity not defined    #
+#                                                                 #
+###################################################################
+save_assigned_chem_shift_cChim
+   _Saveframe_category               assigned_chemical_shifts
+
+   _Details                          .
+
+   loop_
+      _Experiment_label
+
+      '2D 1H-15N HSQC'  
+      '3D 1H-15N NOESY' 
+      '3D 1H-15N TOCSY' 
+      '3D HNHA'         
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label         $sample_conditions_1
+   _Chem_shift_reference_set_label  $chemical_shift_reference_1
+   _Mol_system_component_name        cChimera
+   _Text_data_format                 .
+   _Text_data                        .
+
+   loop_
+      _Atom_shift_assign_ID
+      _Residue_author_seq_code
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _Atom_type
+      _Chem_shift_value
+      _Chem_shift_value_error
+      _Chem_shift_ambiguity_code
+
+        1  -7  10 GLU H   H   8.2591 0.0027 1 
+        2  -7  10 GLU HA  H   4.2367 0.0000 1 
+        3  -7  10 GLU HB2 H   1.9518 0.0023 1 
+        4  -7  10 GLU HB3 H   2.0883 0.0017 1 
+        5  -7  10 GLU HG2 H   2.3082 0.0044 1 
+        6  -7  10 GLU N   N 121.9319 0.0407 1 
+        7  -6  11 ASN HA  H   4.2315 0.0000 1 
+        8   7  23 ALA H   H   7.8730 0.0033 1 
+        9   7  23 ALA HA  H   4.1536 0.0000 1 
+       10   7  23 ALA HB  H   1.4253 0.0000 1 
+       11   7  23 ALA N   N 120.9253 0.1550 1 
+       12   8  24 ALA H   H   7.5908 0.0043 1 
+       13   8  24 ALA HA  H   4.1670 0.0000 1 
+       14   8  24 ALA HB  H   1.5708 0.0000 1 
+       15   8  24 ALA N   N 120.2251 0.0342 1 
+       16   9  25 VAL H   H   7.9743 0.0031 1 
+       17   9  25 VAL N   N 119.3203 0.0221 1 
+       18  10  26 GLU H   H   7.6963 0.0042 1 
+       19  10  26 GLU HA  H   4.1052 0.0000 1 
+       20  10  26 GLU N   N 118.3440 0.0295 1 
+       21  11  27 GLN H   H   7.3897 0.0040 1 
+       22  11  27 GLN HA  H   4.2980 0.0000 1 
+       23  11  27 GLN N   N 114.8566 0.0447 1 
+       24  12  28 LEU H   H   7.3909 0.0043 1 
+       25  12  28 LEU HA  H   4.5147 0.0000 1 
+       26  12  28 LEU N   N 120.9264 0.0435 1 
+       27  13  29 THR H   H   8.9428 0.0042 1 
+       28  13  29 THR HA  H   4.6199 0.0000 1 
+       29  13  29 THR N   N 114.0266 0.0736 1 
+       30  14  30 GLU H   H   9.0267 0.0090 1 
+       31  14  30 GLU HA  H   3.9627 0.0000 1 
+       32  14  30 GLU N   N 121.7352 0.0546 1 
+       33  15  31 GLU H   H   8.6268 0.0127 1 
+       34  15  31 GLU HA  H   4.0578 0.0000 1 
+       35  15  31 GLU N   N 117.7833 0.0366 1 
+       36  16  32 GLN H   H   7.8681 0.0037 1 
+       37  16  32 GLN HA  H   3.8599 0.0000 1 
+       38  16  32 GLN N   N 119.3427 0.0277 1 
+       39  17  33 LYS H   H   8.5935 0.0022 1 
+       40  17  33 LYS HA  H   4.0458 0.0000 1 
+       41  17  33 LYS N   N 118.8902 0.0538 1 
+       42  18  34 ASN H   H   8.5648 0.0039 1 
+       43  18  34 ASN HA  H   4.5513 0.0000 1 
+       44  18  34 ASN N   N 117.9887 0.0330 1 
+       45  19  35 GLU H   H   7.9974 0.0074 1 
+       46  19  35 GLU N   N 123.6238 0.0450 1 
+       47  20  36 PHE H   H   8.4468 0.0024 1 
+       48  20  36 PHE HA  H   4.8912 0.0000 1 
+       49  20  36 PHE N   N 117.6121 0.0045 1 
+       50  21  37 LYS H   H   8.9509 0.0059 1 
+       51  21  37 LYS HA  H   4.0123 0.0000 1 
+       52  21  37 LYS N   N 122.7630 0.0282 1 
+       53  22  38 ALA H   H   7.8137 0.0026 1 
+       54  22  38 ALA HB  H   1.5882 0.0000 1 
+       55  22  38 ALA N   N 121.5799 0.0351 1 
+       56  23  39 ALA H   H   7.8227 0.0000 1 
+       57  23  39 ALA N   N 120.7372 0.0000 1 
+       58  25  41 ASP H   H   8.5933 0.0041 1 
+       59  25  41 ASP HA  H   4.2190 0.0000 1 
+       60  25  41 ASP N   N 116.7704 0.0406 1 
+       61  26  42 ILE H   H   7.2566 0.0050 1 
+       62  26  42 ILE HA  H   3.7954 0.0000 1 
+       63  26  42 ILE N   N 119.3406 0.0321 1 
+       64  27  43 PHE H   H   8.2451 0.0024 1 
+       65  27  43 PHE N   N 123.3348 0.0290 1 
+       66  28  44 VAL H   H   7.5501 0.0034 1 
+       67  28  44 VAL HA  H   3.9960 0.0000 1 
+       68  28  44 VAL N   N 106.1144 0.0338 1 
+       69  29  45 LEU H   H   7.2980 0.0038 1 
+       70  29  45 LEU HA  H   4.0789 0.0000 1 
+       71  29  45 LEU N   N 125.8897 0.0208 1 
+       72  30  46 GLY H   H   8.8618 0.0030 1 
+       73  30  46 GLY N   N 112.2509 0.0370 1 
+       74  31  47 ALA H   H   7.9948 0.0039 1 
+       75  31  47 ALA HA  H   4.4397 0.0000 1 
+       76  31  47 ALA HB  H   1.4969 0.0000 1 
+       77  31  47 ALA N   N 124.2514 0.0278 1 
+       78  32  48 GLU H   H   9.1485 0.0022 1 
+       79  32  48 GLU N   N 124.8732 0.0119 1 
+       80  33  49 ASP H   H   8.1829 0.0041 1 
+       81  33  49 ASP HA  H   4.7443 0.0000 1 
+       82  33  49 ASP N   N 115.8668 0.0313 1 
+       83  34  50 GLY H   H   7.6196 0.0057 1 
+       84  34  50 GLY HA2 H   3.8611 0.0000 2 
+       85  34  50 GLY N   N 105.7531 0.0561 1 
+       86  35  51 SER H   H   7.5605 0.0072 1 
+       87  35  51 SER HA  H   4.9145 0.0000 1 
+       88  35  51 SER N   N 113.3550 0.0262 1 
+       89  36  52 ILE H   H   8.7848 0.0040 1 
+       90  36  52 ILE HA  H   3.7499 0.0000 1 
+       91  36  52 ILE N   N 119.5204 0.0384 1 
+       92  37  53 SER H   H   9.4557 0.0039 1 
+       93  37  53 SER HA  H   5.0754 0.0000 1 
+       94  37  53 SER N   N 126.0605 0.0621 1 
+       95  38  54 THR H   H   8.8245 0.0012 1 
+       96  38  54 THR N   N 111.8692 0.0329 1 
+       97  39  55 LYS H   H   8.0569 0.0051 1 
+       98  39  55 LYS HA  H   4.0541 0.0000 1 
+       99  39  55 LYS N   N 123.2590 0.0245 1 
+      100  40  56 GLU H   H   7.7100 0.0044 1 
+      101  40  56 GLU HA  H   4.1743 0.0000 1 
+      102  40  56 GLU N   N 119.4820 0.0371 1 
+      103  41  57 LEU H   H   8.3393 0.0013 1 
+      104  41  57 LEU N   N 119.3003 0.0199 1 
+      105  42  58 GLY H   H   8.5070 0.0057 1 
+      106  42  58 GLY HA2 H   3.9522 0.0000 2 
+      107  42  58 GLY N   N 106.0082 0.0222 1 
+      108  43  59 LYS H   H   7.3237 0.0024 1 
+      109  43  59 LYS N   N 120.9288 0.0265 1 
+      110  44  60 VAL H   H   7.5732 0.0045 1 
+      111  44  60 VAL HA  H   3.6187 0.0000 1 
+      112  44  60 VAL N   N 119.6193 0.0313 1 
+      113  45  61 MET H   H   8.4246 0.0057 1 
+      114  45  61 MET HA  H   4.1848 0.0000 1 
+      115  45  61 MET N   N 116.9251 0.0331 1 
+      116  46  62 ARG H   H   8.1338 0.0053 1 
+      117  46  62 ARG N   N 118.8399 0.0127 1 
+      118  47  63 MET H   H   7.8844 0.0052 1 
+      119  47  63 MET HA  H   4.2162 0.0000 1 
+      120  47  63 MET N   N 122.3923 0.0307 1 
+      121  48  64 LEU H   H   7.5087 0.0039 1 
+      122  48  64 LEU HA  H   4.3895 0.0000 1 
+      123  48  64 LEU N   N 117.6717 0.0347 1 
+      124  49  65 GLY H   H   7.8804 0.0037 1 
+      125  49  65 GLY HA2 H   3.8196 0.0000 2 
+      126  49  65 GLY HA3 H   4.1929 0.0000 2 
+      127  49  65 GLY N   N 107.5871 0.0524 1 
+      128  50  66 GLN H   H   8.0283 0.0030 1 
+      129  50  66 GLN HA  H   4.2372 0.0000 1 
+      130  50  66 GLN N   N 118.1569 0.0046 1 
+      131  51  67 ASN H   H   8.7121 0.0067 1 
+      132  51  67 ASN HA  H   5.1595 0.0000 1 
+      133  51  67 ASN N   N 116.7855 0.0795 1 
+      134  53  69 THR H   H   8.8373 0.0000 1 
+      135  53  69 THR N   N 114.4821 0.0000 1 
+      136  55  71 GLU H   H   8.7725 0.0016 1 
+      137  55  71 GLU N   N 117.3173 0.0098 1 
+      138  56  72 GLU H   H   7.8127 0.0025 1 
+      139  56  72 GLU N   N 121.6761 0.0353 1 
+      140  57  73 LEU H   H   8.1191 0.0038 1 
+      141  57  73 LEU N   N 120.0304 0.0171 1 
+      142  58  74 GLN H   H   7.9936 0.0000 1 
+      143  58  74 GLN N   N 117.9469 0.0000 1 
+      144  59  75 GLU H   H   7.9220 0.0037 1 
+      145  59  75 GLU HA  H   4.0314 0.0000 1 
+      146  59  75 GLU N   N 119.2013 0.0257 1 
+      147  60  76 MET H   H   7.6244 0.0046 1 
+      148  60  76 MET HA  H   3.9001 0.0000 1 
+      149  60  76 MET N   N 117.5127 0.0192 1 
+      150  61  77 ILE H   H   7.3252 0.0031 1 
+      151  61  77 ILE N   N 118.0138 0.0091 1 
+      152  62  78 ASP H   H   8.7429 0.0023 1 
+      153  62  78 ASP N   N 119.4413 0.0000 1 
+      154  63  79 GLU H   H   7.5725 0.0048 1 
+      155  63  79 GLU HA  H   3.9941 0.0000 1 
+      156  63  79 GLU N   N 116.0632 0.0380 1 
+      157  64  80 VAL H   H   7.2109 0.0035 1 
+      158  64  80 VAL HA  H   4.5722 0.0000 1 
+      159  64  80 VAL N   N 107.1272 0.0585 1 
+      160  65  81 ASP H   H   7.5607 0.0000 1 
+      161  65  81 ASP N   N 121.9785 0.0000 1 
+      162  66  82 GLU H   H   8.5063 0.0051 1 
+      163  66  82 GLU HA  H   4.0919 0.0000 1 
+      164  66  82 GLU N   N 128.4340 0.0413 1 
+      165  67  83 ASP H   H   7.9465 0.0043 1 
+      166  67  83 ASP HA  H   4.6918 0.0000 1 
+      167  67  83 ASP N   N 114.3806 0.0481 1 
+      168  68  84 GLY H   H   7.7256 0.0056 1 
+      169  68  84 GLY HA2 H   3.7590 0.0000 2 
+      170  68  84 GLY HA3 H   3.8542 0.0000 2 
+      171  68  84 GLY N   N 108.9591 0.0360 1 
+      172  69  85 SER H   H   8.4747 0.0042 1 
+      173  69  85 SER HA  H   4.2140 0.0000 1 
+      174  69  85 SER N   N 116.7026 0.0373 1 
+      175  70  86 GLY H   H  10.8406 0.0033 1 
+      176  70  86 GLY HA2 H   3.5001 0.0000 2 
+      177  70  86 GLY HA3 H   4.2023 0.0000 2 
+      178  70  86 GLY N   N 116.5515 0.0123 1 
+      179  71  87 THR H   H   7.6349 0.0048 1 
+      180  71  87 THR HA  H   4.9246 0.0000 1 
+      181  71  87 THR N   N 107.6691 0.0457 1 
+      182  72  88 VAL H   H   9.7520 0.0049 1 
+      183  72  88 VAL HA  H   5.0201 0.0000 1 
+      184  72  88 VAL N   N 127.2945 0.0479 1 
+      185  73  89 ASP H   H   8.7785 0.0042 1 
+      186  73  89 ASP HA  H   5.0793 0.0000 1 
+      187  73  89 ASP N   N 129.0031 0.0400 1 
+      188  74  90 PHE H   H   8.5519 0.0040 1 
+      189  74  90 PHE N   N 118.1654 0.0599 1 
+      190  75  91 ASP H   H   7.6156 0.0049 1 
+      191  75  91 ASP HA  H   3.9485 0.0000 1 
+      192  75  91 ASP N   N 116.9802 0.0655 1 
+      193  76  92 GLU H   H   8.1890 0.0043 1 
+      194  76  92 GLU HA  H   4.0621 0.0000 1 
+      195  76  92 GLU N   N 120.8196 0.0534 1 
+      196  77  93 PHE H   H   9.0180 0.0022 1 
+      197  77  93 PHE N   N 123.2188 0.0297 1 
+      198  78  94 LEU H   H   7.8275 0.0000 1 
+      199  78  94 LEU N   N 118.5530 0.0129 1 
+      200  79  95 VAL H   H   6.8107 0.0000 1 
+      201  79  95 VAL N   N 117.6666 0.0069 1 
+      202  80  96 MET H   H   8.0453 0.0011 1 
+      203  80  96 MET HA  H   3.9581 0.0000 1 
+      204  80  96 MET N   N 120.1555 0.0578 1 
+      205  82  98 VAL H   H   8.1904 0.0000 1 
+      206  82  98 VAL N   N 116.5870 0.0000 1 
+      207  84 100 CYS H   H   7.7996 0.0013 1 
+      208  84 100 CYS N   N 115.8189 0.0189 1 
+      209  85 101 MET H   H   7.9239 0.0029 1 
+      210  85 101 MET N   N 120.0201 0.0700 1 
+      211  86 102 LYS H   H   7.8048 0.0000 1 
+      212  86 102 LYS N   N 121.0592 0.0000 1 
+      213 146 114 VAL H   H   8.1190 0.0235 1 
+      214 146 114 VAL N   N 121.1590 0.0458 1 
+      215 147 115 ARG H   H   8.3292 0.0041 1 
+      216 147 115 ARG HA  H   4.4580 0.0007 1 
+      217 147 115 ARG N   N 125.2396 0.0178 1 
+      218 148 116 ILE H   H   8.0789 0.0027 1 
+      219 148 116 ILE HB  H   1.7893 0.0000 1 
+      220 148 116 ILE N   N 121.5181 0.0246 1 
+      221 150 118 ALA H   H   8.6549 0.0010 1 
+      222 150 118 ALA N   N 128.2852 0.0000 1 
+      223 151 119 ASP H   H   8.4699 0.0039 1 
+      224 151 119 ASP HA  H   4.3179 0.0000 1 
+      225 151 119 ASP N   N 116.0516 0.0213 1 
+      226 152 120 ALA H   H   7.7862 0.0042 1 
+      227 152 120 ALA HA  H   4.1198 0.0000 1 
+      228 152 120 ALA N   N 122.6803 0.0341 1 
+      229 153 121 MET H   H   8.1796 0.0039 1 
+      230 153 121 MET N   N 118.6461 0.0092 1 
+      231 154 122 MET H   H   8.4838 0.0060 1 
+      232 154 122 MET HA  H   4.3877 0.0000 1 
+      233 154 122 MET N   N 117.2705 0.0684 1 
+      234 155 123 GLN H   H   8.1537 0.0066 1 
+      235 155 123 GLN HA  H   4.0042 0.0000 1 
+      236 155 123 GLN N   N 118.3606 0.0380 1 
+      237 156 124 ALA H   H   7.8681 0.0027 1 
+      238 156 124 ALA HB  H   1.5014 0.0000 1 
+      239 156 124 ALA N   N 121.4586 0.0000 1 
+      240 157 125 LEU H   H   7.9822 0.0078 1 
+      241 157 125 LEU HA  H   4.1642 0.0000 1 
+      242 157 125 LEU N   N 116.1927 0.0000 1 
+      243 158 126 LEU H   H   8.2556 0.0037 1 
+      244 158 126 LEU HA  H   4.3333 0.0000 1 
+      245 158 126 LEU N   N 116.0763 0.0000 1 
+      246 159 127 GLY H   H   7.8691 0.0022 1 
+      247 159 127 GLY HA2 H   3.9925 0.0000 2 
+      248 159 127 GLY N   N 108.6521 0.0000 1 
+      249 160 128 ALA H   H   8.1705 0.0040 1 
+      250 160 128 ALA HA  H   4.2659 0.0035 1 
+      251 160 128 ALA HB  H   1.4412 0.0068 1 
+      252 160 128 ALA N   N 124.0892 0.0408 1 
+      253 161 129 ARG H   H   8.0172 0.0021 1 
+      254 161 129 ARG HA  H   4.2464 0.0000 1 
+      255 161 129 ARG HB2 H   1.9271 0.0047 2 
+      256 161 129 ARG HB3 H   1.8210 0.0090 2 
+      257 161 129 ARG HG2 H   1.6950 0.0000 2 
+      258 161 129 ARG N   N 118.0673 0.0097 1 
+      259 169 137 ARG H   H   8.1648 0.0000 1 
+      260 169 137 ARG N   N 119.4646 0.0000 1 
+      261 170 138 ALA H   H   7.9755 0.0000 1 
+      262 170 138 ALA N   N 123.0286 0.0000 1 
+      263 172 140 LEU H   H   8.1493 0.0000 1 
+      264 172 140 LEU N   N 122.8658 0.0000 1 
+      265 173 141 LYS H   H   7.7505 0.0000 1 
+      266 173 141 LYS N   N 126.6915 0.0000 1 
+
+   stop_
+
+save_
+
+
+save_heteronuclear_T1_cChim500
+   _Saveframe_category          T1_relaxation
+
+   _Details                     .
+
+   loop_
+      _Software_label
+
+      $NMRView 
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label    $sample_conditions_1
+   _Spectrometer_frequency_1H   500
+   _T1_coherence_type           Sz
+   _T1_value_units              ms
+   _Mol_system_component_name   cChimera
+   _Text_data_format            .
+   _Text_data                   .
+
+   loop_
+      _T1_ID
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _T1_value
+      _T1_value_error
+
+       1  23 ALA N 502.513 12.6259  
+       2  24 ALA N 515.464 13.2852  
+       3  25 VAL N 519.481  3.50818 
+       4  26 GLU N 534.759 14.2984  
+       5  27 GLN N 591.716 17.5064  
+       6  28 LEU N 595.238 17.7154  
+       7  29 THR N 555.556  9.25926 
+       8  30 GLU N 478.469 11.4466  
+       9  31 GLU N 515.464 23.9133  
+      10  32 GLN N 485.437 21.2084  
+      11  33 LYS N 564.972 22.3435  
+      12  34 ASN N 555.556 18.5185  
+      13  35 GLU N 505.051 12.7538  
+      14  36 PHE N 495.05  19.6059  
+      15  37 LYS N 552.486 18.3145  
+      16  38 ALA N 512.821 10.5194  
+      17  39 ALA N 497.512 12.3759  
+      18  40 PHE N 473.934  8.98452 
+      19  41 ASP N 520.833  8.13802 
+      20  42 ILE N 537.634 20.2336  
+      21  43 PHE N 436.681 30.5105  
+      22  44 VAL N 485.437 25.9214  
+      23  45 LEU N 515.464 23.9133  
+      24  47 ALA N 478.469  9.1573  
+      25  48 GLU N 500     50       
+      26  49 ASP N 497.512 22.2767  
+      27  50 GLY N 465.116 15.1433  
+      28  51 SER N 540.833  5.5575  
+      29  52 ILE N 555.556 30.8642  
+      30  53 SER N 662.252 35.0862  
+      31  54 THR N 483.092 32.6729  
+      32  55 LYS N 460.829 12.7418  
+      33  56 GLU N 490.196  7.20877 
+      34  57 LEU N 512.821 18.4089  
+      35  58 GLY N 485.437 11.7824  
+      36  59 LYS N 515.464 15.9422  
+      37  60 VAL N 473.934 17.969   
+      38  61 MET N 495.05  12.2537  
+      39  62 ARG N 510.204 13.0154  
+      40  63 MET N 510.204 18.2216  
+      41  64 LEU N 555.556 18.5185  
+      42  65 GLY N 543.478  8.86106 
+      43  66 GLN N 471.698 15.5749  
+      44  71 GLU N 505.051 15.3046  
+      45  73 LEU N 460.829 10.6182  
+      46  75 GLU N 534.759 14.2984  
+      47  76 MET N 529.101  8.39842 
+      48  77 ILE N 505.051 43.3629  
+      49  78 ASP N 526.316  8.31025 
+      50  79 GLU N 546.448 11.9442  
+      51  80 VAL N 444.444 11.8519  
+      52  81 ASP N 534.759 28.5968  
+      53  82 GLU N 662.252 21.9289  
+      54  83 ASP N 568.182 19.3698  
+      55  84 GLY N 520.833 13.5634  
+      56  85 SER N 471.698 17.7999  
+      57  86 GLY N 512.821 21.0388  
+      58  87 THR N 492.611 21.8399  
+      59  88 VAL N 555.556 33.9506  
+      60  89 ASP N 558.659 28.089   
+      61  90 PHE N 540.541 23.3747  
+      62  91 ASP N 561.798 18.937   
+      63  92 GLU N 505.051 17.8553  
+      64  93 PHE N 510.204 28.6339  
+      65  94 LEU N 446.429 35.8737  
+      66  95 VAL N 552.486 21.3669  
+      67  96 MET N 534.759 11.4387  
+      68  98 VAL N 515.464 15.9422  
+      69 100 CYS N 460.829 19.1127  
+      70 101 MET N 515.464 23.9133  
+      71 102 LYS N 458.716 18.9378  
+      72 114 VAL N 413.223 20.4904  
+      73 115 ARG N 418.41  22.7587  
+      74 116 ILE N 460.829 25.4837  
+      75 118 ALA N 502.513 32.8275  
+      76 119 ASP N 458.716 18.9378  
+      77 120 ALA N 505.051  7.65228 
+      78 121 MET N 520.833 10.8507  
+      79 122 MET N 531.915 16.976   
+      80 123 GLN N 512.821 18.4089  
+      81 124 ALA N 505.051 17.8553  
+      82 125 LEU N 581.395 43.9427  
+      83 126 LEU N 512.821 26.2985  
+      84 127 GLY N 531.915 25.464   
+      85 128 ALA N 414.938 20.6608  
+      86 129 ARG N 469.484 15.429   
+      87 137 ARG N 440.529 13.5846  
+      88 138 ALA N 436.681 17.1621  
+      89 140 LEU N 456.621 12.5102  
+      90 141 LYS N 859.845 12.5687  
+
+   stop_
+
+save_
+
+
+save_heteronuclear_T1_cChim600
+   _Saveframe_category          T1_relaxation
+
+   _Details                     .
+
+   loop_
+      _Software_label
+
+      $NMRView 
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label    $sample_conditions_1
+   _Spectrometer_frequency_1H   600
+   _T1_coherence_type           Sz
+   _T1_value_units              ms
+   _Mol_system_component_name   cChimera
+   _Text_data_format            .
+   _Text_data                   .
+
+   loop_
+      _T1_ID
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _T1_value
+      _T1_value_error
+
+       1  23 ALA N 602.41  10.8869  
+       2  24 ALA N 649.351 25.2994  
+       3  25 VAL N 613.497 18.8189  
+       4  26 GLU N 647.249  4.60825 
+       5  27 GLN N 709.22  20.1197  
+       6  28 LEU N 675.676 13.6961  
+       7  29 THR N 684.932  9.38262 
+       8  30 GLU N 625     11.7188  
+       9  31 GLU N 611.247  6.35159 
+      10  32 GLN N 645.161 24.974   
+      11  33 LYS N 649.351 16.8663  
+      12  34 ASN N 672.948  6.34002 
+      13  35 GLU N 606.061 11.0193  
+      14  36 PHE N 609.756 14.8721  
+      15  36 PHE N 636.943 12.1709  
+      16  37 LYS N 621.118 19.2894  
+      17  38 ALA N 657.895 12.9848  
+      18  39 ALA N 584.795 10.2596  
+      19  40 PHE N 625     11.7188  
+      20  41 ASP N 606.061 25.7117  
+      21  42 ILE N 671.141  7.65731 
+      22  43 PHE N 671.141 49.5473  
+      23  44 VAL N 641.026 49.3097  
+      24  45 LEU N 653.595 25.6312  
+      25  47 ALA N 617.284  7.62079 
+      26  48 GLU N 746.269 44.5534  
+      27  49 ASP N 595.238  7.08617 
+      28  50 GLY N 602.41  25.4028  
+      29  51 SER N 649.351 16.8663  
+      30  52 ILE N 671.141  9.0086  
+      31  53 SER N 699.301 39.1217  
+      32  54 THR N 666.667 35.5556  
+      33  55 LYS N 558.659 15.605   
+      34  56 GLU N 632.911 28.0404  
+      35  57 LEU N 552.486 15.262   
+      36  58 GLY N 613.497 22.5827  
+      37  59 LYS N 636.943 20.2848  
+      38  60 VAL N 652.316  5.95722 
+      39  61 MET N 617.284 26.6728  
+      40  62 ARG N 628.536  7.50608 
+      41  63 MET N 625     19.5312  
+      42  64 LEU N 666.667 22.2222  
+      43  65 GLY N 649.351 12.6497  
+      44  66 GLN N 585.823  4.46145 
+      45  67 ASN N 595.238 46.0601  
+      46  71 GLU N 606.061 14.6924  
+      47  73 LEU N 558.659  9.363   
+      48  74 GLN N 587.889  3.80175 
+      49  75 GLU N 621.118 11.5736  
+      50  76 MET N 666.667 17.7778  
+      51  77 ILE N 653.595 29.903   
+      52  78 ASP N 617.284 22.8624  
+      53  79 GLU N 666.667 13.3333  
+      54  80 VAL N 666.667 88.8889  
+      55  81 ASP N 617.284 15.2416  
+      56  82 GLU N 847.458 35.9092  
+      57  83 ASP N 694.444 19.2901  
+      58  84 GLY N 602.41  14.5159  
+      59  85 SER N 591.716 17.5064  
+      60  86 GLY N 609.756 18.5901  
+      61  87 THR N 529.101 19.5963  
+      62  88 VAL N 689.655 19.025   
+      63  89 ASP N 684.932 32.8392  
+      64  90 PHE N 672.948  6.79288 
+      65  91 ASP N 641.026 16.4366  
+      66  92 GLU N 584.795 10.2596  
+      67  93 PHE N 625     23.4375  
+      68  94 LEU N 564.972 15.9597  
+      69  95 VAL N 617.284 15.2416  
+      70  96 MET N 520.833 10.8507  
+      71  98 VAL N 595.238 31.8878  
+      72 100 CYS N 555.556 27.7778  
+      73 101 MET N 558.659 21.847   
+      74 102 LYS N 666.667 26.6667  
+      75 114 VAL N 526.316 11.0803  
+      76 115 ARG N 534.759  8.57903 
+      77 116 ILE N 591.716 21.0077  
+      78 118 ALA N 625     39.0625  
+      79 119 ASP N 625     19.5312  
+      80 120 ALA N 617.284 11.4312  
+      81 121 MET N 621.118 11.5736  
+      82 123 GLN N 636.943 12.1709  
+      83 124 ALA N 632.911 16.0231  
+      84 125 LEU N 657.895 25.9695  
+      85 126 LEU N 617.284 22.8624  
+      86 127 GLY N 581.395 27.0416  
+      87 128 ALA N 420.168 17.6541  
+      88 137 ARG N 520.833  8.13802 
+      89 138 ALA N 595.238 31.8878  
+      90 140 LEU N 531.915  8.488   
+      91 141 LYS N 932.836  5.2211  
+
+   stop_
+
+save_
+
+
+save_heteronuclear_T2_cChim500
+   _Saveframe_category          T2_relaxation
+
+   _Details                     .
+
+   loop_
+      _Software_label
+
+      $NMRView 
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label    $sample_conditions_1
+   _Spectrometer_frequency_1H   500
+   _T2_coherence_type           S(+,-)
+   _T2_value_units              ms
+   _Mol_system_component_name   cChimera
+   _Text_data_format            .
+   _Text_data                   .
+
+   loop_
+      _T2_ID
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _T2_value
+      _T2_value_error
+      _Rex_value
+      _Rex_error
+
+       1  23 ALA N  83.3333  3.47222 . . 
+       2  24 ALA N  90.0901  3.24649 . . 
+       3  25 VAL N  78.125   3.66211 . . 
+       4  26 GLU N  83.3333  2.08333 . . 
+       5  27 GLN N  97.0874  1.88519 . . 
+       6  28 LEU N  86.2069  3.71581 . . 
+       7  29 THR N 102.041   4.16493 . . 
+       8  30 GLU N  88.4956  3.91573 . . 
+       9  31 GLU N  78.7402  2.48    . . 
+      10  32 GLN N  77.5194  3.60555 . . 
+      11  33 LYS N  87.7193  2.3084  . . 
+      12  34 ASN N  87.7193  4.61681 . . 
+      13  35 GLU N 109.89    4.83033 . . 
+      14  36 PHE N  71.4286  1.53061 . . 
+      15  37 LYS N  99.0099  7.84237 . . 
+      16  38 ALA N  85.4701  2.92205 . . 
+      17  39 ALA N  90.0901  4.05811 . . 
+      18  40 PHE N  78.125   4.88281 . . 
+      19  41 ASP N  89.2857  3.98597 . . 
+      20  42 ILE N  82.6446  3.41507 . . 
+      21  43 PHE N  57.8035  6.01423 . . 
+      22  44 VAL N  41.6667  5.20833 . . 
+      23  45 LEU N  80       5.76    . . 
+      24  47 ALA N 112.36    3.7874  . . 
+      25  48 GLU N  83.3333  4.16667 . . 
+      26  49 ASP N  85.4701  4.38308 . . 
+      27  50 GLY N 109.89    6.03792 . . 
+      28  51 SER N 108.696   4.7259  . . 
+      29  52 ILE N  82.6446  3.41507 . . 
+      30  53 SER N  71.9424  7.246   . . 
+      31  54 THR N  76.3359  4.66173 . . 
+      32  55 LYS N  76.9231  4.14201 . . 
+      33  56 GLU N  86.2069  3.71581 . . 
+      34  57 LEU N  80       1.92    . . 
+      35  58 GLY N  98.0392  4.80584 . . 
+      36  59 LYS N  92.5926  3.42936 . . 
+      37  60 VAL N  84.0336  1.41233 . . 
+      38  61 MET N  89.2857  5.58036 . . 
+      39  62 ARG N  90.0901  4.86973 . . 
+      40  63 MET N 103.093   3.18844 . . 
+      41  64 LEU N  90.9091  2.47934 . . 
+      42  65 GLY N  90.9091  4.95868 . . 
+      43  66 GLN N  94.3396  3.55999 . . 
+      44  69 THR N 100       5       . . 
+      45  71 GLU N  92.5926  6.00137 . . 
+      46  73 LEU N 101.01    4.08122 . . 
+      47  75 GLU N  79.3651  2.51953 . . 
+      48  76 MET N  81.9672  4.03117 . . 
+      49  77 ILE N  86.2069  5.9453  . . 
+      50  78 ASP N  91.7431  3.36672 . . 
+      51  79 GLU N  87.7193  5.38627 . . 
+      52  80 VAL N  35.7143  3.82653 . . 
+      53  81 ASP N 111.111   2.46914 . . 
+      54  82 GLU N 101.01    5.10152 . . 
+      55  83 ASP N  86.2069  2.97265 . . 
+      56  84 GLY N  98.0392  4.80584 . . 
+      57  85 SER N  80       3.2     . . 
+      58  86 GLY N  78.125   4.88281 . . 
+      59  87 THR N  82.6446  3.41507 . . 
+      60  88 VAL N  80.6452  3.90219 . . 
+      61  89 ASP N  84.7458  7.18184 . . 
+      62  90 PHE N  91.7431  5.89176 . . 
+      63  91 ASP N  89.2857  2.39158 . . 
+      64  92 GLU N  88.4956  4.69888 . . 
+      65  93 PHE N  87.7193  6.92521 . . 
+      66  94 LEU N  80       5.76    . . 
+      67  95 VAL N 103.093   4.25125 . . 
+      68  96 MET N 103.093   4.25125 . . 
+      69  98 VAL N  85.4701  6.57462 . . 
+      70 100 CYS N  93.4579  4.36719 . . 
+      71 101 MET N 102.041   4.16493 . . 
+      72 102 LYS N  90.9091  3.30579 . . 
+      73 114 VAL N  88.4956  5.48203 . . 
+      74 115 ARG N 100       2       . . 
+      75 116 ILE N  99.0099  5.88178 . . 
+      76 118 ALA N  82.6446  6.83013 . . 
+      77 119 ASP N  88.4956  3.13259 . . 
+      78 120 ALA N  93.4579  4.36719 . . 
+      79 121 MET N  80       3.2     . . 
+      80 122 MET N  90.9091  4.13223 . . 
+      81 123 GLN N  90.9091  2.47934 . . 
+      82 124 ALA N  86.9565  5.29301 . . 
+      83 125 LEU N  81.3008  7.2708  . . 
+      84 126 LEU N  87.7193  3.84734 . . 
+      85 127 GLY N 104.167   6.51042 . . 
+      86 128 ALA N 123.457  10.6691  . . 
+      87 129 ARG N  94.3396  4.44998 . . 
+      88 137 ARG N 149.254   8.91067 . . 
+      89 138 ALA N 196.078   7.68935 . . 
+      90 140 LEU N 185.185  10.2881  . . 
+      91 141 LYS N 512.821  49.9671  . . 
+
+   stop_
+
+save_
+
+
+save_heteronuclear_T2_cChim600
+   _Saveframe_category          T2_relaxation
+
+   _Details                     .
+
+   loop_
+      _Software_label
+
+      $NMRView 
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label    $sample_conditions_1
+   _Spectrometer_frequency_1H   600
+   _T2_coherence_type           S(+,-)
+   _T2_value_units              ms
+   _Mol_system_component_name   cChimera
+   _Text_data_format            .
+   _Text_data                   .
+
+   loop_
+      _T2_ID
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _T2_value
+      _T2_value_error
+      _Rex_value
+      _Rex_error
+
+       1  23 ALA N  78.7402   1.24     . . 
+       2  24 ALA N  81.3008   2.64393  . . 
+       3  25 VAL N  71.7875   0.669948 . . 
+       4  26 GLU N  79.6813   0.761893 . . 
+       5  27 GLN N 106.383    3.3952   . . 
+       6  28 LEU N  82.1018   0.943699 . . 
+       7  29 THR N  93.7207   0.878357 . . 
+       8  30 GLU N  78.125    1.2207   . . 
+       9  31 GLU N  81.9672   2.01559  . . 
+      10  32 GLN N  74.6269   1.67075  . . 
+      11  33 LYS N  80.6452   1.30073  . . 
+      12  34 ASN N  77.6398   0.90419  . . 
+      13  35 GLU N 111.857    2.12703  . . 
+      14  36 PHE N  73.5294   2.70329  . . 
+      15  36 PHE N  75.188    2.82662  . . 
+      16  37 LYS N  74.6269   2.22767  . . 
+      17  38 ALA N  75.3012   0.907243 . . 
+      18  39 ALA N  81.9672   2.01559  . . 
+      19  40 PHE N  78.125    1.2207   . . 
+      20  41 ASP N  81.6327   1.13286  . . 
+      21  42 ILE N  83.3333   2.08333  . . 
+      22  43 PHE N  41.1523   3.21767  . . 
+      23  44 VAL N  29.4118   2.59516  . . 
+      24  45 LEU N  59.5238   1.41723  . . 
+      25  47 ALA N  93.4579   1.74688  . . 
+      26  48 GLU N  95.2381   6.34921  . . 
+      27  49 ASP N  86.2069   1.48633  . . 
+      28  50 GLY N  89.2857   3.18878  . . 
+      29  51 SER N  97.0874   4.71298  . . 
+      30  52 ILE N  75.188    3.39194  . . 
+      31  53 SER N  60.241    2.54028  . . 
+      32  54 THR N  56.8182   2.25981  . . 
+      33  55 LYS N  91.7431   3.36672  . . 
+      34  56 GLU N  67.1141   2.25215  . . 
+      35  57 LEU N  74.0741   1.64609  . . 
+      36  58 GLY N  82.6446   2.73205  . . 
+      37  59 LYS N  79.4913   0.947829 . . 
+      38  60 VAL N  76.3359   1.74815  . . 
+      39  61 MET N  73.5294   1.62197  . . 
+      40  62 ARG N  78.4314   0.922722 . . 
+      41  63 MET N  71.9424   1.55271  . . 
+      42  64 LEU N  87.7193   1.53894  . . 
+      43  65 GLY N  87.108    0.758781 . . 
+      44  66 GLN N  92.4214   1.53751  . . 
+      45  67 ASN N 106.383   11.3173   . . 
+      46  71 GLU N  90.0901   1.62324  . . 
+      47  73 LEU N 102.041    2.08247  . . 
+      48  74 GLN N  92.4214   1.53751  . . 
+      49  75 GLU N  80.2568   1.15941  . . 
+      50  76 MET N  81.3008   2.64393  . . 
+      51  77 ILE N  80        5.76     . . 
+      52  78 ASP N  75.188    2.26129  . . 
+      53  79 GLU N  90.9091   2.47934  . . 
+      54  80 VAL N  37.037    2.74348  . . 
+      55  81 ASP N  77.5194   4.8074   . . 
+      56  82 GLU N 101.01     4.08122  . . 
+      57  83 ASP N  78.4929   1.17062  . . 
+      58  84 GLY N  84.7458   2.87274  . . 
+      59  85 SER N  84.7458   2.15455  . . 
+      60  86 GLY N  84.0336   3.53082  . . 
+      61  87 THR N  68.4932   1.87652  . . 
+      62  88 VAL N  86.9565   6.04915  . . 
+      63  89 ASP N  72.4638   4.2008   . . 
+      64  90 PHE N  77.6398   0.84391  . . 
+      65  91 ASP N  88.4956   3.13259  . . 
+      66  92 GLU N  95.2381   1.81406  . . 
+      67  93 PHE N  78.125    2.44141  . . 
+      68  94 LEU N  74.0741   2.19479  . . 
+      69  95 VAL N  86.2069   2.97265  . . 
+      70  96 MET N 144.718    2.09432  . . 
+      71  98 VAL N  80.6452   3.90219  . . 
+      72 100 CYS N  88.4956   4.69888  . . 
+      73 101 MET N  80.6452   2.60146  . . 
+      74 102 LYS N  85.4701   3.65257  . . 
+      75 114 VAL N  86.2069   2.97265  . . 
+      76 115 ARG N  91.7431   2.52504  . . 
+      77 116 ILE N  84.0336   3.53082  . . 
+      78 118 ALA N  61.3497   3.76378  . . 
+      79 119 ASP N  83.3333   3.47222  . . 
+      80 120 ALA N  74.0741   2.19479  . . 
+      81 121 MET N  79.3651   1.88964  . . 
+      82 123 GLN N  78.125    1.83105  . . 
+      83 124 ALA N  72.4638   2.1004   . . 
+      84 125 LEU N  72.9927   4.26235  . . 
+      85 126 LEU N 101.01     8.16243  . . 
+      86 127 GLY N  78.125    3.05176  . . 
+      87 128 ALA N  89.2857   3.18878  . . 
+      88 137 ARG N 139.665    3.121    . . 
+      89 138 ALA N 177.305    3.14371  . . 
+      90 140 LEU N 148.148    2.41427  . . 
+      91 141 LYS N 588.235  138.408    . . 
+
+   stop_
+
+save_
+
+
+save_heteronuclear_noe_cChim500
+   _Saveframe_category             heteronuclear_NOE
+
+   _Details                        .
+
+   loop_
+      _Software_label
+
+      $NMRView 
+
+   stop_
+
+   loop_
+      _Experiment_label
+
+      '2D 1H-15N HSQC' 
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label       $sample_conditions_1
+   _Spectrometer_frequency_1H      500
+   _Mol_system_component_name      cChimera
+   _Atom_one_atom_name             N
+   _Atom_two_atom_name             H
+   _Heteronuclear_NOE_value_type  'relative intensities'
+   _NOE_reference_value            20000000
+   _NOE_reference_description      .
+   _Text_data_format               .
+   _Text_data                      .
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+      _Heteronuclear_NOE_value
+      _Heteronuclear_NOE_value_error
+
+       23 ALA  0.618342262219  0.091 
+       24 ALA  0.863039901618  0.229 
+       25 VAL  0.644136462472  0.079 
+       26 GLU  0.678278502599  0.108 
+       27 GLN  0.532618102639  0.127 
+       28 LEU  0.688148017949  0.123 
+       29 THR  0.714131672685  0.112 
+       30 GLU  0.787837508484  0.157 
+       31 GLU  0.685588022945  0.151 
+       32 GLN  0.759201339522  0.153 
+       33 LYS  0.638975040849  0.172 
+       34 ASN  0.758214121985  0.132 
+       35 GLU  0.721164366579  0.102 
+       36 PHE  0.801023291369  0.213 
+       37 LYS  0.795057593182  0.232 
+       38 ALA  0.722389160803  0.083 
+       39 ALA  0.597549934507  0.128 
+       40 PHE  0.787837508484  0.157 
+       41 ASP  0.790552899076  0.174 
+       42 ILE  0.808165083385  0.153 
+       43 PHE  0.82063745751   0.551 
+       44 VAL  0.774776467434  0.367 
+       45 LEU  0.816744914114  0.204 
+       47 ALA  0.700228998161  0.151 
+       48 GLU  0.449223606606  0.396 
+       49 ASP  0.543726631792  0.163 
+       50 GLY  0.919192290347  0.278 
+       51 SER  0.818909192371  0.155 
+       52 ILE  0.769841446127  0.221 
+       53 SER  0.728387172343  0.371 
+       54 THR  0.702718442097  0.198 
+       55 LYS  0.790724646178  0.211 
+       56 GLU  0.84331840012   0.21  
+       57 LEU  0.717962927125  0.206 
+       58 GLY  0.749407112314  0.197 
+       59 LYS  0.767384951812  0.159 
+       60 VAL  0.779220734577  0.192 
+       61 MET  0.794523155553  0.205 
+       62 ARG  0.72207358686   0.094 
+       63 MET  0.744520170688  0.176 
+       64 LEU  0.696247024179  0.177 
+       65 GLY  0.71979827813   0.133 
+       66 GLN  0.674372436877  0.081 
+       67 ASN  0.864754032693  0.781 
+       69 THR  0.676840255235  0.115 
+       71 GLU  0.747511312884  0.141 
+       73 LEU  0.611999679319  0.098 
+       74 GLN  0.674372436877  0.081 
+       75 GLU  0.704442348663  0.116 
+       76 MET  0.836981771427  0.227 
+       77 ILE  0.72588376407   0.301 
+       78 ASP  0.742393749681  0.206 
+       79 GLU  0.787073817912  0.149 
+       80 VAL  0.894073009413  0.451 
+       81 ASP  0.875642628585  0.293 
+       82 GLU  0.588835276168  0.182 
+       83 ASP  0.818588963507  0.179 
+       84 GLY  0.702127334252  0.147 
+       85 SER  0.91180812997   0.166 
+       86 GLY  0.778988257925  0.211 
+       87 THR  0.737777594698  0.2   
+       88 VAL  0.699596120221  0.223 
+       89 ASP  0.602867664161  0.197 
+       90 PHE  0.739630399633  0.13  
+       91 ASP  0.865234216762  0.221 
+       92 GLU  0.660676875337  0.14  
+       93 PHE  0.935491992768  0.293 
+       94 LEU  0.814958005591  0.263 
+       95 VAL  0.806487803101  0.256 
+       96 MET  0.758619483086  0.106 
+       98 VAL  0.634416923792  0.178 
+      100 CYS  0.679606527702  0.213 
+      101 MET  0.5804480099    0.162 
+      102 LYS  0.63768796947   0.147 
+      114 VAL  0.697913213616  0.249 
+      115 ARG  0.579710879605  0.208 
+      116 ILE  0.653305267647  0.251 
+      118 ALA  0.782618992324  0.392 
+      119 ASP  0.832908127179  0.19  
+      120 ALA  0.828613795595  0.224 
+      121 MET  0.648422210558  0.153 
+      122 MET  0.682744285925  0.185 
+      123 GLN  0.735911902832  0.135 
+      124 ALA  0.655048897826  0.137 
+      125 LEU  0.758262708314  0.258 
+      126 LEU  0.826867177114  0.239 
+      127 GLY  0.640848026651  0.202 
+      128 ALA  0.549623904312  0.416 
+      137 ARG  0.48376591793   0.094 
+      138 ALA -0.572801982828 -0.266 
+      140 LEU  0.295825210323  0.101 
+      141 LYS -1.4910091648   -0.151 
+
+   stop_
+
+save_
+
+
+save_heteronuclear_noe_cChim600
+   _Saveframe_category             heteronuclear_NOE
+
+   _Details                        .
+
+   loop_
+      _Software_label
+
+      $NMRView 
+
+   stop_
+
+   loop_
+      _Experiment_label
+
+      '2D 1H-15N HSQC' 
+
+   stop_
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label       $sample_conditions_1
+   _Spectrometer_frequency_1H      600
+   _Mol_system_component_name      cChimera
+   _Atom_one_atom_name             N
+   _Atom_two_atom_name             H
+   _Heteronuclear_NOE_value_type  'relative intensities'
+   _NOE_reference_value            20000000
+   _NOE_reference_description      .
+   _Text_data_format               .
+   _Text_data                      .
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+      _Heteronuclear_NOE_value
+      _Heteronuclear_NOE_value_error
+
+       23 ALA  0.812261443181  0.081 
+       24 ALA  0.785576647439  0.152 
+       25 VAL  0.790894214759  0.074 
+       26 GLU  0.815699778582  0.09  
+       27 GLN  0.737740014159  0.121 
+       28 LEU  0.831665914667  0.089 
+       29 THR  0.835900357549  0.088 
+       30 GLU  0.837054582936  0.098 
+       31 GLU  0.999579013278  0.148 
+       32 GLN  0.852072561261  0.102 
+       33 LYS  0.818298506111  0.146 
+       34 ASN  0.793834345375  0.1   
+       35 GLU  0.555758589867  0.068 
+       36 PHE  0.850376317236  0.131 
+       37 LYS  0.8716547308    0.163 
+       38 ALA  0.850567431881  0.058 
+       39 ALA  0.742198040171  0.107 
+       40 PHE  0.837054582936  0.098 
+       41 ASP  0.837029575119  0.126 
+       42 ILE  0.757847778773  0.096 
+       43 PHE  0.968732224627  0.438 
+       44 VAL  0.610293851465  0.3   
+       45 LEU  0.891255016406  0.154 
+       47 ALA  0.840493596555  0.143 
+       48 GLU  0.621706622435  0.348 
+       49 ASP  0.681611413714  0.147 
+       50 GLY  0.800681665262  0.174 
+       51 SER  0.83353000174   0.107 
+       52 ILE  0.985594740656  0.192 
+       53 SER  1.08970828455   0.315 
+       54 THR  1.22425681976   0.266 
+       55 LYS  0.812092864619  0.135 
+       56 GLU  0.830196437965  0.135 
+       57 LEU  0.823840828489  0.19  
+       58 GLY  0.926588421993  0.181 
+       59 LYS  0.835300307178  0.116 
+       60 VAL  0.856445156183  0.14  
+       61 MET  0.88759326122   0.159 
+       62 ARG  0.856104340067  0.08  
+       63 MET  0.79318412632   0.119 
+       64 LEU  0.749736251382  0.129 
+       65 GLY  0.750483103073  0.087 
+       66 GLN  0.755856873469  0.076 
+       67 ASN  0.78566796883   0.427 
+       71 GLU  0.785358255824  0.09  
+       73 LEU  0.706764214529  0.081 
+       74 GLN  0.758190171566  0.074 
+       75 GLU  0.832774611938  0.091 
+       76 MET  0.715484793439  0.144 
+       77 ILE  0.904029753205  0.422 
+       78 ASP  0.879843602965  0.169 
+       79 GLU  0.859033748834  0.101 
+       80 VAL  0.853288062792  0.403 
+       81 ASP  0.740478558054  0.214 
+       82 GLU  0.785487616628  0.177 
+       83 ASP  0.84279709859   0.118 
+       84 GLY  0.842819035132  0.117 
+       85 SER  1.05561909578   0.11  
+       86 GLY  0.95700157168   0.157 
+       87 THR  0.814663384974  0.156 
+       88 VAL  0.792201445834  0.143 
+       89 ASP  0.828968235852  0.16  
+       90 PHE  0.794208526407  0.1   
+       91 ASP  0.945406633705  0.134 
+       92 GLU  0.75797676341   0.09  
+       93 PHE  0.845881083791  0.171 
+       94 LEU  1.0267758602    0.215 
+       95 VAL  1.03655805196   0.239 
+       96 MET  0.691885728823  0.068 
+       98 VAL  0.940677118611  0.19  
+      100 CYS  1.03247125029   0.226 
+      101 MET  0.824125782098  0.145 
+      102 LYS  0.711779974611  0.111 
+      114 VAL  0.561506151324  0.149 
+      115 ARG  0.846190366686  0.225 
+      116 ILE  0.446270185984  0.151 
+      118 ALA  0.765415437402  0.236 
+      119 ASP  0.962448461015  0.143 
+      120 ALA  0.793206122053  0.134 
+      121 MET  0.69692517805   0.112 
+      122 MET  0.825542715632  0.142 
+      123 GLN  0.904016204073  0.124 
+      124 ALA  0.886016374591  0.116 
+      125 LEU  0.825093931477  0.244 
+      126 LEU  0.883962749898  0.142 
+      127 GLY  0.78713599278   0.185 
+      130 ALA -1.51244929176  -0.462 
+      137 ARG  0.66178910272   0.083 
+      138 ALA -0.16205162642  -0.152 
+      140 LEU  0.347386390907  0.094 
+      141 LYS -1.53200093644  -0.095 
+
+   stop_
+
+save_
+

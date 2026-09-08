@@ -34,7 +34,7 @@ Typical pipeline run:
 python scripts/pipeline.py --input data/CSP_UBQ.csv --out outputs
 ```
 
-Additional flags (`--ids`, `--workers`, `--no-case-study`, metadata annotation, etc.) and verbose logging (`CSP_VERBOSE=1`) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).
+Additional flags (`--ids`, `--workers`, `--no-case-study`, `--no-interactive-view`, metadata annotation, etc.) and verbose logging (`CSP_VERBOSE=1`) are documented in [docs/pipeline_reference.md](docs/pipeline_reference.md).
 
 Grid referencing options and defaults live in [scripts/config.py](scripts/config.py); [docs/pipeline_reference.md](docs/pipeline_reference.md) describes the grid workflow in detail.
 
@@ -60,7 +60,7 @@ pytest scripts/test_pipeline.py -m "not integration"
 
 ## Notes for agents
 
-- **Case-study figures** (on by default; disable with `--no-case-study`) expect a **PyMOL GUI** and manual steps (orientation, F5 to save the view) when views are not cached. Do not assume a headless environment will succeed.
+- **Case-study figures** (on by default; disable with `--no-case-study`) reuse cached cameras under `pymol_views/`. Without a saved view they open a **PyMOL GUI** (orientation, F5) unless `--no-interactive-view` is set, in which case those figures are skipped. Do not assume a headless environment will succeed without `--no-interactive-view`.
 - **Avoid large unrelated diffs** in `outputs/`, `figures/`, and other generated or binary assets unless the user explicitly asked to regenerate or change them.
 - Prefer focused code changes in [scripts/](scripts/) that match existing style and patterns; extend existing functions rather than duplicating logic.
 

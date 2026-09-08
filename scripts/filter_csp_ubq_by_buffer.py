@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Write a subset of CSP_UBQ.csv whose apo/holo rows satisfy buffer criteria from
-apo_holo_exp_conditions.csv (paired by row index with CSP_UBQ).
+apo_holo_exp_conditions.csv (joined by pair key, not row index).
 
 Default: |ΔpH| ≤ 0.5 and |ΔT| ≤ 5 °C, requiring pH and temperature on both sides.
 """
@@ -18,6 +18,19 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from scripts.config import Paths  # noqa: E402
+
+
+def _norm(v: str | None) -> str:
+    return (v or "").strip()
+
+
+def pair_key(row: dict[str, str]) -> tuple[str, str, str, str]:
+    return (
+        _norm(row.get("apo_bmrb")),
+        _norm(row.get("holo_bmrb")),
+        _norm(row.get("apo_pdb")),
+        _norm(row.get("holo_pdb")),
+    )
 
 
 def row_meets(
@@ -61,7 +74,6 @@ def main() -> int:
     tc = float(args.temp_max_diff_c)
     out = args.output
     if out is None:
-        # Filename encodes tolerances (avoid ugly floats)
         out = Path(cfg.data_dir) / f"CSP_UBQ_ph{ph:g}_temp{tc:g}C.csv"
 
     if not csp_path.is_file() or not exp_path.is_file():
@@ -79,18 +91,26 @@ def main() -> int:
         print("CSP CSV has no header.", file=sys.stderr)
         return 1
 
-    n = min(len(csp_rows), len(exp_rows))
-    if len(csp_rows) != len(exp_rows):
+    exp_by_key: dict[tuple[str, str, str, str], dict[str, str]] = {}
+    for er in exp_rows:
+        exp_by_key[pair_key(er)] = er
+
+    kept: list[dict[str, str]] = []
+    missing_exp = 0
+    for cr in csp_rows:
+        er = exp_by_key.get(pair_key(cr))
+        if er is None:
+            missing_exp += 1
+            continue
+        if row_meets(er, ph_max=ph, temp_max_c=tc):
+            kept.append(cr)
+
+    if missing_exp:
         print(
-            f"WARN: row counts differ (csp={len(csp_rows)}, exp={len(exp_rows)}); using first {n} pairs.",
+            f"WARN: {missing_exp} CSP rows had no matching exp-conditions key "
+            f"(apo_bmrb, holo_bmrb, apo_pdb, holo_pdb).",
             file=sys.stderr,
         )
-
-    kept = [
-        csp_rows[i]
-        for i in range(n)
-        if row_meets(exp_rows[i], ph_max=ph, temp_max_c=tc)
-    ]
 
     out = out if out.is_absolute() else _REPO / out
     with out.open("w", newline="", encoding="utf-8") as f:
