@@ -410,6 +410,7 @@ def build_plot_block(
     selection_file_token: str,
     sf_id: str | None = None,
     sf_title: str | None = None,
+    n_targets: int | None = None,
 ) -> str:
     """
     Build a LaTeX figure block with the single supplementary plot.
@@ -423,7 +424,11 @@ def build_plot_block(
         png_file = f"SF1_{selection_file_token}.png"
     si_label = _sf_id_to_si_label(sf_id or "SF1")
     title_part = sf_title if (sf_id and sf_title) else escape_underscores(selection_label)
-    caption_text = f"\\textbf{{SI Fig. {si_label}. Confusion Matrix Histograms for {title_part}}}"
+    n_suffix = f" ($n={n_targets}$)" if n_targets is not None else ""
+    caption_text = (
+        f"\\textbf{{SI Fig. {si_label}. Confusion Matrix Histograms for {title_part}}}"
+        f"{n_suffix}"
+    )
     fig_label = f"fig:{sf_id.lower()}_{selection_slug}" if sf_id else f"fig:sf1_{selection_slug}"
     return (
         "\n"
@@ -501,6 +506,7 @@ def main(argv=None) -> int:
                 selection_file_token=numbering["file_token"],
                 sf_id=numbering["sf_id"],
                 sf_title=numbering["title"],
+                n_targets=len(df),
             )
             latex = latex + plot_block
 

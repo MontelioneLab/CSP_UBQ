@@ -13,7 +13,7 @@ For each target directory under outputs/ that has a csp_table.csv, this script:
 
 Shared helpers :func:`fraction_rows_with_both_ca_shifts_1d` and
 :func:`target_basenames_passing_ca_shift_coverage` define the CA-shift coverage
-rule for SI Fig. S10 / S11 / S14 and the standalone 1D F1 boxplot (default
+rule for SI Fig. S11 / S12 / S15 and the standalone 1D F1 boxplot (default
 ``DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE``: strictly more than half of rows with both
 ``CA_apo`` and ``CA_holo``).
 
@@ -149,7 +149,7 @@ def target_basenames_passing_ca_shift_coverage(
 ) -> Tuple[Set[str], Dict[str, float]]:
     """Per-target dirs whose CA row fraction in ``1d_analysis.csv`` is **strictly** ``> min_coverage``.
 
-    Shared eligibility rule for SI Fig. S10 / S11 / S14 and the standalone 1D F1 boxplot so CA-shift
+    Shared eligibility rule for SI Fig. S11 / S12 / S15 and the standalone 1D F1 boxplot so CA-shift
     targets are gated identically from the pipeline 1D table.
 
     Args:

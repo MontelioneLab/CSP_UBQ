@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+import csv
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from scripts.domain_full_length_bifurcation import (
+    SLIM_REPORT_FIELDS,
     _classify_row,
     _pick_uniprot_accession,
+    is_domain_from_lengths,
     process_dataset,
+    slim_report_row,
 )
 from scripts.uniprot_blast import BlastHit
 from scripts.uniprot_io import normalize_uniprot_accession
@@ -21,6 +25,62 @@ from scripts.uniprot_io import normalize_uniprot_accession
 )
 def test_classify_row(holo_len, uni, ratio, expected):
     assert _classify_row(holo_len, uni, ratio) == expected
+
+
+@pytest.mark.parametrize(
+    "seq_len,full_len,fraction,expected",
+    [
+        (74, 100, 0.75, True),
+        (75, 100, 0.75, False),
+        (76, 100, 0.75, False),
+        (100, 100, 0.75, False),
+        (0, 100, 0.75, None),
+        (50, 0, 0.75, None),
+        (120, 500, 0.75, True),
+    ],
+)
+def test_is_domain_from_lengths(seq_len, full_len, fraction, expected):
+    assert is_domain_from_lengths(seq_len, full_len, fraction) == expected
+
+
+def test_slim_report_row_unresolved_leaves_flag_empty():
+    row = slim_report_row(
+        {
+            "holo_pdb": "1d5g",
+            "apo_bmrb": "99999",
+            "holo_bmrb": "88888",
+            "uniprot_accession": "Q12923",
+            "bmrb_holo_seq_length": "120",
+            "uniprot_seq_length": "500",
+            "error_reason": "no_blast_hits",
+        },
+        domain_fraction=0.75,
+    )
+    assert row["holo_pdb"] == "1d5g"
+    assert row["uniprot_id"] == ""
+    assert row["sequence_length"] == ""
+    assert row["full_protein_length"] == ""
+    assert row["is_domain"] == ""
+    assert list(row.keys()) == SLIM_REPORT_FIELDS
+
+
+def test_slim_report_row_full_length_is_false():
+    row = slim_report_row(
+        {
+            "holo_pdb": "1abc",
+            "apo_bmrb": "1",
+            "holo_bmrb": "2",
+            "uniprot_accession": "P12345",
+            "bmrb_holo_seq_length": "90",
+            "uniprot_seq_length": "100",
+            "error_reason": "",
+        },
+        domain_fraction=0.75,
+    )
+    assert row["uniprot_id"] == "P12345"
+    assert row["sequence_length"] == "90"
+    assert row["full_protein_length"] == "100"
+    assert row["is_domain"] == "False"
 
 
 def test_normalize_uniprot_accession():
@@ -156,6 +216,19 @@ def test_process_dataset_stubbed(
     assert counts["domains"] == 1
     dom = (tmp_path / "tst_domains.csv").read_text(encoding="utf-8")
     assert "domain" in dom.lower() or "Q12923" in dom
+
+    report_path = tmp_path / "tst_receptor_is_domain.csv"
+    assert report_path.is_file()
+    with open(report_path, newline="", encoding="utf-8") as f:
+        report_rows = list(csv.DictReader(f))
+    assert list(report_rows[0].keys()) == list(SLIM_REPORT_FIELDS)
+    assert report_rows[0]["holo_pdb"] == "1d5g"
+    assert report_rows[0]["apo_bmrb"] == "99999"
+    assert report_rows[0]["holo_bmrb"] == "88888"
+    assert report_rows[0]["uniprot_id"] == "Q12923"
+    assert report_rows[0]["sequence_length"] == "120"
+    assert report_rows[0]["full_protein_length"] == "500"
+    assert report_rows[0]["is_domain"] == "True"
 
 
 @patch("scripts.domain_full_length_bifurcation.run_blastp")

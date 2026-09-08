@@ -1,0 +1,40 @@
+% SI tables portion (ST1–ST10 + paired SF1–SF9 figure blocks in the fragments).
+% Compile from this directory:
+%   latexmk -pdf -interaction=nonstopmode main.tex
+%
+% Generated fragments live in ../../figures/ST*.tex (produced by the SI wrapper).
+\documentclass[11pt]{article}
+\input{preamble_fragment}
+
+\begin{document}
+
+% ST1 — all receptors
+\input{../../figures/ST1_all_receptors.tex}
+\clearpage
+
+% ST2–ST3 — EC classes (+ SF1–SF2)
+\input{../../figures/ST2_hydrolase_receptors.tex}
+\clearpage
+\input{../../figures/ST3_transferase_receptors.tex}
+\clearpage
+
+% ST4–ST6 — SCOPe fold classes (+ SF3–SF5)
+\input{../../figures/ST4_all_alpha_receptors.tex}
+\clearpage
+\input{../../figures/ST5_all_beta_receptors.tex}
+\clearpage
+\input{../../figures/ST6_alpha_and_beta_a_plus_b_receptors.tex}
+\clearpage
+
+% ST7–ST9 — domain selections (+ SF6–SF8)
+\input{../../figures/ST7_bet_et_domain_receptors.tex}
+\clearpage
+\input{../../figures/ST8_tfiih_domain_receptors.tex}
+\clearpage
+\input{../../figures/ST9_ubiquitin_domain_receptors.tex}
+\clearpage
+
+% ST10 — dissimilar apo/holo conditions (+ SF9)
+\input{../../figures/ST10_dissimilar_apo_holo_conditions.tex}
+
+\end{document}

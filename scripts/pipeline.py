@@ -26,18 +26,28 @@ try:
     from .config import paths, concurrency, ensure_directories, sasa_analysis, ca_distance_analysis, Referencing as _Referencing  # type: ignore
     from .bmrb_io import fetch_bmrb, parse_sequence_and_shifts, parse_sequence_and_shifts_from_saveframes
     from .align import align_global
-    from .csp import compute_csp_A, compute_csp_multiple_saveframes, compute_csp_from_aligned_sequences, compute_csp_multiple_saveframes_ca, compute_csp_multiple_saveframes_ha_ca
+    from .csp import (
+        compute_csp_A,
+        compute_csp_multiple_saveframes,
+        compute_csp_from_aligned_sequences,
+        compute_csp_multiple_saveframes_ca,
+        compute_csp_multiple_saveframes_ha_ca,
+        collect_large_dn_exclusions,
+        write_large_dn_exclusions_csv,
+        scan_csp_tables_for_large_dn_exclusions,
+    )
     from .rcsb_io import fetch_pdb, parse_pdb_sequences
     from .visualize import write_pymol_color_csp_mask_script, plot_csp_histogram, write_pymol_occlusion_script, write_pymol_combined_script, write_pymol_delta_sasa_script, write_pymol_session_file, create_pdb_with_delta_sasa_bfactors, write_pymol_csp_heatmap_script, write_pymol_csp_session_file, plot_csp_classification_bars, write_pymol_csp_classification_script, write_pymol_csp_classification_session_file, plot_per_atom_classification_panels
     from .HSQC_visualize import plot_hsqc_variants
     from .sasa_analysis import compute_sasa_occlusion, write_occlusion_analysis_csv, get_occlusion_summary
-    from .interaction_analysis import compute_interaction_filter, write_interaction_analysis_csv, get_interaction_summary, compute_ca_distance_filter, write_ca_distance_csv, get_ca_distance_summary, compute_nn_distance_filter, write_nn_distance_csv, get_nn_distance_summary, compute_min_atom_distance_filter, write_any_atom_distance_csv, get_any_atom_distance_summary
+    from .interaction_analysis import compute_interaction_filter, write_interaction_analysis_csv, get_interaction_summary, compute_ca_distance_filter, write_ca_distance_csv, get_ca_distance_summary, compute_nn_distance_filter, write_nn_distance_csv, get_nn_distance_summary, compute_min_atom_distance_filter, write_any_atom_distance_csv, get_any_atom_distance_summary, compute_second_shell_filter, write_second_shell_csv, get_second_shell_summary
     from .merge_csv import merge_all_csv_files
     from .analyze_targets_single_atom_shifts import compute_1d_metrics_for_target
     from .case_study import generate_case_study_figure
     from .case_study_2 import generate_case_study_2_figure
     from .annotate_csp_csv_metadata import annotate_csv_with_ec_and_scope, _load_receptor_chain_map
     from .confusion_matrix_analysis import generate_confusion_matrix_per_system
+    from .plot_csp_z_vs_ca_distance import plot_per_target as plot_csp_z_vs_ca_distance_per_target, plot_dataset as plot_csp_z_vs_ca_distance_dataset
     from .receptor_msa import try_write_receptor_alignment_png
     from .target_resolution import canonical_output_dir_name
 except Exception:
@@ -46,18 +56,28 @@ except Exception:
     from scripts.config import paths, concurrency, ensure_directories, sasa_analysis, ca_distance_analysis, Referencing as _Referencing  # type: ignore
     from scripts.bmrb_io import fetch_bmrb, parse_sequence_and_shifts, parse_sequence_and_shifts_from_saveframes
     from scripts.align import align_global
-    from scripts.csp import compute_csp_A, compute_csp_multiple_saveframes, compute_csp_from_aligned_sequences, compute_csp_multiple_saveframes_ca, compute_csp_multiple_saveframes_ha_ca
+    from scripts.csp import (
+        compute_csp_A,
+        compute_csp_multiple_saveframes,
+        compute_csp_from_aligned_sequences,
+        compute_csp_multiple_saveframes_ca,
+        compute_csp_multiple_saveframes_ha_ca,
+        collect_large_dn_exclusions,
+        write_large_dn_exclusions_csv,
+        scan_csp_tables_for_large_dn_exclusions,
+    )
     from scripts.rcsb_io import fetch_pdb, parse_pdb_sequences
     from scripts.visualize import write_pymol_color_csp_mask_script, plot_csp_histogram, write_pymol_occlusion_script, write_pymol_combined_script, write_pymol_delta_sasa_script, write_pymol_session_file, create_pdb_with_delta_sasa_bfactors, write_pymol_csp_heatmap_script, write_pymol_csp_session_file, plot_csp_classification_bars, write_pymol_csp_classification_script, write_pymol_csp_classification_session_file, plot_per_atom_classification_panels
     from scripts.HSQC_visualize import plot_hsqc_variants
     from scripts.sasa_analysis import compute_sasa_occlusion, write_occlusion_analysis_csv, get_occlusion_summary
-    from scripts.interaction_analysis import compute_interaction_filter, write_interaction_analysis_csv, get_interaction_summary, compute_ca_distance_filter, write_ca_distance_csv, get_ca_distance_summary, compute_nn_distance_filter, write_nn_distance_csv, get_nn_distance_summary, compute_min_atom_distance_filter, write_any_atom_distance_csv, get_any_atom_distance_summary
+    from scripts.interaction_analysis import compute_interaction_filter, write_interaction_analysis_csv, get_interaction_summary, compute_ca_distance_filter, write_ca_distance_csv, get_ca_distance_summary, compute_nn_distance_filter, write_nn_distance_csv, get_nn_distance_summary, compute_min_atom_distance_filter, write_any_atom_distance_csv, get_any_atom_distance_summary, compute_second_shell_filter, write_second_shell_csv, get_second_shell_summary
     from scripts.merge_csv import merge_all_csv_files
     from scripts.analyze_targets_single_atom_shifts import compute_1d_metrics_for_target
     from scripts.case_study import generate_case_study_figure
     from scripts.case_study_2 import generate_case_study_2_figure
     from scripts.annotate_csp_csv_metadata import annotate_csv_with_ec_and_scope, _load_receptor_chain_map
     from scripts.confusion_matrix_analysis import generate_confusion_matrix_per_system
+    from scripts.plot_csp_z_vs_ca_distance import plot_per_target as plot_csp_z_vs_ca_distance_per_target, plot_dataset as plot_csp_z_vs_ca_distance_dataset
     from scripts.receptor_msa import try_write_receptor_alignment_png
     from scripts.target_resolution import canonical_output_dir_name
 
@@ -200,6 +220,7 @@ def process_row(
     force_case_study_view_reset: bool = False,
     bifurcation_basename: Optional[str] = None,
     receptor_msa_png: bool = True,
+    allow_interactive_view: bool = True,
 ) -> None:
     apo_bmrb = (row.get("apo_bmrb") or "").strip()
     holo_bmrb = (row.get("holo_bmrb") or "").strip()
@@ -222,10 +243,11 @@ def process_row(
         "ca_distance": os.path.join(logs_dir, "06_ca_distance_filter.txt"),
         "nn_distance": os.path.join(logs_dir, "07_nn_distance_filter.txt"),
         "any_atom_distance": os.path.join(logs_dir, "08_any_atom_distance_filter.txt"),
-        "tables_outputs": os.path.join(logs_dir, "09_tables_and_visualizations.txt"),
-        "master_csv": os.path.join(logs_dir, "10_master_csv.txt"),
-        "case_study": os.path.join(logs_dir, "11_case_study.txt"),
-        "receptor_msa_png": os.path.join(logs_dir, "12_receptor_msa_png.txt"),
+        "second_shell": os.path.join(logs_dir, "09_second_shell_filter.txt"),
+        "tables_outputs": os.path.join(logs_dir, "10_tables_and_visualizations.txt"),
+        "master_csv": os.path.join(logs_dir, "11_master_csv.txt"),
+        "case_study": os.path.join(logs_dir, "12_case_study.txt"),
+        "receptor_msa_png": os.path.join(logs_dir, "13_receptor_msa_png.txt"),
     }
     target_label = os.path.basename(tgt_dir)
     
@@ -299,6 +321,22 @@ def process_row(
         _emit_warning(f"[PIPE] ERROR: No valid CSPs computed for {apo_bmrb} vs {holo_bmrb}", log_files["compute_csp"])
         return
 
+    # Persist residues excluded for |ΔN_raw| > max_abs_delta_n_ppm (per-target)
+    large_dn_rows = collect_large_dn_exclusions(results)
+    if large_dn_rows:
+        per_target_excl = os.path.join(tgt_dir, "excluded_large_dn.csv")
+        write_large_dn_exclusions_csv(
+            per_target_excl,
+            large_dn_rows,
+            apo_bmrb=apo_bmrb,
+            holo_bmrb=holo_bmrb,
+            holo_pdb=holo_pdb,
+            target_dir=target_label,
+        )
+        _console_line(
+            f"[PIPE] [{target_label}] Excluded {len(large_dn_rows)} residue(s) with |ΔN| > 15 ppm"
+        )
+
     # Check if CA shifts are available in both apo and holo
     has_apo_ca = any(len(seq[3]) > 0 for seq in apo_sequences)  # CA_shifts is at index 3
     has_holo_ca = any(len(seq[3]) > 0 for seq in holo_sequences)  # CA_shifts is at index 3
@@ -363,25 +401,17 @@ def process_row(
     pdb_path = _run_logged(log_files["structure_pdb_alignment"], fetch_pdb, holo_pdb)
     chains = _run_logged(log_files["structure_pdb_alignment"], parse_pdb_sequences, pdb_path)
 
-    # Find the best apo-holo alignment to determine which holo sequence was used
-    # This matches the logic in compute_csp_multiple_saveframes
-    best_alignment_score = float('-inf')
-    best_holo_sequence = None
-    best_apo_sequence = None
-    best_aligned_apo = None
-    best_aligned_holo = None
-    best_mapping = None
-    
-    for apo_seq, _, _, _, _, apo_saveframe in apo_sequences:
-        for holo_seq, _, _, _, _, holo_saveframe in holo_sequences:
-            aligned_apo, aligned_holo, mapping, alignment_score = align_global(apo_seq, holo_seq)
-            if alignment_score > best_alignment_score:
-                best_alignment_score = alignment_score
-                best_holo_sequence = holo_seq
-                best_apo_sequence = apo_seq
-                best_aligned_apo = aligned_apo
-                best_aligned_holo = aligned_holo
-                best_mapping = mapping
+    # Seq_ID-offset alignment (same selection as compute_csp_multiple_saveframes)
+    from scripts.csp import _best_seqid_alignment
+
+    best_aln = _best_seqid_alignment(apo_sequences, holo_sequences)
+    best_holo_sequence = best_aln["holo_seq"] if best_aln else None
+    best_apo_sequence = best_aln["apo_seq"] if best_aln else None
+    best_aligned_apo = best_aln["aligned_apo"] if best_aln else None
+    best_aligned_holo = best_aln["aligned_holo"] if best_aln else None
+    best_mapping = best_aln["mapping"] if best_aln else None
+    best_alignment_score = best_aln["score"] if best_aln else float("-inf")
+    best_seqid_offset = best_aln["offset"] if best_aln else None
     
     # Save sequence alignment to text file
     if best_aligned_apo and best_aligned_holo:
@@ -392,6 +422,12 @@ def process_row(
                 f.write("=" * 80 + "\n\n")
                 f.write(f"Apo BMRB ID: {apo_bmrb}\n")
                 f.write(f"Holo BMRB ID: {holo_bmrb}\n")
+                f.write("Method: Seq_ID offset (exact AA matches only)\n")
+                if best_seqid_offset is not None:
+                    f.write(f"Seq_ID offset (apo_sid = holo_sid + offset): {best_seqid_offset}\n")
+                if best_aln:
+                    f.write(f"Apo saveframe: {best_aln['apo_saveframe']}\n")
+                    f.write(f"Holo saveframe: {best_aln['holo_saveframe']}\n")
                 f.write(f"Alignment Score: {best_alignment_score:.2f}\n")
                 f.write(f"Number of Mapped Pairs: {len(best_mapping) if best_mapping else 0}\n\n")
                 
@@ -761,6 +797,11 @@ def process_row(
             "H_holo_original","N_holo_original",
             "H_offset","N_offset","CA_offset","HA_offset",
             "dH","dN","csp_A","csp_z","significant","significant_1sd","significant_2sd",
+            "significant_sigma_0","significant_sigma_1","significant_sigma_2",
+            "significant_top_10_percentile","significant_top_5_percentile",
+            "significant_03_ppm","significant_05_ppm","significant_10_ppm",
+            "significant_raw_mean","significant_raw_1sd","significant_raw_2sd",
+            "significant_max_05_cleaned_mean",
             "delta_sasa","occluded",
         ])
         for r in results:
@@ -810,9 +851,29 @@ def process_row(
                 int(bool(r.significant)) if r.significant is not None else "",
                 int(bool(r.significant_1sd)) if r.significant_1sd is not None else "",
                 int(bool(r.significant_2sd)) if r.significant_2sd is not None else "",
+                int(bool(r.significant_sigma_0)) if r.significant_sigma_0 is not None else "",
+                int(bool(r.significant_sigma_1)) if r.significant_sigma_1 is not None else "",
+                int(bool(r.significant_sigma_2)) if r.significant_sigma_2 is not None else "",
+                int(bool(r.significant_top_10_percentile)) if r.significant_top_10_percentile is not None else "",
+                int(bool(r.significant_top_5_percentile)) if r.significant_top_5_percentile is not None else "",
+                int(bool(r.significant_03_ppm)) if r.significant_03_ppm is not None else "",
+                int(bool(r.significant_05_ppm)) if r.significant_05_ppm is not None else "",
+                int(bool(r.significant_10_ppm)) if r.significant_10_ppm is not None else "",
+                int(bool(r.significant_raw_mean)) if r.significant_raw_mean is not None else "",
+                int(bool(r.significant_raw_1sd)) if r.significant_raw_1sd is not None else "",
+                int(bool(r.significant_raw_2sd)) if r.significant_raw_2sd is not None else "",
+                int(bool(r.significant_max_05_cleaned_mean)) if r.significant_max_05_cleaned_mean is not None else "",
                 f"{occlusion_data['delta_sasa']:.4f}" if occlusion_data['delta_sasa'] != '' else "",
                 int(bool(occlusion_data['is_occluded'])) if occlusion_data['is_occluded'] is not None else "",
             ])
+
+    # Refresh aggregate |ΔN| exclusion manifest after csp_table.csv is current
+    global_excl_rows = scan_csp_tables_for_large_dn_exclusions(out_dir)
+    write_large_dn_exclusions_csv(
+        os.path.join(out_dir, "large_delta_n_exclusions.csv"),
+        global_excl_rows,
+        write_if_empty=True,
+    )
 
     # Write outputs for CA-inclusive CSPs (separate analysis) if available
     if results_ca:
@@ -919,14 +980,8 @@ def process_row(
                     int(bool(occlusion_data['is_occluded'])) if occlusion_data['is_occluded'] is not None else "",
                 ])
 
-    # Visualizations (H/N CSPs)
-    _run_logged(
-        log_files["tables_outputs"],
-        plot_hsqc_variants,
-        results,
-        os.path.join(tgt_dir, "hsqc_scatter.png"),
-        title=f"{holo_pdb} HSQC comparison",
-    )
+    # Visualizations (H/N CSPs) — HSQC plots run after union binding is ready
+    # so line colors match CSP classification bars / case-study panels.
     _run_logged(
         log_files["tables_outputs"],
         write_pymol_color_csp_mask_script,
@@ -939,26 +994,6 @@ def process_row(
         output_dir=tgt_dir_for_pymol
     )
 
-    # Visualizations (CA-inclusive CSPs) if available
-    if results_ca:
-        _run_logged(
-            log_files["tables_outputs"],
-            plot_hsqc_variants,
-            results_ca,
-            os.path.join(tgt_dir, "hsqc_scatter_CA.png"),
-            title=f"{holo_pdb} HSQC comparison (CA-inclusive CSPs)",
-        )
-    if results_ha_ca:
-        _run_logged(
-            log_files["tables_outputs"],
-            plot_hsqc_variants,
-            results_ha_ca,
-            os.path.join(tgt_dir, "hsqc_scatter_HA_CA.png"),
-            title=f"{holo_pdb} HSQC comparison (HA/CA CSPs)",
-            x_atom="CA",
-            y_atom="HA",
-        )
-    
     # Generate CSP classification bar plots and PyMOL visualizations for each threshold
     significance_thresholds = [('significant', 'original')]
     if include_alternative_thresholds:
@@ -966,7 +1001,7 @@ def process_row(
             ('significant_1sd', '1sd'),
             ('significant_2sd', '2sd')
         ])
-    
+
     # Generate occlusion visualizations
     _run_logged(
         log_files["tables_outputs"],
@@ -1123,6 +1158,67 @@ def process_row(
         interaction_results['n_union_residues'] / total_union_entries if total_union_entries else 0.0
     )
 
+    # Exclusive second-shell residues around the binding-site union
+    binding_site_resnums = [
+        int(entry['residue_number'])
+        for entry in union_residue_info
+        if entry['has_hbond']
+        or entry['has_charge_complement']
+        or entry['has_pi_contact']
+        or entry['has_sasa_occlusion']
+        or entry['has_ca_distance']
+        or entry['has_any_atom_sub_2A']
+    ]
+    if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
+        print(f"[PIPE] Performing second-shell filter analysis ({len(binding_site_resnums)} binding-site residues)")
+    second_shell_results = _run_logged(
+        log_files["second_shell"],
+        compute_second_shell_filter,
+        pdb_path,
+        binding_site_resnums,
+        distance_threshold=ca_distance_analysis.second_shell_threshold,
+        receptor_chain_id=receptor_chain,
+    )
+    if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
+        print(get_second_shell_summary(second_shell_results))
+    second_shell_csv_path = os.path.join(tgt_dir, "second_shell_filter.csv")
+    _run_logged(
+        log_files["second_shell"],
+        write_second_shell_csv,
+        second_shell_results.get('residue_info', []),
+        second_shell_csv_path,
+        ca_distance_analysis.second_shell_threshold,
+    )
+
+    # HSQC overlays (after union binding) so apo→holo lines match classification bars
+    _run_logged(
+        log_files["tables_outputs"],
+        plot_hsqc_variants,
+        results,
+        os.path.join(tgt_dir, "hsqc_scatter.png"),
+        title=f"{holo_pdb} HSQC comparison",
+        binding_results=interaction_results,
+    )
+    if results_ca:
+        _run_logged(
+            log_files["tables_outputs"],
+            plot_hsqc_variants,
+            results_ca,
+            os.path.join(tgt_dir, "hsqc_scatter_CA.png"),
+            title=f"{holo_pdb} HSQC comparison (CA-inclusive CSPs)",
+            binding_results=interaction_results,
+        )
+    if results_ha_ca:
+        _run_logged(
+            log_files["tables_outputs"],
+            plot_hsqc_variants,
+            results_ha_ca,
+            os.path.join(tgt_dir, "hsqc_scatter_HA_CA.png"),
+            title=f"{holo_pdb} HSQC comparison (HA/CA CSPs)",
+            x_atom="HA",
+            y_atom="CA",
+            binding_results=interaction_results,
+        )
 
     # Generate CSP classification visualizations only for original cutoff
     significance_field = 'significant'
@@ -1506,6 +1602,19 @@ def process_row(
         _run_logged(log_files["master_csv"], merge_all_csv_files, tgt_dir, master_csv_path)
         if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
             print(f"[PIPE] ✓ Master CSV saved: {master_csv_path}")
+        try:
+            scatter_path = _run_logged(
+                log_files["master_csv"],
+                plot_csp_z_vs_ca_distance_per_target,
+                tgt_dir,
+            )
+            if scatter_path and (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
+                print(f"[PIPE] ✓ CSP z vs nearest atom–atom distance scatter saved: {scatter_path}")
+        except Exception as e:
+            _emit_warning(
+                f"[PIPE] ✗ Failed to generate CSP z vs nearest atom–atom distance scatter: {e}",
+                log_files["master_csv"],
+            )
     except Exception as e:
         _emit_warning(f"[PIPE] ✗ Failed to generate master CSV: {e}", log_files["master_csv"])
 
@@ -1525,6 +1634,7 @@ def process_row(
                 apo_pdb=apo_pdb or None,
                 force_view_reset=force_reset_for_case_study_1,
                 view_key=target_label,
+                allow_interactive_view=allow_interactive_view,
             )
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ Case-study figure saved: {case_study_path}")
@@ -1541,6 +1651,7 @@ def process_row(
                 apo_pdb=apo_pdb or None,
                 force_view_reset=force_reset_for_case_study_2,
                 view_key=target_label,
+                allow_interactive_view=allow_interactive_view,
             )
             if (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
                 print(f"[PIPE] ✓ Case-study v2 figure saved: {case_study_2_path}")
@@ -1666,6 +1777,11 @@ def main() -> None:
         "--force-case-study-view-reset",
         action="store_true",
         help="Always recapture PyMOL perspective (F5) even if a saved view already exists.",
+    )
+    parser.add_argument(
+        "--no-interactive-view",
+        action="store_true",
+        help="Skip case-study figures that would require an interactive PyMOL view capture.",
     )
     parser.add_argument(
         "--bifurcation-basename",
@@ -1841,6 +1957,7 @@ def main() -> None:
                     args.force_case_study_view_reset,
                     args.bifurcation_basename,
                     not args.no_receptor_msa_png,
+                    not args.no_interactive_view,
                 )
                 for row in rows
             ]
@@ -1869,9 +1986,10 @@ def main() -> None:
                 args.force_case_study_view_reset,
                 args.bifurcation_basename,
                 not args.no_receptor_msa_png,
+                not args.no_interactive_view,
             )
 
-    # Generate confusion_matrix_per_system.csv for downstream scripts (create_si_fig_s18, etc.)
+    # Generate confusion_matrix_per_system.csv for downstream scripts (create_si_fig_s19, etc.)
     _console_line("[PIPE] Finalize: refresh confusion-matrix summary")
     run_logs_dir = os.path.join(args.out, "logs")
     os.makedirs(run_logs_dir, exist_ok=True)
@@ -1882,6 +2000,23 @@ def main() -> None:
         args.out,
         verbose=(os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")),
     )
+
+    # Dataset-wide CSP z-score vs nearest atom–atom distance scatterplot
+    _console_line("[PIPE] Finalize: CSP z vs nearest atom–atom distance scatter (all targets)")
+    scatter_log = os.path.join(run_logs_dir, "csp_z_vs_ca_distance_scatter.txt")
+    try:
+        scatter_path = _run_logged(
+            scatter_log,
+            plot_csp_z_vs_ca_distance_dataset,
+            args.out,
+        )
+        if scatter_path and (os.environ.get("CSP_VERBOSE", "").lower() in ("1", "true", "yes")):
+            print(f"[PIPE] ✓ Dataset CSP z vs nearest atom–atom distance scatter saved: {scatter_path}")
+    except Exception as e:
+        _emit_warning(
+            f"[PIPE] ✗ Failed to generate dataset CSP z vs nearest atom–atom distance scatter: {e}",
+            scatter_log,
+        )
 
 
 if __name__ == "__main__":

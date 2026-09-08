@@ -60,6 +60,27 @@ def _get_direct_contact_threshold() -> float:
     return 2.0
 
 
+def _get_second_shell_threshold() -> float:
+    if ca_distance_analysis is not None:
+        return float(getattr(ca_distance_analysis, 'second_shell_threshold', 6.0))
+    return 6.0
+
+
+def second_shell_column_name(distance_threshold: float = 6.0) -> str:
+    """
+    Build a cutoff-suffixed second-shell boolean column name.
+
+    Whole-number thresholds use an integer suffix (6.0 -> is_second_shell_6A);
+    non-integers use a 'p' decimal marker (6.5 -> is_second_shell_6p5A).
+    """
+    threshold = float(distance_threshold)
+    if threshold.is_integer():
+        suffix = f"{int(threshold)}A"
+    else:
+        suffix = f"{str(threshold).replace('.', 'p')}A"
+    return f"is_second_shell_{suffix}"
+
+
 def _build_bond_map(topology: md.Topology) -> Dict[int, List[int]]:
     """
     Build adjacency mapping of atom index -> bonded atom indices.
@@ -1524,5 +1545,165 @@ Any-Atom Distance Filter Summary:
 - Residues passing filter: {any_atom_results['n_passing']}
 - Fraction passing: {any_atom_results['fraction_passing']:.2%}
 - Distance threshold: {any_atom_results['distance_threshold']} Å
+"""
+    return summary.strip()
+
+
+def compute_second_shell_filter(
+    holo_pdb_path: str,
+    binding_site_residue_numbers: List[int],
+    distance_threshold: Optional[float] = None,
+    receptor_chain_id: str = None,
+) -> Dict:
+    """
+    Flag exclusive second-shell receptor residues around a binding-site set.
+
+    A receptor residue is second-shell when it is not itself in the binding site
+    and has any-atom distance <= distance_threshold to any atom in any
+    binding-site residue (same receptor chain).
+    """
+    if distance_threshold is None:
+        distance_threshold = _get_second_shell_threshold()
+    shell_col = second_shell_column_name(distance_threshold)
+    binding_site_set = {int(r) for r in (binding_site_residue_numbers or [])}
+
+    try:
+        medoid_pdb_path = find_medoid_model_from_pdb(holo_pdb_path)
+        holo_traj = md.load_pdb(medoid_pdb_path)
+
+        if receptor_chain_id is None:
+            receptor_chain = get_longest_chain(medoid_pdb_path)
+            large_chains = [c for c in holo_traj.topology.chains if c.n_residues > 50]
+            if len(large_chains) > 1:
+                chain_info = [(c.chain_id, c.n_residues) for c in large_chains]
+                raise ValueError(f"Ambiguous receptor chain; specify manually. Large chains: {chain_info}")
+        else:
+            receptor_chain = receptor_chain_id
+
+        receptor_residues = [
+            res for res in holo_traj.topology.residues
+            if res.chain.chain_id == receptor_chain and res.name in STANDARD_RESIDUES
+        ]
+        binding_site_residues = [
+            res for res in receptor_residues if int(res.resSeq) in binding_site_set
+        ]
+
+        # Precompute binding-site atom coordinates (nm) for faster distance scans
+        bs_coords = []
+        for bs_res in binding_site_residues:
+            for atom in bs_res.atoms:
+                bs_coords.append(holo_traj.xyz[0, atom.index])
+        bs_coords_arr = np.asarray(bs_coords) if bs_coords else np.empty((0, 3))
+
+        residue_info = []
+        n_second_shell = 0
+
+        for receptor_res in receptor_residues:
+            res_num = int(receptor_res.resSeq)
+            is_binding_site = res_num in binding_site_set
+
+            if is_binding_site or bs_coords_arr.size == 0:
+                min_distance = 0.0 if is_binding_site else float('inf')
+            else:
+                min_distance = float('inf')
+                for atom in receptor_res.atoms:
+                    atom_coord = holo_traj.xyz[0, atom.index]
+                    # Distances in nm; convert min to Å
+                    dists = np.linalg.norm(bs_coords_arr - atom_coord, axis=1) * 10.0
+                    if dists.size:
+                        min_distance = min(min_distance, float(np.min(dists)))
+
+            is_second_shell = (
+                (not is_binding_site)
+                and min_distance != float('inf')
+                and min_distance <= distance_threshold
+            )
+            if is_second_shell:
+                n_second_shell += 1
+
+            entry = {
+                'residue_number': res_num,
+                'residue_name': receptor_res.name,
+                'chain_id': receptor_chain,
+                'is_binding_site': is_binding_site,
+                'min_distance_to_binding_site': (
+                    min_distance if min_distance != float('inf') else None
+                ),
+                'distance_threshold': distance_threshold,
+                shell_col: is_second_shell,
+            }
+            residue_info.append(entry)
+
+        total = len(residue_info)
+        return {
+            'residue_info': residue_info,
+            'receptor_chain': receptor_chain,
+            'n_binding_site': len(binding_site_set),
+            'n_second_shell': n_second_shell,
+            'fraction_second_shell': n_second_shell / total if total else 0.0,
+            'distance_threshold': distance_threshold,
+            'shell_column': shell_col,
+        }
+
+    except Exception as e:
+        print(f"Error in compute_second_shell_filter: {e}")
+        return {
+            'error': str(e),
+            'residue_info': [],
+            'receptor_chain': '',
+            'n_binding_site': len(binding_site_set),
+            'n_second_shell': 0,
+            'fraction_second_shell': 0.0,
+            'distance_threshold': distance_threshold,
+            'shell_column': shell_col,
+        }
+
+
+def write_second_shell_csv(residue_info: List[Dict], output_path: str,
+                           distance_threshold: Optional[float] = None) -> None:
+    """Write second-shell filter results to CSV file."""
+    if distance_threshold is None:
+        if residue_info and residue_info[0].get('distance_threshold') is not None:
+            distance_threshold = float(residue_info[0]['distance_threshold'])
+        else:
+            distance_threshold = _get_second_shell_threshold()
+    shell_col = second_shell_column_name(distance_threshold)
+
+    with open(output_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            'residue_number', 'residue_name', 'chain_id',
+            'is_binding_site', 'min_distance_to_binding_site',
+            shell_col, 'distance_threshold',
+        ])
+        for info in residue_info:
+            min_dist = info.get('min_distance_to_binding_site')
+            writer.writerow([
+                info['residue_number'],
+                info['residue_name'],
+                info['chain_id'],
+                info.get('is_binding_site', False),
+                f"{min_dist:.4f}" if min_dist is not None else "",
+                info.get(shell_col, False),
+                f"{float(info.get('distance_threshold', distance_threshold)):.4f}",
+            ])
+
+
+def get_second_shell_summary(second_shell_results: Dict) -> str:
+    """Generate a summary string of second-shell filter results."""
+    if 'error' in second_shell_results:
+        return f"Second-shell filter failed: {second_shell_results['error']}"
+    shell_col = second_shell_results.get(
+        'shell_column',
+        second_shell_column_name(second_shell_results.get('distance_threshold', 6.0)),
+    )
+    summary = f"""
+Second-Shell Filter Summary:
+- Receptor chain: {second_shell_results['receptor_chain']}
+- Binding-site residues: {second_shell_results['n_binding_site']}
+- Total residues analyzed: {len(second_shell_results['residue_info'])}
+- Second-shell residues ({shell_col}): {second_shell_results['n_second_shell']}
+- Fraction second-shell: {second_shell_results['fraction_second_shell']:.2%}
+- Distance threshold: {second_shell_results['distance_threshold']} Å (inclusive)
 """
     return summary.strip()

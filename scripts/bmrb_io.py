@@ -7,7 +7,10 @@ Outputs per entry:
 
 Notes:
 - Amide H atom names: {"H", "HN", "H1"}; N: {"N"}; α-H: {"HA", "HA2", "HA3"}
-- Residue indexing is returned as 1-based sequence position (not BMRB seq_id)
+- Sequences span observed BMRB Seq_ID min..max; missing Seq_IDs are filled with
+  polymer letters (when available) or 'X' so alignment preserves residue register.
+- Shift maps are keyed by BMRB Seq_ID (same coordinate system as the spaced sequence).
+- Parsers return (sequence, H, N, CA, HA, seq_id_min, saveframe_name).
 - Multiple atoms per residue are aggregated by median to reduce outliers
 """
 
@@ -539,16 +542,14 @@ def _export_residue_shift_table_csv(
     CA_by_pos: Dict[int, float],
     HA_by_pos: Dict[int, float],
     saveframe_name: Optional[str] = None,
+    seq_id_min: int = 1,
 ) -> None:
-    """Write seq_pos, aa, H, N, CA, HA table under parsed/ (empty cells when missing)."""
+    """Write seq_id, aa, H, N, CA, HA table under parsed/ (empty cells when missing)."""
     import csv
 
-    positions = set(H_by_pos) | set(N_by_pos) | set(CA_by_pos) | set(HA_by_pos)
-    n_pos = len(sequence) if sequence else 0
-    if positions:
-        n_pos = max(n_pos, max(positions))
-    if n_pos == 0:
+    if not sequence:
         return
+    seq_id_max = seq_id_min + len(sequence) - 1
 
     base_name = os.path.splitext(os.path.basename(star_path))[0]
     output_dir = os.path.join(os.path.dirname(star_path), "parsed")
@@ -565,164 +566,319 @@ def _export_residue_shift_table_csv(
 
     with open(out_path, "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(["seq_pos", "aa", "H", "N", "CA", "HA"])
-        for seq_pos in range(1, n_pos + 1):
-            aa = sequence[seq_pos - 1] if seq_pos <= len(sequence) else ""
+        writer.writerow(["seq_id", "aa", "H", "N", "CA", "HA"])
+        for seq_id in range(seq_id_min, seq_id_max + 1):
+            aa = sequence[seq_id - seq_id_min]
             writer.writerow(
                 [
-                    seq_pos,
+                    seq_id,
                     aa,
-                    _cell(H_by_pos, seq_pos),
-                    _cell(N_by_pos, seq_pos),
-                    _cell(CA_by_pos, seq_pos),
-                    _cell(HA_by_pos, seq_pos),
+                    _cell(H_by_pos, seq_id),
+                    _cell(N_by_pos, seq_id),
+                    _cell(CA_by_pos, seq_id),
+                    _cell(HA_by_pos, seq_id),
                 ]
             )
     _vprint(f"[BMRB] Exported residue shift table to {out_path}")
 
 
-def _parse_sequence_and_shifts_v3(star_path: str) -> Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float]]:
-    """Extract sequence and per-residue H, N, CA, and α-H shifts from NMR-STAR version 3.
-    
-    Version 3 format uses _Atom_chem_shift.Val instead of _Chem_shift_value.
-    """
-    with open(star_path, "r", encoding="utf-8", errors="ignore") as f:
-        text = f.read()
-    lines = _tokenize_star_lines(text)
-    
-    # Parse all chemical shift saveframes using v3 parser
-    saveframes = _parse_chem_shifts_v3(lines)
-    _vprint(f"[BMRB] Found {len(saveframes)} chemical shift saveframes (v3) in {os.path.basename(star_path)}")
-    
-    # Combine data from all saveframes
-    all_rows = []
-    for saveframe_name, rows in saveframes:
-        all_rows.extend(rows)
-        _vprint(f"[BMRB] Parsed {len(rows)} rows from {saveframe_name}")
-    
-    _vprint(f"[BMRB] Total parsed {len(all_rows)} chem shift rows (v3) from {os.path.basename(star_path)}")
+def _row_entity_id(row: Dict[str, str]) -> Optional[str]:
+    """Return _Atom_chem_shift.Entity_ID (not Entity_assembly_ID) when present."""
+    for k, val in row.items():
+        if k == "__tags_order__" or val in (None, ".", "?"):
+            continue
+        kl = k.lower().replace(" ", "")
+        if "entity_assembly" in kl:
+            continue
+        if kl.endswith("entity_id") or ".entity_id" in kl:
+            s = str(val).strip().strip("'\"")
+            if s and s not in (".", "?"):
+                return s
+    return None
 
-    # Extract sequence from monomeric polymer saveframe first
-    sequence = _extract_sequence_from_saveframe(lines)
-    if not sequence:
-        _vprint(f"[BMRB] Warning: Could not extract sequence from saveframe, using CS data")
-        sequence = ""
 
-    # Collect per residue atom shifts from chemical shift data (v3 format)
-    residue_to_atoms: Dict[Tuple[int, str], Dict[str, List[float]]] = {}
-    for r in all_rows:
+def _row_polymer_group_key(row: Dict[str, str]) -> str:
+    """Group chem-shift rows by Auth_asym chain, else Entity_ID, else '_default'."""
+    asym = _row_explicit_auth_asym_value(row)
+    if asym:
+        return f"chain_{asym.strip().upper()}"
+    eid = _row_entity_id(row)
+    if eid:
+        return f"entity_{eid}"
+    return "_default"
+
+
+def _parse_v3_row_shift_fields(
+    row: Dict[str, str],
+) -> Optional[Tuple[int, str, str, float]]:
+    """Extract (seq_id, comp_id, atom_id, value) from a v3 Atom_chem_shift row."""
+    seq_id: Optional[int] = None
+    comp_id = ""
+    atom_id = ""
+    value: Optional[float] = None
+
+    for tag, val in row.items():
+        if tag == "__tags_order__":
+            continue
+        if "_Atom_chem_shift.Seq_ID" in tag and seq_id is None:
+            try:
+                seq_id = int(val)
+            except (TypeError, ValueError):
+                pass
+        elif "_Atom_chem_shift.Comp_ID" in tag:
+            comp_id = str(val).strip()
+        elif "_Atom_chem_shift.Atom_ID" in tag:
+            atom_id = str(val).strip().upper()
+        elif tag == "_Atom_chem_shift.Val":
+            try:
+                value = float(val)
+            except (TypeError, ValueError):
+                pass
+
+    if value is None and atom_id:
         try:
-            # Extract key fields - handle the v3 BMRB tag names
-            seq_id = None
-            comp_id = ""
-            atom_id = ""
-            value = None
-            
-            # Try different tag name patterns based on v3 BMRB format
-            for tag, val in r.items():
-                if "_Atom_chem_shift.Seq_ID" in tag and not seq_id:
-                    try:
-                        seq_id = int(val)
-                    except:
-                        pass
-                elif "_Atom_chem_shift.Comp_ID" in tag:
-                    comp_id = val.strip()
-                elif "_Atom_chem_shift.Atom_ID" in tag:
-                    atom_id = val.strip().upper()
-                elif tag == "_Atom_chem_shift.Val":
-                    try:
-                        value = float(val)
-                    except:
-                        pass
+            order_s = row.get("__tags_order__", "")
+            if order_s:
+                order = order_s.split("\t")
+                atom_idx = -1
+                for j, t in enumerate(order):
+                    if "_Atom_chem_shift.Atom_ID" in t:
+                        atom_idx = j
+                        break
+                if atom_idx != -1 and (atom_idx + 1) < len(order):
+                    next_tag = order[atom_idx + 1]
+                    raw_val = row.get(next_tag)
+                    if raw_val is not None and raw_val not in (".", "?"):
+                        value = float(raw_val)
+        except Exception:
+            pass
 
-            # If explicit Val not present, infer value as column after Atom_ID
-            if value is None and atom_id:
-                try:
-                    # Recover ordered tags for this loop
-                    order_s = r.get("__tags_order__", "")
-                    if order_s:
-                        order = order_s.split("\t")
-                        # Find index of Atom_ID tag in order
-                        atom_idx = -1
-                        for j, t in enumerate(order):
-                            if "_Atom_chem_shift.Atom_ID" in t:
-                                atom_idx = j
-                                break
-                        if atom_idx != -1 and (atom_idx + 1) < len(order):
-                            # The next column is the value by convention
-                            next_tag = order[atom_idx + 1]
-                            raw_val = r.get(next_tag)
-                            if raw_val is not None and raw_val != "." and raw_val != "?":
-                                value = float(raw_val)
-                except Exception:
-                    # best-effort; skip if cannot infer
-                    pass
-                        
-            if seq_id is None or not comp_id or not atom_id or value is None:
+    if seq_id is None or not comp_id or not atom_id or value is None:
+        return None
+    return seq_id, comp_id, atom_id, value
+
+
+def _collect_residue_to_atoms_v3(
+    rows: List[Dict[str, str]],
+) -> Dict[Tuple[int, str], Dict[str, List[float]]]:
+    """Build (seq_id, comp_id) → atom → values map from v3 chem-shift rows."""
+    residue_to_atoms: Dict[Tuple[int, str], Dict[str, List[float]]] = {}
+    for r in rows:
+        try:
+            parsed = _parse_v3_row_shift_fields(r)
+            if parsed is None:
                 continue
-                
-            key = (seq_id, comp_id)
-            bank = residue_to_atoms.setdefault(key, {})
+            seq_id, comp_id, atom_id, value = parsed
+            bank = residue_to_atoms.setdefault((seq_id, comp_id), {})
             bank.setdefault(atom_id, []).append(value)
-            
         except Exception as e:
             _vprint(f"[BMRB] Error parsing row (v3): {e}")
-            continue
+    return residue_to_atoms
 
-    # Build sequence from chemical shift data if not found in saveframe
-    if not sequence:
-        sorted_keys = sorted(residue_to_atoms.keys(), key=lambda k: k[0])
-        seq_letters: List[str] = []
-        
-        # minimal 3-letter to 1-letter mapping
-        aa3_to1 = {
-            "ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C",
-            "GLN": "Q", "GLU": "E", "GLY": "G", "HIS": "H", "ILE": "I",
-            "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P",
-            "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": "V",
-        }
-        
-        for idx1, comp_id in sorted_keys:
-            aa1 = aa3_to1.get(comp_id.upper(), "X")
-            seq_letters.append(aa1)
-        sequence = "".join(seq_letters)
 
-    # Export raw chemical shift data to CSV
-    _export_chem_shifts_to_csv(star_path, all_rows, saveframes)
+def _sequence_and_shifts_from_residue_map(
+    residue_to_atoms: Dict[Tuple[int, str], Dict[str, List[float]]],
+    polymer_sequence: str = "",
+) -> Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], int]:
+    """Build Seq_ID-spaced sequence and Seq_ID-keyed H/N/CA/HA maps.
 
-    # Extract H, N, CA, and α-H shifts by sequence position
+    Spans observed Seq_ID min..max so unassigned residues are not collapsed out of
+    the string (filled from polymer_sequence when indexable, else 'X'). Shift dict
+    keys are BMRB Seq_IDs. Returns seq_id_min as the final element.
+    """
+    if not residue_to_atoms:
+        return "", {}, {}, {}, {}, 1
+
+    # Merge atom banks per Seq_ID; first Comp_ID wins for the letter.
+    atoms_by_seq: Dict[int, Dict[str, List[float]]] = {}
+    comp_by_seq: Dict[int, str] = {}
+    for seq_id, comp_id in sorted(residue_to_atoms.keys(), key=lambda k: k[0]):
+        if seq_id not in comp_by_seq:
+            comp_by_seq[seq_id] = comp_id
+        bank = atoms_by_seq.setdefault(seq_id, {})
+        for atom_id, values in residue_to_atoms[(seq_id, comp_id)].items():
+            bank.setdefault(atom_id, []).extend(values)
+
+    seq_id_min = min(comp_by_seq)
+    seq_id_max = max(comp_by_seq)
+    polymer = (polymer_sequence or "").strip().upper()
+
+    letters: List[str] = []
+    for seq_id in range(seq_id_min, seq_id_max + 1):
+        if seq_id in comp_by_seq:
+            letters.append(AA3_TO1.get(comp_by_seq[seq_id].upper(), "X"))
+        elif polymer and 1 <= seq_id <= len(polymer) and polymer[seq_id - 1].isalpha():
+            letters.append(polymer[seq_id - 1])
+        else:
+            letters.append("X")
+    sequence = "".join(letters)
+
     H_by_pos: Dict[int, float] = {}
     N_by_pos: Dict[int, float] = {}
     CA_by_pos: Dict[int, float] = {}
     HA_by_pos: Dict[int, float] = {}
 
-    # Map residue numbers to sequence positions
-    sorted_keys = sorted(residue_to_atoms.keys(), key=lambda k: k[0])
-    for seq_pos, key in enumerate(sorted_keys, 1):
-        atoms = residue_to_atoms[key]
-
+    for seq_id, atoms in atoms_by_seq.items():
         h_m = _median_for_atom_names(atoms, AMIDE_H_NAMES)
         if h_m is not None:
-            H_by_pos[seq_pos] = h_m
-
+            H_by_pos[seq_id] = h_m
         n_m = _median_for_atom_names(atoms, ("N",))
         if n_m is not None:
-            N_by_pos[seq_pos] = n_m
-
+            N_by_pos[seq_id] = n_m
         ca_m = _median_for_atom_names(atoms, ("CA",))
         if ca_m is not None:
-            CA_by_pos[seq_pos] = ca_m
-
+            CA_by_pos[seq_id] = ca_m
         ha_m = _median_for_atom_names(atoms, ALPHA_H_NAMES)
         if ha_m is not None:
-            HA_by_pos[seq_pos] = ha_m
+            HA_by_pos[seq_id] = ha_m
 
-    _export_residue_shift_table_csv(
-        star_path, sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, saveframe_name=None
+    return sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, seq_id_min
+
+
+def _parse_sequence_and_shifts_v3_grouped(
+    star_path: str,
+) -> List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], str]]:
+    """Parse v3 NMR-STAR, splitting multi-chain/entity shift lists into separate sequences.
+
+    When Auth_asym_ID (or Entity_ID) distinguishes multiple polymers in one assigned
+    chem-shift list, each polymer is returned as its own tuple so downstream CSP
+    alignment does not interleave overlapping Seq_IDs into a chimeric sequence.
+    """
+    with open(star_path, "r", encoding="utf-8", errors="ignore") as f:
+        text = f.read()
+    lines = _tokenize_star_lines(text)
+
+    saveframes = _parse_chem_shifts_v3(lines)
+    _vprint(
+        f"[BMRB] Found {len(saveframes)} chemical shift saveframes (v3) "
+        f"in {os.path.basename(star_path)}"
     )
 
+    all_rows: List[Dict[str, str]] = []
+    primary_sf = "assigned_chemical_shifts_1"
+    for saveframe_name, rows in saveframes:
+        all_rows.extend(rows)
+        if rows and primary_sf == "assigned_chemical_shifts_1":
+            primary_sf = saveframe_name.replace("save_", "") if saveframe_name else primary_sf
+        _vprint(f"[BMRB] Parsed {len(rows)} rows from {saveframe_name}")
+
     _vprint(
-        f"[BMRB] Sequence length {len(sequence)}; "
+        f"[BMRB] Total parsed {len(all_rows)} chem shift rows (v3) "
+        f"from {os.path.basename(star_path)}"
+    )
+    _export_chem_shifts_to_csv(star_path, all_rows, saveframes)
+
+    if not all_rows:
+        return []
+
+    grouped: Dict[str, List[Dict[str, str]]] = {}
+    for r in all_rows:
+        grouped.setdefault(_row_polymer_group_key(r), []).append(r)
+
+    # Only treat as multi-polymer when there are multiple annotated groups.
+    annotated_keys = [k for k in grouped if k != "_default"]
+    if len(annotated_keys) >= 2:
+        group_items = [(k, grouped[k]) for k in sorted(annotated_keys)]
+        # Rows lacking chain/entity tags are ignored when annotated groups exist.
+        if "_default" in grouped:
+            _vprint(
+                f"[BMRB] Ignoring {len(grouped['_default'])} unannotated rows; "
+                f"using {len(annotated_keys)} chain/entity groups"
+            )
+    else:
+        # Single polymer (or unannotated): keep historical combined behavior.
+        group_items = [("_default", all_rows)]
+
+    multi = len(group_items) > 1
+    # Polymer sequence from v2.1-style saveframe is only safe for single-polymer entries.
+    polymer_sequence = ""
+    if not multi:
+        polymer_sequence = _extract_sequence_from_saveframe(lines)
+        if not polymer_sequence:
+            _vprint("[BMRB] Warning: Could not extract sequence from saveframe, using CS data")
+
+    results: List[
+        Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], int, str]
+    ] = []
+
+    for group_key, rows in group_items:
+        residue_to_atoms = _collect_residue_to_atoms_v3(rows)
+        if not residue_to_atoms:
+            continue
+        # Always build sequence from this group's CS residues when multi-polymer,
+        # so overlapping Seq_IDs cannot form a chimera.
+        seq_source = "" if multi else polymer_sequence
+        sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, seq_id_min = (
+            _sequence_and_shifts_from_residue_map(
+                residue_to_atoms, polymer_sequence=seq_source
+            )
+        )
+        if not (sequence and H_by_pos and N_by_pos):
+            _vprint(
+                f"[BMRB] Skipping group {group_key}: missing sequence or H/N "
+                f"(len={len(sequence)}, H={len(H_by_pos)}, N={len(N_by_pos)})"
+            )
+            continue
+
+        if group_key == "_default":
+            label = primary_sf
+        elif group_key.startswith("chain_"):
+            label = f"{primary_sf}_{group_key}"
+        else:
+            label = f"{primary_sf}_{group_key}"
+
+        export_name = None if not multi else label
+        _export_residue_shift_table_csv(
+            star_path,
+            sequence,
+            H_by_pos,
+            N_by_pos,
+            CA_by_pos,
+            HA_by_pos,
+            saveframe_name=export_name,
+            seq_id_min=seq_id_min,
+        )
+        results.append(
+            (sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, seq_id_min, label)
+        )
+        _vprint(
+            f"[BMRB] Added v3 sequence group {group_key}: "
+            f"len={len(sequence)}, seq_id_min={seq_id_min}, H={len(H_by_pos)}, "
+            f"N={len(N_by_pos)}, CA={len(CA_by_pos)}, HA={len(HA_by_pos)}"
+        )
+
+    if multi and results:
+        # Also write a primary residue_shifts.csv for the longest polymer (back-compat).
+        best = max(results, key=lambda t: len(t[0]))
+        _export_residue_shift_table_csv(
+            star_path,
+            best[0],
+            best[1],
+            best[2],
+            best[3],
+            best[4],
+            saveframe_name=None,
+            seq_id_min=best[5],
+        )
+
+    return results
+
+
+def _parse_sequence_and_shifts_v3(star_path: str) -> Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float]]:
+    """Extract sequence and per-residue H, N, CA, and α-H shifts from NMR-STAR version 3.
+
+    Version 3 format uses _Atom_chem_shift.Val instead of _Chem_shift_value.
+    When multiple chains/entities are present, returns the longest polymer with H+N
+    (avoids chimeric Seq_ID interleaving across entities).
+    """
+    grouped = _parse_sequence_and_shifts_v3_grouped(star_path)
+    if not grouped:
+        return "", {}, {}, {}, {}
+    sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, _seq_id_min, label = max(
+        grouped, key=lambda t: len(t[0])
+    )
+    _vprint(
+        f"[BMRB] Selected v3 polymer '{label}': length {len(sequence)}; "
         f"H entries {len(H_by_pos)}, N entries {len(N_by_pos)}, "
         f"CA entries {len(CA_by_pos)}, HA entries {len(HA_by_pos)} (v3)"
     )
@@ -731,23 +887,25 @@ def _parse_sequence_and_shifts_v3(star_path: str) -> Tuple[str, Dict[int, float]
 
 def parse_sequence_and_shifts_from_saveframes(
     star_path: str,
-) -> List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], str]]:
+) -> List[
+    Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], int, str]
+]:
     """Parse NMR-STAR and return entries with both amide H and N data.
 
     Each tuple is
-    (sequence, H_shifts, N_shifts, CA_shifts, HA_shifts, saveframe_name).
-    HA_shifts pools HA / HA2 / HA3 (median). CA/HA may be empty dicts if absent.
+    (sequence, H_shifts, N_shifts, CA_shifts, HA_shifts, seq_id_min, saveframe_name).
+    Shift maps are keyed by BMRB Seq_ID. HA_shifts pools HA / HA2 / HA3 (median).
+
+    For NMR-STAR v3 entries with multiple Auth_asym_ID / Entity_ID polymers in one
+    chem-shift list, one tuple is returned per polymer so CSP alignment can pick
+    the best-matching chain.
     """
     # Detect format and use appropriate parser
     format_version = _detect_bmrb_format(star_path)
     _vprint(f"[BMRB] Detected format version: {format_version}")
     
     if format_version == '3':
-        sequence, H_shifts, N_shifts, CA_shifts, HA_shifts = _parse_sequence_and_shifts_v3(star_path)
-        if sequence and H_shifts and N_shifts:
-            return [(sequence, H_shifts, N_shifts, CA_shifts, HA_shifts, "assigned_chemical_shifts_1")]
-        else:
-            return []
+        return _parse_sequence_and_shifts_v3_grouped(star_path)
     else:
         # Use original v21 parser
         with open(star_path, "r", encoding="utf-8", errors="ignore") as f:
@@ -758,7 +916,17 @@ def parse_sequence_and_shifts_from_saveframes(
         saveframes = _parse_all_chem_shift_saveframes(lines)
         _vprint(f"[BMRB] Found {len(saveframes)} chemical shift saveframes in {os.path.basename(star_path)}")
         
-        results: List[Tuple[str, Dict[int, float], Dict[int, float], Dict[int, float], Dict[int, float], str]] = []
+        results: List[
+            Tuple[
+                str,
+                Dict[int, float],
+                Dict[int, float],
+                Dict[int, float],
+                Dict[int, float],
+                int,
+                str,
+            ]
+        ] = []
         
         for saveframe_name, rows in saveframes:
             if not rows:
@@ -827,57 +995,37 @@ def parse_sequence_and_shifts_from_saveframes(
                     _vprint(f"[BMRB] Error parsing row: {e}")
                     continue
 
-            # Build sequence from chemical shift data
-            sorted_keys = sorted(residue_to_atoms.keys(), key=lambda k: k[0])
-            seq_letters: List[str] = []
-            
-            # minimal 3-letter to 1-letter mapping
-            aa3_to1 = {
-                "ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C",
-                "GLN": "Q", "GLU": "E", "GLY": "G", "HIS": "H", "ILE": "I",
-                "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P",
-                "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": "V",
-            }
-            
-            for idx1, comp_id in sorted_keys:
-                aa1 = aa3_to1.get(comp_id.upper(), "X")
-                seq_letters.append(aa1)
-            sequence = "".join(seq_letters)
-
-            # Extract H, N, CA, and α-H shifts by sequence position
-            H_by_pos: Dict[int, float] = {}
-            N_by_pos: Dict[int, float] = {}
-            CA_by_pos: Dict[int, float] = {}
-            HA_by_pos: Dict[int, float] = {}
-
-            for seq_pos, key in enumerate(sorted_keys, 1):
-                atoms = residue_to_atoms[key]
-
-                h_m = _median_for_atom_names(atoms, AMIDE_H_NAMES)
-                if h_m is not None:
-                    H_by_pos[seq_pos] = h_m
-
-                n_m = _median_for_atom_names(atoms, ("N",))
-                if n_m is not None:
-                    N_by_pos[seq_pos] = n_m
-
-                ca_m = _median_for_atom_names(atoms, ("CA",))
-                if ca_m is not None:
-                    CA_by_pos[seq_pos] = ca_m
-
-                ha_m = _median_for_atom_names(atoms, ALPHA_H_NAMES)
-                if ha_m is not None:
-                    HA_by_pos[seq_pos] = ha_m
+            sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, seq_id_min = (
+                _sequence_and_shifts_from_residue_map(residue_to_atoms)
+            )
 
             # Only include sequences that have both H and N shifts
             if H_by_pos and N_by_pos:
                 _export_residue_shift_table_csv(
-                    star_path, sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, saveframe_name
+                    star_path,
+                    sequence,
+                    H_by_pos,
+                    N_by_pos,
+                    CA_by_pos,
+                    HA_by_pos,
+                    saveframe_name,
+                    seq_id_min=seq_id_min,
                 )
-                results.append((sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, saveframe_name))
+                results.append(
+                    (
+                        sequence,
+                        H_by_pos,
+                        N_by_pos,
+                        CA_by_pos,
+                        HA_by_pos,
+                        seq_id_min,
+                        saveframe_name,
+                    )
+                )
                 _vprint(
                     f"[BMRB] Added sequence from {saveframe_name}: "
-                    f"len={len(sequence)}, H={len(H_by_pos)}, N={len(N_by_pos)}, "
+                    f"len={len(sequence)}, seq_id_min={seq_id_min}, "
+                    f"H={len(H_by_pos)}, N={len(N_by_pos)}, "
                     f"CA={len(CA_by_pos)}, HA={len(HA_by_pos)}"
                 )
             else:
@@ -923,11 +1071,11 @@ def parse_sequence_and_shifts(
         
         _vprint(f"[BMRB] Total parsed {len(all_rows)} chem shift rows from {os.path.basename(star_path)}")
 
-        # Extract sequence from monomeric polymer saveframe first
-        sequence = _extract_sequence_from_saveframe(lines)
-        if not sequence:
+        # Polymer letters may fill missing Seq_IDs; never used as a densify-desynced string.
+        polymer_sequence = _extract_sequence_from_saveframe(lines)
+        if not polymer_sequence:
             _vprint(f"[BMRB] Warning: Could not extract sequence from saveframe, using CS data")
-            sequence = ""
+            polymer_sequence = ""
 
     # Collect per residue atom shifts from chemical shift data
     residue_to_atoms: Dict[Tuple[int, str], Dict[str, List[float]]] = {}
@@ -990,60 +1138,30 @@ def parse_sequence_and_shifts(
             _vprint(f"[BMRB] Error parsing row: {e}")
             continue
 
-    # Build sequence from chemical shift data if not found in saveframe
-    if not sequence:
-        sorted_keys = sorted(residue_to_atoms.keys(), key=lambda k: k[0])
-        seq_letters: List[str] = []
-        
-        # minimal 3-letter to 1-letter mapping
-        aa3_to1 = {
-            "ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C",
-            "GLN": "Q", "GLU": "E", "GLY": "G", "HIS": "H", "ILE": "I",
-            "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P",
-            "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": "V",
-        }
-        
-        for idx1, comp_id in sorted_keys:
-            aa1 = aa3_to1.get(comp_id.upper(), "X")
-            seq_letters.append(aa1)
-        sequence = "".join(seq_letters)
-
     # Export raw chemical shift data to CSV
     _export_chem_shifts_to_csv(star_path, all_rows, saveframes)
 
-    # Extract H, N, CA, and α-H shifts by sequence position
-    H_by_pos: Dict[int, float] = {}
-    N_by_pos: Dict[int, float] = {}
-    CA_by_pos: Dict[int, float] = {}
-    HA_by_pos: Dict[int, float] = {}
-
-    sorted_keys = sorted(residue_to_atoms.keys(), key=lambda k: k[0])
-    for seq_pos, key in enumerate(sorted_keys, 1):
-        atoms = residue_to_atoms[key]
-
-        h_m = _median_for_atom_names(atoms, AMIDE_H_NAMES)
-        if h_m is not None:
-            H_by_pos[seq_pos] = h_m
-
-        n_m = _median_for_atom_names(atoms, ("N",))
-        if n_m is not None:
-            N_by_pos[seq_pos] = n_m
-
-        ca_m = _median_for_atom_names(atoms, ("CA",))
-        if ca_m is not None:
-            CA_by_pos[seq_pos] = ca_m
-
-        ha_m = _median_for_atom_names(atoms, ALPHA_H_NAMES)
-        if ha_m is not None:
-            HA_by_pos[seq_pos] = ha_m
+    sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, seq_id_min = (
+        _sequence_and_shifts_from_residue_map(
+            residue_to_atoms, polymer_sequence=polymer_sequence
+        )
+    )
 
     _export_residue_shift_table_csv(
-        star_path, sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos, saveframe_name=None
+        star_path,
+        sequence,
+        H_by_pos,
+        N_by_pos,
+        CA_by_pos,
+        HA_by_pos,
+        saveframe_name=None,
+        seq_id_min=seq_id_min,
     )
 
     _vprint(
-        f"[BMRB] Sequence length {len(sequence)}; H entries {len(H_by_pos)}, "
-        f"N entries {len(N_by_pos)}, CA entries {len(CA_by_pos)}, HA entries {len(HA_by_pos)}"
+        f"[BMRB] Sequence length {len(sequence)}; seq_id_min={seq_id_min}; "
+        f"H entries {len(H_by_pos)}, N entries {len(N_by_pos)}, "
+        f"CA entries {len(CA_by_pos)}, HA entries {len(HA_by_pos)}"
     )
     return sequence, H_by_pos, N_by_pos, CA_by_pos, HA_by_pos
 

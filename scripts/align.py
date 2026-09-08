@@ -7,7 +7,7 @@ simple Needleman–Wunsch implementation with linear gap penalties.
 
 from __future__ import annotations
 
-from typing import List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 try:
     from Bio import Align
@@ -21,6 +21,119 @@ except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.config import alignment as cfg
+
+
+def _display_residue(
+    aa: Optional[str],
+    sid: Optional[int],
+    H: Optional[Dict[int, float]],
+    N: Optional[Dict[int, float]],
+) -> str:
+    """Display char for one side.
+
+    - ``-`` if Seq_ID absent (``None`` / empty)
+    - ``X`` if filler (no Comp_ID reported)
+    - ``P`` for proline even when amide H/N are missing
+    - ``*`` if a real AA is reported but amide H or N is missing
+    - otherwise the amino-acid letter
+    """
+    if aa is None or aa in {"", "?", "-"}:
+        return "-"
+    if aa == "X":
+        return "X"
+    if aa == "P":
+        return "P"
+    if H is not None and N is not None and sid is not None:
+        if sid not in H or sid not in N:
+            return "*"
+    return aa
+
+
+def align_by_seqid_offset(
+    apo_seq: str,
+    holo_seq: str,
+    *,
+    apo_seq_id_min: int,
+    holo_seq_id_min: int,
+    H_apo: Optional[Dict[int, float]] = None,
+    N_apo: Optional[Dict[int, float]] = None,
+    H_holo: Optional[Dict[int, float]] = None,
+    N_holo: Optional[Dict[int, float]] = None,
+) -> Tuple[str, str, List[Tuple[int, int]], float, int]:
+    """Align by a constant BMRB Seq_ID offset, keeping only exact AA matches.
+
+    Searches offset such that ``apo_sid = holo_sid + offset`` maximizes the number
+    of positions where both sides have the same non-X amino acid. Unmatched Seq_IDs
+    become gaps (``-``); ``X`` fillers stay ``X`` and remain co-column when both
+    sides have ``X`` (or ``X`` vs a real AA) at the same Seq_ID; prolines stay
+    ``P``. When H/N maps are provided, other reported residues missing amide H or
+    N are shown as ``*``. Mapping entries are ``(apo_sid, holo_sid)`` for exact
+    real-AA matches only (not ``X``). Score is ``2 * n_exact``.
+    """
+    if not apo_seq or not holo_seq:
+        aligned_a, aligned_h, mapping, score = align_global(apo_seq, holo_seq)
+        return aligned_a, aligned_h, mapping, score, 0
+
+    apo_aa = {apo_seq_id_min + i: aa for i, aa in enumerate(apo_seq)}
+    holo_aa = {holo_seq_id_min + i: aa for i, aa in enumerate(holo_seq)}
+    apo_min, apo_max = apo_seq_id_min, apo_seq_id_min + len(apo_seq) - 1
+    holo_min, holo_max = holo_seq_id_min, holo_seq_id_min + len(holo_seq) - 1
+
+    best_off = 0
+    best_same = -1
+    for off in range(apo_min - holo_max, apo_max - holo_min + 1):
+        same = 0
+        for hsid, haa in holo_aa.items():
+            asid = hsid + off
+            aaa = apo_aa.get(asid)
+            if aaa is None or aaa == "X" or haa == "X":
+                continue
+            if aaa == haa:
+                same += 1
+        if same > best_same:
+            best_same = same
+            best_off = off
+
+    # Build display alignment over the union of apo-sid coordinates covered by either side.
+    holo_as_apo = {hsid + best_off: (hsid, haa) for hsid, haa in holo_aa.items()}
+    col_sids = sorted(set(apo_aa) | set(holo_as_apo))
+    aligned_apo_chars: List[str] = []
+    aligned_holo_chars: List[str] = []
+    mapping: List[Tuple[int, int]] = []
+
+    for asid in col_sids:
+        aaa = apo_aa.get(asid)
+        h_entry = holo_as_apo.get(asid)
+        if aaa is None and h_entry is None:
+            continue
+        if h_entry is None:
+            # Apo-only Seq_ID (including apo X fillers): gap on holo
+            aligned_apo_chars.append(_display_residue(aaa, asid, H_apo, N_apo))
+            aligned_holo_chars.append("-")
+            continue
+        hsid, haa = h_entry
+        if aaa is None:
+            aligned_apo_chars.append("-")
+            aligned_holo_chars.append(_display_residue(haa, hsid, H_holo, N_holo))
+            continue
+        # Exact Comp_ID / AA match only — never map X or disagreements.
+        if aaa == haa and aaa not in {"-", "X", "?", ""}:
+            aligned_apo_chars.append(_display_residue(aaa, asid, H_apo, N_apo))
+            aligned_holo_chars.append(_display_residue(haa, hsid, H_holo, N_holo))
+            mapping.append((asid, hsid))
+        elif aaa == "X" or haa == "X":
+            # X/X or X vs real AA: keep one co-aligned display column (no mapping).
+            aligned_apo_chars.append(_display_residue(aaa, asid, H_apo, N_apo))
+            aligned_holo_chars.append(_display_residue(haa, hsid, H_holo, N_holo))
+        else:
+            # True AA conflict at this offset: keep both visible as unmatched
+            aligned_apo_chars.append(_display_residue(aaa, asid, H_apo, N_apo))
+            aligned_holo_chars.append("-")
+            aligned_apo_chars.append("-")
+            aligned_holo_chars.append(_display_residue(haa, hsid, H_holo, N_holo))
+
+    score = float(2 * len(mapping))
+    return "".join(aligned_apo_chars), "".join(aligned_holo_chars), mapping, score, best_off
 
 
 def align_global(apo_seq: str, holo_seq: str) -> Tuple[str, str, List[Tuple[int, int]], float]:

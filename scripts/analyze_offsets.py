@@ -14,6 +14,30 @@ from pathlib import Path
 from typing import List, Tuple, Dict, Any, Optional
 import argparse
 
+try:
+    from .config import Referencing
+    from .csp import _build_param_slug
+except Exception:
+    import sys as _sys
+    _sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+    from scripts.config import Referencing
+    from scripts.csp import _build_param_slug
+
+
+def default_hn_offset_grid_basename(*, ext: str = "csv") -> str:
+    """Basename for the default ¹H/¹⁵N grid-search artifact from Referencing config."""
+    cfg = Referencing()
+    slug = _build_param_slug(
+        h_min=cfg.grid_h_min,
+        h_max=cfg.grid_h_max,
+        h_step=cfg.grid_h_step,
+        n_min=cfg.grid_n_min,
+        n_max=cfg.grid_n_max,
+        n_step=cfg.grid_n_step,
+        cutoff=float(cfg.grid_cutoff),
+    )
+    return f"offset_grid_{slug}.{ext}"
+
 
 def find_csp_table_files(outputs_dir: str) -> List[str]:
     """
@@ -32,7 +56,7 @@ def find_csp_table_files(outputs_dir: str) -> List[str]:
 
 def find_grid_offset_files(outputs_dir: str) -> List[str]:
     """
-    Find all grid search CSV files with fixed parameters in the outputs directory.
+    Find all grid search CSV files with the current default H/N parameters.
 
     Args:
         outputs_dir: Path to the outputs directory
@@ -43,7 +67,7 @@ def find_grid_offset_files(outputs_dir: str) -> List[str]:
     pattern = os.path.join(
         outputs_dir,
         "**",
-        "offset_grid_H_-0.12_0.12_0.01__N_-1.2_1.2_0.05__C_0.05.csv",
+        default_hn_offset_grid_basename(ext="csv"),
     )
     csv_files = glob.glob(pattern, recursive=True)
     return sorted(csv_files)
@@ -403,9 +427,12 @@ def create_grid_heatmap(
     )
     ax_heatmap.grid(False)
     ax_heatmap.tick_params(axis="x", labelbottom=False)
-    # Use fixed ranges for N offset (-1.225 to 1.225) and H offset (-0.125 to 0.125)
-    ax_heatmap.set_xlim(-1.225, 1.225)
-    ax_heatmap.set_ylim(-0.125, 0.125)
+    # Axis limits follow current Referencing H/N grid defaults (plus half-step padding).
+    _ref = Referencing()
+    _n_pad = float(_ref.grid_n_step) / 2.0
+    _h_pad = float(_ref.grid_h_step) / 2.0
+    ax_heatmap.set_xlim(float(_ref.grid_n_min) - _n_pad, float(_ref.grid_n_max) + _n_pad)
+    ax_heatmap.set_ylim(float(_ref.grid_h_min) - _h_pad, float(_ref.grid_h_max) + _h_pad)
     # ax_heatmap.yaxis.set_label_position("right")
     # ax_heatmap.yaxis.tick_right()
     ax_heatmap.tick_params(
@@ -421,10 +448,9 @@ def create_grid_heatmap(
     if cbar_ticks:
         cbar.set_ticks(cbar_ticks)
 
-    # Fixed tick ranges for histograms: N offset -1.225 to 1.225, H offset -0.125 to 0.125,
-    # both with equal steps and 0.00 included.
-    tick_positions_n = np.linspace(-1.225, 1.225, 11)  # 11 ticks, equal steps, includes 0.00
-    tick_positions_h = np.linspace(-0.125, 0.125, 11)  # 11 ticks, equal steps, includes 0.00
+    # Tick ranges span the current Referencing H/N grid defaults (includes 0.00).
+    tick_positions_n = np.linspace(float(_ref.grid_n_min) - _n_pad, float(_ref.grid_n_max) + _n_pad, 11)
+    tick_positions_h = np.linspace(float(_ref.grid_h_min) - _h_pad, float(_ref.grid_h_max) + _h_pad, 11)
 
     ax_heatmap.set_xticks(tick_positions_n, minor=False)
     ax_heatmap.set_yticks(tick_positions_h, minor=False)
