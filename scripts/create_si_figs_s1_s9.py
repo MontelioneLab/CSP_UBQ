@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate SI Figs S1–S8 (Confusion Matrix Histograms) and SI Tables S2–S9 (Data).
+Generate SI Figs S1–S7 (Confusion Matrix Histograms) and SI Tables S2–S8 (Data).
 
 Naming scheme:
   SI Table S2 / SI Fig S1: Hydrolase Receptors
@@ -9,8 +9,7 @@ Naming scheme:
   SI Table S5 / SI Fig S4: All Beta Receptors
   SI Table S6 / SI Fig S5: Alpha and Beta (a+b) Receptors
   SI Table S7 / SI Fig S6: BET-ET Domain Receptors
-  SI Table S8 / SI Fig S7: TFIIH Domain Receptors
-  SI Table S9 / SI Fig S8: Ubiquitin Domain Receptors
+  SI Table S8 / SI Fig S7: Ubiquitin Domain Receptors
 
 For each configured selection, this script:
 1) Loads holo_pdb IDs either from a targets CSV or from CSP_UBQ.csv class columns.
@@ -46,10 +45,10 @@ class ClassSpec(TypedDict):
     targets_csv: Optional[Path]
 
 
-# Order and IDs match SI Tables S2–S9 and SI Figs S1–S8:
+# Order and IDs match SI Tables S2–S8 and SI Figs S1–S7:
 # S2/S1 Hydrolases, S3/S2 Transferases
 # S4/S3 All Alpha, S5/S4 All Beta, S6/S5 Alpha and Beta (a+b)
-# S7/S6 BET-ET, S8/S7 TFIIH, S9/S8 Ubiquitin
+# S7/S6 BET-ET, S8/S7 Ubiquitin
 CLASS_SPECS: List[ClassSpec] = [
     {
         "column": "ec_classes",
@@ -108,18 +107,9 @@ CLASS_SPECS: List[ClassSpec] = [
     {
         "column": None,
         "class_label": None,
-        "file_token": "TFIIH",
+        "file_token": "ubiquitin",
         "st_id": "ST8",
         "sf_id": "SF7",
-        "display_title": "TFIIH Domain Receptors",
-        "targets_csv": Path("data/targets_TFIIH.csv"),
-    },
-    {
-        "column": None,
-        "class_label": None,
-        "file_token": "ubiquitin",
-        "st_id": "ST9",
-        "sf_id": "SF8",
         "display_title": "Ubiquitin Domain Receptors",
         "targets_csv": Path("data/targets_ubiquitin.csv"),
     },
@@ -128,7 +118,7 @@ CLASS_SPECS: List[ClassSpec] = [
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate supplementary stacked histograms by class.")
-    parser.add_argument("--csv", type=Path, default=Path("data/CSP_UBQ.csv"))
+    parser.add_argument("--csv", type=Path, default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"))
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
     parser.add_argument("--figures-dir", type=Path, default=Path("figures"))
     parser.add_argument("--aux-dir", type=Path, default=Path("outputs") / "si_figs_s1_s9_aux")
@@ -316,6 +306,7 @@ def main() -> int:
             targets = collect_targets(csprank_csv, column, class_label)
             targets_csv = aux_dir / f"targets_{file_token}.csv"
             write_targets_csv(targets_csv, targets)
+            write_targets_csv(repo_root / "data" / f"targets_{file_token}.csv", targets)
 
         if not targets:
             print(f"[SI_FIGS_S1_S9] Skipping '{display_title}' (no targets found).")

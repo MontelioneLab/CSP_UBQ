@@ -2,29 +2,29 @@
 """
 Wrapper script to run all scripts that create supplemental figures and tables.
 
-SI figure generators (one entry point per SI Fig. S1–S27):
-  - S1–S8:  create_si_figs_s1_s9.py
-  - S9:     create_si_st10_fig_s9_dissimilar_conditions.py
-  - S10:    create_si_fig_s10.py  (HA/CA confusion histograms)
-  - S11:    create_si_fig_s11.py  (CA-inclusive confusion histograms)
+SI figure generators (one entry point per SI Fig. S1–S26):
+  - S1–S7:  create_si_figs_s1_s9.py
+  - S8:     create_si_st9_fig_s8_dissimilar_conditions.py
+  - S9:     create_si_fig_s9.py  (HA/CA confusion histograms)
+  - S10:    create_si_fig_s10.py  (CA-inclusive confusion histograms)
+  - S11:    create_si_fig_s11.py
   - S12:    create_si_fig_s12.py
   - S13:    create_si_fig_s13.py
   - S14:    create_si_fig_s14.py
-  - S15:    create_si_fig_s15.py
-  - S16:    create_si_fig_s16.py  (static PDB search screenshot)
+  - S15:    create_si_fig_s15.py  (static PDB search screenshot)
+  - S16:    create_si_fig_s16.py
   - S17:    create_si_fig_s17.py
   - S18:    create_si_fig_s18.py
   - S19:    create_si_fig_s19.py
-  - S20:    create_si_fig_s20.py
-  - S21:    create_si_fig_s21.py  (wraps create_fig_3_thresholds.py)
-  - S22:    create_si_fig_s22.py  (wraps create_si_fig_s22_fp_percent.py)
-  - S23:    create_si_fig_s23.py  (wraps create_fig_3.py)
-  - S24:    create_si_fig_s24.py  (apo–apo controls S24A–E)
-  - S25:    create_si_fig_s25.py  (terminal-anchor vs global offsets)
-  - S26:    create_si_fig_s26.py  (wraps create_si_fig_s26_csp_vs_distance.py)
-  - S27:    create_si_fig_s27.py  (2FIN case-study z panel)
+  - S20:    create_si_fig_s20.py  (wraps create_fig_3_thresholds.py)
+  - S21:    create_si_fig_s21.py  (wraps create_si_fig_s21_fp_percent.py)
+  - S22:    create_si_fig_s22.py  (wraps create_fig_3.py)
+  - S23:    create_si_fig_s23.py  (apo–apo controls S23A–E)
+  - S24:    create_si_fig_s24.py  (terminal-anchor vs global offsets)
+  - S25:    create_si_fig_s25.py  (wraps create_si_fig_s25_csp_vs_distance.py)
+  - S26:    create_si_fig_s26.py  (2FIN case-study z panel)
 
-Also: SI Table S1 (create_si_table_s1.py), ST2–ST9 LaTeX
+Also: SI Table S1 (create_si_table_s1.py), ST2–ST8 LaTeX
 (create_custom_selection_latex_tables.py), equations S1–S3
 (create_si_eqn_*.py), and SI merged PDF (build_si_merged_pdf.py).
 
@@ -32,7 +32,7 @@ Prerequisites:
   - Pair edits in data/CSP_UBQ_ph0.5_temp5C.csv synced via scripts/sync_pairs_from_ph05.py
   - Pipeline outputs under --outputs-dir (master_alignment.csv per target, etc.)
   - confusion_matrix_per_system.csv (e.g. scripts/confusion_matrix_analysis.py)
-  - Domain targets CSVs for ST7–ST9 (targets_BET_ET.csv, targets_TFIIH.csv, targets_ubiquitin.csv)
+  - Domain targets CSVs for ST7–ST8 (targets_BET_ET.csv, targets_ubiquitin.csv)
   - latexmk/pdflatex and pypdf for the final SI PDF merge
 """
 
@@ -106,11 +106,11 @@ def main() -> int:
                 str(Path(figures) / "ST1_all_receptors.tex"),
             ],
         ),
-        # SI Figs S1–S8 (+ ST2–ST9 data)
-        ("create_si_figs_s1_s9.py", ["--outputs-dir", outputs, "--figures-dir", figures, "--csv", csv_path]),
-        # SI Fig. S9 (+ ST10)
+        # SI Figs S1–S7 (+ ST2–ST8 data)
+        ("create_si_figs_s1_s9.py", ["--outputs-dir", outputs, "--figures-dir", figures, "--csv", ph05]),
+        # SI Fig. S8 (+ ST9)
         (
-            "create_si_st10_fig_s9_dissimilar_conditions.py",
+            "create_si_st9_fig_s8_dissimilar_conditions.py",
             [
                 "--full-csp-csv",
                 csv_path,
@@ -123,30 +123,41 @@ def main() -> int:
             ],
         ),
         (
+            "create_si_fig_s9.py",
+            [
+                "--outputs-dir",
+                outputs,
+                "--output-image",
+                str(Path(figures) / "SF9_ha_ca.png"),
+                "--targets-csv",
+                ph05,
+            ],
+        ),
+        (
             "create_si_fig_s10.py",
             [
                 "--outputs-dir",
                 outputs,
                 "--output-image",
-                str(Path(figures) / "SF10_ha_ca.png"),
+                str(Path(figures) / "SF10_ca_inclusive.png"),
                 "--targets-csv",
                 ph05,
             ],
         ),
         (
             "create_si_fig_s11.py",
-            [
-                "--outputs-dir",
-                outputs,
-                "--output-image",
-                str(Path(figures) / "SF11_ca_inclusive.png"),
-                "--targets-csv",
-                ph05,
-            ],
+            ["--outputs-dir", outputs, "--targets-csv", ph05],
         ),
         (
             "create_si_fig_s12.py",
-            ["--outputs-dir", outputs, "--targets-csv", ph05],
+            [
+                "--outputs-dir",
+                outputs,
+                "--figures-dir",
+                figures,
+                "--targets-csv",
+                ph05_n137,
+            ],
         ),
         (
             "create_si_fig_s13.py",
@@ -164,36 +175,36 @@ def main() -> int:
             [
                 "--outputs-dir",
                 outputs,
-                "--figures-dir",
-                figures,
-                "--targets-csv",
-                ph05_n137,
-            ],
-        ),
-        (
-            "create_si_fig_s15.py",
-            [
-                "--outputs-dir",
-                outputs,
                 "--output-image",
-                str(Path(figures) / "SF15_1d_CSP_boxplot.png"),
+                str(Path(figures) / "SF14_1d_CSP_boxplot.png"),
                 "--targets-csv",
                 ph05,
             ],
         ),
         (
-            "create_si_fig_s16.py",
+            "create_si_fig_s15.py",
             ["--figures-dir", figures],
         ),
         (
-            "create_si_fig_s17.py",
+            "create_si_fig_s16.py",
             [
                 "--outputs-dir",
                 outputs,
                 "--sweep-out-dir",
                 str(Path(outputs) / "buffer_threshold_sweep"),
                 "--output",
-                str(Path(figures) / "SF17_buffer_sweep.png"),
+                str(Path(figures) / "SF16_buffer_sweep.png"),
+            ],
+        ),
+        (
+            "create_si_fig_s17.py",
+            [
+                "--outputs-dir",
+                outputs,
+                "--figures-dir",
+                figures,
+                "--targets-csv",
+                ph05,
             ],
         ),
         (
@@ -201,19 +212,8 @@ def main() -> int:
             [
                 "--outputs-dir",
                 outputs,
-                "--figures-dir",
-                figures,
-                "--targets-csv",
-                ph05,
-            ],
-        ),
-        (
-            "create_si_fig_s19.py",
-            [
-                "--outputs-dir",
-                outputs,
                 "--output",
-                str(Path(figures) / "SF19_significance_threshold.png"),
+                str(Path(figures) / "SF18_significance_threshold.png"),
                 "--targets-csv",
                 ph05,
             ],
@@ -222,14 +222,27 @@ def main() -> int:
         ("create_si_eqn_2.py", ["--output", str(Path(figures) / "SE2_nh_ca_csp.png")]),
         ("create_si_eqn_3.py", ["--output", str(Path(figures) / "SE3_ha_ca_csp.png")]),
         (
-            "create_si_fig_s20.py",
+            "create_si_fig_s19.py",
             [
                 "--outputs-dir",
                 outputs,
                 "--input",
                 confusion_csv,
                 "--output-image",
-                str(Path(figures) / "SF20_f1_vs_mcc.png"),
+                str(Path(figures) / "SF19_f1_vs_mcc.png"),
+                "--targets-csv",
+                ph05,
+            ],
+        ),
+        (
+            "create_si_fig_s20.py",
+            [
+                "--outputs-dir",
+                outputs,
+                "--figures-dir",
+                figures,
+                "--output",
+                str(Path(figures) / "SF20_figure_3_thresholds.png"),
                 "--targets-csv",
                 ph05,
             ],
@@ -239,25 +252,12 @@ def main() -> int:
             [
                 "--outputs-dir",
                 outputs,
-                "--figures-dir",
-                figures,
-                "--output",
-                str(Path(figures) / "SF21_figure_3_thresholds.png"),
-                "--targets-csv",
-                ph05,
+                "--output-image",
+                str(Path(figures) / "SF21_fp_percent_distribution_cleaned_mean.png"),
             ],
         ),
         (
             "create_si_fig_s22.py",
-            [
-                "--outputs-dir",
-                outputs,
-                "--output-image",
-                str(Path(figures) / "SF22_fp_percent_distribution_cleaned_mean.png"),
-            ],
-        ),
-        (
-            "create_si_fig_s23.py",
             [
                 "--outputs-dir",
                 outputs,
@@ -268,24 +268,24 @@ def main() -> int:
                 "--output-b",
                 str(Path(figures) / "figure_3_b_same_author_list.png"),
                 "--output-combined",
-                str(Path(figures) / "SF23_figure_3_combined_same_author_list.png"),
+                str(Path(figures) / "SF22_figure_3_combined_same_author_list.png"),
             ],
         ),
         (
-            "create_si_fig_s24.py",
+            "create_si_fig_s23.py",
             ["--output-dir", str(Path(figures))],
         ),
         (
+            "create_si_fig_s24.py",
+            ["--output", str(Path(figures) / "SF24_terminal_anchor_vs_global.png")],
+        ),
+        (
             "create_si_fig_s25.py",
-            ["--output", str(Path(figures) / "SF25_terminal_anchor_vs_global.png")],
+            ["--output", str(Path(figures) / "SF25_csp_vs_distance_panels.png")],
         ),
         (
             "create_si_fig_s26.py",
-            ["--output", str(Path(figures) / "SF26_csp_vs_distance_panels.png")],
-        ),
-        (
-            "create_si_fig_s27.py",
-            ["--output", str(Path(figures) / "SF27_2FIN_case_study_z.png")],
+            ["--output", str(Path(figures) / "SF26_2FIN_case_study_z.png")],
         ),
         ("create_custom_selection_latex_tables.py", ["--figures-dir", figures]),
         (

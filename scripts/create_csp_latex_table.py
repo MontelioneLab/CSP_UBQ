@@ -23,7 +23,7 @@ from pathlib import Path
 
 import pandas as pd
 
-# SI Tables S2–S9 / S10 and SI Figs S1–S8 / S9 (see SELECTION_NUMBERING)
+# SI Tables S2–S9 and SI Figs S1–S8 (see SELECTION_NUMBERING)
 SELECTION_NUMBERING: dict[str, dict[str, str]] = {
     "hydrolases": {"st_id": "ST2", "sf_id": "SF1", "title": "Hydrolase Receptors", "file_token": "hydrolases"},
     "transferases": {"st_id": "ST3", "sf_id": "SF2", "title": "Transferase Receptors", "file_token": "transferases"},
@@ -32,11 +32,10 @@ SELECTION_NUMBERING: dict[str, dict[str, str]] = {
     "alpha_and_beta_proteins_(a+b)": {"st_id": "ST6", "sf_id": "SF5", "title": "Alpha and Beta (a+b) Receptors", "file_token": "alpha_and_beta_proteins_a_plus_b"},
     "alpha_and_beta_proteins_a_plus_b": {"st_id": "ST6", "sf_id": "SF5", "title": "Alpha and Beta (a+b) Receptors", "file_token": "alpha_and_beta_proteins_a_plus_b"},
     "bet_et": {"st_id": "ST7", "sf_id": "SF6", "title": "BET-ET Domain Receptors", "file_token": "BET_ET"},
-    "tfiih": {"st_id": "ST8", "sf_id": "SF7", "title": "TFIIH Domain Receptors", "file_token": "TFIIH"},
-    "ubiquitin": {"st_id": "ST9", "sf_id": "SF8", "title": "Ubiquitin Domain Receptors", "file_token": "ubiquitin"},
+    "ubiquitin": {"st_id": "ST8", "sf_id": "SF7", "title": "Ubiquitin Domain Receptors", "file_token": "ubiquitin"},
     "dissimilar_apo_holo_conditions": {
-        "st_id": "ST10",
-        "sf_id": "SF9",
+        "st_id": "ST9",
+        "sf_id": "SF8",
         "title": "targets with dissimilar apo/holo experimental conditions",
         "file_token": "dissimilar_apo_holo_conditions",
     },

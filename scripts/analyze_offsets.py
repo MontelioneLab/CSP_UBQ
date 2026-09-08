@@ -16,12 +16,12 @@ import argparse
 
 try:
     from .config import Referencing
-    from .csp import _build_param_slug
+    from .csp import _build_param_slug, _build_param_slug_ha_ca
 except Exception:
     import sys as _sys
     _sys.path.append(os.path.dirname(os.path.dirname(__file__)))
     from scripts.config import Referencing
-    from scripts.csp import _build_param_slug
+    from scripts.csp import _build_param_slug, _build_param_slug_ha_ca
 
 
 def default_hn_offset_grid_basename(*, ext: str = "csv") -> str:
@@ -34,6 +34,21 @@ def default_hn_offset_grid_basename(*, ext: str = "csv") -> str:
         n_min=cfg.grid_n_min,
         n_max=cfg.grid_n_max,
         n_step=cfg.grid_n_step,
+        cutoff=float(cfg.grid_cutoff),
+    )
+    return f"offset_grid_{slug}.{ext}"
+
+
+def default_haca_offset_grid_basename(*, ext: str = "csv") -> str:
+    """Basename for the default Hα/Cα grid-search artifact from Referencing config."""
+    cfg = Referencing()
+    slug = _build_param_slug_ha_ca(
+        ha_min=cfg.grid_ha_min,
+        ha_max=cfg.grid_ha_max,
+        ha_step=cfg.grid_ha_step,
+        ca_min=cfg.grid_ca_min,
+        ca_max=cfg.grid_ca_max,
+        ca_step=cfg.grid_ca_step,
         cutoff=float(cfg.grid_cutoff),
     )
     return f"offset_grid_{slug}.{ext}"
@@ -68,6 +83,25 @@ def find_grid_offset_files(outputs_dir: str) -> List[str]:
         outputs_dir,
         "**",
         default_hn_offset_grid_basename(ext="csv"),
+    )
+    csv_files = glob.glob(pattern, recursive=True)
+    return sorted(csv_files)
+
+
+def find_haca_grid_offset_files(outputs_dir: str) -> List[str]:
+    """
+    Find all grid search CSV files with the current default HA/CA parameters.
+
+    Args:
+        outputs_dir: Path to the outputs directory
+
+    Returns:
+        List of paths to HA/CA grid search CSV files
+    """
+    pattern = os.path.join(
+        outputs_dir,
+        "**",
+        default_haca_offset_grid_basename(ext="csv"),
     )
     csv_files = glob.glob(pattern, recursive=True)
     return sorted(csv_files)
@@ -185,6 +219,114 @@ def collect_best_grid_offsets(
         best_n_offsets_by_target,
         representative_h_values,
         representative_n_values,
+    )
+
+
+def _extract_best_offsets_from_haca_grid_file(
+    csv_file: str,
+) -> Tuple[Optional[float], Optional[float], Optional[List[float]], Optional[List[float]]]:
+    """
+    Extract best HA/CA offsets and grid definitions from a HA/CA grid CSV file.
+
+    Returns:
+        Tuple of (best_ha_offset, best_ca_offset, ha_values, ca_values)
+    """
+    best_ha_offset: Optional[float] = None
+    best_ca_offset: Optional[float] = None
+    ha_values: Optional[List[float]] = None
+    ca_values: Optional[List[float]] = None
+
+    try:
+        with open(csv_file, "r", newline="") as f:
+            for raw_line in f:
+                line = raw_line.strip()
+                if not line:
+                    continue
+
+                if line.startswith("ha_values"):
+                    parts = line.split(",")[1:]
+                    if parts:
+                        ha_values = [float(x) for x in parts]
+                elif line.startswith("ca_values"):
+                    parts = line.split(",")[1:]
+                    if parts:
+                        ca_values = [float(x) for x in parts]
+                elif line.startswith("best_ha_offset"):
+                    parts = line.split(",")
+                    if len(parts) > 1:
+                        try:
+                            best_ha_offset = float(parts[1])
+                        except ValueError:
+                            best_ha_offset = None
+                elif line.startswith("best_ca_offset"):
+                    parts = line.split(",")
+                    if len(parts) > 1:
+                        try:
+                            best_ca_offset = float(parts[1])
+                        except ValueError:
+                            best_ca_offset = None
+    except Exception as e:
+        print(f"Error reading HA/CA grid file {csv_file}: {e}")
+
+    return best_ha_offset, best_ca_offset, ha_values, ca_values
+
+
+def collect_best_grid_offsets_ha_ca(
+    outputs_dir: str,
+) -> Tuple[List[float], List[float], Dict[str, float], Dict[str, float], Optional[List[float]], Optional[List[float]]]:
+    """
+    Collect best HA/CA offsets from HA/CA grid search CSV files.
+
+    Returns:
+        Tuple containing:
+            - List of best HA offsets
+            - List of best CA offsets
+            - Mapping of target name -> best HA offset
+            - Mapping of target name -> best CA offset
+            - Representative list of HA grid values
+            - Representative list of CA grid values
+    """
+    csv_files = find_haca_grid_offset_files(outputs_dir)
+
+    all_best_ha_offsets: List[float] = []
+    all_best_ca_offsets: List[float] = []
+    best_ha_offsets_by_target: Dict[str, float] = {}
+    best_ca_offsets_by_target: Dict[str, float] = {}
+    representative_ha_values: Optional[List[float]] = None
+    representative_ca_values: Optional[List[float]] = None
+
+    print(f"Found {len(csv_files)} HA/CA grid CSV files")
+
+    for csv_file in csv_files:
+        target_name = Path(csv_file).parent.name
+        best_ha, best_ca, ha_values, ca_values = _extract_best_offsets_from_haca_grid_file(csv_file)
+
+        if best_ha is None and best_ca is None:
+            print(f"Target {target_name}: No best HA/CA offsets found in grid CSV")
+            continue
+
+        print(f"Target {target_name}: best_ha_offset={best_ha}, best_ca_offset={best_ca}")
+
+        if best_ha is not None:
+            all_best_ha_offsets.append(best_ha)
+            best_ha_offsets_by_target[target_name] = best_ha
+
+        if best_ca is not None:
+            all_best_ca_offsets.append(best_ca)
+            best_ca_offsets_by_target[target_name] = best_ca
+
+        if representative_ha_values is None and ha_values:
+            representative_ha_values = ha_values
+        if representative_ca_values is None and ca_values:
+            representative_ca_values = ca_values
+
+    return (
+        all_best_ha_offsets,
+        all_best_ca_offsets,
+        best_ha_offsets_by_target,
+        best_ca_offsets_by_target,
+        representative_ha_values,
+        representative_ca_values,
     )
 
 
@@ -351,16 +493,36 @@ def create_grid_heatmap(
     output_dir: str,
     h_grid_values: Optional[List[float]] = None,
     n_grid_values: Optional[List[float]] = None,
+    *,
+    y_label: str = "H offset (ppm)",
+    x_label: str = "N offset (ppm)",
+    title: str = "Best Offsets from Grid Search Across Targets",
+    y_min: Optional[float] = None,
+    y_max: Optional[float] = None,
+    y_step: Optional[float] = None,
+    x_min: Optional[float] = None,
+    x_max: Optional[float] = None,
+    x_step: Optional[float] = None,
+    output_name: str = "offset_grid_heatmap.png",
 ) -> Optional[str]:
     """
     Create a heatmap showing counts of best offsets across the grid.
 
+    Defaults are the H (y) / N (x) referencing grid. Pass HA/CA labels and
+    limits to reuse the same layout for Hα/Cα offsets.
+
     Args:
-        best_h_offsets: List of best H offsets
-        best_n_offsets: List of best N offsets
+        best_h_offsets: List of best y-axis offsets (H or HA)
+        best_n_offsets: List of best x-axis offsets (N or CA)
         output_dir: Directory to save the heatmap
-        h_grid_values: Optional list of H grid center values
-        n_grid_values: Optional list of N grid center values
+        h_grid_values: Optional list of y-axis grid center values
+        n_grid_values: Optional list of x-axis grid center values
+        y_label: Left-histogram / y-axis label
+        x_label: Bottom-histogram / x-axis label
+        title: Heatmap title
+        y_min, y_max, y_step: Optional y-axis limits (default: Referencing H)
+        x_min, x_max, x_step: Optional x-axis limits (default: Referencing N)
+        output_name: Filename written under output_dir
 
     Returns:
         Path to the saved heatmap image, or None if there was nothing to plot
@@ -419,22 +581,25 @@ def create_grid_heatmap(
         extent=[n_edges_hist[0], n_edges_hist[-1], h_edges_hist[0], h_edges_hist[-1]],
     )
     ax_heatmap.set_xlabel("")
-    # ax_heatmap.set_ylabel("H offset (ppm)")
     ax_heatmap.set_title(
-        "Best Offsets from Grid Search Across Targets",
+        title,
         pad=20,
         fontsize=title_fontsize,
     )
     ax_heatmap.grid(False)
     ax_heatmap.tick_params(axis="x", labelbottom=False)
-    # Axis limits follow current Referencing H/N grid defaults (plus half-step padding).
+    # Axis limits follow the supplied grid (default: current Referencing H/N).
     _ref = Referencing()
-    _n_pad = float(_ref.grid_n_step) / 2.0
-    _h_pad = float(_ref.grid_h_step) / 2.0
-    ax_heatmap.set_xlim(float(_ref.grid_n_min) - _n_pad, float(_ref.grid_n_max) + _n_pad)
-    ax_heatmap.set_ylim(float(_ref.grid_h_min) - _h_pad, float(_ref.grid_h_max) + _h_pad)
-    # ax_heatmap.yaxis.set_label_position("right")
-    # ax_heatmap.yaxis.tick_right()
+    _x_min = float(_ref.grid_n_min if x_min is None else x_min)
+    _x_max = float(_ref.grid_n_max if x_max is None else x_max)
+    _x_step = float(_ref.grid_n_step if x_step is None else x_step)
+    _y_min = float(_ref.grid_h_min if y_min is None else y_min)
+    _y_max = float(_ref.grid_h_max if y_max is None else y_max)
+    _y_step = float(_ref.grid_h_step if y_step is None else y_step)
+    _n_pad = _x_step / 2.0
+    _h_pad = _y_step / 2.0
+    ax_heatmap.set_xlim(_x_min - _n_pad, _x_max + _n_pad)
+    ax_heatmap.set_ylim(_y_min - _h_pad, _y_max + _h_pad)
     ax_heatmap.tick_params(
         axis="y", which="both", labelleft=False, labelright=False, labelsize=tick_fontsize
     )
@@ -448,15 +613,13 @@ def create_grid_heatmap(
     if cbar_ticks:
         cbar.set_ticks(cbar_ticks)
 
-    # Tick ranges span the current Referencing H/N grid defaults (includes 0.00).
-    tick_positions_n = np.linspace(float(_ref.grid_n_min) - _n_pad, float(_ref.grid_n_max) + _n_pad, 11)
-    tick_positions_h = np.linspace(float(_ref.grid_h_min) - _h_pad, float(_ref.grid_h_max) + _h_pad, 11)
+    tick_positions_n = np.linspace(_x_min - _n_pad, _x_max + _n_pad, 11)
+    tick_positions_h = np.linspace(_y_min - _h_pad, _y_max + _h_pad, 11)
 
     ax_heatmap.set_xticks(tick_positions_n, minor=False)
     ax_heatmap.set_yticks(tick_positions_h, minor=False)
 
-    # Bottom histogram for N offsets
-    # Bottom histogram for N offsets. Use the FULL set of bin edges
+    # Bottom histogram for x-axis offsets. Use the FULL set of bin edges
     # (n_edges) so each bar lines up one-to-one with a heatmap column.
     n_hist_counts, _, _ = ax_bottom.hist(
         best_n_offsets,
@@ -465,7 +628,7 @@ def create_grid_heatmap(
         edgecolor="black",
         alpha=0.7,
     )
-    ax_bottom.set_xlabel("N offset (ppm)", fontsize=label_fontsize)
+    ax_bottom.set_xlabel(x_label, fontsize=label_fontsize)
     ax_bottom.set_ylabel("Count", fontsize=label_fontsize)
     ax_bottom.grid(False)
     ax_bottom.invert_yaxis()
@@ -480,8 +643,7 @@ def create_grid_heatmap(
     )
     ax_bottom.tick_params(axis="y", labelsize=tick_fontsize)
 
-    # Left histogram for H offsets (horizontal)
-    # Left histogram for H offsets (horizontal), likewise using the full
+    # Left histogram for y-axis offsets (horizontal), likewise using the full
     # set of bin edges (h_edges) so each bar corresponds to a single
     # heatmap row.
     h_hist_counts, _, _ = ax_left.hist(
@@ -492,7 +654,7 @@ def create_grid_heatmap(
         edgecolor="black",
         alpha=0.7,
     )
-    ax_left.set_ylabel("H offset (ppm)", fontsize=label_fontsize)
+    ax_left.set_ylabel(y_label, fontsize=label_fontsize)
     ax_left.set_xlabel("Count", fontsize=label_fontsize)
     ax_left.grid(False)
     ax_left.invert_xaxis()
@@ -503,8 +665,6 @@ def create_grid_heatmap(
         labelsize=tick_fontsize,
     )
     ax_left.tick_params(axis="x", labelsize=tick_fontsize)
-    # Make sure the left histogram uses the same tick positions
-    # as the heatmap so the H offset bins line up.
     ax_left.set_yticks(tick_positions_h, minor=False)
     ax_left.set_ylim(ax_heatmap.get_ylim())
 
@@ -526,7 +686,7 @@ def create_grid_heatmap(
     plt.setp(ax_bottom.get_xticklabels(), rotation=45, ha="right")
     plt.setp(ax_bottom.get_yticklabels(), rotation=0)
     fig.tight_layout()
-    output_path = os.path.join(output_dir, "offset_grid_heatmap.png")
+    output_path = os.path.join(output_dir, output_name)
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close(fig)
 

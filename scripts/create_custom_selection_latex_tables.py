@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create ST2-ST9 LaTeX tables for predefined custom target selections.
+Create ST2-ST8 LaTeX tables for predefined custom target selections.
 
 This script runs `scripts/create_csp_latex_table.py` for each selection CSV and
 writes one `.tex` file per selection to `./figures/`. The generated `.tex` files
@@ -16,41 +16,41 @@ from pathlib import Path
 from typing import Iterable
 
 
-# Order matches SI Tables S2–S9
+# Order matches SI Tables S2–S8
 SELECTIONS = [
     {
         "st_id": "ST2",
         "title": "Hydrolase Receptors",
         "selection_name": "hydrolases",
-        "targets_csv": Path("outputs") / "si_figs_s1_s9_aux" / "targets_hydrolases.csv",
+        "targets_csv": Path("data/targets_hydrolases.csv"),
         "output_tex": "ST2_hydrolase_receptors.tex",
     },
     {
         "st_id": "ST3",
         "title": "Transferase Receptors",
         "selection_name": "transferases",
-        "targets_csv": Path("outputs") / "si_figs_s1_s9_aux" / "targets_transferases.csv",
+        "targets_csv": Path("data/targets_transferases.csv"),
         "output_tex": "ST3_transferase_receptors.tex",
     },
     {
         "st_id": "ST4",
         "title": "All Alpha Receptors",
         "selection_name": "all_alpha_proteins",
-        "targets_csv": Path("outputs") / "si_figs_s1_s9_aux" / "targets_all_alpha_proteins.csv",
+        "targets_csv": Path("data/targets_all_alpha_proteins.csv"),
         "output_tex": "ST4_all_alpha_receptors.tex",
     },
     {
         "st_id": "ST5",
         "title": "All Beta Receptors",
         "selection_name": "all_beta_proteins",
-        "targets_csv": Path("outputs") / "si_figs_s1_s9_aux" / "targets_all_beta_proteins.csv",
+        "targets_csv": Path("data/targets_all_beta_proteins.csv"),
         "output_tex": "ST5_all_beta_receptors.tex",
     },
     {
         "st_id": "ST6",
         "title": "Alpha and Beta (a+b) Receptors",
         "selection_name": "alpha_and_beta_proteins_a_plus_b",
-        "targets_csv": Path("outputs") / "si_figs_s1_s9_aux" / "targets_alpha_and_beta_proteins_a_plus_b.csv",
+        "targets_csv": Path("data/targets_alpha_and_beta_proteins_a_plus_b.csv"),
         "output_tex": "ST6_alpha_and_beta_a_plus_b_receptors.tex",
     },
     {
@@ -62,30 +62,23 @@ SELECTIONS = [
     },
     {
         "st_id": "ST8",
-        "title": "TFIIH Domain Receptors",
-        "selection_name": "TFIIH",
-        "targets_csv": Path("data/targets_TFIIH.csv"),
-        "output_tex": "ST8_tfiih_domain_receptors.tex",
-    },
-    {
-        "st_id": "ST9",
         "title": "Ubiquitin Domain Receptors",
         "selection_name": "ubiquitin",
         "targets_csv": Path("data/targets_ubiquitin.csv"),
-        "output_tex": "ST9_ubiquitin_domain_receptors.tex",
+        "output_tex": "ST8_ubiquitin_domain_receptors.tex",
     },
 ]
 
 
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create ST2–ST9 LaTeX tables (SI Table S10 + SF9: create_si_st10_fig_s9_dissimilar_conditions.py)."
+        description="Create ST2–ST8 LaTeX tables (SI Table S9 + SF8: create_si_st9_fig_s8_dissimilar_conditions.py)."
     )
     parser.add_argument(
         "--csp-csv",
         type=Path,
-        default=Path("data/CSP_UBQ.csv"),
-        help="Path to CSP_UBQ.csv (default: data/CSP_UBQ.csv).",
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
+        help="Path to CSP CSV (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
     parser.add_argument(
         "--confusion-csv",

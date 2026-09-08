@@ -65,8 +65,8 @@ try:
     from .analyze_targets_single_atom_shifts import compute_1d_metrics_for_target
     from .analyze_targets import load_alignment, compute_f1_score
     from .create_fig_3 import collect_distance_categories
-    from .create_si_fig_s13 import collect_distance_categories as collect_s13_distance_categories
-    from .create_si_fig_s14 import collect_distance_categories as collect_s14_distance_categories
+    from .create_si_fig_s12 import collect_distance_categories as collect_s13_distance_categories
+    from .create_si_fig_s13 import collect_distance_categories as collect_s14_distance_categories
     from .HSQC_visualize import (
         plot_hsqc_variants,
         resolve_hsqc_offsets,
@@ -121,8 +121,8 @@ except Exception:
     from scripts.analyze_targets_single_atom_shifts import compute_1d_metrics_for_target
     from scripts.analyze_targets import load_alignment, compute_f1_score
     from scripts.create_fig_3 import collect_distance_categories
-    from scripts.create_si_fig_s13 import collect_distance_categories as collect_s13_distance_categories
-    from scripts.create_si_fig_s14 import collect_distance_categories as collect_s14_distance_categories
+    from scripts.create_si_fig_s12 import collect_distance_categories as collect_s13_distance_categories
+    from scripts.create_si_fig_s13 import collect_distance_categories as collect_s14_distance_categories
     from scripts.HSQC_visualize import (
         plot_hsqc_variants,
         resolve_hsqc_offsets,

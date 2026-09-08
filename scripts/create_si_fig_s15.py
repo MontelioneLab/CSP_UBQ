@@ -1,113 +1,81 @@
 #!/usr/bin/env python3
 """
-SI Fig. S15 — Per-target **F1 scores** for 1D H / N / Cα CSPs (boxplots + paired Wilcoxon).
+SI Fig. S15 — PDB Advanced Search interface screenshot.
 
-Hα is omitted so the paired cohort matches the CA–shift coverage gate (with
-default ``data/CSP_UBQ_ph0.5_temp5C.csv`` and default ``--min-ca-coverage``), without
-requiring an Hα F1 for every target. Implements SI Fig. S15 via
-:func:`run_f1_1d_boxplot` in ``create_si_fig_f1_1d_boxplot`` with
-:data:`SF15_ATOM_ORDER`.
+Static asset. Installs/verifies ``figures/SF15_pdb_search.png`` (preferred) or
+leaves ``figures/SF15_pdb_search.pdf`` for ``build_si_merged_pdf.py`` to splice.
 
-Older versions of this script incorrectly plotted summarized **|1D CSP|**
-magnitudes on the *y*-axis rather than classifier **F1** scores derived from the
-same 1D significance rules as the rest of the 1D single-atom analysis.
-
-Outputs:
-
-  ./figures/SF15_1d_CSP_boxplot.png
-  ./figures/SF15_1d_CSP_boxplot_stats.csv  (Holm-adjusted pairwise *p*-values)
-
-Default targets: ``data/CSP_UBQ_ph0.5_temp5C.csv``. Override via ``--targets-csv``.
-CA-shift gating uses :func:`target_basenames_passing_ca_shift_coverage` in
-``analyze_targets_single_atom_shifts`` (same as SI Fig. S11 / S12; ``--min-ca-coverage``).
+Usage:
+  python scripts/create_si_fig_s15.py
+  python scripts/create_si_fig_s15.py --source path/to/screenshot.png
 """
 
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 from pathlib import Path
 
-try:
-    from .analyze_targets_single_atom_shifts import DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE
-    from .create_si_fig_f1_1d_boxplot import SF15_ATOM_ORDER, run_f1_1d_boxplot
-except Exception:
-    project_root = Path(__file__).resolve().parent.parent
-    if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))
-    from scripts.analyze_targets_single_atom_shifts import (  # type: ignore
-        DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
-    )
-    from scripts.create_si_fig_f1_1d_boxplot import (  # type: ignore
-        SF15_ATOM_ORDER,
-        run_f1_1d_boxplot,
-    )
+_REPO = Path(__file__).resolve().parents[1]
+DEFAULT_PNG = _REPO / "figures" / "SF15_pdb_search.png"
+DEFAULT_PDF = _REPO / "figures" / "SF15_pdb_search.pdf"
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="SI Fig. S15: 1D H/N/Cα F1 score boxplots with paired Wilcoxon (Holm-adjusted)."
-    )
-    parser.add_argument(
-        "--outputs-dir",
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--figures-dir",
         type=Path,
-        default=Path("outputs"),
-        help="Root outputs directory with per-target folders.",
+        default=_REPO / "figures",
+        help="Figures directory (default: figures/).",
     )
-    parser.add_argument(
-        "--targets-csv",
-        type=Path,
-        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
-        help="Targets CSV (holo_pdb + apo_bmrb); resolved to output dirs (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
-    )
-    parser.add_argument(
-        "--output-image",
-        type=Path,
-        default=Path("figures") / "SF15_1d_CSP_boxplot.png",
-        help="Destination PNG for SI Fig. S15.",
-    )
-    parser.add_argument(
-        "--stats-csv",
+    ap.add_argument(
+        "--source",
         type=Path,
         default=None,
-        help="Optional Holm stats table path (default: sibling <stem>_stats.csv next to --output-image).",
+        help="Optional PNG/PDF to copy into figures/ as SF15_pdb_search.*",
     )
-    parser.add_argument(
-        "--min-ca-coverage",
-        type=float,
-        default=DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
-        help=(
-            "Same as SI Fig. S12: strictly more than this fraction of 1d_analysis.csv "
-            "rows must have both CA_apo and CA_holo (default: %(default)s)."
-        ),
+    ap.add_argument(
+        "--require-png",
+        action="store_true",
+        help="Fail if SF15_pdb_search.png is missing (default: PNG or PDF is OK).",
     )
-    return parser.parse_args()
+    args = ap.parse_args(argv)
 
+    figures = args.figures_dir if args.figures_dir.is_absolute() else _REPO / args.figures_dir
+    figures.mkdir(parents=True, exist_ok=True)
+    png = figures / "SF15_pdb_search.png"
+    pdf = figures / "SF15_pdb_search.pdf"
 
-def main() -> int:
-    args = parse_args()
-    project_root = Path(__file__).resolve().parent.parent
+    if args.source is not None:
+        src = args.source if args.source.is_absolute() else _REPO / args.source
+        if not src.is_file():
+            print(f"Error: --source not found: {src}", file=sys.stderr)
+            return 1
+        dest = png if src.suffix.lower() == ".png" else pdf if src.suffix.lower() == ".pdf" else png
+        if src.suffix.lower() not in {".png", ".pdf"}:
+            dest = png
+        shutil.copy2(src, dest)
+        print(f"[SF15] Installed {dest}")
 
-    outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
-    targets_csv = args.targets_csv if args.targets_csv.is_absolute() else project_root / args.targets_csv
-    output_image = args.output_image if args.output_image.is_absolute() else project_root / args.output_image
-    stats_csv = (
-        None
-        if args.stats_csv is None
-        else (args.stats_csv if args.stats_csv.is_absolute() else project_root / args.stats_csv)
+    if png.is_file():
+        print(f"[SF15] OK: {png}")
+        return 0
+    if pdf.is_file() and not args.require_png:
+        print(
+            f"[SF15] PNG missing; PDF present at {pdf}. "
+            "build_si_merged_pdf.py will insert this page.",
+            file=sys.stderr,
+        )
+        return 0
+
+    print(
+        "Error: SI Fig. S15 asset missing. Provide figures/SF15_pdb_search.png "
+        "(or .pdf) or pass --source.",
+        file=sys.stderr,
     )
-
-    rc = run_f1_1d_boxplot(
-        outputs_dir,
-        targets_csv=targets_csv,
-        output_image=output_image,
-        stats_csv=stats_csv,
-        min_ca_coverage=float(args.min_ca_coverage),
-        atom_order=SF15_ATOM_ORDER,
-    )
-    if rc == 0:
-        print(f"SI Fig. S15 saved to {output_image.resolve()}")
-    return rc
+    return 1
 
 
 if __name__ == "__main__":
