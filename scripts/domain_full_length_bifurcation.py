@@ -11,6 +11,10 @@ Split a CSP_UBQ-style table into domain-like vs full-length protein targets:
 Incremental runs resume from ``{basename}_bifurcation_all_rows.csv`` unless ``--force-recompute``.
 After each processed row all CSVs plus the summary JSON are rewritten.
 
+A slim 7-column report (``--report-csv``, default ``data/CSP_UBQ_receptor_is_domain.csv``)
+sets ``is_domain`` True when ``sequence_length < --domain-fraction * full_protein_length``
+(default 0.75). Unresolved rows keep empty UniProt/length/is_domain fields.
+
 """
 
 from __future__ import annotations
@@ -53,6 +57,17 @@ except ImportError:
 
 
 LENGTH_RATIO_DEFAULT = 1.5
+DOMAIN_FRACTION_DEFAULT = 0.75
+
+SLIM_REPORT_FIELDS = [
+    "holo_pdb",
+    "apo_bmrb",
+    "holo_bmrb",
+    "uniprot_id",
+    "sequence_length",
+    "full_protein_length",
+    "is_domain",
+]
 
 
 def _short_err(reason: Optional[str], max_len: int = 80) -> str:
@@ -127,6 +142,8 @@ def write_bifurcation_bundle(
     out_dir: Path,
     started_at_perf: float,
     skipped_cached: int,
+    report_csv: Optional[Path] = None,
+    domain_fraction: float = DOMAIN_FRACTION_DEFAULT,
 ) -> Dict[str, Any]:
     """Rewrite all bifurcation outputs from the current ``enriched`` list."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -160,6 +177,9 @@ def write_bifurcation_bundle(
         for row in enriched:
             wr.writerow({k: row.get(k, "") for k in base_fieldnames})
 
+    slim_path = report_csv if report_csv is not None else (out_dir / f"{basename}_receptor_is_domain.csv")
+    write_slim_report(enriched, report_csv=slim_path, domain_fraction=domain_fraction)
+
     counts, classified = _tally_enriched(enriched)
     elapsed = time.perf_counter() - started_at_perf
     summary_payload = {
@@ -171,8 +191,10 @@ def write_bifurcation_bundle(
             "full_length_csv": str(out_full.resolve()),
             "unresolved_csv": str(out_unresolved.resolve()),
             "all_rows_csv": str(out_all.resolve()),
+            "report_csv": str(slim_path.resolve()),
             "summary_json": str(summary_path.resolve()),
         },
+        "domain_fraction": domain_fraction,
     }
     with open(summary_path, "w", encoding="utf-8") as sf:
         json.dump(summary_payload, sf, indent=2)
@@ -289,6 +311,70 @@ def _classify_row(
     return "full_length"
 
 
+def is_domain_from_lengths(
+    seq_len: int,
+    full_len: int,
+    fraction: float = DOMAIN_FRACTION_DEFAULT,
+) -> Optional[bool]:
+    """True if construct length is strictly below ``fraction`` of the UniProt protein.
+
+    Returns None when either length is missing or non-positive (unresolved).
+    """
+    if seq_len <= 0 or full_len <= 0:
+        return None
+    return seq_len < fraction * full_len
+
+
+def _int_or_zero(raw: Any) -> int:
+    try:
+        return int(str(raw).strip())
+    except (TypeError, ValueError):
+        return 0
+
+
+def slim_report_row(row: Dict[str, Any], *, domain_fraction: float) -> Dict[str, str]:
+    """Map a bifurcation row to the 7-column receptor domain report."""
+    err = (row.get("error_reason") or "").strip()
+    seq_len = _int_or_zero(row.get("bmrb_holo_seq_length"))
+    full_len = _int_or_zero(row.get("uniprot_seq_length"))
+    flag = None if err else is_domain_from_lengths(seq_len, full_len, domain_fraction)
+
+    if flag is None:
+        uniprot_id = ""
+        seq_out = ""
+        full_out = ""
+        is_domain = ""
+    else:
+        uniprot_id = (row.get("uniprot_accession") or "").strip()
+        seq_out = str(seq_len)
+        full_out = str(full_len)
+        is_domain = "True" if flag else "False"
+
+    return {
+        "holo_pdb": (row.get("holo_pdb") or "").strip(),
+        "apo_bmrb": (row.get("apo_bmrb") or "").strip(),
+        "holo_bmrb": (row.get("holo_bmrb") or "").strip(),
+        "uniprot_id": uniprot_id,
+        "sequence_length": seq_out,
+        "full_protein_length": full_out,
+        "is_domain": is_domain,
+    }
+
+
+def write_slim_report(
+    enriched: List[Dict[str, Any]],
+    *,
+    report_csv: Path,
+    domain_fraction: float,
+) -> None:
+    report_csv.parent.mkdir(parents=True, exist_ok=True)
+    with open(report_csv, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=SLIM_REPORT_FIELDS)
+        w.writeheader()
+        for row in enriched:
+            w.writerow(slim_report_row(row, domain_fraction=domain_fraction))
+
+
 def process_dataset(
     *,
     input_csv: Path,
@@ -307,6 +393,8 @@ def process_dataset(
     dry_run_rest: bool,
     quiet: bool = False,
     force_recompute: bool = False,
+    report_csv: Optional[Path] = None,
+    domain_fraction: float = DOMAIN_FRACTION_DEFAULT,
 ) -> Dict[str, Any]:
     t0 = time.perf_counter()
     receptor_map = _load_receptor_chain_map(receptor_csv)
@@ -355,6 +443,8 @@ def process_dataset(
     base_fieldnames_in = list(fieldnames_in) + [c for c in extra_cols if c not in fieldnames_in]
     base_fieldnames = _merge_output_fieldnames(base_fieldnames_in, cache_fieldnames_from_disk)
 
+    slim_report_path = report_csv if report_csv is not None else (out_dir / f"{basename}_receptor_is_domain.csv")
+
     if not quiet:
         blast_mode = f"blastp -db {blast_db}" + (" -remote" if blast_remote else " (local)")
         print("Domain / full-length bifurcation", file=sys.stdout)
@@ -365,7 +455,12 @@ def process_dataset(
         print(f"  PDB cache:         {pdb_cache_dir}", file=sys.stdout)
         print(f"  Output dir:        {out_dir.resolve()}", file=sys.stdout)
         print(f"  Basename:          {basename}", file=sys.stdout)
+        print(f"  Slim report:       {slim_report_path.resolve()}", file=sys.stdout)
         print(f"  Classify rule:     UniProt length > {ratio} × bmrb_holo_seq_length → domain", file=sys.stdout)
+        print(
+            f"  is_domain rule:    sequence_length < {domain_fraction} × full_protein_length → True",
+            file=sys.stdout,
+        )
         print(f"  UniProt pref:      RCSB polymer entity (SIFS) → then {blast_mode} if missing", file=sys.stdout)
         print(
             f"  Blast hit filters: min %identity {min_pident}, min query coverage {min_query_cov:.2f}",
@@ -422,6 +517,8 @@ def process_dataset(
                 out_dir=out_dir,
                 started_at_perf=t0,
                 skipped_cached=run_skipped_so_far,
+                report_csv=slim_report_path,
+                domain_fraction=domain_fraction,
             )
             continue
 
@@ -599,6 +696,8 @@ def process_dataset(
             out_dir=out_dir,
             started_at_perf=t0,
             skipped_cached=run_skipped_so_far,
+            report_csv=slim_report_path,
+            domain_fraction=domain_fraction,
         )
 
     if bundle_result is None:
@@ -609,6 +708,8 @@ def process_dataset(
             out_dir=out_dir,
             started_at_perf=t0,
             skipped_cached=run_skipped_so_far,
+            report_csv=slim_report_path,
+            domain_fraction=domain_fraction,
         )
     final = bundle_result
 
@@ -623,6 +724,7 @@ def process_dataset(
             file=sys.stdout,
         )
         print(f"  Wrote all outputs under basename «{basename}» (domains, full_length, unresolved, all_rows, JSON).")
+        print(f"  Slim report:       {slim_report_path.resolve()}")
     return final
 
 
@@ -706,6 +808,21 @@ def build_arg_parser() -> argparse.ArgumentParser:
             "(default: merge/cache from that file for incremental/resumable runs)."
         ),
     )
+    p.add_argument(
+        "--report-csv",
+        type=Path,
+        default=Path(paths.data_dir) / "CSP_UBQ_receptor_is_domain.csv",
+        help="Slim 7-column domain report CSV (default: data/CSP_UBQ_receptor_is_domain.csv).",
+    )
+    p.add_argument(
+        "--domain-fraction",
+        type=float,
+        default=DOMAIN_FRACTION_DEFAULT,
+        help=(
+            "is_domain is True when sequence_length < fraction * full_protein_length "
+            f"(default: {DOMAIN_FRACTION_DEFAULT})."
+        ),
+    )
     return p
 
 
@@ -729,6 +846,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         dry_run_rest=args.dry_run_rest,
         quiet=args.quiet,
         force_recompute=args.force_recompute,
+        report_csv=args.report_csv,
+        domain_fraction=args.domain_fraction,
     )
     if args.quiet:
         print(json.dumps(final, indent=2, sort_keys=True), file=sys.stdout)

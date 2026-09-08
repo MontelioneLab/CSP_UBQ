@@ -19,13 +19,13 @@ CSV row is resolved to ``outputs/{HOLO_PDB}_{apo_bmrb}/`` using the same rules a
 is set). Writes one summary CSV plus five heatmap PNGs into
 ``outputs/buffer_threshold_sweep/`` (configurable).
 
-The heatmap cell ``n`` is the number of **distinct** ``outputs/{holo}_{apo}/`` directories
+The heatmap cell ``n`` is the number of **distinct** ``outputs/{holo}_{apo}/`` dirs
 with a parsable ``master_alignment.csv`` and residue classifications, among **rows of the
 ``--csp`` file** (default: full ``data/CSP_UBQ.csv``) whose paired ``--exp`` row satisfies
-the cell's |ΔpH| and |ΔT| tolerances. It is **not** tied to the row count of
-``CSP_UBQ_ph0.5_temp5C.csv`` unless you pass that file as ``--csp`` and keep ``--exp`` row
-alignment; regenerate that subset with ``scripts/filter_csp_ubq_by_buffer.py`` when inputs
-change.
+the cell's |ΔpH| and |ΔT| tolerances. CSP and exp rows are joined by pair key
+``(apo_bmrb, holo_bmrb, apo_pdb, holo_pdb)``, not by row index. It is **not** tied to the
+row count of ``CSP_UBQ_ph0.5_temp5C.csv`` unless you pass that file as ``--csp``;
+regenerate that subset with ``scripts/filter_csp_ubq_by_buffer.py`` when inputs change.
 """
 
 from __future__ import annotations
@@ -59,7 +59,7 @@ from scripts.analyze_targets import (  # noqa: E402
     load_alignment,
 )
 from scripts.config import Paths  # noqa: E402
-from scripts.filter_csp_ubq_by_buffer import row_meets  # noqa: E402
+from scripts.filter_csp_ubq_by_buffer import pair_key, row_meets  # noqa: E402
 from scripts.target_resolution import (  # noqa: E402
     build_resolution_caches,
     resolve_output_dir_from_csv_row,
@@ -146,20 +146,29 @@ def load_paired_rows(
     csp_path: Path,
     exp_path: Path,
 ) -> Tuple[List[Dict[str, str]], List[Dict[str, str]], List[Optional[Tuple[float, float]]]]:
-    """Load CSP and EXP rows paired by row index, plus precomputed (|ΔpH|, |ΔT|)."""
+    """Load CSP and EXP rows joined by pair key, plus precomputed (|ΔpH|, |ΔT|)."""
     with csp_path.open(newline="", encoding="utf-8") as f:
-        csp_rows = list(csv.DictReader(f))
+        csp_rows_in = list(csv.DictReader(f))
     with exp_path.open(newline="", encoding="utf-8") as f:
-        exp_rows = list(csv.DictReader(f))
-    n_pairs = min(len(csp_rows), len(exp_rows))
-    if len(csp_rows) != len(exp_rows):
+        exp_by_key = {pair_key(r): r for r in csv.DictReader(f)}
+
+    csp_rows: List[Dict[str, str]] = []
+    exp_rows: List[Dict[str, str]] = []
+    missing = 0
+    for cr in csp_rows_in:
+        er = exp_by_key.get(pair_key(cr))
+        if er is None:
+            missing += 1
+            continue
+        csp_rows.append(cr)
+        exp_rows.append(er)
+
+    if missing:
         print(
-            f"WARN: row counts differ (csp={len(csp_rows)}, exp={len(exp_rows)}); "
-            f"using first {n_pairs} pairs.",
+            f"WARN: {missing} CSP rows had no matching exp-conditions pair key "
+            f"(apo_bmrb, holo_bmrb, apo_pdb, holo_pdb); skipped.",
             file=sys.stderr,
         )
-    csp_rows = csp_rows[:n_pairs]
-    exp_rows = exp_rows[:n_pairs]
     diffs = [_exp_diffs(er) for er in exp_rows]
     return csp_rows, exp_rows, diffs
 

@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 """
-
-SI Fig. S10 — CA-inclusive CSP confusion matrix histograms (two-panel image).
+SI Fig. S10 — HA/CA CSP confusion matrix histograms (two-panel image).
 
 - Panel A: stacked histogram of significant residues (TP/FP only)
 - Panel B: stacked confusion-matrix histogram (TN/FP/FN/TP)
 
 Output:
-- figures/SF10_ca_inclusive.png
+- figures/SF10_ha_ca.png
 
-Target eligibility matches SI Fig. S11 / S14: CSV rows are resolved to
-``outputs/{HOLO}_{apo_bmrb}/``, then
-:func:`target_basenames_passing_ca_shift_coverage` keeps only targets whose
-``1d_analysis.csv`` has both ``CA_apo`` and ``CA_holo`` on strictly more than
-``--min-ca-coverage`` of rows (default ``DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE``).
+Target eligibility: rows in CSP_UBQ_ph0.5_temp5C.csv resolved to
+``outputs/{HOLO}_{apo_bmrb}/``, then kept only if ``csp_table_HA_CA.csv`` exists
+(pipeline writes that table when HA and CA shifts are present in both apo and
+holo, subject to ``ha_ca_min_shift_coverage``).
 
-Default targets list: CSP_UBQ_ph0.5_temp5C.csv (buffer-filtered subset). Override with --targets-csv.
+Default targets list: CSP_UBQ_ph0.5_temp5C.csv. Override with --targets-csv.
 """
 
 from __future__ import annotations
@@ -42,10 +40,6 @@ try:
         render_confusion_matrix_stacked_histogram,
         render_stacked_histogram,
     )
-    from .analyze_targets_single_atom_shifts import (
-        DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
-        target_basenames_passing_ca_shift_coverage,
-    )
     from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     project_root = Path(__file__).resolve().parent.parent
@@ -56,16 +50,15 @@ except Exception:
         render_confusion_matrix_stacked_histogram,
         render_stacked_histogram,
     )
-    from scripts.analyze_targets_single_atom_shifts import (  # type: ignore
-        DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
-        target_basenames_passing_ca_shift_coverage,
-    )
     from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
+
+
+HA_CA_TABLE = "csp_table_HA_CA.csv"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create SI Fig. S10 (CA-inclusive CSP confusion matrix histograms)."
+        description="Create SI Fig. S10 (HA/CA CSP confusion matrix histograms)."
     )
     parser.add_argument(
         "--outputs-dir",
@@ -79,16 +72,7 @@ def parse_args() -> argparse.Namespace:
         default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
         help="CSV with holo_pdb target IDs (default: data/CSP_UBQ_ph0.5_temp5C.csv).",
     )
-    parser.add_argument("--output-image", type=Path, default=Path("figures") / "SF10_ca_inclusive.png")
-    parser.add_argument(
-        "--min-ca-coverage",
-        type=float,
-        default=DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
-        help=(
-            "Same as SI Fig. S11 / S14: require strictly more than this fraction of "
-            "1d_analysis.csv rows with both CA_apo and CA_holo (default: %(default)s)."
-        ),
-    )
+    parser.add_argument("--output-image", type=Path, default=Path("figures") / "SF10_ha_ca.png")
     return parser.parse_args()
 
 
@@ -148,37 +132,35 @@ def main() -> int:
         return 1
 
     rows = load_target_rows(targets_csv)
-    allowed_targets = {p.name for p in resolve_target_rows(rows, outputs_dir)}
-    if not allowed_targets:
+    resolved = {p.name for p in resolve_target_rows(rows, outputs_dir)}
+    if not resolved:
         print("No targets resolved from CSV against outputs/", file=sys.stderr)
         return 1
 
-    min_cov = float(args.min_ca_coverage)
-    eligible, coverage_map = target_basenames_passing_ca_shift_coverage(
-        outputs_dir,
-        min_coverage=min_cov,
-        allowed_basenames={k: True for k in allowed_targets},
-    )
+    eligible = {
+        name
+        for name in resolved
+        if (outputs_dir / name / HA_CA_TABLE).is_file()
+    }
     print(
-        f"{len(eligible)} targets pass CA row coverage > {min_cov:.0%} "
-        f"(among {len(allowed_targets)} CSV-resolved; "
-        f"{len(coverage_map)} with readable 1d_analysis CA columns)"
+        f"{len(eligible)} targets have {HA_CA_TABLE} "
+        f"(among {len(resolved)} CSV-resolved pH/temp-matched dirs)"
     )
     if not eligible:
         print(
-            "No targets left after CA shift coverage filter; cannot build SI Fig. S10.",
+            "No targets left after HA/CA table filter; cannot build SI Fig. S10.",
             file=sys.stderr,
         )
         return 1
 
-    _, distances, confusion_records = collect_results(outputs_dir, eligible, "nh_ca")
+    _, distances, confusion_records = collect_results(outputs_dir, eligible, "ha_ca")
 
     positive_count = sum(1 for record in distances if record.is_predicted_positive)
     negative_count = sum(1 for record in distances if not record.is_predicted_positive)
 
     output_image.parent.mkdir(parents=True, exist_ok=True)
 
-    with tempfile.TemporaryDirectory(prefix="si_fig_s13_") as tmp_dir:
+    with tempfile.TemporaryDirectory(prefix="si_fig_s10_") as tmp_dir:
         tmp_dir_path = Path(tmp_dir)
         panel_a_path = tmp_dir_path / "panel_a.png"
         panel_b_path = tmp_dir_path / "panel_b.png"
@@ -188,7 +170,7 @@ def main() -> int:
             panel_a_path,
             positive_count,
             negative_count,
-            "nh_ca",
+            "ha_ca",
             tp_color=classification_colors.TP,
             show_title=False,
             ylabel="Number of Residues",
@@ -199,7 +181,7 @@ def main() -> int:
         render_confusion_matrix_stacked_histogram(
             confusion_records,
             panel_b_path,
-            "nh_ca",
+            "ha_ca",
             tp_color=classification_colors.TP,
             show_title=False,
             bold_axes=False,
@@ -215,7 +197,7 @@ def main() -> int:
             return 1
         compose_two_panel_figure(panel_a_path, panel_b_path, output_image)
 
-    print(f"SI Fig. S10 saved to {output_image.resolve()}")
+    print(f"SI Fig. S10 saved to {output_image.resolve()} (n={len(eligible)})")
     return 0
 
 

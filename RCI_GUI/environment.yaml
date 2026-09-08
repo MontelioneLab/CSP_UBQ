@@ -1,0 +1,34 @@
+# Conda environment for RCI tools in this repo.
+#
+# scripts/rci_gui.py (Qt GUI)
+#   - PySide6
+#   - runs rci_v_1c_PyNMR-STAR.py with -mpl (matplotlib plots: PNG + SVG)
+#
+# scripts/rci_v_1c_PyNMR-STAR.py
+#   - numpy
+#   - matplotlib (default modern plots via -mpl)
+#   - pynmrstar (NMR-STAR input)
+#   - gnuplot (optional legacy plots via -gif / -ps / -jpg)
+#
+# tests/
+#   - pytest
+#
+# Create:   conda env create -f environment.yaml
+# Update:   conda env update -f environment.yaml --prune
+# Activate: conda activate rci
+# GUI:      python scripts/rci_gui.py
+#
+name: rci
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.10,<3.14
+  - numpy>=1.24
+  - matplotlib>=3.8
+  - pyside6>=6.7
+  - gnuplot>=6.0
+  - pytest>=8
+  - pip
+  - pip:
+      # https://pypi.org/project/pynmrstar/
+      - pynmrstar>=3.5,<4
