@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Compose SI Fig. S25: CSP vs interchain distance (two panels).
+Compose SI Fig. S17: CSP vs interchain distance (two panels).
 
   a) P(significant CSP | CA–CA distance) stacked by CSP z-score
      (from plot_p_significant_vs_ca_distance.py)
@@ -28,14 +28,14 @@ _REPO = Path(__file__).resolve().parents[1]
 DEFAULT_PANEL_A = (
     _REPO / "outputs" / "p_significant_vs_ca_distance_ph05.png"
 )
-# Equivalent to any-atom max(0.05, cleaned mean) scatter for the n=145
-# buffer-similar set (not the all-targets scatter).
+# Equivalent to any-atom max(0.05, cleaned mean) scatter for the n=135
+# buffer-similar set with pipeline outputs (not the all-targets scatter).
 DEFAULT_PANEL_B = (
     _REPO
     / "outputs"
     / "csp_z_vs_any_atom_distance_scatter_max05_ph05.png"
 )
-DEFAULT_OUT = _REPO / "figures" / "SF25_csp_vs_distance_panels.png"
+DEFAULT_OUT = _REPO / "figures" / "SF17_csp_vs_distance_panels.png"
 
 
 def compose(
@@ -109,7 +109,7 @@ def main(argv: list[str] | None = None) -> int:
         y0, y1 = int(0.50 * h), h
         x0, x1 = 0, int(0.50 * w)
         cropped = quad[y0:y1, x0:x1]
-        tmp = out.parent / "_sf25_panel_b_crop.png"
+        tmp = out.parent / "_sf17_panel_b_crop.png"
         plt.imsave(tmp, cropped)
         panel_b = tmp
 

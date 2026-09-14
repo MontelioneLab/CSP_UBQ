@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create SI Fig. S21: among-significant FP% = 100 × FP/(TP+FP) for four cohorts.
+Create SI Fig. S15: among-significant FP% = 100 × FP/(TP+FP) for four cohorts.
 
 Cohorts (sizes taken from the CSVs at runtime):
   - ideal sequence-match ∩ ph0.5
@@ -130,7 +130,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     ap.add_argument(
         "--output-image",
         type=Path,
-        default=Path("figures") / "SF21_fp_percent_distribution_cleaned_mean.png",
+        default=Path("figures") / "SF15_fp_percent_distribution_cleaned_mean.png",
     )
     ap.add_argument("--n-extreme", type=int, default=2)
     args = ap.parse_args(list(argv) if argv is not None else None)
@@ -154,7 +154,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 print(f"Error: no FP data for {path}", file=sys.stderr)
                 return 1
             labeled = f"{title} (n={len(df)})"
-            print(f"[SF20] {labeled}: collected from {rel.name}")
+            print(f"[SF15] {labeled}: collected from {rel.name}")
             cohort_dfs.append((labeled, df))
     finally:
         if tmp_n137 is not None:

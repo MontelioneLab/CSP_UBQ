@@ -11,18 +11,18 @@ SI figure generators (one entry point per SI Fig. S1–S26):
   - S12:    create_si_fig_s12.py
   - S13:    create_si_fig_s13.py
   - S14:    create_si_fig_s14.py
-  - S15:    create_si_fig_s15.py  (static PDB search screenshot)
-  - S16:    create_si_fig_s16.py
-  - S17:    create_si_fig_s17.py
-  - S18:    create_si_fig_s18.py
-  - S19:    create_si_fig_s19.py
-  - S20:    create_si_fig_s20.py  (wraps create_fig_3_thresholds.py)
-  - S21:    create_si_fig_s21.py  (wraps create_si_fig_s21_fp_percent.py)
-  - S22:    create_si_fig_s22.py  (wraps create_fig_3.py)
-  - S23:    create_si_fig_s23.py  (apo–apo controls S23A–E)
-  - S24:    create_si_fig_s24.py  (terminal-anchor vs global offsets)
-  - S25:    create_si_fig_s25.py  (wraps create_si_fig_s25_csp_vs_distance.py)
-  - S26:    create_si_fig_s26.py  (2FIN case-study z panel)
+  - S15:    create_si_fig_s15.py  (wraps create_si_fig_s15_fp_percent.py)
+  - S16:    create_si_fig_s16.py  (wraps create_fig_3.py; same-author subset)
+  - S17:    create_si_fig_s17.py  (wraps create_si_fig_s17_csp_vs_distance.py)
+  - S18:    create_si_fig_s18.py  (2FIN case-study z panel)
+  - S19:    create_si_fig_s19.py  (static PDB search screenshot)
+  - S20:    create_si_fig_s20.py  (buffer threshold sweep)
+  - S21:    create_si_fig_s21.py  (ideal N/H and HA/CA offsets)
+  - S22:    create_si_fig_s22.py  (terminal-anchor vs global offsets)
+  - S23:    create_si_fig_s23.py  (CSP significance threshold histogram)
+  - S24:    create_si_fig_s24.py  (wraps create_fig_3_thresholds.py)
+  - S25:    create_si_fig_s25.py  (apo–apo controls S25A–E)
+  - S26:    create_si_fig_s26.py  (F1 vs MCC)
 
 Also: SI Table S1 (create_si_table_s1.py), ST2–ST8 LaTeX
 (create_custom_selection_latex_tables.py), equations S1–S3
@@ -183,81 +183,15 @@ def main() -> int:
         ),
         (
             "create_si_fig_s15.py",
-            ["--figures-dir", figures],
+            [
+                "--outputs-dir",
+                outputs,
+                "--output-image",
+                str(Path(figures) / "SF15_fp_percent_distribution_cleaned_mean.png"),
+            ],
         ),
         (
             "create_si_fig_s16.py",
-            [
-                "--outputs-dir",
-                outputs,
-                "--sweep-out-dir",
-                str(Path(outputs) / "buffer_threshold_sweep"),
-                "--output",
-                str(Path(figures) / "SF16_buffer_sweep.png"),
-            ],
-        ),
-        (
-            "create_si_fig_s17.py",
-            [
-                "--outputs-dir",
-                outputs,
-                "--figures-dir",
-                figures,
-                "--targets-csv",
-                ph05,
-            ],
-        ),
-        (
-            "create_si_fig_s18.py",
-            [
-                "--outputs-dir",
-                outputs,
-                "--output",
-                str(Path(figures) / "SF18_significance_threshold.png"),
-                "--targets-csv",
-                ph05,
-            ],
-        ),
-        ("create_si_eqn_1.py", ["--output", str(Path(figures) / "SE1_nh_csp.png")]),
-        ("create_si_eqn_2.py", ["--output", str(Path(figures) / "SE2_nh_ca_csp.png")]),
-        ("create_si_eqn_3.py", ["--output", str(Path(figures) / "SE3_ha_ca_csp.png")]),
-        (
-            "create_si_fig_s19.py",
-            [
-                "--outputs-dir",
-                outputs,
-                "--input",
-                confusion_csv,
-                "--output-image",
-                str(Path(figures) / "SF19_f1_vs_mcc.png"),
-                "--targets-csv",
-                ph05,
-            ],
-        ),
-        (
-            "create_si_fig_s20.py",
-            [
-                "--outputs-dir",
-                outputs,
-                "--figures-dir",
-                figures,
-                "--output",
-                str(Path(figures) / "SF20_figure_3_thresholds.png"),
-                "--targets-csv",
-                ph05,
-            ],
-        ),
-        (
-            "create_si_fig_s21.py",
-            [
-                "--outputs-dir",
-                outputs,
-                "--output-image",
-                str(Path(figures) / "SF21_fp_percent_distribution_cleaned_mean.png"),
-            ],
-        ),
-        (
-            "create_si_fig_s22.py",
             [
                 "--outputs-dir",
                 outputs,
@@ -268,24 +202,90 @@ def main() -> int:
                 "--output-b",
                 str(Path(figures) / "figure_3_b_same_author_list.png"),
                 "--output-combined",
-                str(Path(figures) / "SF22_figure_3_combined_same_author_list.png"),
+                str(Path(figures) / "SF16_figure_3_combined_same_author_list.png"),
             ],
         ),
         (
-            "create_si_fig_s23.py",
-            ["--output-dir", str(Path(figures))],
+            "create_si_fig_s17.py",
+            ["--output", str(Path(figures) / "SF17_csp_vs_distance_panels.png")],
         ),
         (
+            "create_si_fig_s18.py",
+            ["--output", str(Path(figures) / "SF18_2FIN_case_study_z.png")],
+        ),
+        (
+            "create_si_fig_s19.py",
+            ["--figures-dir", figures],
+        ),
+        (
+            "create_si_fig_s20.py",
+            [
+                "--outputs-dir",
+                outputs,
+                "--sweep-out-dir",
+                str(Path(outputs) / "buffer_threshold_sweep"),
+                "--output",
+                str(Path(figures) / "SF20_buffer_sweep.png"),
+            ],
+        ),
+        (
+            "create_si_fig_s21.py",
+            [
+                "--outputs-dir",
+                outputs,
+                "--figures-dir",
+                figures,
+                "--targets-csv",
+                ph05,
+            ],
+        ),
+        (
+            "create_si_fig_s22.py",
+            ["--output", str(Path(figures) / "SF22_terminal_anchor_vs_global.png")],
+        ),
+        (
+            "create_si_fig_s23.py",
+            [
+                "--outputs-dir",
+                outputs,
+                "--output",
+                str(Path(figures) / "SF23_significance_threshold.png"),
+                "--targets-csv",
+                ph05,
+            ],
+        ),
+        ("create_si_eqn_1.py", ["--output", str(Path(figures) / "SE1_nh_csp.png")]),
+        ("create_si_eqn_2.py", ["--output", str(Path(figures) / "SE2_nh_ca_csp.png")]),
+        ("create_si_eqn_3.py", ["--output", str(Path(figures) / "SE3_ha_ca_csp.png")]),
+        (
             "create_si_fig_s24.py",
-            ["--output", str(Path(figures) / "SF24_terminal_anchor_vs_global.png")],
+            [
+                "--outputs-dir",
+                outputs,
+                "--figures-dir",
+                figures,
+                "--output",
+                str(Path(figures) / "SF24_figure_3_thresholds.png"),
+                "--targets-csv",
+                ph05,
+            ],
         ),
         (
             "create_si_fig_s25.py",
-            ["--output", str(Path(figures) / "SF25_csp_vs_distance_panels.png")],
+            ["--output-dir", str(Path(figures))],
         ),
         (
             "create_si_fig_s26.py",
-            ["--output", str(Path(figures) / "SF26_2FIN_case_study_z.png")],
+            [
+                "--outputs-dir",
+                outputs,
+                "--input",
+                confusion_csv,
+                "--output-image",
+                str(Path(figures) / "SF26_f1_vs_mcc.png"),
+                "--targets-csv",
+                ph05,
+            ],
         ),
         ("create_custom_selection_latex_tables.py", ["--figures-dir", figures]),
         (

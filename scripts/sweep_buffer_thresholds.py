@@ -43,7 +43,7 @@ import pandas as pd
 import seaborn as sns
 from matplotlib.axes import Axes
 
-# Default heatmap title size (pt); SI composite panel letters scale from this in create_si_fig_s16.
+# Default heatmap title size (pt); SI composite panel letters scale from this in create_si_fig_s20.
 SWEEP_HEATMAP_TITLE_FONTSIZE: float = 17.0
 
 _REPO = Path(__file__).resolve().parent.parent

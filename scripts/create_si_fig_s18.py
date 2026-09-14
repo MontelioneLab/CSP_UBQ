@@ -1,166 +1,40 @@
 #!/usr/bin/env python3
 """
-SI Fig. S18 — CSP significance threshold histogram.
+SI Fig. S18 — Case study panel for holo 2FIN / apo BMRB 6809.
 
-For each target, recomputes the **primary** HN significance cutoff from ``csp_A``
-using the same logic as the pipeline and README Methods: iterative outlier
-removal, then ``max(cleaned mean, 0.05 ppm)``
-(``_floor_primary_hn_cutoff``). Plots a histogram of these per-target cutoffs.
+Copies the precomputed case-study z panel into ``figures/SF18_2FIN_case_study_z.png``.
 
-Output: figures/SF18_significance_threshold.png
-
-By default only targets listed in CSP_UBQ_ph0.5_temp5C.csv are included; each row is
-resolved to ``outputs/<dir>`` via ``apo_bmrb`` (see ``scripts.target_resolution``).
-Override with --targets-csv.
+Default source: outputs/2FIN_6809/2FIN_case_study_z.png
 """
 
 from __future__ import annotations
 
 import argparse
-import statistics
+import shutil
 import sys
 from pathlib import Path
-from typing import List, Optional, Set
 
-import matplotlib.pyplot as plt
-import pandas as pd
-
-try:
-    from .config import thresholds
-    from .csp import _floor_primary_hn_cutoff, compute_threshold_with_outlier_removal
-    from .target_resolution import load_target_rows, resolve_target_rows
-except Exception:
-    import os as _os
-    import sys as _sys
-    _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
-    from scripts.config import thresholds
-    from scripts.csp import _floor_primary_hn_cutoff, compute_threshold_with_outlier_removal
-    from scripts.target_resolution import load_target_rows, resolve_target_rows
+_REPO = Path(__file__).resolve().parents[1]
+DEFAULT_SRC = _REPO / "outputs" / "2FIN_6809" / "2FIN_case_study_z.png"
+DEFAULT_OUT = _REPO / "figures" / "SF18_2FIN_case_study_z.png"
 
 
-def collect_thresholds(outputs_dir: Path, selected_dir_names: Optional[Set[str]]) -> List[tuple[str, float]]:
-    """Collect (target_name, threshold) for each target with valid csp_A data.
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--source", type=Path, default=DEFAULT_SRC)
+    ap.add_argument("--output", type=Path, default=DEFAULT_OUT)
+    args = ap.parse_args(argv)
 
-    ``selected_dir_names`` is the set of resolved ``outputs/<dir>`` basenames;
-    pass ``None`` to scan every subdirectory.
-    """
-    results: List[tuple[str, float]] = []
-
-    for alignment_path in sorted(outputs_dir.glob("*/master_alignment.csv")):
-        target_name = alignment_path.parent.name
-        if selected_dir_names is not None and target_name not in selected_dir_names:
-            continue
-        df = pd.read_csv(alignment_path)
-
-        if "csp_A" not in df.columns:
-            continue
-
-        csp_vals = pd.to_numeric(df["csp_A"], errors="coerce")
-        valid = csp_vals.notna()
-        values = csp_vals[valid].astype(float).tolist()
-
-        if len(values) < 2:
-            continue
-
-        info = compute_threshold_with_outlier_removal(
-            values,
-            outlier_z=thresholds.outlier_z_score,
-            significance_z=thresholds.significance_z_score,
-            max_iterations=thresholds.max_outlier_iterations,
-            max_outlier_fraction=thresholds.max_outlier_fraction,
-        )
-        # Primary pipeline / README cutoff: max(cleaned-mean path, 0.05 ppm).
-        results.append((target_name, _floor_primary_hn_cutoff(info.threshold)))
-
-    return results
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Create SI Fig. S18 (CSP significance threshold histogram)"
-    )
-    parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
-    parser.add_argument(
-        "--targets-csv",
-        type=Path,
-        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
-        help=(
-            "CSV with holo_pdb plus apo_bmrb/holo_bmrb (default: data/CSP_UBQ_ph0.5_temp5C.csv)."
-        ),
-    )
-    parser.add_argument("--output", type=Path, default=Path("figures") / "SF18_significance_threshold.png")
-    parser.add_argument("--bin-width", type=float, default=0.02)
-    parser.add_argument("--dpi", type=int, default=300)
-    parser.add_argument("--fig-width", type=float, default=8.0)
-    parser.add_argument("--fig-height", type=float, default=5.0)
-    args = parser.parse_args()
-
-    project_root = Path(__file__).resolve().parent.parent
-    outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
-    targets_csv = args.targets_csv
-    if not targets_csv.is_absolute():
-        targets_csv = project_root / targets_csv
-    output_path = args.output if args.output.is_absolute() else project_root / args.output
-
-    if not outputs_dir.exists():
-        print(f"Error: outputs directory does not exist: {outputs_dir}", file=sys.stderr)
+    src = args.source if args.source.is_absolute() else _REPO / args.source
+    out = args.output if args.output.is_absolute() else _REPO / args.output
+    if not src.is_file():
+        print(f"Error: missing 2FIN case-study panel: {src}", file=sys.stderr)
         return 1
-    if not targets_csv.exists():
-        print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
-        return 1
-
-    rows = load_target_rows(targets_csv)
-    selected = {p.name for p in resolve_target_rows(rows, outputs_dir)}
-    data = collect_thresholds(outputs_dir, selected)
-    if not data:
-        print("No threshold data found.", file=sys.stderr)
-        return 1
-
-    sorted_data = sorted(data, key=lambda x: x[1], reverse=True)
-    _, thresh_vals = zip(*sorted_data)
-    thresholds_list = list(thresh_vals)
-
-    print(f"Collected {len(thresholds_list)} thresholds")
-    print("\nHolo PDBs by decreasing significance threshold:")
-    for target, thresh in sorted_data:
-        print(f"  {target}: {thresh:.4f}")
-    mean_val = statistics.mean(thresholds_list)
-    median_val = statistics.median(thresholds_list)
-    print(f"  Min: {min(thresholds_list):.4f}")
-    print(f"  Max: {max(thresholds_list):.4f}")
-    print(f"  Mean: {mean_val:.4f}")
-    print(f"  Median: {median_val:.4f}")
-
-    bin_width = args.bin_width
-    t_min, t_max = min(thresholds_list), max(thresholds_list)
-    n_bins = max(1, int((t_max - t_min) / bin_width) + 1)
-    bins = [t_min + i * bin_width for i in range(n_bins + 1)]
-
-    plt.figure(figsize=(args.fig_width, args.fig_height))
-    plt.hist(
-        thresholds_list,
-        bins=bins,
-        edgecolor="black",
-        linewidth=0.8,
-    )
-    plt.axvline(mean_val, color="red", linestyle="--", linewidth=2, label=f"Mean: {mean_val:.4f}")
-    plt.axvline(median_val, color="blue", linestyle="--", linewidth=2, label=f"Median: {median_val:.4f}")
-    plt.xlabel("CSP significance threshold (ppm)")
-    plt.ylabel("Number of targets")
-    plt.title(
-        f"Primary CSP significance thresholds "
-        f"(max(cleaned mean, 0.05 ppm); $n={len(thresholds_list)}$)"
-    )
-    plt.legend()
-    plt.tight_layout()
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    plt.savefig(output_path, dpi=args.dpi)
-    plt.close()
-
-    print(f"SI Fig. S18 written to {output_path.resolve()}")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, out)
+    print(f"[SF18] Wrote {out} (from {src})")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

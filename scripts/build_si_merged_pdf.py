@@ -35,8 +35,10 @@ SUPPLEMENTARY_TEXT = "Supplementary Text.pdf"
 REFERENCES = "SI_C_term_references.pdf"
 MERGED = "SI merged.pdf"
 
-# Heuristic SF15 page index (0-based) in a prior C-term PDF when PNG is missing.
-DEFAULT_SF15_PAGE_INDEX = 6
+# Heuristic SF19 (PDB Advanced Search) page index (0-based) in a prior C-term PDF when PNG is missing.
+# C-term pages are S9–S18 then PDB as S19 (insert index 10).
+DEFAULT_SF19_PAGE_INDEX = 10
+DEFAULT_SF19_INSERT_INDEX = 10
 # N-term page 0 = title; page 1 = stale TOC (dropped); pages 2+ = narrative.
 N_TERM_TITLE_PAGES = 1
 N_TERM_DROP_AFTER_TITLE = 1
@@ -100,7 +102,7 @@ def _ensure_references_pdf(si_dir: Path, c_term_pdf: Path) -> Path:
     return refs
 
 
-def _extract_sf15_png_from_c_term(
+def _extract_sf19_png_from_c_term(
     c_term_pdf: Path,
     out_png: Path,
     page_index: int,
@@ -140,7 +142,7 @@ def _extract_sf15_png_from_c_term(
     page_text = (reader.pages[page_index].extract_text() or "").lower()
     if "advanced search" not in page_text and "pdb advanced" not in page_text:
         print(
-            "[SI PDF] SF15 PNG unavailable; prior C-term page "
+            "[SI PDF] SF19 PNG unavailable; prior C-term page "
             f"{page_index} is not a PDB Advanced Search page — not extracting."
         )
         return False
@@ -149,12 +151,12 @@ def _extract_sf15_png_from_c_term(
     tmp_pdf = out_png.with_suffix(".pdf")
     with tmp_pdf.open("wb") as f:
         writer.write(f)
-    print(f"[SI PDF] SF15 PNG unavailable; saved page PDF to {tmp_pdf}")
+    print(f"[SI PDF] SF19 PNG unavailable; saved page PDF to {tmp_pdf}")
     return False
 
 
 def _pdf_looks_like_pdb_search(path: Path) -> bool:
-    """True if a fallback SF15 PDF is actually the PDB Advanced Search page."""
+    """True if a fallback SF19 PDF is actually the PDB Advanced Search page."""
     try:
         from pypdf import PdfReader
     except ImportError:
@@ -177,41 +179,41 @@ def _build_c_term_pdf(
     si_dir: Path,
     figures_dir: Path,
     *,
-    sf15_page_index: int,
+    sf19_page_index: int,
 ) -> Path:
     from pypdf import PdfReader, PdfWriter
 
     existing_c = si_dir / C_TERM_OUT
     refs_pdf = _ensure_references_pdf(si_dir, existing_c)
 
-    sf15_png = figures_dir / "SF15_pdb_search.png"
-    sf15_pdf = figures_dir / "SF15_pdb_search.pdf"
-    if not sf15_png.is_file() and not sf15_pdf.is_file() and existing_c.is_file():
-        _extract_sf15_png_from_c_term(existing_c, sf15_png, sf15_page_index)
+    sf19_png = figures_dir / "SF19_pdb_search.png"
+    sf19_pdf = figures_dir / "SF19_pdb_search.pdf"
+    if not sf19_png.is_file() and not sf19_pdf.is_file() and existing_c.is_file():
+        _extract_sf19_png_from_c_term(existing_c, sf19_png, sf19_page_index)
 
     fig_pdf = _compile_tex(C_TERM_MASTER, tex_dir)
     writer = PdfWriter()
     for page in PdfReader(str(fig_pdf)).pages:
         writer.add_page(page)
 
-    if not sf15_png.is_file() and sf15_pdf.is_file() and _pdf_looks_like_pdb_search(sf15_pdf):
-        insert_at = min(6, len(writer.pages))
-        sf15_pages = PdfReader(str(sf15_pdf)).pages
+    if not sf19_png.is_file() and sf19_pdf.is_file() and _pdf_looks_like_pdb_search(sf19_pdf):
+        insert_at = min(DEFAULT_SF19_INSERT_INDEX, len(writer.pages))
+        sf19_pages = PdfReader(str(sf19_pdf)).pages
         pages = list(writer.pages)
         new_writer = PdfWriter()
         for i, page in enumerate(pages):
             if i == insert_at:
-                for sp in sf15_pages:
+                for sp in sf19_pages:
                     new_writer.add_page(sp)
             new_writer.add_page(page)
         if insert_at >= len(pages):
-            for sp in sf15_pages:
+            for sp in sf19_pages:
                 new_writer.add_page(sp)
         writer = new_writer
-    elif not sf15_png.is_file():
+    elif not sf19_png.is_file():
         print(
-            "[SI PDF] SF15 PDB-search PNG/PDF missing or not a PDB Advanced Search page; "
-            "skipping S15 splice (TOC still lists it)."
+            "[SI PDF] SF19 PDB-search PNG/PDF missing or not a PDB Advanced Search page; "
+            "skipping S19 splice (TOC still lists it)."
         )
 
     # Append dedicated references only (never re-append old SF19).
@@ -270,7 +272,7 @@ def build_si_merged(
     figures_dir: Path,
     si_dir: Path,
     tex_dir: Path,
-    sf15_page_index: int = DEFAULT_SF15_PAGE_INDEX,
+    sf19_page_index: int = DEFAULT_SF19_PAGE_INDEX,
     skip_c_term: bool = False,
     chunk_tables: bool = False,
 ) -> Path:
@@ -302,7 +304,7 @@ def build_si_merged(
             tex_dir,
             si_dir,
             figures_dir,
-            sf15_page_index=sf15_page_index,
+            sf19_page_index=sf19_page_index,
         )
 
     writer = PdfWriter()
@@ -340,10 +342,10 @@ def main() -> int:
     ap.add_argument("--si-dir", type=Path, default=None)
     ap.add_argument("--tex-dir", type=Path, default=None)
     ap.add_argument(
-        "--sf15-page-index",
+        "--sf19-page-index",
         type=int,
-        default=DEFAULT_SF15_PAGE_INDEX,
-        help="0-based page index of SF15 in a previous C-term PDF.",
+        default=DEFAULT_SF19_PAGE_INDEX,
+        help="0-based page index of SF19 (PDB Advanced Search) in a previous C-term PDF.",
     )
     ap.add_argument(
         "--skip-c-term",
@@ -370,7 +372,7 @@ def main() -> int:
             figures_dir=figures,
             si_dir=si_dir,
             tex_dir=tex_dir,
-            sf15_page_index=args.sf15_page_index,
+            sf19_page_index=args.sf19_page_index,
             skip_c_term=args.skip_c_term,
             chunk_tables=args.chunk_tables,
         )

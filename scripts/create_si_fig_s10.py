@@ -9,7 +9,7 @@ SI Fig. S10 — CA-inclusive CSP confusion matrix histograms (two-panel image).
 Output:
 - figures/SF10_ca_inclusive.png
 
-Target eligibility matches SI Fig. S11 / S15: CSV rows are resolved to
+Target eligibility matches SI Fig. S11 / S14: CSV rows are resolved to
 ``outputs/{HOLO}_{apo_bmrb}/``, then
 :func:`target_basenames_passing_ca_shift_coverage` keeps only targets whose
 ``1d_analysis.csv`` has both ``CA_apo`` and ``CA_holo`` on strictly more than
@@ -85,7 +85,7 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
         help=(
-            "Same as SI Fig. S11 / S15: require strictly more than this fraction of "
+            "Same as SI Fig. S11 / S14: require strictly more than this fraction of "
             "1d_analysis.csv rows with both CA_apo and CA_holo (default: %(default)s)."
         ),
     )

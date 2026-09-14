@@ -50,18 +50,18 @@ Optional: `--stop-on-error` exits on the first failing sub-script (default: cont
 | S12 | `scripts/create_si_fig_s12.py` |
 | S13 | `scripts/create_si_fig_s13.py` |
 | S14 | `scripts/create_si_fig_s14.py` |
-| S15 | `scripts/create_si_fig_s15.py` (static PDB search screenshot) |
-| S16 | `scripts/create_si_fig_s16.py` |
-| S17 | `scripts/create_si_fig_s17.py` |
-| S18 | `scripts/create_si_fig_s18.py` |
-| S19 | `scripts/create_si_fig_s19.py` |
-| S20 | `scripts/create_si_fig_s20.py` |
-| S21 | `scripts/create_si_fig_s21.py` |
-| S22 | `scripts/create_si_fig_s22.py` |
-| S23 | `scripts/create_si_fig_s23.py` |
-| S24 | `scripts/create_si_fig_s24.py` |
-| S25 | `scripts/create_si_fig_s25.py` |
-| S26 | `scripts/create_si_fig_s26.py` (2FIN case-study z panel) |
+| S15 | `scripts/create_si_fig_s15.py` (FP/(TP+FP) distributions) |
+| S16 | `scripts/create_si_fig_s16.py` (same-author Figure 3) |
+| S17 | `scripts/create_si_fig_s17.py` (CSP vs distance panels) |
+| S18 | `scripts/create_si_fig_s18.py` (2FIN case-study z panel) |
+| S19 | `scripts/create_si_fig_s19.py` (static PDB search screenshot) |
+| S20 | `scripts/create_si_fig_s20.py` (buffer threshold sweep) |
+| S21 | `scripts/create_si_fig_s21.py` (ideal N/H and HA/CA offsets) |
+| S22 | `scripts/create_si_fig_s22.py` (terminal-anchor vs global offsets) |
+| S23 | `scripts/create_si_fig_s23.py` (CSP significance threshold histogram) |
+| S24 | `scripts/create_si_fig_s24.py` (Figure 3 alternate thresholds) |
+| S25 | `scripts/create_si_fig_s25.py` (apo–apo controls S25A–E) |
+| S26 | `scripts/create_si_fig_s26.py` (F1 vs MCC) |
 
 The wrapper invokes each of these in order before compiling/merging the SI PDF.
 
@@ -88,34 +88,37 @@ cd SI_documents/tex && latexmk -pdf -interaction=nonstopmode main.tex
 `SI N term.pdf` title page is kept; its stale TOC page is replaced by a compiled
 `SI_documents/tex/si_toc.tex` listing Tables S1–S9, Figs S1–S26, and Equations S1–S3.
 `SI_documents/Supplementary Text.pdf` is inserted immediately after that TOC.
-The C term is rebuilt from regenerated SF9–SF26 (and SE1–SE3) figures. SF15 is
-included only when `figures/SF15_pdb_search.png` (or a real PDB-search PDF) is
+The C term is rebuilt from regenerated SF9–SF26 (and SE1–SE3) figures. SF19 is
+included only when `figures/SF19_pdb_search.png` (or a real PDB-search PDF) is
 present. References are appended from
 `SI_documents/SI_C_term_references.pdf` only (not the last N pages of a prior C-term,
-which previously re-introduced a duplicate SF18).
+which previously re-introduced a duplicate PDB-search page).
 
 SI Fig. S9 uses the pH/temp-matched subset that also has apo and holo HA and CA
 shifts (`csp_table_HA_CA.csv`; $n=101$ on the current outputs tree).
-Analysis figures S10, S11, S14, and S17–S20 default to
-`data/CSP_UBQ_ph0.5_temp5C.csv`. SI Fig. S18 uses the primary cutoff
-`max(cleaned mean, 0.05 ppm)` on that list ($n=135$ with pipeline outputs;
-mean $0.0804$ ppm, matching README Methods). S12/S13 use the rematch-excluded
-pH/temp-matched list (`ph05_n137_targets.csv`, $n=136`).
-SI Fig. S23 uses the five selected apo–apo control panels
-`figures/SF23{A–E}_apo_apo_*.png`
+Analysis figures S10, S11, S14, S21, S23–S24, and S26 default to
+`data/CSP_UBQ_ph0.5_temp5C.csv`. SI Fig. S16 uses
+`data/CSP_UBQ_ph0.5_temp5C_same_author_list.csv` ($n=32$ with pipeline outputs).
+SI Fig. S23 uses the primary cutoff
+`max(cleaned mean, 0.05 ppm)` on the pH/temp-matched list ($n=135$ with pipeline
+outputs; mean $0.0804$ ppm, matching README Methods). S12/S13 use the rematch-excluded
+pH/temp-matched list (`ph05_n137_targets.csv`, $n=136$).
+SI Fig. S17 is composed by `scripts/create_si_fig_s17_csp_vs_distance.py` from
+`p_significant_vs_ca_distance_ph05.png` (panel a) and the atom–atom
+`max(0.05 ppm, cleaned mean)` CSP-$z$ scatter (panel b; bottom-left of the
+CA vs any-atom $2\times 2$). Both source panels use
+`data/CSP_UBQ_ph0.5_temp5C.csv` resolved to pipeline outputs ($n=135$).
+SI Fig. S18 copies the case-study z panel from
+`outputs/2FIN_6809/2FIN_case_study_z.png`.
+SI Fig. S22 uses the precomputed terminal-anchor vs global-offset panel
+`figures/SF22_terminal_anchor_vs_global.png`
+(source: `outputs/hsqc_overlay_anchor_vs_global_all.png`).
+SI Fig. S25 uses the five selected apo–apo control panels
+`figures/SF25{A–E}_apo_apo_*.png`
 (sources: `figures/selected_apo_apo_controls/{query}_{match}.png`,
 falling back to
 `outputs/apo_apo_matches/{query}_{match}/aggregate_csp_hsqc_grid.png`).
 Panels: A 52080/52079, B 28070/28071, C 34000/34001, D 34394/6354, E 17769/51725.
-SI Fig. S24 uses the precomputed terminal-anchor vs global-offset panel
-`figures/SF24_terminal_anchor_vs_global.png`
-(source: `outputs/hsqc_overlay_anchor_vs_global_all.png`).
-SI Fig. S25 is composed by `scripts/create_si_fig_s25_csp_vs_distance.py` from
-`p_significant_vs_ca_distance_ph05.png` (panel a) and the atom–atom
-`max(0.05 ppm, cleaned mean)` CSP-$z$ scatter (panel b; bottom-left of the
-CA vs any-atom $2\times 2$).
-SI Fig. S26 copies the case-study z panel from
-`outputs/2FIN_6809/2FIN_case_study_z.png`.
 
 ## CLI options
 
@@ -130,8 +133,8 @@ SI Fig. S26 copies the case-study z panel from
 - PyMOL is not required by the wrapper itself, but some upstream artifacts it depends on may require PyMOL during their own generation.
 - CSV-path behavior is mixed by design in the current wrapper:
   - `create_si_table_s1.py` always uses `data/CSP_UBQ_ph0.5_temp5C.csv` (the wrapper does not forward `--csv` to this script).
-  - `create_si_fig_s16.py` regenerates `outputs/buffer_threshold_sweep/sweep_metrics.csv` plus the `heatmap_n.png` and `heatmap_pct_allosteric.png` panel assets before composing `figures/SF16_buffer_sweep.png`.
-  - `create_si_fig_s19.py` receives `--outputs-dir`, `--input` (`<outputs-dir>/confusion_matrix_per_system.csv`), and `--output-image`.
+  - `create_si_fig_s20.py` regenerates `outputs/buffer_threshold_sweep/sweep_metrics.csv` plus the `heatmap_n.png` and `heatmap_pct_allosteric.png` panel assets before composing `figures/SF20_buffer_sweep.png`.
+  - `create_si_fig_s26.py` receives `--outputs-dir`, `--input` (`<outputs-dir>/confusion_matrix_per_system.csv`), and `--output-image`.
   - `create_custom_selection_latex_tables.py` reads `data/targets_*.csv` (hydrolases through ubiquitin) joined to `data/CSP_UBQ_ph0.5_temp5C.csv`.
 - Rebuild only the merged PDF (after figures/tables already exist):
 

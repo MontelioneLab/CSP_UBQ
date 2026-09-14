@@ -1,74 +1,59 @@
 #!/usr/bin/env python3
 """
-SI Fig. S24 — Terminal-anchor vs global offsets (HSQC overlays + CSP bars).
+SI Fig. S24 — Figure 3-style CA-distance histograms under alternate CSP thresholds.
 
-By default copies the precomputed four-target panel into
-``figures/SF24_terminal_anchor_vs_global.png``.
-
-Default source:
-  outputs/hsqc_overlay_anchor_vs_global_all.png
-
-Pass ``--regenerate`` to rebuild via ``scripts/compare_terminal_anchor_offsets.py``
-(requires matching per-target outputs under ``--outputs``).
+Thin wrapper around ``create_fig_3_thresholds.py`` with SI defaults
+(``data/CSP_UBQ_ph0.5_temp5C.csv`` → ``figures/SF24_figure_3_thresholds.png``).
 """
 
 from __future__ import annotations
 
 import argparse
-import shutil
-import subprocess
 import sys
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
-DEFAULT_SRC = (
-    _REPO / "outputs" / "hsqc_overlay_anchor_vs_global_all.png"
-)
-DEFAULT_OUT = _REPO / "figures" / "SF24_terminal_anchor_vs_global.png"
-DEFAULT_OUTPUTS = _REPO / "outputs"
+if str(_REPO) not in sys.path:
+    sys.path.insert(0, str(_REPO))
+
+from scripts import create_fig_3_thresholds as _impl  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Rebuild argv so create_fig_3_thresholds sees SI defaults when omitted.
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--source", type=Path, default=DEFAULT_SRC)
-    ap.add_argument("--output", type=Path, default=DEFAULT_OUT)
+    ap.add_argument("--outputs-dir", type=Path, default=_REPO / "outputs")
+    ap.add_argument("--figures-dir", type=Path, default=_REPO / "figures")
     ap.add_argument(
-        "--regenerate",
-        action="store_true",
-        help="Run compare_terminal_anchor_offsets.py before copying.",
-    )
-    ap.add_argument(
-        "--outputs",
+        "--targets-csv",
         type=Path,
-        default=DEFAULT_OUTPUTS,
-        help="Per-target root for --regenerate (default: outputs).",
+        default=_REPO / "data" / "CSP_UBQ_ph0.5_temp5C.csv",
     )
-    args = ap.parse_args(argv)
+    ap.add_argument(
+        "--output",
+        type=Path,
+        default=_REPO / "figures" / "SF24_figure_3_thresholds.png",
+    )
+    # Forward unknown flags to the underlying script.
+    args, rest = ap.parse_known_args(argv)
 
-    src = args.source if args.source.is_absolute() else _REPO / args.source
+    outputs = args.outputs_dir if args.outputs_dir.is_absolute() else _REPO / args.outputs_dir
+    figures = args.figures_dir if args.figures_dir.is_absolute() else _REPO / args.figures_dir
+    targets = args.targets_csv if args.targets_csv.is_absolute() else _REPO / args.targets_csv
     out = args.output if args.output.is_absolute() else _REPO / args.output
-    outputs = args.outputs if args.outputs.is_absolute() else _REPO / args.outputs
 
-    if args.regenerate:
-        cmd = [
-            sys.executable,
-            str(_REPO / "scripts" / "compare_terminal_anchor_offsets.py"),
-            "--outputs",
-            str(outputs),
-        ]
-        print(f"[SF23] Regenerating via: {' '.join(cmd)}")
-        r = subprocess.run(cmd, cwd=str(_REPO))
-        if r.returncode != 0:
-            return r.returncode
-        src = outputs / "hsqc_overlay_anchor_vs_global_all.png"
-
-    if not src.is_file():
-        print(f"Error: missing terminal-anchor panel: {src}", file=sys.stderr)
-        return 1
-    out.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(src, out)
-    print(f"[SF23] Wrote {out} (from {src})")
-    return 0
+    forwarded = [
+        "--outputs-dir",
+        str(outputs),
+        "--figures-dir",
+        str(figures),
+        "--targets-csv",
+        str(targets),
+        "--output",
+        str(out),
+        *rest,
+    ]
+    return int(_impl.main(forwarded))
 
 
 if __name__ == "__main__":

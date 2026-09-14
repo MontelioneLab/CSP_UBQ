@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-SI Fig. S14 — Per-target **F1 scores** for 1D H / N / Cα CSPs (boxplots + paired Wilcoxon).
+SI Fig. S14 — Per-target **F1 scores** for 1D H / N / Cα / Hα CSPs
+(boxplots + paired Wilcoxon).
 
-Hα is omitted so the paired cohort matches the CA–shift coverage gate (with
-default ``data/CSP_UBQ_ph0.5_temp5C.csv`` and default ``--min-ca-coverage``), without
-requiring an Hα F1 for every target. Implements SI Fig. S14 via
-:func:`run_f1_1d_boxplot` in ``create_si_fig_f1_1d_boxplot`` with
-:data:`SF14_ATOM_ORDER`.
+The paired cohort is the intersection of targets that yield a valid F1 for
+every atom in :data:`SF14_ATOM_ORDER` (H/N/CA/HA) after the CA–shift coverage
+gate (default ``data/CSP_UBQ_ph0.5_temp5C.csv`` and ``--min-ca-coverage``), so
+*n* is the HA/CA-complete subset (expected 101). Implements SI Fig. S14 via
+:func:`run_f1_1d_boxplot` in ``create_si_fig_f1_1d_boxplot``.
 
 Older versions of this script incorrectly plotted summarized **|1D CSP|**
 magnitudes on the *y*-axis rather than classifier **F1** scores derived from the
@@ -46,7 +47,7 @@ except Exception:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="SI Fig. S15: 1D H/N/Cα F1 score boxplots with paired Wilcoxon (Holm-adjusted)."
+        description="SI Fig. S14: 1D H/N/Cα/Hα F1 score boxplots with paired Wilcoxon (Holm-adjusted)."
     )
     parser.add_argument(
         "--outputs-dir",

@@ -8,8 +8,8 @@ and optionally HA CSPs are computed (reusing :func:`collect_1d_f1_results` from
 :mod:`analyze_targets_single_atom_shifts`). Targets are gated by CA row
 coverage (:func:`target_basenames_passing_ca_shift_coverage`, same rule as SI
 Fig. S11 / S12). The plot uses the intersection of targets that yield a valid
-F1 for every atom in the chosen ``atom_order`` (SI Fig. S14 uses H/N/CA only so
-*n* matches the CA-gated cohort without requiring HA F1).
+F1 for every atom in the chosen ``atom_order`` (SI Fig. S14 uses H/N/CA/HA, so
+*n* is the HA/CA-complete paired subset).
 
 Inter-group comparisons use paired Wilcoxon signed-rank tests for all
 unordered atom pairs, with Holm-Bonferroni–adjusted *p*-values overlaid on the
@@ -60,8 +60,8 @@ ATOM_COLORS = {
 
 _VALID_ATOMS = frozenset(ATOM_ORDER)
 
-# SI Fig. S15: N/H/Cα only (same CA gate as S11/S12; omit Hα so n matches CA cohort).
-SF14_ATOM_ORDER: Tuple[str, ...] = ("H", "N", "CA")
+# SI Fig. S14: H/N/Cα/Hα (paired subset; n drops vs the CA-only H/N/CA gate).
+SF14_ATOM_ORDER: Tuple[str, ...] = ("H", "N", "CA", "HA")
 
 
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
@@ -245,7 +245,9 @@ def _render_boxplot(
     positions = list(_atom_positions(atom_order).values())
 
     fig_w = 6.0 + 0.7 * (len(atom_order) - 3)
-    fig, ax = plt.subplots(figsize=(fig_w, 6.5))
+    n_pairs = len(atom_order) * (len(atom_order) - 1) // 2
+    fig_h = 6.5 + 0.35 * max(0, n_pairs - 3)
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
 
     bp = ax.boxplot(
         data_for_plot,
@@ -290,7 +292,9 @@ def _render_boxplot(
         pad=28,
     )
     ax.grid(axis="y", alpha=0.3, linestyle="--")
-    ax.set_ylim(0.0, 1.0)
+    n_pairs = len(atom_order) * (len(atom_order) - 1) // 2
+    y_top = 1.0 if n_pairs <= 3 else 1.02 + n_pairs * 0.042
+    ax.set_ylim(0.0, y_top)
 
     _annotate_significance(ax, stats_df, atom_order)
 
@@ -305,11 +309,17 @@ def _annotate_significance(
     stats_df: pd.DataFrame,
     atom_order: Tuple[str, ...],
 ) -> None:
-    """Draw stacked significance bars over the boxes (within y in [0, 1])."""
+    """Draw stacked significance bars over the boxes."""
     pos = _atom_positions(atom_order)
-    base_y = 0.68
-    step = 0.04
+    n_pairs = len(list(combinations(atom_order, 2)))
+    if n_pairs <= 3:
+        base_y = 0.68
+        step = 0.04
+    else:
+        base_y = 1.02
+        step = 0.038
     bar_height = 0.012
+    font_size = 9 if n_pairs <= 3 else 8
 
     pairs_all = list(combinations(atom_order, 2))
     ordering = sorted(
@@ -344,7 +354,7 @@ def _annotate_significance(
             annotation,
             ha="center",
             va="bottom",
-            fontsize=9,
+            fontsize=font_size,
             clip_on=False,
         )
 

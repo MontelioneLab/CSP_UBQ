@@ -1,92 +1,166 @@
 #!/usr/bin/env python3
 """
-SI Fig. S23 — Five selected apo–apo control panels (S23A–S23E).
+SI Fig. S23 — CSP significance threshold histogram.
 
-Copies the precomputed aggregate figures into ``figures/SF23{A–E}_*.png``.
+For each target, recomputes the **primary** HN significance cutoff from ``csp_A``
+using the same logic as the pipeline and README Methods: iterative outlier
+removal, then ``max(cleaned mean, 0.05 ppm)``
+(``_floor_primary_hn_cutoff``). Plots a histogram of these per-target cutoffs.
 
-Default sources (in order):
-  figures/selected_apo_apo_controls/{query}_{match}.png
-  else outputs/apo_apo_matches/{query}_{match}/aggregate_csp_hsqc_grid.png
+Output: figures/SF23_significance_threshold.png
+
+By default only targets listed in CSP_UBQ_ph0.5_temp5C.csv are included; each row is
+resolved to ``outputs/<dir>`` via ``apo_bmrb`` (see ``scripts.target_resolution``).
+Override with --targets-csv.
 """
 
 from __future__ import annotations
 
 import argparse
-import shutil
+import statistics
 import sys
 from pathlib import Path
+from typing import List, Optional, Set
 
-_REPO = Path(__file__).resolve().parents[1]
-DEFAULT_SELECTED = _REPO / "figures" / "selected_apo_apo_controls"
-DEFAULT_PAIRS_ROOT = _REPO / "outputs" / "apo_apo_matches"
-DEFAULT_OUT_DIR = _REPO / "figures"
+import matplotlib.pyplot as plt
+import pandas as pd
 
-# Curated order used by compose_apo_apo_aggregate_grid.py
-PANELS: tuple[tuple[str, str], ...] = (
-    ("A", "52080_52079"),
-    ("B", "28070_28071"),
-    ("C", "34000_34001"),
-    ("D", "34394_6354"),
-    ("E", "17769_51725"),
-)
-
-
-def _source_for_pair(pair_id: str, selected_dir: Path, pairs_root: Path) -> Path:
-    selected = selected_dir / f"{pair_id}.png"
-    if selected.is_file():
-        return selected
-    aggregate = pairs_root / pair_id / "aggregate_csp_hsqc_grid.png"
-    if aggregate.is_file():
-        return aggregate
-    raise FileNotFoundError(
-        f"Missing apo–apo panel for {pair_id}: tried {selected} and {aggregate}"
-    )
+try:
+    from .config import thresholds
+    from .csp import _floor_primary_hn_cutoff, compute_threshold_with_outlier_removal
+    from .target_resolution import load_target_rows, resolve_target_rows
+except Exception:
+    import os as _os
+    import sys as _sys
+    _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
+    from scripts.config import thresholds
+    from scripts.csp import _floor_primary_hn_cutoff, compute_threshold_with_outlier_removal
+    from scripts.target_resolution import load_target_rows, resolve_target_rows
 
 
-def _output_name(letter: str, pair_id: str) -> str:
-    return f"SF23{letter}_apo_apo_{pair_id}.png"
+def collect_thresholds(outputs_dir: Path, selected_dir_names: Optional[Set[str]]) -> List[tuple[str, float]]:
+    """Collect (target_name, threshold) for each target with valid csp_A data.
 
+    ``selected_dir_names`` is the set of resolved ``outputs/<dir>`` basenames;
+    pass ``None`` to scan every subdirectory.
+    """
+    results: List[tuple[str, float]] = []
 
-def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument(
-        "--selected-dir",
-        type=Path,
-        default=DEFAULT_SELECTED,
-        help="Directory of selected pair PNGs (default: figures/selected_apo_apo_controls).",
-    )
-    ap.add_argument(
-        "--pairs-root",
-        type=Path,
-        default=DEFAULT_PAIRS_ROOT,
-        help="Fallback root of apo–apo pair directories.",
-    )
-    ap.add_argument(
-        "--output-dir",
-        type=Path,
-        default=DEFAULT_OUT_DIR,
-        help="Destination directory for SF23A–E PNGs (default: figures).",
-    )
-    args = ap.parse_args(argv)
-
-    selected_dir = args.selected_dir if args.selected_dir.is_absolute() else _REPO / args.selected_dir
-    pairs_root = args.pairs_root if args.pairs_root.is_absolute() else _REPO / args.pairs_root
-    out_dir = args.output_dir if args.output_dir.is_absolute() else _REPO / args.output_dir
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    failed = 0
-    for letter, pair_id in PANELS:
-        try:
-            src = _source_for_pair(pair_id, selected_dir, pairs_root)
-        except FileNotFoundError as exc:
-            print(f"Error: {exc}", file=sys.stderr)
-            failed += 1
+    for alignment_path in sorted(outputs_dir.glob("*/master_alignment.csv")):
+        target_name = alignment_path.parent.name
+        if selected_dir_names is not None and target_name not in selected_dir_names:
             continue
-        out = out_dir / _output_name(letter, pair_id)
-        shutil.copy2(src, out)
-        print(f"[SF23{letter}] Wrote {out} (from {src})")
-    return 1 if failed else 0
+        df = pd.read_csv(alignment_path)
+
+        if "csp_A" not in df.columns:
+            continue
+
+        csp_vals = pd.to_numeric(df["csp_A"], errors="coerce")
+        valid = csp_vals.notna()
+        values = csp_vals[valid].astype(float).tolist()
+
+        if len(values) < 2:
+            continue
+
+        info = compute_threshold_with_outlier_removal(
+            values,
+            outlier_z=thresholds.outlier_z_score,
+            significance_z=thresholds.significance_z_score,
+            max_iterations=thresholds.max_outlier_iterations,
+            max_outlier_fraction=thresholds.max_outlier_fraction,
+        )
+        # Primary pipeline / README cutoff: max(cleaned-mean path, 0.05 ppm).
+        results.append((target_name, _floor_primary_hn_cutoff(info.threshold)))
+
+    return results
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Create SI Fig. S23 (CSP significance threshold histogram)"
+    )
+    parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
+    parser.add_argument(
+        "--targets-csv",
+        type=Path,
+        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
+        help=(
+            "CSV with holo_pdb plus apo_bmrb/holo_bmrb (default: data/CSP_UBQ_ph0.5_temp5C.csv)."
+        ),
+    )
+    parser.add_argument("--output", type=Path, default=Path("figures") / "SF23_significance_threshold.png")
+    parser.add_argument("--bin-width", type=float, default=0.02)
+    parser.add_argument("--dpi", type=int, default=300)
+    parser.add_argument("--fig-width", type=float, default=8.0)
+    parser.add_argument("--fig-height", type=float, default=5.0)
+    args = parser.parse_args()
+
+    project_root = Path(__file__).resolve().parent.parent
+    outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
+    targets_csv = args.targets_csv
+    if not targets_csv.is_absolute():
+        targets_csv = project_root / targets_csv
+    output_path = args.output if args.output.is_absolute() else project_root / args.output
+
+    if not outputs_dir.exists():
+        print(f"Error: outputs directory does not exist: {outputs_dir}", file=sys.stderr)
+        return 1
+    if not targets_csv.exists():
+        print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
+        return 1
+
+    rows = load_target_rows(targets_csv)
+    selected = {p.name for p in resolve_target_rows(rows, outputs_dir)}
+    data = collect_thresholds(outputs_dir, selected)
+    if not data:
+        print("No threshold data found.", file=sys.stderr)
+        return 1
+
+    sorted_data = sorted(data, key=lambda x: x[1], reverse=True)
+    _, thresh_vals = zip(*sorted_data)
+    thresholds_list = list(thresh_vals)
+
+    print(f"Collected {len(thresholds_list)} thresholds")
+    print("\nHolo PDBs by decreasing significance threshold:")
+    for target, thresh in sorted_data:
+        print(f"  {target}: {thresh:.4f}")
+    mean_val = statistics.mean(thresholds_list)
+    median_val = statistics.median(thresholds_list)
+    print(f"  Min: {min(thresholds_list):.4f}")
+    print(f"  Max: {max(thresholds_list):.4f}")
+    print(f"  Mean: {mean_val:.4f}")
+    print(f"  Median: {median_val:.4f}")
+
+    bin_width = args.bin_width
+    t_min, t_max = min(thresholds_list), max(thresholds_list)
+    n_bins = max(1, int((t_max - t_min) / bin_width) + 1)
+    bins = [t_min + i * bin_width for i in range(n_bins + 1)]
+
+    plt.figure(figsize=(args.fig_width, args.fig_height))
+    plt.hist(
+        thresholds_list,
+        bins=bins,
+        edgecolor="black",
+        linewidth=0.8,
+    )
+    plt.axvline(mean_val, color="red", linestyle="--", linewidth=2, label=f"Mean: {mean_val:.4f}")
+    plt.axvline(median_val, color="blue", linestyle="--", linewidth=2, label=f"Median: {median_val:.4f}")
+    plt.xlabel("CSP significance threshold (ppm)")
+    plt.ylabel("Number of targets")
+    plt.title(
+        f"Primary CSP significance thresholds "
+        f"(max(cleaned mean, 0.05 ppm); $n={len(thresholds_list)}$)"
+    )
+    plt.legend()
+    plt.tight_layout()
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=args.dpi)
+    plt.close()
+
+    print(f"SI Fig. S23 written to {output_path.resolve()}")
+    return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())

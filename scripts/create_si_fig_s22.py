@@ -1,66 +1,74 @@
 #!/usr/bin/env python3
 """
-SI Fig. S22 — Figure 3 histograms for the same-author/same-study subset.
+SI Fig. S22 — Terminal-anchor vs global offsets (HSQC overlays + CSP bars).
 
-Thin wrapper around ``create_fig_3.py`` with SI defaults
-(``data/CSP_UBQ_ph0.5_temp5C_same_author_list.csv`` → SF23 combined PNG).
+By default copies the precomputed four-target panel into
+``figures/SF22_terminal_anchor_vs_global.png``.
+
+Default source:
+  outputs/hsqc_overlay_anchor_vs_global_all.png
+
+Pass ``--regenerate`` to rebuild via ``scripts/compare_terminal_anchor_offsets.py``
+(requires matching per-target outputs under ``--outputs``).
 """
 
 from __future__ import annotations
 
 import argparse
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[1]
-if str(_REPO) not in sys.path:
-    sys.path.insert(0, str(_REPO))
-
-from scripts import create_fig_3 as _impl  # noqa: E402
+DEFAULT_SRC = (
+    _REPO / "outputs" / "hsqc_overlay_anchor_vs_global_all.png"
+)
+DEFAULT_OUT = _REPO / "figures" / "SF22_terminal_anchor_vs_global.png"
+DEFAULT_OUTPUTS = _REPO / "outputs"
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--outputs-dir", type=Path, default=_REPO / "outputs")
+    ap.add_argument("--source", type=Path, default=DEFAULT_SRC)
+    ap.add_argument("--output", type=Path, default=DEFAULT_OUT)
     ap.add_argument(
-        "--targets-csv",
-        type=Path,
-        default=_REPO / "data" / "CSP_UBQ_ph0.5_temp5C_same_author_list.csv",
+        "--regenerate",
+        action="store_true",
+        help="Run compare_terminal_anchor_offsets.py before copying.",
     )
     ap.add_argument(
-        "--output-a",
+        "--outputs",
         type=Path,
-        default=_REPO / "figures" / "figure_3_a_same_author_list.png",
+        default=DEFAULT_OUTPUTS,
+        help="Per-target root for --regenerate (default: outputs).",
     )
-    ap.add_argument(
-        "--output-b",
-        type=Path,
-        default=_REPO / "figures" / "figure_3_b_same_author_list.png",
-    )
-    ap.add_argument(
-        "--output-combined",
-        type=Path,
-        default=_REPO / "figures" / "SF22_figure_3_combined_same_author_list.png",
-    )
-    args, rest = ap.parse_known_args(argv)
+    args = ap.parse_args(argv)
 
-    def _abs(p: Path) -> Path:
-        return p if p.is_absolute() else _REPO / p
+    src = args.source if args.source.is_absolute() else _REPO / args.source
+    out = args.output if args.output.is_absolute() else _REPO / args.output
+    outputs = args.outputs if args.outputs.is_absolute() else _REPO / args.outputs
 
-    forwarded = [
-        "--outputs-dir",
-        str(_abs(args.outputs_dir)),
-        "--targets-csv",
-        str(_abs(args.targets_csv)),
-        "--output-a",
-        str(_abs(args.output_a)),
-        "--output-b",
-        str(_abs(args.output_b)),
-        "--output-combined",
-        str(_abs(args.output_combined)),
-        *rest,
-    ]
-    return int(_impl.main(forwarded))
+    if args.regenerate:
+        cmd = [
+            sys.executable,
+            str(_REPO / "scripts" / "compare_terminal_anchor_offsets.py"),
+            "--outputs",
+            str(outputs),
+        ]
+        print(f"[SF22] Regenerating via: {' '.join(cmd)}")
+        r = subprocess.run(cmd, cwd=str(_REPO))
+        if r.returncode != 0:
+            return r.returncode
+        src = outputs / "hsqc_overlay_anchor_vs_global_all.png"
+
+    if not src.is_file():
+        print(f"Error: missing terminal-anchor panel: {src}", file=sys.stderr)
+        return 1
+    out.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, out)
+    print(f"[SF22] Wrote {out} (from {src})")
+    return 0
 
 
 if __name__ == "__main__":

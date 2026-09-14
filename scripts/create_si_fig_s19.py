@@ -1,95 +1,81 @@
 #!/usr/bin/env python3
 """
-SI Fig. S19 — F1 vs MCC scatterplot.
+SI Fig. S19 — PDB Advanced Search interface screenshot.
 
-Reuses existing logic from scripts/plot_f1_vs_mcc.py and writes:
-  ./figures/SF19_f1_vs_mcc.png
+Static asset. Installs/verifies ``figures/SF19_pdb_search.png`` (preferred) or
+leaves ``figures/SF19_pdb_search.pdf`` for ``build_si_merged_pdf.py`` to splice.
 
-By default only systems whose ``system_id`` matches a resolved ``outputs/<dir>``
-basename from ``--targets-csv`` rows (``apo_bmrb``/``holo_bmrb`` congruence with
-``master_alignment.csv``; see ``scripts.target_resolution``) are plotted.
-Override with --targets-csv / --outputs-dir.
+Usage:
+  python scripts/create_si_fig_s19.py
+  python scripts/create_si_fig_s19.py --source path/to/screenshot.png
 """
 
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 from pathlib import Path
 
-try:
-    from .plot_f1_vs_mcc import load_f1_mcc, plot_f1_vs_mcc
-    from .target_resolution import load_target_rows, resolve_target_rows
-except Exception:
-    project_root = Path(__file__).resolve().parent.parent
-    if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))
-    from scripts.plot_f1_vs_mcc import load_f1_mcc, plot_f1_vs_mcc  # type: ignore
-    from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
+_REPO = Path(__file__).resolve().parents[1]
+DEFAULT_PNG = _REPO / "figures" / "SF19_pdb_search.png"
+DEFAULT_PDF = _REPO / "figures" / "SF19_pdb_search.pdf"
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Create SI Fig. S19 (F1 vs MCC scatter plot)."
-    )
-    parser.add_argument(
-        "--input",
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--figures-dir",
         type=Path,
-        default=Path("outputs") / "confusion_matrix_per_system.csv",
-        help="Path to confusion_matrix_per_system.csv.",
+        default=_REPO / "figures",
+        help="Figures directory (default: figures/).",
     )
-    parser.add_argument(
-        "--outputs-dir",
+    ap.add_argument(
+        "--source",
         type=Path,
-        default=Path("outputs"),
-        help="Root outputs directory used to resolve targets-csv rows to system_id (default: outputs).",
+        default=None,
+        help="Optional PNG/PDF to copy into figures/ as SF19_pdb_search.*",
     )
-    parser.add_argument(
-        "--targets-csv",
-        type=Path,
-        default=Path("data/CSP_UBQ_ph0.5_temp5C.csv"),
-        help=(
-            "CSV with holo_pdb plus apo_bmrb/holo_bmrb to filter system_id rows "
-            "(default: data/CSP_UBQ_ph0.5_temp5C.csv)."
-        ),
+    ap.add_argument(
+        "--require-png",
+        action="store_true",
+        help="Fail if SF19_pdb_search.png is missing (default: PNG or PDF is OK).",
     )
-    parser.add_argument(
-        "--output-image",
-        type=Path,
-        default=Path("figures") / "SF19_f1_vs_mcc.png",
-        help="Destination for SI Fig. S19 image.",
+    args = ap.parse_args(argv)
+
+    figures = args.figures_dir if args.figures_dir.is_absolute() else _REPO / args.figures_dir
+    figures.mkdir(parents=True, exist_ok=True)
+    png = figures / "SF19_pdb_search.png"
+    pdf = figures / "SF19_pdb_search.pdf"
+
+    if args.source is not None:
+        src = args.source if args.source.is_absolute() else _REPO / args.source
+        if not src.is_file():
+            print(f"Error: --source not found: {src}", file=sys.stderr)
+            return 1
+        dest = png if src.suffix.lower() == ".png" else pdf if src.suffix.lower() == ".pdf" else png
+        if src.suffix.lower() not in {".png", ".pdf"}:
+            dest = png
+        shutil.copy2(src, dest)
+        print(f"[SF19] Installed {dest}")
+
+    if png.is_file():
+        print(f"[SF19] OK: {png}")
+        return 0
+    if pdf.is_file() and not args.require_png:
+        print(
+            f"[SF19] PNG missing; PDF present at {pdf}. "
+            "build_si_merged_pdf.py will insert this page.",
+            file=sys.stderr,
+        )
+        return 0
+
+    print(
+        "Error: SI Fig. S19 asset missing. Provide figures/SF19_pdb_search.png "
+        "(or .pdf) or pass --source.",
+        file=sys.stderr,
     )
-    return parser.parse_args()
-
-
-def main() -> int:
-    args = parse_args()
-    project_root = Path(__file__).resolve().parent.parent
-
-    input_csv = args.input if args.input.is_absolute() else project_root / args.input
-    output_image = args.output_image if args.output_image.is_absolute() else project_root / args.output_image
-    targets_csv = args.targets_csv
-    if not targets_csv.is_absolute():
-        targets_csv = project_root / targets_csv
-    outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
-
-    if not input_csv.exists():
-        print(f"Error: input CSV does not exist: {input_csv}", file=sys.stderr)
-        return 1
-    if not targets_csv.exists():
-        print(f"Error: targets CSV does not exist: {targets_csv}", file=sys.stderr)
-        return 1
-    if not outputs_dir.is_dir():
-        print(f"Error: outputs directory does not exist: {outputs_dir}", file=sys.stderr)
-        return 1
-
-    rows = load_target_rows(targets_csv)
-    allowed_system_ids = {p.name for p in resolve_target_rows(rows, outputs_dir)}
-    f1_vals, mcc_vals = load_f1_mcc(input_csv, allowed_system_ids=allowed_system_ids)
-    output_image.parent.mkdir(parents=True, exist_ok=True)
-    plot_f1_vs_mcc(f1_vals, mcc_vals, output_image)
-    print(f"SI Fig. S19 saved to {output_image.resolve()}")
-    return 0
+    return 1
 
 
 if __name__ == "__main__":

@@ -1989,7 +1989,7 @@ def main() -> None:
                 not args.no_interactive_view,
             )
 
-    # Generate confusion_matrix_per_system.csv for downstream scripts (create_si_fig_s19, etc.)
+    # Generate confusion_matrix_per_system.csv for downstream scripts (create_si_fig_s26, etc.)
     _console_line("[PIPE] Finalize: refresh confusion-matrix summary")
     run_logs_dir = os.path.join(args.out, "logs")
     os.makedirs(run_logs_dir, exist_ok=True)
