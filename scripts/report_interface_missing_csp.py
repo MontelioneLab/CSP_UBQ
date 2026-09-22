@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 """
-Report missing holo HN shifts / missing CSPs at the binding-site interface.
+Report missing HN shifts / missing CSPs at the binding-site interface and outside it.
 
 Interface = union used by merge_csv.compute_classification / PyMOL viz:
   occluded OR CA-distance OR H-bond/charge/π OR any-atom < 2 Å.
+Outside (non-interface) residues are the complementary aligned rows.
 
-Large-|ΔN| exclusions are reported separately and are not counted as missing CSP.
-Primary fraction: n_missing_holo_hn / n_interface (from master_alignment.csv).
+Two missing-shift definitions:
+  - missing HN (apo or holo): empty H or N on apo or holo (pooled fact-check statistic)
+  - missing holo HN: empty H_holo or N_holo (interface-only, historical)
+  - missing CSP: empty csp_A, excluding large-|ΔN|
 
 Examples:
   python scripts/report_interface_missing_csp.py --outputs-dir outputs
-  python scripts/report_interface_missing_csp.py --targets-csv data/CSP_UBQ.csv
+  python scripts/report_interface_missing_csp.py --targets-csv data/CSP_UBQ_ph0.5_temp5C.csv
+  python scripts/report_interface_missing_csp.py --targets-csv data/CSP_UBQ.csv --no-write-per-target
 """
 
 from __future__ import annotations
@@ -56,10 +60,17 @@ MANIFEST_FIELDS: Tuple[str, ...] = (
     "n_interface",
     "n_missing_holo_hn",
     "fraction_missing_holo_hn",
+    "n_missing_hn_interface",
+    "fraction_missing_hn_interface",
     "n_missing_csp",
     "fraction_missing_csp",
     "n_excluded_large_dn_interface",
     "n_interface_not_in_alignment",
+    "n_outside",
+    "n_missing_hn_outside",
+    "fraction_missing_hn_outside",
+    "n_missing_csp_outside",
+    "fraction_missing_csp_outside",
 )
 
 DETAIL_FIELDS: Tuple[str, ...] = (
@@ -140,6 +151,16 @@ def is_missing_holo_hn(row: Dict[str, str]) -> bool:
     return is_empty(row.get("H_holo")) or is_empty(row.get("N_holo"))
 
 
+def is_missing_hn(row: Dict[str, str]) -> bool:
+    """True if apo or holo H/N is empty (the pooled 'missing shifts' definition)."""
+    return (
+        is_empty(row.get("H_apo"))
+        or is_empty(row.get("N_apo"))
+        or is_empty(row.get("H_holo"))
+        or is_empty(row.get("N_holo"))
+    )
+
+
 def is_missing_csp(row: Dict[str, str], *, large_dn: bool) -> bool:
     if large_dn:
         return False
@@ -193,9 +214,13 @@ class TargetReport:
     holo_pdb: str = ""
     n_interface: int = 0
     n_missing_holo_hn: int = 0
+    n_missing_hn_interface: int = 0
     n_missing_csp: int = 0
     n_excluded_large_dn_interface: int = 0
     n_interface_not_in_alignment: int = 0
+    n_outside: int = 0
+    n_missing_hn_outside: int = 0
+    n_missing_csp_outside: int = 0
     detail_rows: List[Dict[str, str]] = field(default_factory=list)
 
     @property
@@ -205,10 +230,28 @@ class TargetReport:
         return self.n_missing_holo_hn / self.n_interface
 
     @property
+    def fraction_missing_hn_interface(self) -> float:
+        if self.n_interface <= 0:
+            return 0.0
+        return self.n_missing_hn_interface / self.n_interface
+
+    @property
     def fraction_missing_csp(self) -> float:
         if self.n_interface <= 0:
             return 0.0
         return self.n_missing_csp / self.n_interface
+
+    @property
+    def fraction_missing_hn_outside(self) -> float:
+        if self.n_outside <= 0:
+            return 0.0
+        return self.n_missing_hn_outside / self.n_outside
+
+    @property
+    def fraction_missing_csp_outside(self) -> float:
+        if self.n_outside <= 0:
+            return 0.0
+        return self.n_missing_csp_outside / self.n_outside
 
     def manifest_row(self) -> Dict[str, str]:
         return {
@@ -219,10 +262,17 @@ class TargetReport:
             "n_interface": str(self.n_interface),
             "n_missing_holo_hn": str(self.n_missing_holo_hn),
             "fraction_missing_holo_hn": f"{self.fraction_missing_holo_hn:.6f}",
+            "n_missing_hn_interface": str(self.n_missing_hn_interface),
+            "fraction_missing_hn_interface": f"{self.fraction_missing_hn_interface:.6f}",
             "n_missing_csp": str(self.n_missing_csp),
             "fraction_missing_csp": f"{self.fraction_missing_csp:.6f}",
             "n_excluded_large_dn_interface": str(self.n_excluded_large_dn_interface),
             "n_interface_not_in_alignment": str(self.n_interface_not_in_alignment),
+            "n_outside": str(self.n_outside),
+            "n_missing_hn_outside": str(self.n_missing_hn_outside),
+            "fraction_missing_hn_outside": f"{self.fraction_missing_hn_outside:.6f}",
+            "n_missing_csp_outside": str(self.n_missing_csp_outside),
+            "fraction_missing_csp_outside": f"{self.fraction_missing_csp_outside:.6f}",
         }
 
 
@@ -249,23 +299,30 @@ def analyze_target(
         if key:
             aligned_pdb_resis.add(key)
 
-        if not is_interface_row(row):
-            continue
-
-        report.n_interface += 1
         large_dn = is_large_dn_row(row, threshold_ppm=threshold_ppm)
-        if large_dn:
-            report.n_excluded_large_dn_interface += 1
-
         missing_holo = is_missing_holo_hn(row)
+        missing_hn = is_missing_hn(row)
         missing_csp = is_missing_csp(row, large_dn=large_dn)
+        is_interface = is_interface_row(row)
 
-        if missing_holo:
-            report.n_missing_holo_hn += 1
-        if missing_csp:
-            report.n_missing_csp += 1
+        if is_interface:
+            report.n_interface += 1
+            if large_dn:
+                report.n_excluded_large_dn_interface += 1
+            if missing_holo:
+                report.n_missing_holo_hn += 1
+            if missing_hn:
+                report.n_missing_hn_interface += 1
+            if missing_csp:
+                report.n_missing_csp += 1
+        else:
+            report.n_outside += 1
+            if missing_hn:
+                report.n_missing_hn_outside += 1
+            if missing_csp:
+                report.n_missing_csp_outside += 1
 
-        if missing_holo or missing_csp:
+        if is_interface and (missing_holo or missing_csp):
             detail = {
                 "target_dir": target_dir.name,
                 "apo_bmrb": report.apo_bmrb,
@@ -309,8 +366,8 @@ def write_csv(path: Path, fieldnames: Sequence[str], rows: Iterable[Dict[str, st
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Report fraction of missing holo HN shifts and missing CSPs at the "
-            "binding-site interface (large-|ΔN| exclusions ignored for missing CSP)."
+            "Report missing HN (apo or holo) and missing CSPs at the binding-site "
+            "interface vs outside it (large-|ΔN| exclusions ignored for missing CSP)."
         )
     )
     parser.add_argument(
@@ -403,8 +460,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     n_targets = len(reports)
     sum_iface = sum(r.n_interface for r in reports)
+    sum_outside = sum(r.n_outside for r in reports)
     sum_holo = sum(r.n_missing_holo_hn for r in reports)
+    sum_hn_iface = sum(r.n_missing_hn_interface for r in reports)
+    sum_hn_out = sum(r.n_missing_hn_outside for r in reports)
     sum_csp = sum(r.n_missing_csp for r in reports)
+    sum_csp_out = sum(r.n_missing_csp_outside for r in reports)
     sum_ldn = sum(r.n_excluded_large_dn_interface for r in reports)
     with_iface = [r for r in reports if r.n_interface > 0]
     mean_frac_holo = (
@@ -419,9 +480,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     )
     overall_frac_holo = (sum_holo / sum_iface) if sum_iface else 0.0
     overall_frac_csp = (sum_csp / sum_iface) if sum_iface else 0.0
+    overall_frac_hn_iface = (sum_hn_iface / sum_iface) if sum_iface else 0.0
+    overall_frac_hn_out = (sum_hn_out / sum_outside) if sum_outside else 0.0
+    overall_frac_csp_out = (sum_csp_out / sum_outside) if sum_outside else 0.0
 
     print(f"Targets analyzed: {n_targets}")
     print(f"Interface residues (sum): {sum_iface}")
+    print(f"Outside residues (sum): {sum_outside}")
+    print(
+        f"Missing HN (apo or holo) at interface: {sum_hn_iface}/{sum_iface} "
+        f"({100.0 * overall_frac_hn_iface:.2f}%)"
+    )
+    print(
+        f"Missing HN (apo or holo) outside: {sum_hn_out}/{sum_outside} "
+        f"({100.0 * overall_frac_hn_out:.2f}%)"
+    )
     print(
         f"Missing holo HN at interface: {sum_holo} "
         f"(overall fraction {overall_frac_holo:.4f}; "
@@ -431,6 +504,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         f"Missing CSP at interface (excl. large-|ΔN|): {sum_csp} "
         f"(overall fraction {overall_frac_csp:.4f}; "
         f"mean per-target {mean_frac_csp:.4f})"
+    )
+    print(
+        f"Missing CSP outside (excl. large-|ΔN|): {sum_csp_out}/{sum_outside} "
+        f"({100.0 * overall_frac_csp_out:.2f}%)"
     )
     print(f"Large-|ΔN| at interface (ignored for missing CSP): {sum_ldn}")
     print(f"Manifest: {manifest_path}")

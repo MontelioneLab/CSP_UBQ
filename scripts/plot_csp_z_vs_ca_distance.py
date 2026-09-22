@@ -34,14 +34,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 try:
-    from .config import classification_colors, paths
+    from .config import classification_colors, classification_legend_label, paths
     from .merge_csv import compute_classification
 except Exception:
     import os as _os
     import sys as _sys
 
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
-    from scripts.config import classification_colors, paths
+    from scripts.config import classification_colors, classification_legend_label, paths
     from scripts.merge_csv import compute_classification
 
 Point = Tuple[float, float, str]  # (distance, csp_z, classification)
@@ -55,12 +55,6 @@ _CLASS_COLORS = {
     "FN": classification_colors.FN,
 }
 
-_LEGEND_LABELS = {
-    "TP": "(TP) Sig. CSP in Binding Site",
-    "FP": "(FP) Sig. CSP -- Allosteric",
-    "TN": "(TN) low CSP -- Allosteric",
-    "FN": "(FN) low CSP in Binding Site",
-}
 
 DEFAULT_SIGNIFICANT_COLUMN = "significant"
 CA_DISTANCE_COLUMN = "min_ca_distance_distance"
@@ -231,7 +225,7 @@ def _draw_csp_z_vs_distance_scatter(
             alpha=0.55,
             edgecolors="none",
             s=marker_size,
-            label=f"{_LEGEND_LABELS[cls]} ({len(xs)})",
+            label=classification_legend_label(cls, len(xs)),
             zorder=3 if cls in ("TP", "FP") else 2,
         )
 

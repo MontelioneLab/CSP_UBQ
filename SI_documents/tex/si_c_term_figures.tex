@@ -4,96 +4,103 @@
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{SF9_ha_ca.png}
+\includegraphics[width=0.85\linewidth]{SF9_figure_3_combined_same_author_list.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S9. HA/CA CSP confusion histograms} for the
-buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} that also have
-H$\alpha$ and C$\alpha$ shifts in both apo and holo experiments ($n=101$).}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\linewidth]{SF10_ca_inclusive.png}
-\captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S10. CA-inclusive CSP confusion histograms} for the
-$n=121$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
-with CA row coverage $>50\%$.}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\linewidth]{SF11_f1_ca_vs_exclusive.png}
-\captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S11. F1 scores for CA-inclusive vs exclusive CSPs}
-($n=121$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
-with CA row coverage $>50\%$).}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\linewidth]{SF12_nn_distance.png}
-\captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S12. Confusion histograms by closest interchain N--N distance}
-($n=135$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
-with pipeline outputs).}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\linewidth]{SF13_any_atom_distance.png}
-\captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S13. Confusion histograms by closest interchain any-atom distance}
-($n=135$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
-with pipeline outputs).}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\linewidth]{SF14_1d_CSP_boxplot.png}
-\captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S14. Per-target F1 scores for 1D H/N/C$\alpha$/H$\alpha$ CSPs}
-($n=101$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
-with paired H/N/CA/HA F1 scores).
-Boxes show the per-target F1 distribution for 1D CSPs of each nucleus.
-Pairwise comparisons are two-sided Wilcoxon signed-rank tests for all unordered
-atom pairs, with Holm--Bonferroni adjustment of $p$-values.}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\linewidth]{SF15_fp_percent_distribution_cleaned_mean.png}
-\captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S15. Per-target false-positive rates} under the primary CSP
-cutoff $\max(\text{cleaned mean},\,0.05\,\mathrm{ppm})$.
-Rows show four cohorts:
-\textbf{ideal sequence match} ($n=83$),
-\textbf{non-ideal sequence match} ($n=52$),
-\textbf{pH/temp matched} ($n=135$),
-and the \textbf{full CSPdb} ($n=243$).
-For each cohort, panels report
-$100\times\mathrm{FP}/(\mathrm{TP}+\mathrm{FP})$ among significant CSPs.}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\linewidth]{SF16_figure_3_combined_same_author_list.png}
-\captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S16. Figure~3 histograms for the same-author/same-study subset.}
+\caption{\textbf{SI Fig. S9. Figure~3 histograms for the same-author/same-study subset.}
 Targets are the curated pairs in
 \texttt{CSP\_UBQ\_ph0.5\_temp5C\_same\_author\_list.csv}
 ($n=32$ with pipeline outputs of 33 curated pairs): buffer-similar apo/holo systems that share a study or last author
 between apo and holo chemical-shift depositions.
-Left: significant-CSP TP vs FP by minimum C$\alpha$ distance to the interface;
-right: full confusion-matrix stacks (TN/FP/FN/TP).}
+\textbf{A.} significant-CSP TP vs FP by minimum C$\alpha$ distance to the interface;
+\textbf{B.} full confusion-matrix stacks (TN/FP/FN/TP).
+This figure reports results on a very high-fidelity subset, and the results are very similar to those reported in Figure 3: 67.0\% of CSPs are distal vs 69.4\% of CSPs are distal in the $n=135$ subset reported in Figure 3.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{SF17_csp_vs_distance_panels.png}
+\includegraphics[width=\linewidth]{SF10_ha_ca.png}
+\captionsetup{labelformat=empty}
+\caption{\textbf{SI Fig. S10. HA/CA CSP confusion histograms} for the
+buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} that also have
+H$\alpha$ and C$\alpha$ shifts in both apo and holo experiments ($n=101$).
+These results are very similar to CSPs calculated using SI Equation~S1. 71.9\% of CSPs using SI Equation~S3 are distant from the binding site compared to 69.4\% using SI Equation~S1.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{SF11_ca_inclusive.png}
+\captionsetup{labelformat=empty}
+\caption{\textbf{SI Fig. S11. CA-inclusive CSP confusion histograms} for the
+$n=121$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
+with CA row coverage $>50\%$.
+These results are very similar to CSPs calculated using SI Equation~S1. 71.7\% of CSPs using SI Equation~S2 are distant from the binding site compared to 69.4\% using SI Equation~S1.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{SF12_f1_ca_vs_exclusive.png}
+\captionsetup{labelformat=empty}
+\caption{\textbf{SI Fig. S12. F1 scores for CA-inclusive vs exclusive CSPs}
+($n=121$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
+with CA row coverage $>50\%$).
+F1 scores on the $y$ axis use SI Equation~S1 (combined HN);
+F1 scores on the $x$ axis use SI Equation~S2 (combined HN+C$\alpha$).
+The F1 scores here demonstrate that per-target there are very few differences in the distribution of CSPs distant from the binding site across the $n=121$ subset of targets with CA CSPs and similar experimental conditions.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{SF13_nn_distance.png}
+\captionsetup{labelformat=empty}
+\caption{\textbf{SI Fig. S13. Confusion histograms by closest interchain N--N distance}
+($n=135$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
+with pipeline outputs).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{SF14_any_atom_distance.png}
+\captionsetup{labelformat=empty}
+\caption{\textbf{SI Fig. S14. Confusion histograms by closest interchain any-atom distance}
+($n=135$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
+with pipeline outputs).}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{SF15_1d_CSP_boxplot.png}
+\captionsetup{labelformat=empty}
+\caption{\textbf{SI Fig. S15. Per-target F1 scores for 1D H/N/C$\alpha$/H$\alpha$ CSPs}
+($n=101$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
+with paired H/N/CA/HA F1 scores).
+Boxes show the per-target F1 distribution for 1D CSPs of each nucleus.
+Pairwise comparisons are two-sided Wilcoxon signed-rank tests for all unordered
+atom pairs, with Holm--Bonferroni adjustment of $p$-values.
+This figure shows there are no substantial differences in the distribution of F1 scores calculated based on 1D CSPs; distal CSPs occur for all types of atomic shifts at approximately the same frequency.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{SF16_fp_percent_distribution_cleaned_mean.png}
+\captionsetup{labelformat=empty}
+\caption{\textbf{SI Fig. S16. Per-target false-positive rates} under the primary CSP
+cutoff $\max(\text{cleaned mean},\,0.05\,\mathrm{ppm})$.
+\textbf{A.} ideal sequence match ($n=83$);
+\textbf{B.} non-ideal sequence match ($n=52$);
+\textbf{C.} pH/temp matched ($n=135$);
+\textbf{D.} full CSPdb ($n=243$).
+For each cohort, panels report
+$100\times\mathrm{FP}/(\mathrm{TP}+\mathrm{FP})$ among significant CSPs.
+This figure shows per-target false positive rates across four subsets, and reveals there are minimal differences between these four subsets.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\linewidth]{SF17_csp_vs_distance_panels.png}
 \captionsetup{labelformat=empty}
 \caption{\textbf{SI Fig. S17. Chemical-shift perturbations as a function of
 interchain distance.}
-\textbf{(a)} Residue-pooled
+\textbf{A.} Residue-pooled
 $P(\text{significant CSP}\mid\text{minimum interchain }C_\alpha\text{--}C_\alpha\text{ distance})$
 for buffer-similar systems ($n=135$ from
 \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} with pipeline outputs) under the primary cutoff
@@ -104,7 +111,7 @@ CSPs by cleaned-mean $z$-score
 ($0\leq z<1$, $1\leq z<2$, $2\leq z<3$, $z\geq 3$).
 Close to the interface the significant fraction is high and enriched in large
 $z$, then declines toward a lower baseline at longer range.
-\textbf{(b)} Per-residue CSP $z$-score versus nearest interchain any-atom
+\textbf{B.} Per-residue CSP $z$-score versus nearest interchain any-atom
 distance for the same $n=135$ set (same primary significance definition), colored by confusion-matrix
 class (TP/FP/TN/FN) relative to the structural binding-site mask.
 Dashed lines mark $z=3$ and $d=10$\,\AA{}; the annotation counts false positives
@@ -117,10 +124,20 @@ with $d>10$\,\AA{} and $z>3$.}
 \captionsetup{labelformat=empty}
 \caption{\textbf{SI Fig. S18. Case study for holo 2FIN / apo BMRB 6809}
 (holo BMRB 7024).
-HSQC overlay, CSP classification bars, CSP / binding-site / confusion structure
-views, and CSP $z$ versus nearest interchain atom--atom distance.
-\textbf{(F)} Dashed lines mark $z=3$ and $d=10$\,\AA{}; the annotation counts
-false positives with $d>10$\,\AA{} and $z>3$.
+\textbf{A.} $^{15}$N/$^{1}$H HSQC scatterplot overlaying the apo and holo
+assigned spectra with the optimal N/H offset applied.
+\textbf{B.} Calculated CSPs for receptor residues along the sequence, bars
+colored by confusion matrix classification.
+\textbf{C.} The mask of significant CSPs.
+\textbf{D.} The mask of binding-site residues.
+\textbf{E.} The confusion matrix classification projected onto the structure:
+distal CSPs are purple (FP), CSPs in the binding site are green (TP),
+non-CSPs in the binding site are orange (FN), and non-CSPs outside of the
+binding site are blue (TN). Residues without CSP measurements are shown in
+gray; ligands are colored cyan.
+\textbf{F.} CSP $z$ versus nearest interchain atom--atom distance.
+Dashed lines mark $z=3$ and $d=10$\,\AA{}; the annotation counts false
+positives with $d>10$\,\AA{} and $z>3$.
 This plot shows monotonic decay of CSPs with increasing nearest interchain
 atom--atom distance.
 Residues in a set of $\beta$ sheets further away from the ligand with
@@ -147,32 +164,33 @@ holo experiments.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{SF20_buffer_sweep.png}
+\includegraphics[width=0.78\linewidth]{SF20_buffer_sweep.png}
 \captionsetup{labelformat=empty}
 \caption{\textbf{SI Fig. S20. Buffer pH/temperature threshold sweep.}
-(\textbf{A}) Number of apo/holo pairs retained as $|\Delta\mathrm{pH}|$ and
+\textbf{A.} Number of apo/holo pairs retained as $|\Delta\mathrm{pH}|$ and
 $|\Delta T|$ thresholds are tightened.
-(\textbf{B}) Mean FP/(TP+FP) (percent allosteric CSPs) in the same subsets.}
+\textbf{B.} Mean FP/(TP+FP) (percent distal CSPs) in the same subsets.
+This figure reveals the mean per-target false positive rate changes only slightly across all thresholds in apo/holo experimental condition differences from a minimum of 63.6\% to a maximum of 68.3\%.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\textbf{(A)}\\[0.15em]
+\textbf{A.}\\[0.15em]
 \includegraphics[width=0.78\linewidth]{SF21_ideal_offsets.png}\\[0.4em]
-\textbf{(B)}\\[0.15em]
+\textbf{B.}\\[0.15em]
 \includegraphics[width=0.78\linewidth]{SF21_ideal_offsets_ha_ca.png}
 \captionsetup{labelformat=empty}
 \caption{\textbf{SI Fig. S21. Ideal chemical-shift offset grids}
 for buffer-similar systems in \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} with
 pipeline outputs.
-(\textbf{A}) H/N referencing ($n=135$): a grid search selects the H/N offsets
+\textbf{A.} H/N referencing ($n=135$): a grid search selects the H/N offsets
 that maximize aligned HN peak counts under the pipeline CSP criterion; the
 heatmap aggregates those optimal
 $(\Delta\delta_{\mathrm{N}},\,\Delta\delta_{\mathrm{H}})$ pairs
 (color $=$ number of targets).
 Marginal histograms show the one-dimensional distributions of best H (left) and
 N (bottom) offsets.
-(\textbf{B}) HA/CA referencing ($n=101$ systems with HA/CA grid-search CSVs):
+\textbf{B.} HA/CA referencing ($n=101$ systems with HA/CA grid-search CSVs):
 the same layout for offsets that maximize aligned HA/CA peak counts,
 with HA (left) and CA (bottom) marginals.
 Both nuclei pairs are peaked near zero, indicating that most apo/holo pairs
@@ -186,10 +204,11 @@ require only small referencing corrections.}
 \caption{\textbf{SI Fig. S22. Terminal-anchor vs global offsets:}
 HSQC overlays and CSP classification bars for four targets
 (2KZU/17018, 1YWI/6658, 2RR4/11361, 2K17/15670).
-For each target (rows a--d): left pair shows apo (grey) vs offset holo (red)
+For each target (rows A.--D.): left pair shows apo (grey) vs offset holo (red)
 HSQC overlays using terminal-anchor RMSD offsets vs the global CSP-count grid;
 right pair shows corresponding CSP classification bars (TP/FP/TN/FN) under the
-primary significance threshold. Green markers denote terminal-anchor residues.}
+primary significance threshold. Green markers denote terminal-anchor residues.
+This figure reveals an alternative approach to referencing apo and holo shift lists would be an appropriate solution to the problem, but is not generalizeable across the dataset. These results further demonstrate our approach of global optimization described in the Methods is an appropriate generalizeable solution to this problem.}
 \end{figure}
 
 \begin{figure}[H]
@@ -199,7 +218,8 @@ primary significance threshold. Green markers denote terminal-anchor residues.}
 \caption{\textbf{SI Fig. S23. Distribution of CSP significance thresholds}
 (primary cutoff $\max(\mathrm{cleaned\ mean},\,0.05\,\mathrm{ppm})$;
 $n=135$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
-with pipeline outputs). Mean $=0.0804$ ppm.}
+with pipeline outputs). Mean $=0.0804$ ppm.
+This figure shows our mean CSP threshold is 0.08 ppm, corresponding to $\sim$50 Hz at 600 MHz, which is $2$--$5\times$ larger than the corresponding proton resonance linewidths.}
 \end{figure}
 
 \begin{figure}[H]
@@ -218,7 +238,8 @@ outlier removal;
 fixed cutoffs \textbf{0.03}, \textbf{0.05}, and \textbf{0.10\,ppm};
 \textbf{raw mean}, \textbf{raw mean $+1$ SD}, and \textbf{raw mean $+2$ SD}
 (no outlier removal);
-and \textbf{cleaned mean} without the 0.05\,ppm floor.}
+and \textbf{cleaned mean} without the 0.05\,ppm floor.
+This figure reveals our results are relatively stable if we use other reasonable thresholds of what is considered a significant CSP. Some thresholds from this figure we determine are too high (e.g.\ Raw mean + 1 SD, Raw mean + 2 SD, Top 10\%, Top 5\%) which results in less distal CSPs than is expected from the other thresholding approaches.}
 \end{figure}
 
 \begin{figure}[H]
@@ -288,7 +309,8 @@ Cys in BMRB 51725).
 \includegraphics[width=0.9\linewidth]{SF26_f1_vs_mcc.png}
 \captionsetup{labelformat=empty}
 \caption{\textbf{SI Fig. S26. F1 vs MCC} across the $n=135$ buffer-similar systems
-in \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} with pipeline outputs.}
+in \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} with pipeline outputs.
+This figure reveals a strong correlation between F1 and MCC measures against the $n=135$ subset. F1 and MCC are both useful metrics to gauge at a glance the extent of distal CSPs are present in the receptor-ligand system.}
 \end{figure}
 
 \clearpage

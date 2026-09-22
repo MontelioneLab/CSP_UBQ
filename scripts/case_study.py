@@ -337,26 +337,19 @@ def generate_case_study_figure(
     force_view_reset: bool = False,
     view_key: Optional[str] = None,
     allow_interactive_view: bool = True,
+    reuse_existing_panels: bool = True,
 ) -> str:
     """
     Generate <pdb_id>_case_study.png in a target output directory.
+
+    When reuse_existing_panels is True and case_study_* panel PNGs already exist
+    under case_study_assets/, skip PyMOL and only recompose.
     """
     hsqc_scatter_path = os.path.join(target_dir, "hsqc_scatter.png")
     csp_bars_path = os.path.join(target_dir, "csp_classification_bars_original.png")
-    color_csp_mask_pml = os.path.join(target_dir, "color_csp_mask.pml")
-    color_occlusion_pml = os.path.join(target_dir, "color_occlusion.pml")
-    classification_pml = os.path.join(target_dir, "csp_classification_original.pml")
-
-    required_files = [
-        hsqc_scatter_path,
-        csp_bars_path,
-        color_csp_mask_pml,
-        color_occlusion_pml,
-        classification_pml,
-    ]
-    missing = [path for path in required_files if not os.path.exists(path)]
-    if missing:
-        raise FileNotFoundError("Missing case-study input files:\n" + "\n".join(missing))
+    for path in (hsqc_scatter_path, csp_bars_path):
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Missing case-study input: {path}")
 
     try:
         from .config import paths
@@ -365,48 +358,59 @@ def generate_case_study_figure(
         _sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         from scripts.config import paths  # type: ignore
 
-    pymol_views_dir = paths.pymol_views_dir
-    os.makedirs(pymol_views_dir, exist_ok=True)
-    view_id = (view_key or os.path.basename(os.path.abspath(target_dir)) or pdb_id).strip()
-    view_path_save = _case_study_view_save_path(pymol_views_dir, pdb_id, view_key)
-
     assets_dir = os.path.join(target_dir, "case_study_assets")
     os.makedirs(assets_dir, exist_ok=True)
-    view: Optional[List[float]] = None
-    if force_view_reset:
-        print(f"[CASE_STUDY] Forcing view recapture for {view_id}; ignoring saved view.")
-    else:
-        for cand in _case_study_view_load_candidates(pymol_views_dir, pdb_id, view_key):
-            if not os.path.exists(cand):
-                continue
-            try:
-                view = _load_view(cand)
-                print(f"[CASE_STUDY] Reusing saved view: {cand}")
-                break
-            except Exception as exc:
-                print(f"[CASE_STUDY] WARNING: Saved view is invalid ({cand}): {exc}; trying next.")
-
-    if view is None:
-        if not allow_interactive_view:
-            raise RuntimeError(
-                f"No saved PyMOL view for {view_id} and interactive capture is disabled."
-            )
-        capture_user_view_interactive(
-            color_csp_mask_pml_path=color_csp_mask_pml,
-            view_output_path=view_path_save,
-            pdb_id=pdb_id,
-        )
-        view = _load_view(view_path_save)
-
     rendered = {
         "left": os.path.join(assets_dir, "case_study_color_csp_mask.png"),
         "middle": os.path.join(assets_dir, "case_study_color_occlusion.png"),
         "right": os.path.join(assets_dir, "case_study_csp_classification_original.png"),
     }
+    can_reuse = reuse_existing_panels and all(os.path.exists(p) for p in rendered.values())
+    if can_reuse:
+        print(f"[CASE_STUDY] Reusing existing PyMOL panels from {assets_dir}")
+    else:
+        color_csp_mask_pml = os.path.join(target_dir, "color_csp_mask.pml")
+        color_occlusion_pml = os.path.join(target_dir, "color_occlusion.pml")
+        classification_pml = os.path.join(target_dir, "csp_classification_original.pml")
+        required_files = [color_csp_mask_pml, color_occlusion_pml, classification_pml]
+        missing = [path for path in required_files if not os.path.exists(path)]
+        if missing:
+            raise FileNotFoundError("Missing case-study PyMOL inputs:\n" + "\n".join(missing))
 
-    render_pymol_panel_with_view(color_csp_mask_pml, view, rendered["left"])
-    render_pymol_panel_with_view(color_occlusion_pml, view, rendered["middle"])
-    render_pymol_panel_with_view(classification_pml, view, rendered["right"])
+        pymol_views_dir = paths.pymol_views_dir
+        os.makedirs(pymol_views_dir, exist_ok=True)
+        view_id = (view_key or os.path.basename(os.path.abspath(target_dir)) or pdb_id).strip()
+        view_path_save = _case_study_view_save_path(pymol_views_dir, pdb_id, view_key)
+
+        view: Optional[List[float]] = None
+        if force_view_reset:
+            print(f"[CASE_STUDY] Forcing view recapture for {view_id}; ignoring saved view.")
+        else:
+            for cand in _case_study_view_load_candidates(pymol_views_dir, pdb_id, view_key):
+                if not os.path.exists(cand):
+                    continue
+                try:
+                    view = _load_view(cand)
+                    print(f"[CASE_STUDY] Reusing saved view: {cand}")
+                    break
+                except Exception as exc:
+                    print(f"[CASE_STUDY] WARNING: Saved view is invalid ({cand}): {exc}; trying next.")
+
+        if view is None:
+            if not allow_interactive_view:
+                raise RuntimeError(
+                    f"No saved PyMOL view for {view_id} and interactive capture is disabled."
+                )
+            capture_user_view_interactive(
+                color_csp_mask_pml_path=color_csp_mask_pml,
+                view_output_path=view_path_save,
+                pdb_id=pdb_id,
+            )
+            view = _load_view(view_path_save)
+
+        render_pymol_panel_with_view(color_csp_mask_pml, view, rendered["left"])
+        render_pymol_panel_with_view(color_occlusion_pml, view, rendered["middle"])
+        render_pymol_panel_with_view(classification_pml, view, rendered["right"])
 
     hsqc_panel = extract_hsqc_bottom_right_panel(hsqc_scatter_path)
     out_path = os.path.join(target_dir, f"{pdb_id}_case_study.png")

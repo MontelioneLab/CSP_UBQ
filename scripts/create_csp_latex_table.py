@@ -38,6 +38,11 @@ SELECTION_NUMBERING: dict[str, dict[str, str]] = {
         "sf_id": "SF8",
         "title": "targets with dissimilar apo/holo experimental conditions",
         "file_token": "dissimilar_apo_holo_conditions",
+        "fig_caption_note": (
+            "The $n=108$ subset for SI Fig.\\ S8 and SI Table S9 come from the subset of "
+            "targets from the complete $n=243$ CSPdb with a pH difference between apo and "
+            "holo experiments $> 0.5$ units or temperature difference $> 5^{\\circ}$C."
+        ),
     },
 }
 
@@ -424,9 +429,13 @@ def build_plot_block(
     si_label = _sf_id_to_si_label(sf_id or "SF1")
     title_part = sf_title if (sf_id and sf_title) else escape_underscores(selection_label)
     n_suffix = f" ($n={n_targets}$)" if n_targets is not None else ""
+    extra = SELECTION_NUMBERING.get(_normalize_selection_key(selection_slug), {}).get(
+        "fig_caption_note", ""
+    )
+    extra_suffix = f". {extra}" if extra else ""
     caption_text = (
         f"\\textbf{{SI Fig. {si_label}. Confusion Matrix Histograms for {title_part}}}"
-        f"{n_suffix}"
+        f"{n_suffix}{extra_suffix}"
     )
     fig_label = f"fig:{sf_id.lower()}_{selection_slug}" if sf_id else f"fig:sf1_{selection_slug}"
     return (

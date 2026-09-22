@@ -1,0 +1,144 @@
+\documentclass[11pt]{article}
+\input{preamble_fragment}
+\setlength{\parskip}{0.85em}
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Supplementary Text}
+\end{center}
+
+\vspace{0.4em}
+\noindent\textbf{The CSPdb}
+
+The CSPdb includes receptors that regulate diverse biological processes, including
+cell cycle progression (e.g., MAD2: 1KLQ), transcriptional control (e.g., Nrd1:
+2MOW, 6GC3), translational regulation, autophagy, apoptosis (e.g., BCL-XL family:
+2M04, 2LP8), and cell adhesion (e.g., tensin: 2LOZ).
+Disease-relevant targets address mechanisms in leukemia and other cancers,
+Alzheimer's disease (e.g., amyloid precursor protein-binding
+proteins: 2ROZ), and infectious diseases from viruses and bacteria, such as
+anthrax (2RUI), chikungunya (5I22), SARS-CoV-2 (7PKU), HIV (2L6E), and Ebola
+(2KQ0).
+
+The CSPdb features several recurring protein domains that exhibit notable
+conformational changes upon ligand binding. For instance, it includes 23
+interactions involving calmodulin (CaM) or CaM-like proteins with peptides
+(e.g., PDB IDs: 1SY9, 2JZI; full list in \textbf{SI Table S1}), which often involve
+substantial rearrangements upon binding described in detail
+elsewhere\textsuperscript{1}. Other receptors known for binding-induced
+conformational shifts or folding include the G protein Cdc42 (1CF4), the
+metaphase chromosome spindle checkpoint protein MAD2 (1KLQ), the KIX domain
+(2LXS), and CREB-binding proteins (e.g., 1R8U, 1L8C).
+
+Additional recurring domains include the extra-terminal (ET) domains of
+bromodomain proteins BRD3 and BRD4 (e.g., 2NCZ, 2ND0; full list in \textbf{SI Table S7},
+\textbf{SI Fig.\ S6}), which bind intrinsically-disordered regions of viral integrase or
+chromatin regulator proteins. These interactions trigger subtle
+changes distal from the binding site, including the formation of a stabilizing
+secondary structure that reorients two allosteric helices\textsuperscript{2, 3}.
+Similarly, the PDZ2 domain (e.g., 1D5G, 1VJ6, 2M0V) shows distal effects
+mediated by the $\beta$2--$\beta$3 loop during peptide
+recognition\textsuperscript{4}.
+
+Nine entries involve the PH domain of the TFIIH transcription initiation factor
+subunit Tfb1 (e.g., 2LOX, 2M14; full list in \textbf{SI Table S8}, \textbf{SI Fig.\ S7}). In these
+complexes, the ligand is often modeled as a helical polypeptide bound
+orthogonally to an extended $\beta$-sheet, resulting in signal
+propagation via hydrogen-bond rearrangements. Other targets which involve
+hydrogen bond rearrangement in $\beta$-sheets include the Cdc42 (1CF4),
+Cyclophilin A (2MS4), and SH3 domain (e.g., 2OJ2, 2ROL; full list in \textbf{SI Table S1}). An additional eight entries use ubiquitin or ubiquitin-like (e.g.\ SUMO
+and NEDD8) protein receptors. Ubiquitin has been used as a model system for NMR
+studies\textsuperscript{5} and for studying allostery\textsuperscript{6}
+(e.g., 2KWV, 2MUR; full list in \textbf{SI Table S9}, \textbf{SI Fig.\ S8}).
+
+\vspace{0.4em}
+\noindent\textbf{Estimated Distance Limits for Non-structural NMR Chemical Shift Perturbations}
+
+Aromatic ring-current effects decrease as $r^{-3}$, with established
+ring-current parameters indicating that a $\geq 0.05$-ppm amide $^{1}$H shift is
+unlikely beyond approximately 10\,\AA{} for Phe/Tyr and 12\,\AA{} for Trp, even
+under idealized geometry\textsuperscript{8, 9}. Similarly, changes in charge or
+ionization state accompanying ligand binding can produce amide CSPs through
+changes in the local electric field, although the magnitude of these effects
+depends strongly on the dielectric environment, screening, and
+orientation\textsuperscript{10, 11}. Thus, distal CSPs (e.g., $>15$\,\AA{} from
+the binding site) generally reflect long-range effects of ligand binding and are
+consistent with changes in protein conformation or conformational distributions.
+
+\vspace{0.4em}
+\noindent\textbf{NMR ring-current contributions to chemical shift perturbations}
+
+Based on the $r^{-3}$ distance dependence of aromatic ring-current effects and
+established ring-current parameters for aromatic amino acids, the theoretical
+maximum distance for a $\geq 0.05$-ppm HN ring-current shift is approximately
+10\,\AA{} for Phe/Tyr and 12\,\AA{} for Trp under idealized
+geometry\textsuperscript{8, 9}.
+
+\textbf{Estimated maximum distance for a $\geq 0.05$-ppm amide $^{1}$H ring-current shift.}
+
+Aromatic ring-current contributions to $^{1}$H chemical shifts can be
+approximated using the equivalent-dipole model,
+\begin{equation*}
+\Delta\delta_{\mathrm{RC}}=\mu\frac{(3\cos^{2}\theta-1)}{r^{3}},
+\end{equation*}
+where $r$ is the distance from the proton to the aromatic ring center,
+$\theta$ is the angle between this vector and the normal to the ring plane, and
+$\mu$ is the effective ring-current constant. Abraham et al.\ determined
+$\mu = 26.2$\,ppm\,\AA{}$^{3}$ for benzene. The maximum absolute effect occurs
+at $\theta=0^{\circ}$ or $180^{\circ}$ corresponding to the proton lying along
+the normal above or below the aromatic ring plane, where the angular term has a
+magnitude of 2. Using the 0.05-ppm significance threshold gives
+\begin{equation*}
+r_{\max}=\left(\frac{2\mu}{0.05}\right)^{1/3}=10.2\,\textrm{\AA}.
+\end{equation*}
+Thus, even under idealized geometry, a Phe/Tyr-like aromatic ring would need to
+be within approximately 10\,\AA{} of an amide proton to produce a significant
+ring-current effect. For Trp, the contributions from its two aromatic rings are
+summed; using the relative ring-current intensities reported by Perkins et al.\
+gives an idealized upper-bound estimate of approximately 12\,\AA{}.
+
+\vspace{0.4em}
+\noindent\textbf{NMR electric-field induced chemical shift perturbations}
+
+Based on the $r^{-2}$ distance dependence of electric-field effects and
+experimentally determined parameters for protein amide chemical shifts, a
+one-unit charge change is estimated to produce a $\geq 0.05$-ppm HN shift only
+within approximately 6--8\,\AA{} under idealized
+conditions\textsuperscript{10, 11}.
+
+\textbf{Estimated maximum distance for a $\geq 0.05$-ppm amide $^{1}$H electric-field induced shift.}
+
+Electric-field-induced amide chemical shifts can be approximated using the
+Buckingham treatment,
+\begin{equation*}
+|\Delta\delta_{\mathrm{HN}}| = |A|\,|E|\,|\cos\beta|,
+\end{equation*}
+where $A$ is the HN shielding polarizability, $E$ is the change in electric
+field at the amide proton, and $\beta$ is the angle between these vectors.
+Using $|A|=21$\,ppm\,\AA{}$^{2}/e$ for backbone amide protons\textsuperscript{11}
+and approximating the electric field from a point-charge change using Coulomb's
+law gives
+\begin{equation*}
+|\Delta\delta_{\mathrm{HN}}| = \frac{21\,|\Delta q|}{\epsilon_{\mathrm{eff}}\,r^{2}}\,|\cos\beta|.
+\end{equation*}
+For a one-unit charge change ($|\Delta q|=1e$), optimal orientation
+($|\cos\beta|=1$), and the 0.05-ppm significance threshold,
+\begin{equation*}
+r_{\max}=\left[\frac{21}{0.05\,\epsilon_{\mathrm{eff}}}\right]^{1/2}.
+\end{equation*}
+Experimentally derived effective dielectric constants for proteins are
+approximately 6--13; values of $\sim$6.5--7 and $8.6\pm 0.8$ have been obtained
+from protein CSP measurements\textsuperscript{10, 11}. These values correspond
+to idealized maximum distances of approximately 6--8\,\AA{} for a
+$\geq 0.05$-ppm $^{1}$HN shift from a one-unit charge change.
+
+Unlike aromatic ring-current effects, a universal distance cutoff cannot be
+assigned to electrostatic CSPs because their magnitude depends on charge,
+orientation, dielectric environment, and screening. Small electric-field-induced
+$^{1}$HN CSPs have been experimentally detected $>12$\,\AA{} from a charge
+perturbation, although these were below the 0.05-ppm significance threshold used
+here\textsuperscript{11}. Although our apo and holo datasets were matched for
+pH, ligand binding itself may alter protein ionization states and thereby
+generate electric-field-induced CSPs.
+
+\end{document}

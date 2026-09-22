@@ -7,8 +7,8 @@ For each target directory under ``outputs/``, the F1 scores for 1D H, N, CA,
 and optionally HA CSPs are computed (reusing :func:`collect_1d_f1_results` from
 :mod:`analyze_targets_single_atom_shifts`). Targets are gated by CA row
 coverage (:func:`target_basenames_passing_ca_shift_coverage`, same rule as SI
-Fig. S11 / S12). The plot uses the intersection of targets that yield a valid
-F1 for every atom in the chosen ``atom_order`` (SI Fig. S14 uses H/N/CA/HA, so
+Fig. S11 / S12 / S15). The plot uses the intersection of targets that yield a valid
+F1 for every atom in the chosen ``atom_order`` (SI Fig. S15 uses H/N/CA/HA, so
 *n* is the HA/CA-complete paired subset).
 
 Inter-group comparisons use paired Wilcoxon signed-rank tests for all
@@ -60,8 +60,8 @@ ATOM_COLORS = {
 
 _VALID_ATOMS = frozenset(ATOM_ORDER)
 
-# SI Fig. S14: H/N/Cα/Hα (paired subset; n drops vs the CA-only H/N/CA gate).
-SF14_ATOM_ORDER: Tuple[str, ...] = ("H", "N", "CA", "HA")
+# SI Fig. S15: H/N/Cα/Hα (paired subset; n drops vs the CA-only H/N/CA gate).
+SF15_ATOM_ORDER: Tuple[str, ...] = ("H", "N", "CA", "HA")
 
 
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
@@ -246,7 +246,7 @@ def _render_boxplot(
 
     fig_w = 6.0 + 0.7 * (len(atom_order) - 3)
     n_pairs = len(atom_order) * (len(atom_order) - 1) // 2
-    fig_h = 6.5 + 0.35 * max(0, n_pairs - 3)
+    fig_h = 5.6 + 0.12 * max(0, n_pairs - 3)
     fig, ax = plt.subplots(figsize=(fig_w, fig_h))
 
     bp = ax.boxplot(
@@ -289,14 +289,15 @@ def _render_boxplot(
         f"F1 score distributions for 1D single-atom CSPs (n = {n_targets} targets)",
         fontsize=13,
         fontweight="bold",
-        pad=28,
+        pad=10,
     )
     ax.grid(axis="y", alpha=0.3, linestyle="--")
-    n_pairs = len(atom_order) * (len(atom_order) - 1) // 2
-    y_top = 1.0 if n_pairs <= 3 else 1.02 + n_pairs * 0.042
+    data_max = max(
+        (float(np.nanmax(a)) for a in data_for_plot if len(a)),
+        default=1.0,
+    )
+    y_top = _annotate_significance(ax, stats_df, atom_order, data_max=data_max)
     ax.set_ylim(0.0, y_top)
-
-    _annotate_significance(ax, stats_df, atom_order)
 
     fig.tight_layout()
     output_image.parent.mkdir(parents=True, exist_ok=True)
@@ -308,18 +309,21 @@ def _annotate_significance(
     ax: plt.Axes,
     stats_df: pd.DataFrame,
     atom_order: Tuple[str, ...],
-) -> None:
-    """Draw stacked significance bars over the boxes."""
+    *,
+    data_max: float,
+) -> float:
+    """Draw stacked significance bars just above the data; return y-limit."""
     pos = _atom_positions(atom_order)
     n_pairs = len(list(combinations(atom_order, 2)))
-    if n_pairs <= 3:
-        base_y = 0.68
-        step = 0.04
-    else:
-        base_y = 1.02
-        step = 0.038
+    if n_pairs == 0:
+        return max(1.0, data_max * 1.05)
+
+    gap = 0.028
+    step = 0.048
     bar_height = 0.012
     font_size = 9 if n_pairs <= 3 else 8
+    base_y = data_max + gap
+    top = data_max
 
     pairs_all = list(combinations(atom_order, 2))
     ordering = sorted(
@@ -346,7 +350,7 @@ def _annotate_significance(
             [y, y + bar_height, y + bar_height, y],
             lw=1.1,
             color="black",
-            clip_on=False,
+            clip_on=True,
         )
         ax.text(
             (x1 + x2) / 2.0,
@@ -355,8 +359,11 @@ def _annotate_significance(
             ha="center",
             va="bottom",
             fontsize=font_size,
-            clip_on=False,
+            clip_on=True,
         )
+        top = y + bar_height + 0.032
+
+    return top + 0.015
 
 
 def _resolve_stats_csv(output_image: Path, stats_csv: Optional[Path]) -> Path:

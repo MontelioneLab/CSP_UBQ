@@ -3,8 +3,8 @@
 Create CSP classification bar plot with a simpler legend.
 
 Reads master_alignment.csv from a target output directory and generates the same
-bar chart as csp_classification_bars_original.png, but with a simplified legend:
-  - Color + quadrant (TP/FP/TN/FN) + count (e.g. "TP (13)")
+bar chart as csp_classification_bars_original.png, with Figure 3 legend wording
+(e.g. ``(TP) CSP -- in binding site (n)``).
 
 Binding-site residues (TP and FN) are highlighted with a light gray background.
 
@@ -30,12 +30,12 @@ except ImportError:
     _HAS_PLT = False
 
 try:
-    from .config import classification_colors
+    from .config import classification_colors, classification_legend_label
 except Exception:
     import os as _os
     import sys as _sys
     _sys.path.insert(0, _os.path.dirname(_os.path.dirname(__file__)))
-    from scripts.config import classification_colors
+    from scripts.config import classification_colors, classification_legend_label
 
 
 def _get_colors():
@@ -65,7 +65,7 @@ def plot_csp_classification_bars_simple_legend(
     """
     Create CSP classification bar plot with simple legend (color, quadrant, count).
 
-    Legend entries are ``TP (n)`` / ``FP (n)`` / ``TN (n)`` / ``FN (n)`` only.
+    Legend entries match Figure 3 (e.g. ``(TP) CSP -- in binding site (n)``).
     Pass ``xlabel=None`` (default) to omit a baked-in x-axis title so a composite
     figure can label the column once.
 
@@ -138,14 +138,26 @@ def plot_csp_classification_bars_simple_legend(
     tn_count = classifications.count("TN")
     fn_count = classifications.count("FN")
 
-    # Simple legend: color + quadrant + count
+    # Figure 3 legend wording: color + class + binding-site phrase + count
     legend_elements = [
-        plt.Rectangle((0, 0), 1, 1, facecolor=colors["TP"], alpha=0.8, label=f"TP ({tp_count})"),
-        plt.Rectangle((0, 0), 1, 1, facecolor=colors["FP"], alpha=0.8, label=f"FP ({fp_count})"),
-        plt.Rectangle((0, 0), 1, 1, facecolor=colors["TN"], alpha=0.8, label=f"TN ({tn_count})"),
-        plt.Rectangle((0, 0), 1, 1, facecolor=colors["FN"], alpha=0.8, label=f"FN ({fn_count})"),
+        plt.Rectangle(
+            (0, 0), 1, 1, facecolor=colors["TP"], alpha=0.8,
+            label=classification_legend_label("TP", tp_count),
+        ),
+        plt.Rectangle(
+            (0, 0), 1, 1, facecolor=colors["FP"], alpha=0.8,
+            label=classification_legend_label("FP", fp_count),
+        ),
+        plt.Rectangle(
+            (0, 0), 1, 1, facecolor=colors["TN"], alpha=0.8,
+            label=classification_legend_label("TN", tn_count),
+        ),
+        plt.Rectangle(
+            (0, 0), 1, 1, facecolor=colors["FN"], alpha=0.8,
+            label=classification_legend_label("FN", fn_count),
+        ),
     ]
-    plt.legend(handles=legend_elements, loc="upper left", fontsize=28)
+    plt.legend(handles=legend_elements, loc="upper left", fontsize=14)
 
     ax = plt.gca()
     ax.set_xticks(residue_numbers)

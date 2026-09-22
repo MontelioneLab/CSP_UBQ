@@ -2,9 +2,9 @@
 """
 Compose SI Fig. S17: CSP vs interchain distance (two panels).
 
-  a) P(significant CSP | CA–CA distance) stacked by CSP z-score
+  A.) P(significant CSP | CA–CA distance) stacked by CSP z-score
      (from plot_p_significant_vs_ca_distance.py)
-  b) CSP z vs nearest atom–atom distance scatter (confusion-colored)
+  B.) CSP z vs nearest atom–atom distance scatter (confusion-colored)
      — bottom-left panel of csp_z_vs_distance_scatter_ca_vs_any_atom_2x2.png
      (same content as csp_z_vs_any_atom_distance_scatter_max05.png)
 
@@ -46,13 +46,17 @@ def compose(
     img_a = mpimg.imread(str(panel_a))
     img_b = mpimg.imread(str(panel_b))
 
+    ha, wa = img_a.shape[:2]
+    hb, wb = img_b.shape[:2]
+    fig_w = 8.4
+    fig_h = fig_w * ((ha / wa) + (hb / wb)) + 0.9
     fig, axes = plt.subplots(
-        1,
         2,
-        figsize=(16.5, 7.2),
-        gridspec_kw={"wspace": 0.08},
+        1,
+        figsize=(fig_w, fig_h),
+        gridspec_kw={"hspace": 0.12},
     )
-    for ax, img, label in ((axes[0], img_a, "a"), (axes[1], img_b, "b")):
+    for ax, img, label in ((axes[0], img_a, "A."), (axes[1], img_b, "B.")):
         ax.imshow(img)
         ax.axis("off")
         ax.text(

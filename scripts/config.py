@@ -176,6 +176,44 @@ sasa_analysis = SASAAnalysis()
 ca_distance_analysis = CADistanceAnalysis()
 classification_colors = ClassificationColors()
 
+# Figure 3 legend wording: significant CSPs vs low CSPs × in / not in binding site.
+_CLASSIFICATION_LEGEND_SITES = {
+    "TP": ("CSP", "in binding site"),
+    "FP": ("CSP", "not in binding site"),
+    "TN": ("low CSP", "not in binding site"),
+    "FN": ("low CSP", "in binding site"),
+}
+
+
+def classification_legend_label(
+    cls: str,
+    n: Optional[int] = None,
+    *,
+    atom: Optional[str] = None,
+) -> str:
+    """Return a Figure 3-style legend string for a confusion-matrix class.
+
+    Examples::
+
+        classification_legend_label("FP", 3023)
+        # "(FP) CSP -- not in binding site (3023)"
+        classification_legend_label("TN", atom="H")
+        # "(TN) low ΔH -- not in binding site"
+    """
+    key = (cls or "").strip().upper()
+    if key not in _CLASSIFICATION_LEGEND_SITES:
+        raise ValueError(f"Unknown classification {cls!r}; expected TP/FP/TN/FN.")
+    default_sig, site = _CLASSIFICATION_LEGEND_SITES[key]
+    if atom:
+        atom_s = str(atom).strip()
+        phrase = f"Δ{atom_s}" if key in ("TP", "FP") else f"low Δ{atom_s}"
+    else:
+        phrase = default_sig
+    base = f"({key}) {phrase} -- {site}"
+    if n is None:
+        return base
+    return f"{base} ({int(n)})"
+
 
 def ensure_directories(base_output: Optional[str] = None) -> None:
     """Create required directories if they do not exist.

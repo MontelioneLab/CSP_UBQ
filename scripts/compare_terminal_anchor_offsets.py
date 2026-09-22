@@ -36,11 +36,12 @@ if str(_ROOT) not in sys.path:
 from scripts.backfill_terminal_rci import load_state_rci, terminal_high_residues
 from scripts.csp import (
     _csp_n_term,
+    _exceeds_max_abs_delta_n,
     _floor_primary_hn_cutoff,
     compute_threshold_with_outlier_removal,
     run_offset_grid_search,
 )
-from scripts.config import Referencing, classification_colors, thresholds as csp_thresholds
+from scripts.config import Referencing, classification_colors, classification_legend_label, thresholds as csp_thresholds
 from scripts.merge_csv import exceeds_max_classification_csp_z
 
 DEFAULT_TARGETS = (
@@ -56,6 +57,8 @@ _APO_COLOR = "#7f7f7f"
 _HOLO_COLOR = "#e74c3c"
 _ANCHOR_EDGE = "limegreen"
 _LINE_COLOR = "#555555"
+# Match HSQC_visualize._EXCLUDED_LINE_COLOR for |ΔN_raw| > 15 ppm connectors.
+_EXCLUDED_LINE_COLOR = "#808080"
 
 
 def _parse_float(value: object) -> Optional[float]:
@@ -245,7 +248,8 @@ def count_aligned_hn(
     """Count HN pairs with CSP < cutoff after applying holo offsets.
 
     Same definition as ``run_offset_grid_search``: complete H/N in both states,
-    CSP = sqrt(0.5*(dH^2 + (dN/5)^2)). Returns (aligned_count, n_evaluable).
+    CSP = sqrt(0.5*(dH^2 + (dN/5)^2)). Residues with |ΔN_raw| > 15 ppm are
+    omitted (pipeline convention). Returns (aligned_count, n_evaluable).
     """
     aligned = 0
     evaluable = 0
@@ -254,6 +258,8 @@ def count_aligned_hn(
         n_apo = _parse_float(row.get("N_apo"))
         h_holo, n_holo = _holo_hn(row)
         if None in (h_apo, n_apo, h_holo, n_holo):
+            continue
+        if _exceeds_max_abs_delta_n(n_apo, n_holo):
             continue
         evaluable += 1
         dH = (h_holo + h_offset) - h_apo
@@ -344,6 +350,7 @@ def compute_csp_series(
 ) -> Tuple[List[Dict[str, object]], float]:
     """Recompute HN CSPs and significance for a given holo offset scheme.
 
+    Residues with |ΔN_raw| > 15 ppm are omitted (no CSP, matching the pipeline).
     Returns (entries, threshold) where each entry has holo_resi, holo_aa, csp,
     significant, occluded, and classification (TP/FP/TN/FN).
     """
@@ -354,6 +361,8 @@ def compute_csp_series(
         n_apo = _parse_float(row.get("N_apo"))
         h_holo, n_holo = _holo_hn(row)
         if None in (h_apo, n_apo, h_holo, n_holo):
+            continue
+        if _exceeds_max_abs_delta_n(n_apo, n_holo):
             continue
         try:
             holo_resi = int(float(row["holo_resi"]))
@@ -444,12 +453,16 @@ def _draw_overlay_scheme(
     apo_pts = [apo for apo, _ in pairs]
     holo_pts = [(h[0] + h_offset, h[1] + n_offset) for _, h in pairs]
     segments = list(zip(apo_pts, holo_pts))
+    segment_colors = [
+        _EXCLUDED_LINE_COLOR if _exceeds_max_abs_delta_n(apo[1], holo[1]) else _LINE_COLOR
+        for apo, holo in pairs
+    ]
 
     if segments:
         ax.add_collection(
             LineCollection(
                 segments,
-                colors=_LINE_COLOR,
+                colors=segment_colors,
                 linewidths=0.7,
                 alpha=0.45,
                 zorder=1,
@@ -593,10 +606,10 @@ def _draw_csp_classification_bars(
 
     counts = {k: sum(1 for e in entries if e["classification"] == k) for k in ("TP", "FP", "TN", "FN")}
     handles = [
-        Rectangle((0, 0), 1, 1, facecolor=colors["TP"], alpha=0.85, label=f"TP ({counts['TP']})"),
-        Rectangle((0, 0), 1, 1, facecolor=colors["FP"], alpha=0.85, label=f"FP ({counts['FP']})"),
-        Rectangle((0, 0), 1, 1, facecolor=colors["TN"], alpha=0.85, label=f"TN ({counts['TN']})"),
-        Rectangle((0, 0), 1, 1, facecolor=colors["FN"], alpha=0.85, label=f"FN ({counts['FN']})"),
+        Rectangle((0, 0), 1, 1, facecolor=colors["TP"], alpha=0.85, label=classification_legend_label("TP", counts["TP"])),
+        Rectangle((0, 0), 1, 1, facecolor=colors["FP"], alpha=0.85, label=classification_legend_label("FP", counts["FP"])),
+        Rectangle((0, 0), 1, 1, facecolor=colors["TN"], alpha=0.85, label=classification_legend_label("TN", counts["TN"])),
+        Rectangle((0, 0), 1, 1, facecolor=colors["FN"], alpha=0.85, label=classification_legend_label("FN", counts["FN"])),
         Line2D([0], [0], color="black", linestyle="--", linewidth=1.2, label=f"Thr={threshold:.3f}"),
     ]
     if mark_anchor_resi:
@@ -701,7 +714,7 @@ def plot_target_overlay(
         aligned_count=int(result["aligned_count_global"]),
         n_hn=int(result["n_hn_pairs"]),
         scheme_title="Global CSP-count grid — HSQC",
-        highlight_pairs=None,
+        highlight_pairs=data["highlight"],
         x_limits=data["x_limits"],
         y_limits=data["y_limits"],
     )
@@ -725,7 +738,7 @@ def plot_target_overlay(
         aligned_count=int(result["aligned_count_global"]),
         n_hn=int(result["n_hn_pairs"]),
         scheme_title="Global CSP-count grid — CSP bars",
-        mark_anchor_resi=None,
+        mark_anchor_resi=data["anchor_resi"],
     )
 
     fig.suptitle(str(result["target"]), fontsize=13)
@@ -773,7 +786,7 @@ def plot_aggregate_overlay(
             aligned_count=int(result["aligned_count_global"]),
             n_hn=int(result["n_hn_pairs"]),
             scheme_title=f"{target} — Global HSQC",
-            highlight_pairs=None,
+            highlight_pairs=data["highlight"],
             x_limits=data["x_limits"],
             y_limits=data["y_limits"],
             legend_fontsize=6,
@@ -799,16 +812,16 @@ def plot_aggregate_overlay(
             aligned_count=int(result["aligned_count_global"]),
             n_hn=int(result["n_hn_pairs"]),
             scheme_title=f"{target} — Global CSP bars",
-            mark_anchor_resi=None,
+            mark_anchor_resi=data["anchor_resi"],
             legend_fontsize=6,
         )
 
-        # Row label (a., b., c., …) at top-left of each row; leave titles unchanged.
+        # Row label (A., B., C., …) at top-left of each row; leave titles unchanged.
         if row_idx < 26:
             axes[row_idx, 0].text(
                 -0.12,
                 1.08,
-                f"{chr(ord('a') + row_idx)}.",
+                f"{chr(ord('A') + row_idx)}.",
                 transform=axes[row_idx, 0].transAxes,
                 ha="left",
                 va="bottom",

@@ -20,13 +20,13 @@ except Exception:
 
 try:
     from .csp import CSPResult, compute_atom_deltas_with_offset
-    from .config import classification_colors, hex_to_rgb01 as _config_hex_to_rgb01
+    from .config import classification_colors, classification_legend_label, hex_to_rgb01 as _config_hex_to_rgb01
     from .merge_csv import exceeds_max_classification_csp_z
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.csp import CSPResult, compute_atom_deltas_with_offset
-    from scripts.config import classification_colors, hex_to_rgb01 as _config_hex_to_rgb01
+    from scripts.config import classification_colors, classification_legend_label, hex_to_rgb01 as _config_hex_to_rgb01
     from scripts.merge_csv import exceeds_max_classification_csp_z
 
 
@@ -2538,16 +2538,16 @@ def plot_csp_classification_bars(
     
     # Create custom legend
     legend_elements = [
-        plt.Rectangle((0,0),1,1, facecolor=colors['TP'], alpha=0.8, label=f'(TP) Sig. CSP in Binding Site ({tp_count})'),
-        plt.Rectangle((0,0),1,1, facecolor=colors['FP'], alpha=0.8, label=f'(FP) Sig. CSP -- Allosteric ({fp_count})'),
-        plt.Rectangle((0,0),1,1, facecolor=colors['TN'], alpha=0.8, label=f'(TN) low CSP -- Allosteric ({tn_count})'),
-        plt.Rectangle((0,0),1,1, facecolor=colors['FN'], alpha=0.8, label=f'(FN) low CSP in Binding Site ({fn_count})')
+        plt.Rectangle((0,0),1,1, facecolor=colors['TP'], alpha=0.8, label=classification_legend_label("TP", tp_count)),
+        plt.Rectangle((0,0),1,1, facecolor=colors['FP'], alpha=0.8, label=classification_legend_label("FP", fp_count)),
+        plt.Rectangle((0,0),1,1, facecolor=colors['TN'], alpha=0.8, label=classification_legend_label("TN", tn_count)),
+        plt.Rectangle((0,0),1,1, facecolor=colors['FN'], alpha=0.8, label=classification_legend_label("FN", fn_count)),
     ]
     
     plt.legend(
         handles=legend_elements,
         loc='upper left',
-        fontsize=28,
+        fontsize=14,
     )
     
     # Set x-axis ticks with amino acid sequence (letters only on first row).
@@ -2773,13 +2773,13 @@ def plot_per_atom_classification_panels(
 
         legend_elements = [
             plt.Rectangle((0, 0), 1, 1, facecolor=colors['TP'], alpha=0.8,
-                          label=f'(TP) Sig. Δ{atom_label} in binding site ({tp_count})'),
+                          label=classification_legend_label("TP", tp_count, atom=atom_label)),
             plt.Rectangle((0, 0), 1, 1, facecolor=colors['FP'], alpha=0.8,
-                          label=f'(FP) Sig. Δ{atom_label} -- Allosteric ({fp_count})'),
+                          label=classification_legend_label("FP", fp_count, atom=atom_label)),
             plt.Rectangle((0, 0), 1, 1, facecolor=colors['TN'], alpha=0.8,
-                          label=f'(TN) low Δ{atom_label} -- Allosteric ({tn_count})'),
+                          label=classification_legend_label("TN", tn_count, atom=atom_label)),
             plt.Rectangle((0, 0), 1, 1, facecolor=colors['FN'], alpha=0.8,
-                          label=f'(FN) low Δ{atom_label} in binding site ({fn_count})'),
+                          label=classification_legend_label("FN", fn_count, atom=atom_label)),
         ]
 
         ax.legend(handles=legend_elements, loc='upper right', fontsize=9)

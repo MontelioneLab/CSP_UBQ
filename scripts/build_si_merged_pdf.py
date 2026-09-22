@@ -2,6 +2,10 @@
 """
 Compile SI table/figure TeX masters and merge into SI_documents/SI merged.pdf.
 
+With --combined, write Supplemental_Information.pdf instead of SI_merged.pdf:
+the same SI tables/figures/references with a combined TOC and SI Text, plus
+All_Case_Studies.pdf after the References.
+
 Requires latexmk (or pdflatex) and pypdf.
 """
 
@@ -19,6 +23,15 @@ TABLES_MAIN = "main"
 TABLES_OUT = "CSP_UBQ_SUPPL_TABLES.pdf"
 TOC_MASTER = "si_toc"
 TOC_OUT = "SI_TOC.pdf"
+TOC_COMBINED_MASTER = "si_toc_combined"
+TOC_COMBINED_OUT = "SI_TOC_combined.pdf"
+TITLE_MASTER = "si_title"
+TITLE_OUT = "SI_title.pdf"
+SUPP_TEXT_MASTER = "si_supplementary_text"
+SUPP_TEXT_COMBINED_MASTER = "si_supplementary_text_combined"
+SUPP_TEXT_COMBINED_OUT = "Supplementary Text combined.pdf"
+CASE_STUDIES_PDF = "All_Case_Studies.pdf"
+COMBINED_OUT = "Supplemental_Information.pdf"
 
 TABLE_MASTERS: list[tuple[str, str]] = [
     ("si_table_st1", "CSP_UBQ_TABLE.pdf"),
@@ -33,13 +46,15 @@ C_TERM_OUT = "SI C term.pdf"
 N_TERM = "SI N term.pdf"
 SUPPLEMENTARY_TEXT = "Supplementary Text.pdf"
 REFERENCES = "SI_C_term_references.pdf"
+REFERENCES_MASTER = "si_references"
 MERGED = "SI merged.pdf"
 
 # Heuristic SF19 (PDB Advanced Search) page index (0-based) in a prior C-term PDF when PNG is missing.
 # C-term pages are S9–S18 then PDB as S19 (insert index 10).
 DEFAULT_SF19_PAGE_INDEX = 10
 DEFAULT_SF19_INSERT_INDEX = 10
-# N-term page 0 = title; page 1 = stale TOC (dropped); pages 2+ = narrative.
+# Compiled title page replaces N-term page 0. N-term page 1 = stale TOC (dropped);
+# pages 2+ = leftover narrative if present.
 N_TERM_TITLE_PAGES = 1
 N_TERM_DROP_AFTER_TITLE = 1
 
@@ -80,11 +95,18 @@ def _compile_tex(master_stem: str, tex_dir: Path) -> Path:
     return pdf_path
 
 
-def _ensure_references_pdf(si_dir: Path, c_term_pdf: Path) -> Path:
-    """Ensure SI_C_term_references.pdf exists (last page of a prior C-term)."""
+def _ensure_references_pdf(si_dir: Path, c_term_pdf: Path, tex_dir: Path | None = None) -> Path:
+    """Compile si_references.tex when present; else reuse or extract the static PDF."""
     from pypdf import PdfReader, PdfWriter
 
     refs = si_dir / REFERENCES
+    tex_root = tex_dir if tex_dir is not None else si_dir / "tex"
+    refs_master = tex_root / f"{REFERENCES_MASTER}.tex"
+    if refs_master.is_file():
+        print(f"[SI PDF] Compiling {REFERENCES_MASTER}.tex -> {REFERENCES}")
+        built = _compile_tex(REFERENCES_MASTER, tex_root)
+        shutil.copy2(built, refs)
+        return refs
     if refs.is_file():
         return refs
     if not c_term_pdf.is_file():
@@ -174,6 +196,56 @@ def _pdf_looks_like_pdb_search(path: Path) -> bool:
     return False
 
 
+def _footer_overlay_page(width: float, height: float, number: int):
+    """Blank overlay with a white footer patch and a centered page number."""
+    from pypdf import PageObject
+    from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
+
+    overlay = PageObject.create_blank_page(width=width, height=height)
+    font = DictionaryObject()
+    font[NameObject("/Type")] = NameObject("/Font")
+    font[NameObject("/Subtype")] = NameObject("/Type1")
+    font[NameObject("/BaseFont")] = NameObject("/Helvetica")
+    font[NameObject("/Encoding")] = NameObject("/WinAnsiEncoding")
+    fonts = DictionaryObject()
+    fonts[NameObject("/F1")] = font
+    resources = DictionaryObject()
+    resources[NameObject("/Font")] = fonts
+    overlay[NameObject("/Resources")] = resources
+
+    label = str(number)
+    font_size = 10.0
+    text_w = 0.556 * font_size * len(label)
+    y = 22.0
+    x_text = width / 2.0 - text_w / 2.0
+    rect_w = max(52.0, text_w + 18.0)
+    rect_h = 16.0
+    x_rect = width / 2.0 - rect_w / 2.0
+    y_rect = y - 4.0
+    content = (
+        f"q 1 1 1 rg {x_rect:.2f} {y_rect:.2f} {rect_w:.2f} {rect_h:.2f} re f Q\n"
+        f"BT /F1 {font_size:.1f} Tf {x_text:.2f} {y:.2f} Td ({label}) Tj ET\n"
+    )
+    stream = DecodedStreamObject()
+    stream.set_data(content.encode("latin-1"))
+    overlay.replace_contents(stream)
+    return overlay
+
+
+def _stamp_continuous_page_numbers(writer) -> None:
+    """Number pages 1..N in the footer and set matching PDF page labels."""
+    from pypdf.constants import PageLabelStyle
+
+    n_pages = len(writer.pages)
+    for i, page in enumerate(writer.pages, start=1):
+        box = page.mediabox
+        overlay = _footer_overlay_page(float(box.width), float(box.height), i)
+        page.merge_page(overlay)
+    if n_pages:
+        writer.set_page_label(0, n_pages - 1, style=PageLabelStyle.DECIMAL, start=1)
+    print(f"[SI PDF] Stamped continuous page numbers 1-{n_pages}")
+
+
 def _build_c_term_pdf(
     tex_dir: Path,
     si_dir: Path,
@@ -184,7 +256,7 @@ def _build_c_term_pdf(
     from pypdf import PdfReader, PdfWriter
 
     existing_c = si_dir / C_TERM_OUT
-    refs_pdf = _ensure_references_pdf(si_dir, existing_c)
+    refs_pdf = _ensure_references_pdf(si_dir, existing_c, tex_dir)
 
     sf19_png = figures_dir / "SF19_pdb_search.png"
     sf19_pdf = figures_dir / "SF19_pdb_search.pdf"
@@ -227,41 +299,56 @@ def _build_c_term_pdf(
     return out
 
 
-def _merge_n_term_with_toc(si_dir: Path, tex_dir: Path) -> list:
-    """Return pages: N-term title + TOC + Supplementary Text + leftover N-term narrative."""
+def _merge_n_term_with_toc(
+    si_dir: Path,
+    tex_dir: Path,
+    *,
+    toc_master: str = TOC_MASTER,
+    toc_out_name: str = TOC_OUT,
+    supp_text: Path | None = None,
+) -> list:
+    """Return pages: compiled title + TOC + Supplementary Text + leftover N-term narrative."""
     from pypdf import PdfReader
 
-    n_term = si_dir / N_TERM
-    if not n_term.is_file():
-        raise FileNotFoundError(f"Missing N-term PDF: {n_term}")
-    supp_text = si_dir / SUPPLEMENTARY_TEXT
+    print(f"[SI PDF] Compiling {TITLE_MASTER}.tex -> {TITLE_OUT}")
+    title_built = _compile_tex(TITLE_MASTER, tex_dir)
+    title_dest = si_dir / TITLE_OUT
+    shutil.copy2(title_built, title_dest)
+
+    if supp_text is None:
+        print(f"[SI PDF] Compiling {SUPP_TEXT_MASTER}.tex -> {SUPPLEMENTARY_TEXT}")
+        text_built = _compile_tex(SUPP_TEXT_MASTER, tex_dir)
+        supp_text = si_dir / SUPPLEMENTARY_TEXT
+        shutil.copy2(text_built, supp_text)
     if not supp_text.is_file():
         raise FileNotFoundError(f"Missing Supplementary Text PDF: {supp_text}")
 
-    print(f"[SI PDF] Compiling {TOC_MASTER}.tex -> {TOC_OUT}")
-    toc_built = _compile_tex(TOC_MASTER, tex_dir)
-    toc_dest = si_dir / TOC_OUT
+    print(f"[SI PDF] Compiling {toc_master}.tex -> {toc_out_name}")
+    toc_built = _compile_tex(toc_master, tex_dir)
+    toc_dest = si_dir / toc_out_name
     shutil.copy2(toc_built, toc_dest)
 
-    n_reader = PdfReader(str(n_term))
+    n_term = si_dir / N_TERM
     toc_reader = PdfReader(str(toc_dest))
     text_reader = PdfReader(str(supp_text))
-    pages = []
-    # Title page(s)
-    for i in range(min(N_TERM_TITLE_PAGES, len(n_reader.pages))):
-        pages.append(n_reader.pages[i])
-    # Fresh TOC, then Supplementary Text
+    title_reader = PdfReader(str(title_dest))
+    pages = list(title_reader.pages)
     pages.extend(toc_reader.pages)
     pages.extend(text_reader.pages)
-    # Any leftover N-term narrative after dropped stale TOC page(s)
-    start = N_TERM_TITLE_PAGES + N_TERM_DROP_AFTER_TITLE
-    for i in range(start, len(n_reader.pages)):
-        pages.append(n_reader.pages[i])
+    leftover_end = "none"
+    if n_term.is_file():
+        n_reader = PdfReader(str(n_term))
+        start = N_TERM_TITLE_PAGES + N_TERM_DROP_AFTER_TITLE
+        for i in range(start, len(n_reader.pages)):
+            pages.append(n_reader.pages[i])
+        leftover_end = (
+            f"{start + 1}-{len(n_reader.pages)}" if len(n_reader.pages) > start else "none"
+        )
     print(
-        f"[SI PDF] N-term splice: keep pages 1-{N_TERM_TITLE_PAGES}, "
+        f"[SI PDF] Title splice: compiled {TITLE_OUT} ({len(title_reader.pages)} p), "
         f"insert TOC ({len(toc_reader.pages)} p), "
-        f"insert {SUPPLEMENTARY_TEXT} ({len(text_reader.pages)} p), "
-        f"keep N-term pages {start+1}-{len(n_reader.pages) if len(n_reader.pages) > start else 'none'}"
+        f"insert {supp_text.name} ({len(text_reader.pages)} p), "
+        f"keep N-term leftover pages {leftover_end}"
     )
     return pages
 
@@ -325,11 +412,92 @@ def build_si_merged(
     for page in c_reader.pages:
         writer.add_page(page)
 
+    _stamp_continuous_page_numbers(writer)
+
     merged = si_dir / MERGED
     with merged.open("wb") as f:
         writer.write(f)
 
     root_copy = repo_root / "SI_merged.pdf"
+    shutil.copy2(merged, root_copy)
+    print(f"[SI PDF] Wrote {merged} and {root_copy} ({len(writer.pages)} pages)")
+    return merged
+
+
+def build_supplemental_information(
+    *,
+    repo_root: Path,
+    si_dir: Path,
+    tex_dir: Path,
+    case_studies_pdf: Path | None = None,
+) -> Path:
+    """Merge variant TOC/SI text + existing SI parts + All_Case_Studies.pdf.
+
+    Does not rewrite SI_merged.pdf. Reuses existing tables and C-term PDFs.
+    """
+    try:
+        from pypdf import PdfReader, PdfWriter
+    except ImportError as exc:
+        raise SystemExit(
+            "pypdf is required for SI PDF merge. Install with: pip install pypdf"
+        ) from exc
+
+    _which_latex()
+
+    tables = si_dir / TABLES_OUT
+    c_term = si_dir / C_TERM_OUT
+    if not tables.is_file():
+        raise FileNotFoundError(
+            f"Missing tables PDF: {tables}. Run without --combined first."
+        )
+    if not c_term.is_file():
+        raise FileNotFoundError(
+            f"Missing C-term PDF: {c_term}. Run without --combined first."
+        )
+
+    case_pdf = (case_studies_pdf or repo_root / CASE_STUDIES_PDF).resolve()
+    if not case_pdf.is_file():
+        raise FileNotFoundError(f"Missing case-studies PDF: {case_pdf}")
+
+    print(
+        f"[SI PDF] Compiling {SUPP_TEXT_COMBINED_MASTER}.tex -> {SUPP_TEXT_COMBINED_OUT}"
+    )
+    text_built = _compile_tex(SUPP_TEXT_COMBINED_MASTER, tex_dir)
+    text_dest = si_dir / SUPP_TEXT_COMBINED_OUT
+    shutil.copy2(text_built, text_dest)
+
+    writer = PdfWriter()
+    for page in _merge_n_term_with_toc(
+        si_dir,
+        tex_dir,
+        toc_master=TOC_COMBINED_MASTER,
+        toc_out_name=TOC_COMBINED_OUT,
+        supp_text=text_dest,
+    ):
+        writer.add_page(page)
+
+    tables_reader = PdfReader(str(tables))
+    print(f"[SI PDF] Merging {tables.name} ({len(tables_reader.pages)} pages)")
+    for page in tables_reader.pages:
+        writer.add_page(page)
+
+    c_reader = PdfReader(str(c_term))
+    print(f"[SI PDF] Merging {c_term.name} ({len(c_reader.pages)} pages)")
+    for page in c_reader.pages:
+        writer.add_page(page)
+
+    case_reader = PdfReader(str(case_pdf))
+    print(f"[SI PDF] Appending {case_pdf.name} ({len(case_reader.pages)} pages)")
+    for page in case_reader.pages:
+        writer.add_page(page)
+
+    _stamp_continuous_page_numbers(writer)
+
+    merged = si_dir / COMBINED_OUT
+    with merged.open("wb") as f:
+        writer.write(f)
+
+    root_copy = repo_root / COMBINED_OUT
     shutil.copy2(merged, root_copy)
     print(f"[SI PDF] Wrote {merged} and {root_copy} ({len(writer.pages)} pages)")
     return merged
@@ -357,6 +525,20 @@ def main() -> int:
         action="store_true",
         help="Compile legacy per-section table masters instead of main.tex.",
     )
+    ap.add_argument(
+        "--combined",
+        action="store_true",
+        help=(
+            "Build Supplemental_Information.pdf from existing SI parts plus "
+            "All_Case_Studies.pdf. Does not rewrite SI_merged.pdf."
+        ),
+    )
+    ap.add_argument(
+        "--case-studies-pdf",
+        type=Path,
+        default=None,
+        help="Path to All_Case_Studies.pdf (default: <repo-root>/All_Case_Studies.pdf).",
+    )
     # Kept for CLI compatibility; ignored (references PDF is used instead).
     ap.add_argument("--ref-pages-from-end", type=int, default=0, help=argparse.SUPPRESS)
     args = ap.parse_args()
@@ -367,15 +549,23 @@ def main() -> int:
     tex_dir = (args.tex_dir or si_dir / "tex").resolve()
 
     try:
-        build_si_merged(
-            repo_root=repo,
-            figures_dir=figures,
-            si_dir=si_dir,
-            tex_dir=tex_dir,
-            sf19_page_index=args.sf19_page_index,
-            skip_c_term=args.skip_c_term,
-            chunk_tables=args.chunk_tables,
-        )
+        if args.combined:
+            build_supplemental_information(
+                repo_root=repo,
+                si_dir=si_dir,
+                tex_dir=tex_dir,
+                case_studies_pdf=args.case_studies_pdf,
+            )
+        else:
+            build_si_merged(
+                repo_root=repo,
+                figures_dir=figures,
+                si_dir=si_dir,
+                tex_dir=tex_dir,
+                sf19_page_index=args.sf19_page_index,
+                skip_c_term=args.skip_c_term,
+                chunk_tables=args.chunk_tables,
+            )
     except subprocess.CalledProcessError as exc:
         print(f"[SI PDF] LaTeX failed with exit {exc.returncode}", file=sys.stderr)
         return exc.returncode or 1

@@ -25,13 +25,13 @@ import seaborn as sns
 # Support running as a script or module
 try:
     from .align import align_global
-    from .config import classification_colors
+    from .config import classification_colors, classification_legend_label
     from .merge_csv import filter_recorded_csp_dataframe
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
     from scripts.align import align_global
-    from scripts.config import classification_colors
+    from scripts.config import classification_colors, classification_legend_label
     from scripts.merge_csv import filter_recorded_csp_dataframe
 
 
@@ -44,7 +44,7 @@ PREDICTOR_COLUMNS: Sequence[str] = (
     "is_occluded_occlusion",
 )
 
-# Matplotlib mathtext: C with α subscript (not plaintext "CA"). Used by distance histogram x-axes (e.g. SI Fig. S11).
+# Matplotlib mathtext: C with α subscript (not plaintext "CA"). Used by distance histogram x-axes (e.g. SI Fig. S13).
 MIN_CA_DISTANCE_XLABEL = r"Minimum $C_\alpha$ distance (Å)"
 
 MODE_CONFIGS: Dict[str, Dict[str, str]] = {
@@ -741,8 +741,8 @@ def render_stacked_histogram(
         color=[tp_color, fp_color],
         edgecolor="black",
         label=[
-            f"(TP) Sig. CSP in Binding Site ({positive_count})",
-            f"(FP) Sig. CSP -- Allosteric ({negative_count})",
+            classification_legend_label("TP", positive_count),
+            classification_legend_label("FP", negative_count),
         ],
     )
     y_label = ylabel if ylabel is not None else "Number of Significant Residues"
@@ -908,10 +908,10 @@ def render_confusion_matrix_stacked_histogram(
 
     colors = [tn_color, fp_color, fn_color, tp_color]  # TN, FP, FN, TP
     labels = [
-        f"(TN) Small CSP -- allosteric ({len(tn_distances)})",
-        f"(FP) Sig. CSP -- allosteric ({len(fp_distances)})",
-        f"(FN) Small CSP in Binding Site ({len(fn_distances)})",
-        f"(TP) Sig. CSP in Binding Site ({len(tp_distances)})",
+        classification_legend_label("TN", len(tn_distances)),
+        classification_legend_label("FP", len(fp_distances)),
+        classification_legend_label("FN", len(fn_distances)),
+        classification_legend_label("TP", len(tp_distances)),
     ]
 
     plt.figure(figsize=(8, 5))

@@ -65,8 +65,8 @@ try:
     from .analyze_targets_single_atom_shifts import compute_1d_metrics_for_target
     from .analyze_targets import load_alignment, compute_f1_score
     from .create_fig_3 import collect_distance_categories
-    from .create_si_fig_s12 import collect_distance_categories as collect_s13_distance_categories
-    from .create_si_fig_s13 import collect_distance_categories as collect_s14_distance_categories
+    from .create_si_fig_s13 import collect_distance_categories as collect_s13_distance_categories
+    from .create_si_fig_s14 import collect_distance_categories as collect_s14_distance_categories
     from .HSQC_visualize import (
         plot_hsqc_variants,
         resolve_hsqc_offsets,
@@ -81,6 +81,7 @@ try:
         write_pymol_occlusion_script,
         write_pymol_delta_sasa_script,
     )
+    from .report_interface_missing_csp import analyze_target, is_missing_hn
 except Exception:
     from scripts.config import paths, ensure_directories
     from scripts.pipeline import (
@@ -121,8 +122,8 @@ except Exception:
     from scripts.analyze_targets_single_atom_shifts import compute_1d_metrics_for_target
     from scripts.analyze_targets import load_alignment, compute_f1_score
     from scripts.create_fig_3 import collect_distance_categories
-    from scripts.create_si_fig_s12 import collect_distance_categories as collect_s13_distance_categories
-    from scripts.create_si_fig_s13 import collect_distance_categories as collect_s14_distance_categories
+    from scripts.create_si_fig_s13 import collect_distance_categories as collect_s13_distance_categories
+    from scripts.create_si_fig_s14 import collect_distance_categories as collect_s14_distance_categories
     from scripts.HSQC_visualize import (
         plot_hsqc_variants,
         resolve_hsqc_offsets,
@@ -137,6 +138,7 @@ except Exception:
         write_pymol_occlusion_script,
         write_pymol_delta_sasa_script,
     )
+    from scripts.report_interface_missing_csp import analyze_target, is_missing_hn
 
 
 # --- Fixtures ---
@@ -1202,6 +1204,20 @@ class TestPlotHsqcVariants:
         assert _classification_color_map()[cls] == _EXCLUDED_LINE_COLOR
 
 
+class TestClassificationLegendLabel:
+    """Figure 3-style TP/FP/TN/FN legend strings."""
+
+    def test_binding_site_phrases_and_counts(self):
+        from scripts.config import classification_legend_label
+
+        assert classification_legend_label("TP", 1332) == "(TP) CSP -- in binding site (1332)"
+        assert classification_legend_label("FP", 3023) == "(FP) CSP -- not in binding site (3023)"
+        assert classification_legend_label("TN", 7031) == "(TN) low CSP -- not in binding site (7031)"
+        assert classification_legend_label("FN", 882) == "(FN) low CSP -- in binding site (882)"
+        assert classification_legend_label("FP") == "(FP) CSP -- not in binding site"
+        assert classification_legend_label("TN", atom="H") == "(TN) low ΔH -- not in binding site"
+
+
 class TestPlotCspClassificationBars:
     """Tests for plot_csp_classification_bars."""
 
@@ -1547,6 +1563,88 @@ save_
         assert "Phosphate Buffer=50" in row["query_buffer"]
         assert row["query_entities"]
         assert row["match_entities"] == row["query_entities"]
+
+
+class TestInterfaceMissingCspReport:
+    """Pooled missing-HN counts at the interface vs outside."""
+
+    def test_is_missing_hn_apo_or_holo(self):
+        assert not is_missing_hn({"H_apo": "8.1", "N_apo": "120", "H_holo": "8.2", "N_holo": "121"})
+        assert is_missing_hn({"H_apo": "", "N_apo": "120", "H_holo": "8.2", "N_holo": "121"})
+        assert is_missing_hn({"H_apo": "8.1", "N_apo": "120", "H_holo": "", "N_holo": "121"})
+
+    def test_analyze_target_splits_interface_and_outside(self, temp_dir):
+        target = Path(temp_dir) / "1ABC_1"
+        target.mkdir()
+        fields = [
+            "apo_bmrb", "holo_bmrb", "holo_pdb", "pdb_residue_number",
+            "apo_resi", "apo_aa", "holo_resi", "holo_aa",
+            "H_apo", "N_apo", "H_holo", "N_holo", "N_holo_original", "csp_A",
+            "is_occluded_occlusion", "passes_filter_distance",
+            "has_hbond_interaction", "has_charge_complement_interaction",
+            "has_pi_contact_interaction", "passes_sub_2A_filter_any_atom",
+        ]
+        rows = [
+            # interface, complete
+            {
+                "apo_bmrb": "1", "holo_bmrb": "2", "holo_pdb": "1abc",
+                "pdb_residue_number": "10", "apo_resi": "10", "apo_aa": "A",
+                "holo_resi": "10", "holo_aa": "A",
+                "H_apo": "8.1", "N_apo": "120.0", "H_holo": "8.2", "N_holo": "121.0",
+                "N_holo_original": "121.0", "csp_A": "0.05",
+                "is_occluded_occlusion": "True", "passes_filter_distance": "",
+                "has_hbond_interaction": "", "has_charge_complement_interaction": "",
+                "has_pi_contact_interaction": "", "passes_sub_2A_filter_any_atom": "",
+            },
+            # interface, missing holo H (also empty csp)
+            {
+                "apo_bmrb": "1", "holo_bmrb": "2", "holo_pdb": "1abc",
+                "pdb_residue_number": "11", "apo_resi": "11", "apo_aa": "V",
+                "holo_resi": "11", "holo_aa": "V",
+                "H_apo": "8.0", "N_apo": "119.0", "H_holo": "", "N_holo": "118.0",
+                "N_holo_original": "", "csp_A": "",
+                "is_occluded_occlusion": "True", "passes_filter_distance": "",
+                "has_hbond_interaction": "", "has_charge_complement_interaction": "",
+                "has_pi_contact_interaction": "", "passes_sub_2A_filter_any_atom": "",
+            },
+            # outside, complete
+            {
+                "apo_bmrb": "1", "holo_bmrb": "2", "holo_pdb": "1abc",
+                "pdb_residue_number": "20", "apo_resi": "20", "apo_aa": "G",
+                "holo_resi": "20", "holo_aa": "G",
+                "H_apo": "8.3", "N_apo": "110.0", "H_holo": "8.4", "N_holo": "111.0",
+                "N_holo_original": "111.0", "csp_A": "0.02",
+                "is_occluded_occlusion": "", "passes_filter_distance": "",
+                "has_hbond_interaction": "", "has_charge_complement_interaction": "",
+                "has_pi_contact_interaction": "", "passes_sub_2A_filter_any_atom": "",
+            },
+            # outside, missing apo N
+            {
+                "apo_bmrb": "1", "holo_bmrb": "2", "holo_pdb": "1abc",
+                "pdb_residue_number": "21", "apo_resi": "21", "apo_aa": "K",
+                "holo_resi": "21", "holo_aa": "K",
+                "H_apo": "8.5", "N_apo": "", "H_holo": "8.6", "N_holo": "112.0",
+                "N_holo_original": "112.0", "csp_A": "",
+                "is_occluded_occlusion": "", "passes_filter_distance": "",
+                "has_hbond_interaction": "", "has_charge_complement_interaction": "",
+                "has_pi_contact_interaction": "", "passes_sub_2A_filter_any_atom": "",
+            },
+        ]
+        with (target / "master_alignment.csv").open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(rows)
+
+        report = analyze_target(target)
+        assert report.n_interface == 2
+        assert report.n_outside == 2
+        assert report.n_missing_hn_interface == 1
+        assert report.n_missing_hn_outside == 1
+        assert report.n_missing_holo_hn == 1
+        assert report.n_missing_csp == 1
+        assert report.n_missing_csp_outside == 1
+        assert report.fraction_missing_hn_interface == 0.5
+        assert report.fraction_missing_hn_outside == 0.5
 
 
 # --- 7. Integration Test ---

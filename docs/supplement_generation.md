@@ -44,14 +44,14 @@ Optional: `--stop-on-error` exits on the first failing sub-script (default: cont
 |--------|--------|
 | S1–S7 | `scripts/create_si_figs_s1_s9.py` |
 | S8 | `scripts/create_si_st9_fig_s8_dissimilar_conditions.py` |
-| S9 | `scripts/create_si_fig_s9.py` (HA/CA confusion histograms) |
-| S10 | `scripts/create_si_fig_s10.py` (CA-inclusive confusion histograms) |
-| S11 | `scripts/create_si_fig_s11.py` |
+| S9 | `scripts/create_si_fig_s9.py` (same-author Figure 3) |
+| S10 | `scripts/create_si_fig_s10.py` (HA/CA confusion histograms) |
+| S11 | `scripts/create_si_fig_s11.py` (CA-inclusive confusion histograms) |
 | S12 | `scripts/create_si_fig_s12.py` |
 | S13 | `scripts/create_si_fig_s13.py` |
 | S14 | `scripts/create_si_fig_s14.py` |
-| S15 | `scripts/create_si_fig_s15.py` (FP/(TP+FP) distributions) |
-| S16 | `scripts/create_si_fig_s16.py` (same-author Figure 3) |
+| S15 | `scripts/create_si_fig_s15.py` |
+| S16 | `scripts/create_si_fig_s16.py` (FP/(TP+FP) distributions) |
 | S17 | `scripts/create_si_fig_s17.py` (CSP vs distance panels) |
 | S18 | `scripts/create_si_fig_s18.py` (2FIN case-study z panel) |
 | S19 | `scripts/create_si_fig_s19.py` (static PDB search screenshot) |
@@ -79,6 +79,10 @@ SI N term.pdf (title)
 → SI C term.pdf
 ```
 
+4. Builds `Supplemental_Information.pdf` (`scripts/build_si_merged_pdf.py --combined`) with a combined TOC/SI Text and `All_Case_Studies.pdf` appended after the References. `SI_merged.pdf` is left unchanged by that flag.
+
+After each merge, `build_si_merged_pdf.py` stamps a single running footer (title page = 1) so section PDFs no longer reset at page 1.
+
 Compile the tables portion alone:
 
 ```bash
@@ -94,14 +98,14 @@ present. References are appended from
 `SI_documents/SI_C_term_references.pdf` only (not the last N pages of a prior C-term,
 which previously re-introduced a duplicate PDB-search page).
 
-SI Fig. S9 uses the pH/temp-matched subset that also has apo and holo HA and CA
+SI Fig. S10 uses the pH/temp-matched subset that also has apo and holo HA and CA
 shifts (`csp_table_HA_CA.csv`; $n=101$ on the current outputs tree).
-Analysis figures S10, S11, S14, S21, S23–S24, and S26 default to
-`data/CSP_UBQ_ph0.5_temp5C.csv`. SI Fig. S16 uses
+Analysis figures S11, S12, S15, S21, S23–S24, and S26 default to
+`data/CSP_UBQ_ph0.5_temp5C.csv`. SI Fig. S9 uses
 `data/CSP_UBQ_ph0.5_temp5C_same_author_list.csv` ($n=32$ with pipeline outputs).
 SI Fig. S23 uses the primary cutoff
 `max(cleaned mean, 0.05 ppm)` on the pH/temp-matched list ($n=135$ with pipeline
-outputs; mean $0.0804$ ppm, matching README Methods). S12/S13 use the rematch-excluded
+outputs; mean $0.0804$ ppm, matching README Methods). S13/S14 use the rematch-excluded
 pH/temp-matched list (`ph05_n137_targets.csv`, $n=136$).
 SI Fig. S17 is composed by `scripts/create_si_fig_s17_csp_vs_distance.py` from
 `p_significant_vs_ca_distance_ph05.png` (panel a) and the atom–atom
@@ -141,3 +145,22 @@ Panels: A 52080/52079, B 28070/28071, C 34000/34001, D 34394/6354, E 17769/51725
   ```bash
   python scripts/build_si_merged_pdf.py
   ```
+
+- Rebuild the combined SI + case-study document (reuses existing tables/C-term; does not rewrite `SI_merged.pdf`):
+
+  ```bash
+  python scripts/build_si_merged_pdf.py --combined
+  ```
+
+  Order:
+
+  ```text
+  SI N term.pdf (title)
+  → SI_TOC_combined.pdf (from tex/si_toc_combined.tex; adds References + All Case Studies)
+  → Supplementary Text combined.pdf (from tex/si_supplementary_text_combined.tex)
+  → CSP_UBQ_SUPPL_TABLES.pdf
+  → SI C term.pdf
+  → All_Case_Studies.pdf
+  ```
+
+  Writes `SI_documents/Supplemental_Information.pdf` and copies `Supplemental_Information.pdf` at the repo root. The combined SI Text states that the 243 case studies are appended after the References rather than provided as a separate file.

@@ -491,7 +491,7 @@ def main() -> int:
         df,
         value_col="pct_allosteric",
         out_path=out_dir / "heatmap_pct_allosteric.png",
-        title="Mean FP / (TP + FP)  (% allosteric CSPs)",
+        title="Mean FP / (TP + FP)  (% distal CSPs)",
         cbar_label="FP / (TP + FP)",
         fmt=".3f",
         cmap="viridis",

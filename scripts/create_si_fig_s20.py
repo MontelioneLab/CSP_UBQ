@@ -10,9 +10,9 @@ Regenerates the buffer sweep metrics via functions in
   - ``outputs/buffer_threshold_sweep/heatmap_pct_allosteric.png``
   - ``figures/SF20_buffer_sweep.png``
 
-The supplementary figure is a 2-panel layout:
+The supplementary figure is a stacked 2-panel layout (A above B):
   - Panel A: number of targets in subset
-  - Panel B: mean FP / (TP + FP) (% allosteric CSPs)
+  - Panel B: mean FP / (TP + FP) (% distal CSPs)
 """
 
 from __future__ import annotations
@@ -65,7 +65,7 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=Path,
         default=Path("figures") / "SF20_buffer_sweep.png",
-        help="Destination for the 2-panel supplementary figure.",
+        help="Destination for the stacked 2-panel supplementary figure (A above B).",
     )
     parser.add_argument("--ph-min", type=float, default=0.1)
     parser.add_argument("--ph-max", type=float, default=2.0)
@@ -153,7 +153,7 @@ def main() -> int:
         df=df,
         value_col="pct_allosteric",
         out_path=sweep_out_dir / "heatmap_pct_allosteric.png",
-        title="Mean FP / (TP + FP)  (% allosteric CSPs)",
+        title="Mean FP / (TP + FP)  (% distal CSPs)",
         cbar_label="FP / (TP + FP)",
         fmt=".3f",
         cmap="viridis",
@@ -166,15 +166,15 @@ def main() -> int:
         sweep_out_dir / "heatmap_pct_allosteric.png",
     ]
     images = [Image.open(path).convert("RGB") for path in panel_paths]
-    max_height = max(image.height for image in images)
+    max_width = max(image.width for image in images)
 
     padded_images = []
     for image in images:
-        if image.height == max_height:
+        if image.width == max_width:
             padded_images.append(image)
             continue
-        canvas = Image.new("RGB", (image.width, max_height), color="white")
-        canvas.paste(image, (0, (max_height - image.height) // 2))
+        canvas = Image.new("RGB", (max_width, image.height), color="white")
+        canvas.paste(image, (0, 0))
         padded_images.append(canvas)
 
     gap = 30
@@ -187,21 +187,25 @@ def main() -> int:
     font = _load_font(panel_px)
     label_margin = panel_px + 28
 
-    total_width = sum(image.width for image in padded_images) + gap
-    composite = Image.new("RGB", (total_width, max_height + label_margin), color="white")
+    total_height = (
+        sum(image.height for image in padded_images)
+        + gap
+        + 2 * label_margin
+    )
+    composite = Image.new("RGB", (max_width, total_height), color="white")
 
     draw = ImageDraw.Draw(composite)
-    x = 0
-    for label, image in zip(("A", "B"), padded_images):
-        composite.paste(image, (x, label_margin))
+    y = 0
+    for label, image in zip(("A.", "B."), padded_images):
         draw.text(
-            (x, label_margin // 2),
+            (0, y + label_margin // 2),
             label,
             fill=(0, 0, 0),
             font=font,
             anchor="lm",
         )
-        x += image.width + gap
+        composite.paste(image, (0, y + label_margin))
+        y += label_margin + image.height + gap
 
     d = int(args.dpi)
     composite.save(output_path, format="PNG", dpi=(d, d))

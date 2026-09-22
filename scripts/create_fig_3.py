@@ -23,13 +23,13 @@ import pandas as pd
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 
 try:
-    from .config import classification_colors
+    from .config import classification_colors, classification_legend_label
     from .merge_csv import filter_recorded_csp_dataframe, parse_optional_bool
     from .target_resolution import load_target_rows, resolve_target_rows
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
-    from scripts.config import classification_colors
+    from scripts.config import classification_colors, classification_legend_label
     from scripts.merge_csv import filter_recorded_csp_dataframe, parse_optional_bool
     from scripts.target_resolution import load_target_rows, resolve_target_rows
 
@@ -180,8 +180,8 @@ def plot_figure_3a(
         edgecolor="black",
         linewidth=0.8,
         label=[
-            f"(TP) CSP --  in binding site ({len(tp_distances)})",
-            f"(FP) CSP --  not in binding site ({len(fp_distances)})",
+            classification_legend_label("TP", len(tp_distances)),
+            classification_legend_label("FP", len(fp_distances)),
         ],
     )
     ax = plt.gca()
@@ -231,10 +231,10 @@ def plot_figure_3b(
         edgecolor="black",
         linewidth=0.8,
         label=[
-            f"(TN) low CSP -- not in binding site ({len(tn_distances)})",
-            f"(FP) CSP -- not in binding site ({len(fp_distances)})",
-            f"(FN) low CSP --  in binding site ({len(fn_distances)})",
-            f"(TP) CSP --  in binding site ({len(tp_distances)})",
+            classification_legend_label("TN", len(tn_distances)),
+            classification_legend_label("FP", len(fp_distances)),
+            classification_legend_label("FN", len(fn_distances)),
+            classification_legend_label("TP", len(tp_distances)),
         ],
     )
     ax = plt.gca()
@@ -285,8 +285,8 @@ def plot_figure_3_combined(
         edgecolor="black",
         linewidth=0.8,
         label=[
-            f"(TP) CSP --  in binding site ({len(tp_distances)})",
-            f"(FP) CSP --  not in binding site ({len(fp_distances)})",
+            classification_legend_label("TP", len(tp_distances)),
+            classification_legend_label("FP", len(fp_distances)),
         ],
     )
     ax_a.set_xlabel(FIGURE_3_DISTANCE_XLABEL)
@@ -339,10 +339,10 @@ def plot_figure_3_combined(
         edgecolor="black",
         linewidth=0.8,
         label=[
-            f"(TN) low CSP -- not in binding site ({len(tn_distances)})",
-            f"(FP) CSP -- not in binding site ({len(fp_distances)})",
-            f"(FN) low CSP --  in binding site ({len(fn_distances)})",
-            f"(TP) CSP --  in binding site ({len(tp_distances)})",
+            classification_legend_label("TN", len(tn_distances)),
+            classification_legend_label("FP", len(fp_distances)),
+            classification_legend_label("FN", len(fn_distances)),
+            classification_legend_label("TP", len(tp_distances)),
         ],
     )
     ax_b.set_xlabel(FIGURE_3_DISTANCE_XLABEL)

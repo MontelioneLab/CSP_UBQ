@@ -19,7 +19,7 @@ import sys
 import tempfile
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
@@ -120,7 +120,7 @@ def _parse_rows_to_banks(
     rows: List[Dict[str, str]],
     *,
     is_v3: bool,
-) -> Tuple[str, Dict[int, Dict[str, List[float]]]]:
+) -> Tuple[str, Dict[int, Dict[str, List[float]]], List[int]]:
     residue_to_atoms: Dict[Tuple[int, str], Dict[str, List[float]]] = {}
     for r in rows:
         seq_id: Optional[int] = None
@@ -185,16 +185,17 @@ def _parse_rows_to_banks(
         bank.setdefault(atom_id, []).append(value)
 
     sorted_keys = sorted(residue_to_atoms.keys(), key=lambda k: k[0])
+    seq_ids = [sid for sid, _ in sorted_keys]
     sequence = "".join(AA3_TO1.get(comp.upper(), "X") for _, comp in sorted_keys)
     by_pos: Dict[int, Dict[str, List[float]]] = {}
     for seq_pos, key in enumerate(sorted_keys, 1):
         by_pos[seq_pos] = residue_to_atoms[key]
-    return sequence, by_pos
+    return sequence, by_pos, seq_ids
 
 
 def extract_saveframe_atom_banks(
     star_path: Path,
-) -> List[Tuple[str, str, Dict[int, Dict[str, List[float]]]]]:
+) -> List[Tuple[str, str, Dict[int, Dict[str, List[float]]], List[int]]]:
     """Return (saveframe_name, sequence, atoms_by_seq_pos) matching CSP numbering."""
     from scripts.bmrb_io import (
         _detect_bmrb_format,
@@ -212,30 +213,30 @@ def extract_saveframe_atom_banks(
         all_rows: List[Dict[str, str]] = []
         for _name, rows in saveframes:
             all_rows.extend(rows)
-        sequence, by_pos = _parse_rows_to_banks(all_rows, is_v3=True)
+        sequence, by_pos, seq_ids = _parse_rows_to_banks(all_rows, is_v3=True)
         if not sequence:
             return []
-        return [("assigned_chemical_shifts_1", sequence, by_pos)]
+        return [("assigned_chemical_shifts_1", sequence, by_pos, seq_ids)]
 
-    results: List[Tuple[str, str, Dict[int, Dict[str, List[float]]]]] = []
+    results: List[Tuple[str, str, Dict[int, Dict[str, List[float]]], List[int]]] = []
     for saveframe_name, rows in _parse_all_chem_shift_saveframes(lines):
         if not rows:
             continue
-        sequence, by_pos = _parse_rows_to_banks(rows, is_v3=False)
+        sequence, by_pos, seq_ids = _parse_rows_to_banks(rows, is_v3=False)
         # Mirror CSP filter: require at least some amide H and N
         has_h = any(_median(atoms, AMIDE_H) is not None for atoms in by_pos.values())
         has_n = any(_median(atoms, ("N",)) is not None for atoms in by_pos.values())
         if sequence and has_h and has_n:
-            results.append((saveframe_name, sequence, by_pos))
+            results.append((saveframe_name, sequence, by_pos, seq_ids))
     return results
 
 
 def select_best_saveframe_pair(
-    apo_banks: List[Tuple[str, str, Dict[int, Dict[str, List[float]]]]],
-    holo_banks: List[Tuple[str, str, Dict[int, Dict[str, List[float]]]]],
+    apo_banks: List[Tuple[str, str, Dict[int, Dict[str, List[float]]], List[int]]],
+    holo_banks: List[Tuple[str, str, Dict[int, Dict[str, List[float]]], List[int]]],
 ) -> Tuple[
-    Tuple[str, str, Dict[int, Dict[str, List[float]]]],
-    Tuple[str, str, Dict[int, Dict[str, List[float]]]],
+    Tuple[str, str, Dict[int, Dict[str, List[float]]], List[int]],
+    Tuple[str, str, Dict[int, Dict[str, List[float]]], List[int]],
     float,
 ]:
     from scripts.align import align_global
@@ -243,8 +244,8 @@ def select_best_saveframe_pair(
     best_score = float("-inf")
     best: Optional[
         Tuple[
-            Tuple[str, str, Dict[int, Dict[str, List[float]]]],
-            Tuple[str, str, Dict[int, Dict[str, List[float]]]],
+            Tuple[str, str, Dict[int, Dict[str, List[float]]], List[int]],
+            Tuple[str, str, Dict[int, Dict[str, List[float]]], List[int]],
         ]
     ] = None
     for apo in apo_banks:
@@ -400,6 +401,23 @@ def get_or_compute_rci(
     return parse_rci_txt(cached_rci)
 
 
+def _remap_rci_to_seq_ids(
+    rci_by_pos: Dict[int, Tuple[float, str]],
+    seq_ids: Sequence[int],
+) -> Dict[int, Tuple[float, str]]:
+    """Map SHIFTY 1..N residue numbers onto original BMRB Seq_IDs."""
+    out: Dict[int, Tuple[float, str]] = {}
+    for pos, payload in rci_by_pos.items():
+        if 1 <= pos <= len(seq_ids):
+            out[int(seq_ids[pos - 1])] = payload
+    return out
+
+
+def _write_rci_txt(path: Path, rci_by_resi: Dict[int, Tuple[float, str]]) -> None:
+    lines = [f"{resi} {val} {aa}" for resi, (val, aa) in sorted(rci_by_resi.items())]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def read_master(path: Path) -> Tuple[List[str], List[Dict[str, str]]]:
     with path.open(newline="") as f:
         reader = csv.DictReader(f)
@@ -460,10 +478,12 @@ def process_target(
         }
 
     apo_sel, holo_sel, score = select_best_saveframe_pair(apo_banks, holo_banks)
-    apo_sf, apo_seq, apo_atoms = apo_sel
-    holo_sf, holo_seq, holo_atoms = holo_sel
+    apo_sf, apo_seq, apo_atoms, apo_seq_ids = apo_sel
+    holo_sf, holo_seq, holo_atoms, holo_seq_ids = holo_sel
+    apo_id_to_pos = {int(sid): i + 1 for i, sid in enumerate(apo_seq_ids)}
+    holo_id_to_pos = {int(sid): i + 1 for i, sid in enumerate(holo_seq_ids)}
 
-    # Sanity: master residues must match selected sequences at CSP indices
+    # Sanity: master Seq_IDs must match selected saveframe residues
     mismatches = 0
     checked = 0
     for row in rows:
@@ -476,11 +496,13 @@ def process_target(
         holo_aa = (row.get("holo_aa") or "").strip().upper()
         if apo_aa:
             checked += 1
-            if _seq_aa(apo_seq, apo_resi) != apo_aa:
+            pos = apo_id_to_pos.get(apo_resi)
+            if pos is None or _seq_aa(apo_seq, pos) != apo_aa:
                 mismatches += 1
         if holo_aa:
             checked += 1
-            if _seq_aa(holo_seq, holo_resi) != holo_aa:
+            pos = holo_id_to_pos.get(holo_resi)
+            if pos is None or _seq_aa(holo_seq, pos) != holo_aa:
                 mismatches += 1
     mismatch_frac = (mismatches / checked) if checked else 1.0
     if mismatch_frac > 0.05:
@@ -502,26 +524,34 @@ def process_target(
         encoding="utf-8",
     )
 
-    apo_rci = get_or_compute_rci(
-        apo_bmrb,
-        apo_sf,
-        apo_seq,
-        apo_atoms,
-        rci_dir,
-        python_exe,
-        Path(cache_dir),
-        role="apo",
+    apo_rci = _remap_rci_to_seq_ids(
+        get_or_compute_rci(
+            apo_bmrb,
+            apo_sf,
+            apo_seq,
+            apo_atoms,
+            rci_dir,
+            python_exe,
+            Path(cache_dir),
+            role="apo",
+        ),
+        apo_seq_ids,
     )
-    holo_rci = get_or_compute_rci(
-        holo_bmrb,
-        holo_sf,
-        holo_seq,
-        holo_atoms,
-        rci_dir,
-        python_exe,
-        Path(cache_dir),
-        role="holo",
+    holo_rci = _remap_rci_to_seq_ids(
+        get_or_compute_rci(
+            holo_bmrb,
+            holo_sf,
+            holo_seq,
+            holo_atoms,
+            rci_dir,
+            python_exe,
+            Path(cache_dir),
+            role="holo",
+        ),
+        holo_seq_ids,
     )
+    _write_rci_txt(rci_dir / "apo.RCI.txt", apo_rci)
+    _write_rci_txt(rci_dir / "holo.RCI.txt", holo_rci)
 
     filled_apo = filled_holo = aa_skip = 0
     for row in rows:

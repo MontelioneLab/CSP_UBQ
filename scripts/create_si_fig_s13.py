@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-
-SI Fig. S13 — CSP DB confusion matrix histograms by closest interchain atom–atom distance.
+SI Fig. S13 — CSP DB confusion matrix histograms by closest interchain N–N distance.
 
 Two-panel figure:
 - Panel A: stacked histogram of significant residues (TP vs FP only)
@@ -10,7 +9,7 @@ Two-panel figure:
 TP/FP/FN/TN use the same recorded-CSP filter, significance column, and
 binding-site predictor union as Figure 3; only the plotted distance changes.
 
-Output: figures/SF13_any_atom_distance.png
+Output: figures/SF13_nn_distance.png
 
 Default targets list: CSP_UBQ_ph0.5_temp5C.csv (buffer-filtered subset). Override with --targets-csv.
 """
@@ -28,8 +27,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 try:
-    from .config import classification_colors, paths
-    from .interaction_analysis import compute_min_atom_distance_filter
+    from .config import classification_colors, classification_legend_label, paths
+    from .interaction_analysis import compute_nn_distance_filter
     from .merge_csv import filter_recorded_csp_dataframe, parse_optional_bool
     from .rcsb_io import fetch_pdb
     from .target_resolution import load_target_rows, resolve_target_rows
@@ -37,8 +36,8 @@ except Exception:
     import os as _os
     import sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
-    from scripts.config import classification_colors, paths
-    from scripts.interaction_analysis import compute_min_atom_distance_filter
+    from scripts.config import classification_colors, classification_legend_label, paths
+    from scripts.interaction_analysis import compute_nn_distance_filter
     from scripts.merge_csv import filter_recorded_csp_dataframe, parse_optional_bool
     from scripts.rcsb_io import fetch_pdb
     from scripts.target_resolution import load_target_rows, resolve_target_rows
@@ -46,7 +45,7 @@ except Exception:
 
 SIGNIFICANT_COLUMN = "significant"
 CSP_COLUMN = "csp_A"
-DISTANCE_COLUMN = "min_any_atom_distance_any_atom"
+DISTANCE_COLUMN = "min_nn_distance_nn_distance"
 PREDICTOR_COLUMNS: Sequence[str] = (
     "passes_filter_distance",
     "has_charge_complement_interaction",
@@ -113,7 +112,7 @@ def _compute_distances_for_target(
     pdb_path = _resolve_pdb_path(holo_pdb)
     if not pdb_path:
         return None
-    result = compute_min_atom_distance_filter(pdb_path, distance_threshold=6.0)
+    result = compute_nn_distance_filter(pdb_path, distance_threshold=6.0)
     if "error" in result or not result.get("residue_info"):
         return None
     return {info["residue_number"]: info[distance_key] for info in result["residue_info"]}
@@ -121,7 +120,7 @@ def _compute_distances_for_target(
 
 def _get_bins(data: Sequence[float], bin_width: float, max_distance: Optional[float]) -> tuple[List[float], float]:
     if not data:
-        raise ValueError("No inter-atomic distance data found for selected targets.")
+        raise ValueError("No N-distance data found for selected targets.")
     data_max = max(data) if max_distance is None else max_distance
     n_bins = max(1, int((data_max + bin_width) / bin_width))
     bins = [i * bin_width for i in range(n_bins + 1)]
@@ -132,7 +131,7 @@ def collect_distance_categories(
     outputs_dir: Path,
     selected_dir_names: Optional[Set[str]] = None,
 ) -> tuple[List[float], List[float], List[float], List[float]]:
-    """Collect (TP, FP, FN, TN) min-inter-atomic distances across selected outputs/<dir> targets.
+    """Collect (TP, FP, FN, TN) min-N distances across selected outputs/<dir> targets.
 
     ``selected_dir_names`` is the set of resolved outputs basenames returned by
     :func:`scripts.target_resolution.resolve_target_rows`. Pass ``None`` to
@@ -168,7 +167,7 @@ def collect_distance_categories(
         if DISTANCE_COLUMN in df.columns:
             distances = pd.to_numeric(df[DISTANCE_COLUMN], errors="coerce")
         else:
-            distance_map = _compute_distances_for_target(alignment_path, "min_any_atom_distance")
+            distance_map = _compute_distances_for_target(alignment_path, "min_nn_distance")
             if distance_map is None:
                 continue
             pdb_resi = pd.to_numeric(df["pdb_residue_number"], errors="coerce")
@@ -228,12 +227,12 @@ def plot_panel_a(
         edgecolor="black",
         linewidth=0.8,
         label=[
-            f"(TP) CSP -- in binding site ({len(tp_distances)})",
-            f"(FP) CSP -- not in binding site ({len(fp_distances)})",
+            classification_legend_label("TP", len(tp_distances)),
+            classification_legend_label("FP", len(fp_distances)),
         ],
     )
     ax = plt.gca()
-    plt.xlabel("Minimum Inter-Atomic Distance (Å)")
+    plt.xlabel("Minimum N Distance (Å)")
     plt.ylabel("Number of Residues")
     ax.tick_params(axis="both", labelsize=14)
     plt.legend(frameon=True, fontsize=14, title_fontsize=14)
@@ -276,14 +275,14 @@ def plot_panel_b(
         edgecolor="black",
         linewidth=0.8,
         label=[
-            f"(TN) low CSP -- not in binding site ({len(tn_distances)})",
-            f"(FP) CSP -- not in binding site ({len(fp_distances)})",
-            f"(FN) low CSP --  in binding site ({len(fn_distances)})",
-            f"(TP) CSP --  in binding site ({len(tp_distances)})",
+            classification_legend_label("TN", len(tn_distances)),
+            classification_legend_label("FP", len(fp_distances)),
+            classification_legend_label("FN", len(fn_distances)),
+            classification_legend_label("TP", len(tp_distances)),
         ],
     )
     ax = plt.gca()
-    plt.xlabel("Minimum Inter-Atomic Distance (Å)")
+    plt.xlabel("Minimum N Distance (Å)")
     plt.ylabel("Number of Residues")
     ax.tick_params(axis="both", labelsize=14)
     plt.legend(frameon=True, fontsize=14, title_fontsize=14)
@@ -316,10 +315,10 @@ def compose_two_panel_figure(panel_a_path: Path, panel_b_path: Path, output_imag
 
 
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Create SI Fig. S13 (atom–atom distance confusion matrix histograms).")
+    parser = argparse.ArgumentParser(description="Create SI Fig. S13 (N–N distance confusion matrix histograms).")
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
     parser.add_argument("--figures-dir", type=Path, default=Path("figures"))
-    parser.add_argument("--output", type=Path, default=None, help="Output path for SF13_any_atom_distance.png")
+    parser.add_argument("--output", type=Path, default=None, help="Output path for SF13_nn_distance.png")
     parser.add_argument(
         "--targets-csv",
         type=Path,
@@ -340,7 +339,7 @@ def main(argv: Iterable[str]) -> int:
     project_root = Path(__file__).resolve().parent.parent
     outputs_dir = args.outputs_dir if args.outputs_dir.is_absolute() else project_root / args.outputs_dir
     figures_dir = args.figures_dir if args.figures_dir.is_absolute() else project_root / args.figures_dir
-    output_image = args.output or (figures_dir / "SF13_any_atom_distance.png")
+    output_image = args.output or (figures_dir / "SF13_nn_distance.png")
     if not output_image.is_absolute():
         output_image = project_root / output_image
 
@@ -351,19 +350,19 @@ def main(argv: Iterable[str]) -> int:
     tp, fp, fn, tn = collect_distance_categories(outputs_dir, selected_dirs)
     if not (tp or fp or fn or tn):
         print(
-            "No inter-atomic distance data found for selected targets. "
+            "No N-distance data found for selected targets. "
             "Run the pipeline so outputs/<id>/master_alignment.csv exists.",
             file=sys.stderr,
         )
         return 1
     if not (tp or fp):
         print(
-            "No inter-atomic distance data for significant residues (TP/FP) for selected targets.",
+            "No N-distance data for significant residues (TP/FP) for selected targets.",
             file=sys.stderr,
         )
         return 1
 
-    with tempfile.TemporaryDirectory(prefix="si_fig_s16_") as tmp_dir:
+    with tempfile.TemporaryDirectory(prefix="si_fig_s15_") as tmp_dir:
         tmp_dir_path = Path(tmp_dir)
         panel_a_path = tmp_dir_path / "panel_a.png"
         panel_b_path = tmp_dir_path / "panel_b.png"

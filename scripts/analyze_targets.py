@@ -28,12 +28,12 @@ import pandas as pd
 import seaborn as sns
 
 try:
-    from .config import classification_colors
+    from .config import classification_colors, classification_legend_label
     from .merge_csv import filter_recorded_csp_dataframe
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(__file__)))
-    from scripts.config import classification_colors
+    from scripts.config import classification_colors, classification_legend_label
     from scripts.merge_csv import filter_recorded_csp_dataframe
 
 
@@ -634,8 +634,8 @@ def render_stacked_histogram(
         labels = [f"TP ({positive_count})", f"FP ({negative_count})"]
     else:
         labels = [
-            f"(TP) Sig. CSP in Binding Site ({positive_count})",
-            f"(FP) Sig. CSP -- Allosteric ({negative_count})",
+            classification_legend_label("TP", positive_count),
+            classification_legend_label("FP", negative_count),
         ]
 
     ax.hist(
@@ -730,10 +730,10 @@ def render_confusion_matrix_stacked_histogram(
         ]
     else:
         labels = [
-            f"(TN) Small CSP -- allosteric ({tn_count})",
-            f"(FP) Sig. CSP -- allosteric ({fp_count})",
-            f"(FN) Small CSP in Binding Site ({fn_count})",
-            f"(TP) Sig. CSP in Binding Site ({tp_count})",
+            classification_legend_label("TN", tn_count),
+            classification_legend_label("FP", fp_count),
+            classification_legend_label("FN", fn_count),
+            classification_legend_label("TP", tp_count),
         ]
 
     plt.figure(figsize=(8, 5))
