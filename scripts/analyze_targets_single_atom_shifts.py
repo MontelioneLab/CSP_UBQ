@@ -2,18 +2,20 @@
 """
 Per-target single-atom (H, N, CA, HA) 1D shift perturbation analysis.
 
-For each target directory under outputs/ that has a csp_table.csv, this script:
-  - Loads csp_table.csv (and csp_table_CA.csv if present)
-  - Computes per-residue 1D shift metrics for each available atom type:
-      ΔH = H_holo - H_apo, ΔN = N_holo - N_apo, ΔCA = CA_holo - CA_apo, ΔHA = HA_holo - HA_apo
-      CSP_H_1d = |ΔH|, CSP_N_1d = |ΔN|, CSP_CA_1d = |ΔCA|, CSP_HA_1d = |ΔHA|
-      z-scores per atom type, using target-specific mean and SD of CSP_X_1d
-  - Writes outputs/{holo_pdb}/1d_analysis.csv with one row per residue
+For each target directory under outputs/ that has a CSP table, this script:
+  - Loads unreferenced apo/holo shifts (H/N from csp_table.csv, CA from
+    csp_table_CA.csv, HA from csp_table_HA_CA.csv)
+  - Runs an independent 1D offset grid for each nucleus and writes
+    offset_grid_1d_*.csv
+  - Computes per-residue 1D shift metrics:
+      CSP_X_1d = |(holo_original + offset) - apo|
+      significance when CSP_X_1d >= max(cleaned mean, 0.05 ppm)
+  - Writes outputs/{target}/1d_analysis.csv with one row per residue
     containing all single-atom 1D metrics for that residue.
 
 Shared helpers :func:`fraction_rows_with_both_ca_shifts_1d` and
 :func:`target_basenames_passing_ca_shift_coverage` define the CA-shift coverage
-rule for SI Fig. S11 / S12 / S15 and the standalone 1D F1 boxplot (default
+rule for SI Fig. S10 / S12 / S15 and the standalone 1D F1 boxplot (default
 ``DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE``: strictly more than half of rows with both
 ``CA_apo`` and ``CA_holo``).
 
@@ -43,12 +45,24 @@ import seaborn as sns
 # threshold = mean + significance_z * SD of the cleaned subset, defaults
 # yielding threshold = mean of outlier-free subset).
 try:
-    from .csp import compute_threshold_with_outlier_removal  # type: ignore
+    from .csp import (  # type: ignore
+        _floor_primary_hn_cutoff,
+        _fmt_grid_num,
+        compute_threshold_with_outlier_removal,
+        run_offset_grid_search_1d,
+    )
+    from .config import Referencing as _Referencing  # type: ignore
     from .config import thresholds as _thresholds  # type: ignore
 except Exception:
     import os as _os, sys as _sys
     _sys.path.append(_os.path.dirname(_os.path.dirname(os.path.abspath(__file__))))
-    from scripts.csp import compute_threshold_with_outlier_removal  # type: ignore
+    from scripts.csp import (  # type: ignore
+        _floor_primary_hn_cutoff,
+        _fmt_grid_num,
+        compute_threshold_with_outlier_removal,
+        run_offset_grid_search_1d,
+    )
+    from scripts.config import Referencing as _Referencing  # type: ignore
     from scripts.config import thresholds as _thresholds  # type: ignore
 
 
@@ -149,7 +163,7 @@ def target_basenames_passing_ca_shift_coverage(
 ) -> Tuple[Set[str], Dict[str, float]]:
     """Per-target dirs whose CA row fraction in ``1d_analysis.csv`` is **strictly** ``> min_coverage``.
 
-    Shared eligibility rule for SI Fig. S11 / S12 / S15 and the standalone 1D F1 boxplot so CA-shift
+    Shared eligibility rule for SI Fig. S10 / S12 / S15 and the standalone 1D F1 boxplot so CA-shift
     targets are gated identically from the pipeline 1D table.
 
     Args:
@@ -300,9 +314,7 @@ def _compute_f1_for_atom(
     The significance column is computed per target via iterative outlier removal
     (mirroring scripts/csp.py for the HN-weighted pipeline): outliers with
     z > outlier_z are removed iteratively, then the cutoff for significance
-    equals ``mean(cleaned) + significance_z * SD(cleaned)`` with the defaults
-    from scripts/config.py (outlier_z=3, significance_z=0) giving
-    "CSP_X_1d >= mean(outlier-free subset)".
+    is ``max(cleaned mean, 0.05 ppm)``.
 
     For backward compatibility, if the significance column is missing we fall
     back to the legacy ``z_X_1d > 0`` rule.
@@ -565,66 +577,163 @@ def render_1d_f1_boxplot(
     plt.close()
 
 
+def _read_csv_rows(path: Path) -> List[Dict[str, str]]:
+    if not path.exists():
+        return []
+    with open(path, "r", newline="") as handle:
+        return [dict(row) for row in csv.DictReader(handle)]
+
+
+def _residue_key(row: Mapping[str, str]) -> Tuple[str, str]:
+    return ((row.get("holo_resi") or "").strip(), (row.get("holo_aa") or "").strip())
+
+
+def _index_by_residue(rows: List[Dict[str, str]]) -> Dict[Tuple[str, str], Dict[str, str]]:
+    lookup: Dict[Tuple[str, str], Dict[str, str]] = {}
+    for row in rows:
+        key = _residue_key(row)
+        if key[0] and key[1]:
+            lookup[key] = row
+    return lookup
+
+
+def _parse_shift(row: Optional[Mapping[str, str]], field: str) -> Optional[float]:
+    if row is None:
+        return None
+    raw = (row.get(field) or "").strip()
+    if not raw:
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
+
+
+def _unreferenced_pair(
+    primary: Mapping[str, str],
+    fallback: Optional[Mapping[str, str]],
+    apo_field: str,
+    original_field: str,
+) -> Optional[Tuple[float, float]]:
+    apo = _parse_shift(primary, apo_field)
+    original = _parse_shift(primary, original_field)
+    if apo is None or original is None:
+        apo = _parse_shift(fallback, apo_field) if apo is None else apo
+        original = _parse_shift(fallback, original_field) if original is None else original
+    if apo is None or original is None:
+        return None
+    return apo, original
+
+
+def _save_1d_grid_csv(
+    path: Path,
+    *,
+    atom: str,
+    min_offset: float,
+    max_offset: float,
+    step: float,
+    cutoff: float,
+    grid_result: Mapping[str, object],
+) -> None:
+    offsets = list(grid_result["offset_values"])  # type: ignore[index]
+    counts = list(grid_result["counts"])  # type: ignore[index]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", newline="") as handle:
+        handle.write(f"# atom,{atom}\n")
+        handle.write(f"# min,{min_offset}\n")
+        handle.write(f"# max,{max_offset}\n")
+        handle.write(f"# step,{step}\n")
+        handle.write(f"# cutoff,{cutoff}\n")
+        handle.write("offset_values," + ",".join(str(value) for value in offsets) + "\n")
+        handle.write("counts," + ",".join(str(count) for count in counts) + "\n")
+        handle.write(f"best_offset,{grid_result['best_offset']}\n")
+        handle.write(f"best_count,{grid_result['best_count']}\n")
+
+
 def compute_1d_metrics_for_target(target_dir: Path) -> None:
     """
     For a single target directory, compute 1D single-atom metrics and write
     ``1d_analysis.csv``.
 
-    Holo-shift offsets are applied consistently with the 3D grid search method
-    from :mod:`scripts.csp`: whenever ``csp_table_CA.csv`` exists (which is
-    the table produced by ``run_offset_grid_search_3d`` jointly optimizing
-    H/N/CA offsets), it is used as the primary source for H_apo, H_holo,
-    N_apo, N_holo, CA_apo, CA_holo, H_offset, N_offset, and CA_offset so all
-    three 1D CSPs come from the same offset set. ``csp_table.csv`` (which
-    carries 2D HN-grid offsets for H/N and 3D-grid CA offsets for CA) is used
-    as a fallback only when the CA-inclusive table is absent.
+    Each nucleus is referenced by its own 1D grid search on unreferenced
+    apo/holo pairs (H/N from ``csp_table.csv``, CA from ``csp_table_CA.csv``,
+    HA from ``csp_table_HA_CA.csv``), using the ``Referencing`` bounds for that
+    nucleus. The search maximizes the count of ``|(holo + offset) - apo|``
+    below ``grid_cutoff``. CSP is the absolute referenced difference. A residue
+    is significant when that CSP is at least ``max(cleaned mean, 0.05 ppm)``.
     """
     csp_table_path = target_dir / "csp_table.csv"
     csp_table_ca_path = target_dir / "csp_table_CA.csv"
     csp_table_ha_ca_path = target_dir / "csp_table_HA_CA.csv"
 
-    # Prefer csp_table_CA.csv when available so that H, N, and CA 1D CSPs all
-    # use the same 3D-grid-search-derived offsets.
-    if csp_table_ca_path.exists():
-        primary_path = csp_table_ca_path
-    elif csp_table_path.exists():
-        primary_path = csp_table_path
+    hn_rows = _read_csv_rows(csp_table_path)
+    ca_rows = _read_csv_rows(csp_table_ca_path)
+    ha_rows = _read_csv_rows(csp_table_ha_ca_path)
+    if hn_rows:
+        rows = [dict(row) for row in hn_rows]
+    elif ca_rows:
+        rows = [dict(row) for row in ca_rows]
+    elif ha_rows:
+        rows = [dict(row) for row in ha_rows]
     else:
         return
 
-    rows: List[Dict[str, str]] = []
-    with open(primary_path, "r", newline="") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            rows.append(dict(row))
-
-    # Secondary CA lookup retained as a fallback: if we ended up using
-    # csp_table.csv (no CA-inclusive table) we still try to pull CA shifts
-    # from any co-located csp_table_CA.csv; in practice the two branches are
-    # mutually exclusive but this preserves prior robustness guarantees.
-    ca_lookup: Dict[Tuple[str, str], Dict[str, str]] = {}
-    if primary_path is csp_table_path and csp_table_ca_path.exists():
-        with open(csp_table_ca_path, "r", newline="") as f_ca:
-            ca_reader = csv.DictReader(f_ca)
-            for ca_row in ca_reader:
-                key = (
-                    (ca_row.get("holo_resi") or "").strip(),
-                    (ca_row.get("holo_aa") or "").strip(),
-                )
-                if key[0] and key[1]:
-                    ca_lookup[key] = dict(ca_row)
-
-    ha_lookup: Dict[Tuple[str, str], Dict[str, str]] = {}
-    if csp_table_ha_ca_path.exists():
-        with open(csp_table_ha_ca_path, "r", newline="") as f_ha_ca:
-            ha_reader = csv.DictReader(f_ha_ca)
-            for ha_row in ha_reader:
-                key = (
-                    (ha_row.get("holo_resi") or "").strip(),
-                    (ha_row.get("holo_aa") or "").strip(),
-                )
-                if key[0] and key[1]:
-                    ha_lookup[key] = dict(ha_row)
+    ca_lookup = _index_by_residue(ca_rows)
+    ha_lookup = _index_by_residue(ha_rows)
+    ref = _Referencing()
+    atom_sources = {
+        "H": ("H_apo", "H_holo_original", ref.grid_h_min, ref.grid_h_max, ref.grid_h_step, ca_lookup),
+        "N": ("N_apo", "N_holo_original", ref.grid_n_min, ref.grid_n_max, ref.grid_n_step, ca_lookup),
+        "CA": ("CA_apo", "CA_holo_original", ref.grid_ca_min, ref.grid_ca_max, ref.grid_ca_step, ca_lookup),
+        "HA": ("HA_apo", "HA_holo_original", ref.grid_ha_min, ref.grid_ha_max, ref.grid_ha_step, ha_lookup),
+    }
+    for atom, (apo_field, original_field, min_offset, max_offset, step, lookup) in atom_sources.items():
+        pairs: List[Optional[Tuple[float, float]]] = []
+        points: List[Tuple[float, float]] = []
+        for row in rows:
+            fallback = lookup.get(_residue_key(row))
+            pair = _unreferenced_pair(row, fallback, apo_field, original_field)
+            pairs.append(pair)
+            if pair is not None:
+                points.append(pair)
+        row_offset = ""
+        if points:
+            grid_result = run_offset_grid_search_1d(
+                points,
+                min_offset=min_offset,
+                max_offset=max_offset,
+                step=step,
+                cutoff=float(ref.grid_cutoff),
+            )
+            best_offset = float(grid_result["best_offset"])
+            row_offset = f"{best_offset:.4f}"
+            slug = (
+                f"{atom}_{_fmt_grid_num(min_offset)}_{_fmt_grid_num(max_offset)}_"
+                f"{_fmt_grid_num(step)}__C_{_fmt_grid_num(ref.grid_cutoff)}"
+            )
+            _save_1d_grid_csv(
+                target_dir / f"offset_grid_1d_{slug}.csv",
+                atom=atom,
+                min_offset=min_offset,
+                max_offset=max_offset,
+                step=step,
+                cutoff=float(ref.grid_cutoff),
+                grid_result=grid_result,
+            )
+        else:
+            best_offset = 0.0
+        for row, pair in zip(rows, pairs):
+            if pair is None:
+                row[apo_field] = row.get(apo_field, "")
+                row[original_field] = ""
+                row[f"{atom}_offset"] = ""
+                row[f"{atom}_holo"] = ""
+                continue
+            apo_shift, original_shift = pair
+            row[apo_field] = f"{apo_shift:.4f}"
+            row[original_field] = f"{original_shift:.4f}"
+            row[f"{atom}_offset"] = row_offset
+            row[f"{atom}_holo"] = f"{original_shift + best_offset:.4f}"
 
     if not rows:
         return
@@ -672,37 +781,8 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         else:
             stats_for_row["N"] = Atom1DStats(delta=None, csp_1d=None, z_1d=None)
 
-        # CA: may come from csp_table_CA.csv if not in csp_table.csv
         CA_apo = _get_float("CA_apo")
         CA_holo = _get_float("CA_holo")
-
-        if CA_apo is None or CA_holo is None:
-            # Try to pull CA values from csp_table_CA.csv
-            key = (
-                (row.get("holo_resi") or "").strip(),
-                (row.get("holo_aa") or "").strip(),
-            )
-            ca_row = ca_lookup.get(key)
-            if ca_row is not None:
-                ca_apo_raw = (ca_row.get("CA_apo") or "").strip()
-                ca_holo_raw = (ca_row.get("CA_holo") or "").strip()
-                try:
-                    if CA_apo is None and ca_apo_raw:
-                        CA_apo = float(ca_apo_raw)
-                        row["CA_apo"] = ca_apo_raw
-                except ValueError:
-                    CA_apo = None
-                try:
-                    if CA_holo is None and ca_holo_raw:
-                        CA_holo = float(ca_holo_raw)
-                        row["CA_holo"] = ca_holo_raw
-                except ValueError:
-                    CA_holo = None
-
-                # Also propagate CA_offset if present
-                ca_offset_raw = (ca_row.get("CA_offset") or "").strip()
-                if ca_offset_raw and not row.get("CA_offset"):
-                    row["CA_offset"] = ca_offset_raw
         if CA_apo is not None and CA_holo is not None:
             dCA = CA_holo - CA_apo
             csp_CA_1d = abs(dCA)
@@ -711,34 +791,8 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         else:
             stats_for_row["CA"] = Atom1DStats(delta=None, csp_1d=None, z_1d=None)
 
-        # HA: sourced from HA/CA analysis table when available
         HA_apo = _get_float("HA_apo")
         HA_holo = _get_float("HA_holo")
-        if HA_apo is None or HA_holo is None:
-            key = (
-                (row.get("holo_resi") or "").strip(),
-                (row.get("holo_aa") or "").strip(),
-            )
-            ha_row = ha_lookup.get(key)
-            if ha_row is not None:
-                ha_apo_raw = (ha_row.get("HA_apo") or "").strip()
-                ha_holo_raw = (ha_row.get("HA_holo") or "").strip()
-                try:
-                    if HA_apo is None and ha_apo_raw:
-                        HA_apo = float(ha_apo_raw)
-                        row["HA_apo"] = ha_apo_raw
-                except ValueError:
-                    HA_apo = None
-                try:
-                    if HA_holo is None and ha_holo_raw:
-                        HA_holo = float(ha_holo_raw)
-                        row["HA_holo"] = ha_holo_raw
-                except ValueError:
-                    HA_holo = None
-
-                ha_offset_raw = (ha_row.get("HA_offset") or "").strip()
-                if ha_offset_raw and not row.get("HA_offset"):
-                    row["HA_offset"] = ha_offset_raw
         if HA_apo is not None and HA_holo is not None:
             dHA = HA_holo - HA_apo
             csp_HA_1d = abs(dHA)
@@ -749,11 +803,8 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
 
         per_row_stats.append(stats_for_row)
 
-    # Compute per-target mean/sd (full data, used for informative z-scores)
-    # and the canonical significance threshold using iterative outlier removal
-    # matching the 2D/HN-weighted pipeline: outliers with z > outlier_z are
-    # removed iteratively from the per-target distribution, then the cutoff
-    # for significance is mean(cleaned) + significance_z * SD(cleaned).
+    # Z-scores use the full-sample mean and SD. Significance uses the
+    # outlier-cleaned mean, floored at 0.05 ppm.
     h_mean, h_sd = compute_atom_stats(h_csp_vals)
     n_mean, n_sd = compute_atom_stats(n_csp_vals)
     ca_mean, ca_sd = compute_atom_stats(ca_csp_vals)
@@ -788,10 +839,10 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         _thresholds.max_outlier_fraction,
     )
 
-    h_cutoff = float(h_threshold_info.threshold) if h_csp_vals else None
-    n_cutoff = float(n_threshold_info.threshold) if n_csp_vals else None
-    ca_cutoff = float(ca_threshold_info.threshold) if ca_csp_vals else None
-    ha_cutoff = float(ha_threshold_info.threshold) if ha_csp_vals else None
+    h_cutoff = _floor_primary_hn_cutoff(float(h_threshold_info.threshold)) if h_csp_vals else None
+    n_cutoff = _floor_primary_hn_cutoff(float(n_threshold_info.threshold)) if n_csp_vals else None
+    ca_cutoff = _floor_primary_hn_cutoff(float(ca_threshold_info.threshold)) if ca_csp_vals else None
+    ha_cutoff = _floor_primary_hn_cutoff(float(ha_threshold_info.threshold)) if ha_csp_vals else None
 
     for stats_for_row in per_row_stats:
         # H
@@ -842,32 +893,36 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
         "aa",
         # H metrics
         "H_apo",
-        "H_holo",
+        "H_holo_original",
         "H_offset",
+        "H_holo",
         "dH_1d",
         "CSP_H_1d",
         "z_H_1d",
         "csp_H_1d_significant",
         # N metrics
         "N_apo",
-        "N_holo",
+        "N_holo_original",
         "N_offset",
+        "N_holo",
         "dN_1d",
         "CSP_N_1d",
         "z_N_1d",
         "csp_N_1d_significant",
         # CA metrics
         "CA_apo",
-        "CA_holo",
+        "CA_holo_original",
         "CA_offset",
+        "CA_holo",
         "dCA_1d",
         "CSP_CA_1d",
         "z_CA_1d",
         "csp_CA_1d_significant",
         # HA metrics
         "HA_apo",
-        "HA_holo",
+        "HA_holo_original",
         "HA_offset",
+        "HA_holo",
         "dHA_1d",
         "CSP_HA_1d",
         "z_HA_1d",
@@ -895,8 +950,9 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
 
             # H
             out_row["H_apo"] = row.get("H_apo", "")
-            out_row["H_holo"] = row.get("H_holo", "")
+            out_row["H_holo_original"] = row.get("H_holo_original", "")
             out_row["H_offset"] = row.get("H_offset", "")
+            out_row["H_holo"] = row.get("H_holo", "")
             h_stats = stats_for_row["H"]
             out_row["dH_1d"] = f"{h_stats.delta:.4f}" if h_stats.delta is not None else ""
             out_row["CSP_H_1d"] = f"{h_stats.csp_1d:.4f}" if h_stats.csp_1d is not None else ""
@@ -907,8 +963,9 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
 
             # N
             out_row["N_apo"] = row.get("N_apo", "")
-            out_row["N_holo"] = row.get("N_holo", "")
+            out_row["N_holo_original"] = row.get("N_holo_original", "")
             out_row["N_offset"] = row.get("N_offset", "")
+            out_row["N_holo"] = row.get("N_holo", "")
             n_stats = stats_for_row["N"]
             out_row["dN_1d"] = f"{n_stats.delta:.4f}" if n_stats.delta is not None else ""
             out_row["CSP_N_1d"] = f"{n_stats.csp_1d:.4f}" if n_stats.csp_1d is not None else ""
@@ -919,8 +976,9 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
 
             # CA (may be absent)
             out_row["CA_apo"] = row.get("CA_apo", "")
-            out_row["CA_holo"] = row.get("CA_holo", "")
+            out_row["CA_holo_original"] = row.get("CA_holo_original", "")
             out_row["CA_offset"] = row.get("CA_offset", "")
+            out_row["CA_holo"] = row.get("CA_holo", "")
             ca_stats = stats_for_row["CA"]
             out_row["dCA_1d"] = f"{ca_stats.delta:.4f}" if ca_stats.delta is not None else ""
             out_row["CSP_CA_1d"] = f"{ca_stats.csp_1d:.4f}" if ca_stats.csp_1d is not None else ""
@@ -931,8 +989,9 @@ def compute_1d_metrics_for_target(target_dir: Path) -> None:
 
             # HA
             out_row["HA_apo"] = row.get("HA_apo", "")
-            out_row["HA_holo"] = row.get("HA_holo", "")
+            out_row["HA_holo_original"] = row.get("HA_holo_original", "")
             out_row["HA_offset"] = row.get("HA_offset", "")
+            out_row["HA_holo"] = row.get("HA_holo", "")
             ha_stats = stats_for_row["HA"]
             out_row["dHA_1d"] = f"{ha_stats.delta:.4f}" if ha_stats.delta is not None else ""
             out_row["CSP_HA_1d"] = f"{ha_stats.csp_1d:.4f}" if ha_stats.csp_1d is not None else ""

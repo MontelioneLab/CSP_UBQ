@@ -7,7 +7,7 @@ For each target directory under ``outputs/``, the F1 scores for 1D H, N, CA,
 and optionally HA CSPs are computed (reusing :func:`collect_1d_f1_results` from
 :mod:`analyze_targets_single_atom_shifts`). Targets are gated by CA row
 coverage (:func:`target_basenames_passing_ca_shift_coverage`, same rule as SI
-Fig. S11 / S12 / S15). The plot uses the intersection of targets that yield a valid
+Fig. S10 / S12 / S15). The plot uses the intersection of targets that yield a valid
 F1 for every atom in the chosen ``atom_order`` (SI Fig. S15 uses H/N/CA/HA, so
 *n* is the HA/CA-complete paired subset).
 

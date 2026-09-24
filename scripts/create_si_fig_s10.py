@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SI Fig. S10 — HA/CA CSP confusion matrix histograms (two-panel image).
+SI Fig. S11 — HA/CA CSP confusion matrix histograms (two-panel image).
 
 - Panel A: stacked histogram of significant residues (TP/FP only)
 - Panel B: stacked confusion-matrix histogram (TN/FP/FN/TP)
@@ -58,7 +58,7 @@ HA_CA_TABLE = "csp_table_HA_CA.csv"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create SI Fig. S10 (HA/CA CSP confusion matrix histograms)."
+        description="Create SI Fig. S11 (HA/CA CSP confusion matrix histograms)."
     )
     parser.add_argument(
         "--outputs-dir",
@@ -148,7 +148,7 @@ def main() -> int:
     )
     if not eligible:
         print(
-            "No targets left after HA/CA table filter; cannot build SI Fig. S10.",
+            "No targets left after HA/CA table filter; cannot build SI Fig. S11.",
             file=sys.stderr,
         )
         return 1
@@ -190,14 +190,14 @@ def main() -> int:
         )
         if not panel_a_path.is_file() or not panel_b_path.is_file():
             print(
-                "Cannot compose SI Fig. S10: one or both panel PNGs were not written "
+                "Cannot compose SI Fig. S11: one or both panel PNGs were not written "
                 "(no CA-distance data for selected targets / outputs).",
                 file=sys.stderr,
             )
             return 1
         compose_two_panel_figure(panel_a_path, panel_b_path, output_image)
 
-    print(f"SI Fig. S10 saved to {output_image.resolve()} (n={len(eligible)})")
+    print(f"SI Fig. S11 saved to {output_image.resolve()} (n={len(eligible)})")
     return 0
 
 

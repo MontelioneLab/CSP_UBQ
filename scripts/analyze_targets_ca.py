@@ -806,8 +806,16 @@ def render_f1_comparison_scatterplot(
     plt.figure(figsize=(8, 8))
     ax = plt.gca()
     
-    # Create scatter plot
-    ax.scatter(ca_f1_scores, nh_f1_scores, alpha=0.6, s=50, edgecolors='black', linewidth=0.5)
+    cfg = MODE_CONFIGS[mode_key]
+    # SI Fig. S12 (nh_ca): Equation 1 (N/H) on x, Equation 2 (N/H/Ca) on y.
+    if mode_key == "nh_ca":
+        x_scores, y_scores = nh_f1_scores, ca_f1_scores
+        x_label, y_label = "F1 Score (N/H CSPs)", "F1 Score (N/H/Ca CSPs)"
+    else:
+        x_scores, y_scores = ca_f1_scores, nh_f1_scores
+        x_label, y_label = cfg["scatter_xlabel"], "F1 Score (N/H CSPs)"
+
+    ax.scatter(x_scores, y_scores, alpha=0.6, s=50, edgecolors='black', linewidth=0.5)
     
     # Add y=x line (dashed red)
     ax.plot([0, 1], [0, 1], 'r--', linewidth=2, label='y=x', alpha=0.7)
@@ -815,9 +823,8 @@ def render_f1_comparison_scatterplot(
     # Set axis limits and labels
     ax.set_xlim([0, 1])
     ax.set_ylim([0, 1])
-    cfg = MODE_CONFIGS[mode_key]
-    ax.set_xlabel(cfg["scatter_xlabel"], fontsize=14, fontweight="bold")
-    ax.set_ylabel("F1 Score (N/H CSPs)", fontsize=14, fontweight="bold")
+    ax.set_xlabel(x_label, fontsize=14, fontweight="bold")
+    ax.set_ylabel(y_label, fontsize=14, fontweight="bold")
     ax.set_title(cfg["scatter_title"], fontsize=16, fontweight="bold")
     
     # Add grid for better readability

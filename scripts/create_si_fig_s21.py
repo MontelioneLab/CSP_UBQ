@@ -15,6 +15,12 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg", force=True)
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 try:
     from .analyze_offsets import (
         collect_best_grid_offsets,
@@ -34,6 +40,43 @@ except Exception:
     )
     from scripts.config import Referencing  # type: ignore
     from scripts.target_resolution import load_target_rows, resolve_target_rows  # type: ignore
+
+
+def compose_two_panel_figure(panel_a: Path, panel_b: Path, out_path: Path) -> None:
+    """Stack the N/H and HA/CA heatmaps with upper-left A./B. labels.
+
+    Matches SI Fig. S17: bold panel letters sit just above the top-left of each panel.
+    """
+    img_a = mpimg.imread(str(panel_a))
+    img_b = mpimg.imread(str(panel_b))
+    ha, wa = img_a.shape[:2]
+    hb, wb = img_b.shape[:2]
+    fig_w = 8.4
+    fig_h = fig_w * ((ha / wa) + (hb / wb)) + 0.9
+    fig, axes = plt.subplots(
+        2,
+        1,
+        figsize=(fig_w, fig_h),
+        gridspec_kw={"hspace": 0.12},
+    )
+    for ax, img, label in ((axes[0], img_a, "A."), (axes[1], img_b, "B.")):
+        ax.imshow(img)
+        ax.axis("off")
+        ax.text(
+            0.01,
+            1.01,
+            label,
+            transform=ax.transAxes,
+            ha="left",
+            va="bottom",
+            fontsize=18,
+            fontweight="bold",
+            color="black",
+            clip_on=False,
+        )
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_path, dpi=300, bbox_inches="tight", pad_inches=0.15)
+    plt.close(fig)
 
 
 def main() -> int:
@@ -163,6 +206,9 @@ def main() -> int:
         print("Failed to create HA/CA heatmap.", file=sys.stderr)
         return 1
     print(f"SI Fig. S21 HA/CA panel saved to {ha_ca_path.resolve()} (n={len(ha_ca_keys)})")
+    stacked_path = figures_dir / "SF21_ideal_offsets_panels.png"
+    compose_two_panel_figure(suppl_path, ha_ca_path, stacked_path)
+    print(f"SI Fig. S21 stacked figure saved to {stacked_path.resolve()}")
     return 0
 
 

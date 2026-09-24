@@ -20,7 +20,7 @@ Outputs:
 
 Default targets: ``data/CSP_UBQ_ph0.5_temp5C.csv``. Override via ``--targets-csv``.
 CA-shift gating uses :func:`target_basenames_passing_ca_shift_coverage` in
-``analyze_targets_single_atom_shifts`` (same as SI Fig. S11 / S12; ``--min-ca-coverage``).
+``analyze_targets_single_atom_shifts`` (same as SI Fig. S10 / S12; ``--min-ca-coverage``).
 """
 
 from __future__ import annotations
@@ -78,7 +78,7 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE,
         help=(
-            "Same as SI Fig. S11 / S12: strictly more than this fraction of 1d_analysis.csv "
+            "Same as SI Fig. S10 / S12: strictly more than this fraction of 1d_analysis.csv "
             "rows must have both CA_apo and CA_holo (default: %(default)s)."
         ),
     )

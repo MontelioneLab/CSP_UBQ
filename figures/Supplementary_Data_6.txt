@@ -1,0 +1,15 @@
+Supplementary Data 6. Per-system confusion-matrix counts for Figure 3A and Figure 3B.
+
+This table is the per apo/holo pair counts behind the Figure 3 histograms. Each row is one pair in the pH/temperature-matched cohort (data/CSP_UBQ_ph0.5_temp5C.csv). Counts use the same filters as the histograms: a recorded HN CSP, the primary significance cutoff, the binding-site union (Cα distance, charge, pi-contact, hydrogen bond, and occlusion), and a finite minimum interchain Cα distance.
+
+Columns:
+- apo_pdb: apo structure identifier, when one is recorded.
+- apo_bmrb: apo BMRB entry.
+- holo_pdb: holo PDB identifier.
+- holo_bmrb: holo BMRB entry.
+- TP: residues with a significant CSP in the binding site.
+- FP: residues with a significant CSP outside the binding site.
+- TN: residues with a low CSP outside the binding site.
+- FN: residues with a low CSP in the binding site.
+
+Summing TP and FP across rows gives the Figure 3A legend totals. Summing TP, FP, TN, and FN gives the Figure 3B legend totals.

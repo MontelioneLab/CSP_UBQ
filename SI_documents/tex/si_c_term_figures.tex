@@ -18,33 +18,33 @@ This figure reports results on a very high-fidelity subset, and the results are 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{SF10_ha_ca.png}
+\includegraphics[width=\linewidth]{SF11_ca_inclusive.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S10. HA/CA CSP confusion histograms} for the
-buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} that also have
-H$\alpha$ and C$\alpha$ shifts in both apo and holo experiments ($n=101$).
-These results are very similar to CSPs calculated using SI Equation~S1. 71.9\% of CSPs using SI Equation~S3 are distant from the binding site compared to 69.4\% using SI Equation~S1.}
+\caption{\textbf{SI Fig. S10. Confusion histograms calculated with Eqn.\ 2} for the
+$n=121$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
+with CA row coverage $>50\%$.
+These results are very similar to CSPs calculated using SI Equation~S1. 72.2\% of CSPs using SI Equation~S2 are distant from the binding site compared to 69.4\% using SI Equation~S1.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{SF11_ca_inclusive.png}
+\includegraphics[width=\linewidth]{SF10_ha_ca.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S11. CA-inclusive CSP confusion histograms} for the
-$n=121$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
-with CA row coverage $>50\%$.
-These results are very similar to CSPs calculated using SI Equation~S1. 71.7\% of CSPs using SI Equation~S2 are distant from the binding site compared to 69.4\% using SI Equation~S1.}
+\caption{\textbf{SI Fig. S11. Confusion histograms calculated with Eqn.\ 3} for the
+buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} that also have
+H$\alpha$ and C$\alpha$ shifts in both apo and holo experiments ($n=101$).
+These results are very similar to CSPs calculated using SI Equation~S1. 72.2\% of CSPs using SI Equation~S3 are distant from the binding site compared to 69.4\% using SI Equation~S1.}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\linewidth]{SF12_f1_ca_vs_exclusive.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S12. F1 scores for CA-inclusive vs exclusive CSPs}
+\caption{\textbf{SI Fig. S12. F1 for Eqn.\ 1 CSPs vs Eqn.\ 2 CSPs}
 ($n=121$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
 with CA row coverage $>50\%$).
-F1 scores on the $y$ axis use SI Equation~S1 (combined HN);
-F1 scores on the $x$ axis use SI Equation~S2 (combined HN+C$\alpha$).
+F1 scores on the $y$ axis use SI Equation~S2 (combined HN+C$\alpha$);
+F1 scores on the $x$ axis use SI Equation~S1 (combined HN).
 The F1 scores here demonstrate that per-target there are very few differences in the distribution of CSPs distant from the binding site across the $n=121$ subset of targets with CA CSPs and similar experimental conditions.}
 \end{figure}
 
@@ -76,7 +76,16 @@ with paired H/N/CA/HA F1 scores).
 Boxes show the per-target F1 distribution for 1D CSPs of each nucleus.
 Pairwise comparisons are two-sided Wilcoxon signed-rank tests for all unordered
 atom pairs, with Holm--Bonferroni adjustment of $p$-values.
-This figure shows there are no substantial differences in the distribution of F1 scores calculated based on 1D CSPs; distal CSPs occur for all types of atomic shifts at approximately the same frequency.}
+After Holm--Bonferroni adjustment, H, N, and C$\alpha$ F1 scores do not differ (all adjusted $p>0.05$). C$\alpha$ versus H$\alpha$ is the exception (Holm-adjusted $p=0.0017$): median per-target F1 is $0.38$ for C$\alpha$ and $0.40$ for H$\alpha$. Distal CSPs still occur for every nucleus at a similar frequency.
+Apo/holo offsets for 1D CSPs are chosen independently for each nucleus by a 1D
+grid search on unreferenced shifts, using the same bounds as the joint searches
+($^{1}$H$_{\mathrm{N}}$ $\pm 0.2$\,ppm, step $0.01$\,ppm;
+$^{15}$N $\pm 1.5$\,ppm, step $0.05$\,ppm;
+$^{13}$C$\alpha$ $\pm 2$\,ppm, step $0.05$\,ppm;
+$^{1}$H$\alpha$ $\pm 0.12$\,ppm, step $0.01$\,ppm).
+The CSPs calculated to retrieve an F1 score per target are calculated as $(\mathrm{dd}\langle\mathrm{Shift}\rangle^{2})^{1/2}$
+and the threshold for significance is set as the max of the cleaned mean and 0.05\,ppm, for all
+1D CSPs shown in this figure.}
 \end{figure}
 
 \begin{figure}[H]
@@ -175,10 +184,7 @@ This figure reveals the mean per-target false positive rate changes only slightl
 
 \begin{figure}[H]
 \centering
-\textbf{A.}\\[0.15em]
-\includegraphics[width=0.78\linewidth]{SF21_ideal_offsets.png}\\[0.4em]
-\textbf{B.}\\[0.15em]
-\includegraphics[width=0.78\linewidth]{SF21_ideal_offsets_ha_ca.png}
+\includegraphics[width=0.78\linewidth]{SF21_ideal_offsets_panels.png}
 \captionsetup{labelformat=empty}
 \caption{\textbf{SI Fig. S21. Ideal chemical-shift offset grids}
 for buffer-similar systems in \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} with
@@ -193,8 +199,10 @@ N (bottom) offsets.
 \textbf{B.} HA/CA referencing ($n=101$ systems with HA/CA grid-search CSVs):
 the same layout for offsets that maximize aligned HA/CA peak counts,
 with HA (left) and CA (bottom) marginals.
-Both nuclei pairs are peaked near zero, indicating that most apo/holo pairs
-require only small referencing corrections.}
+Both nuclei pairs are peaked near zero. On the C$\alpha$ window of $\pm 2$\,ppm,
+87 of 101 C$\alpha$ offsets lie within $0.2$\,ppm of zero and 5 have
+$|\mathrm{offset}|\geq 1.5$\,ppm, so most apo/holo pairs still require only
+small referencing corrections.}
 \end{figure}
 
 \begin{figure}[H]

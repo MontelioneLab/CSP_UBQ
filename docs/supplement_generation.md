@@ -45,8 +45,8 @@ Optional: `--stop-on-error` exits on the first failing sub-script (default: cont
 | S1–S7 | `scripts/create_si_figs_s1_s9.py` |
 | S8 | `scripts/create_si_st9_fig_s8_dissimilar_conditions.py` |
 | S9 | `scripts/create_si_fig_s9.py` (same-author Figure 3) |
-| S10 | `scripts/create_si_fig_s10.py` (HA/CA confusion histograms) |
-| S11 | `scripts/create_si_fig_s11.py` (CA-inclusive confusion histograms) |
+| S10 | `scripts/create_si_fig_s11.py` (CA-inclusive confusion histograms) |
+| S11 | `scripts/create_si_fig_s10.py` (HA/CA confusion histograms) |
 | S12 | `scripts/create_si_fig_s12.py` |
 | S13 | `scripts/create_si_fig_s13.py` |
 | S14 | `scripts/create_si_fig_s14.py` |
@@ -98,9 +98,9 @@ present. References are appended from
 `SI_documents/SI_C_term_references.pdf` only (not the last N pages of a prior C-term,
 which previously re-introduced a duplicate PDB-search page).
 
-SI Fig. S10 uses the pH/temp-matched subset that also has apo and holo HA and CA
+SI Fig. S11 uses the pH/temp-matched subset that also has apo and holo HA and CA
 shifts (`csp_table_HA_CA.csv`; $n=101$ on the current outputs tree).
-Analysis figures S11, S12, S15, S21, S23–S24, and S26 default to
+Analysis figures S10, S12, S15, S21, S23–S24, and S26 default to
 `data/CSP_UBQ_ph0.5_temp5C.csv`. SI Fig. S9 uses
 `data/CSP_UBQ_ph0.5_temp5C_same_author_list.csv` ($n=32$ with pipeline outputs).
 SI Fig. S23 uses the primary cutoff

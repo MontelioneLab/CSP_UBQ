@@ -1028,14 +1028,75 @@ def _build_param_slug(*, h_min: float, h_max: float, h_step: float, n_min: float
     )
 
 
+def _fmt_grid_num(v: float, decimals: int = 3) -> str:
+    rendered = f"{v:.{decimals}f}"
+    return rendered.rstrip("0").rstrip(".") if "." in rendered else rendered
+
+
 def _build_param_slug_ha_ca(*, ha_min: float, ha_max: float, ha_step: float, ca_min: float, ca_max: float, ca_step: float, cutoff: float) -> str:
-    def fmt(v: float, decimals: int) -> str:
-        return (f"{v:.{decimals}f}").rstrip('0').rstrip('.') if '.' in f"{v:.{decimals}f}" else f"{v:.{decimals}f}"
     return (
-        f"HA_{fmt(ha_min, 3)}_{fmt(ha_max, 3)}_{fmt(ha_step, 3)}__"
-        f"CA_{fmt(ca_min, 3)}_{fmt(ca_max, 3)}_{fmt(ca_step, 3)}__"
-        f"C_{fmt(cutoff, 3)}"
+        f"HA_{_fmt_grid_num(ha_min)}_{_fmt_grid_num(ha_max)}_{_fmt_grid_num(ha_step)}__"
+        f"CA_{_fmt_grid_num(ca_min)}_{_fmt_grid_num(ca_max)}_{_fmt_grid_num(ca_step)}__"
+        f"C_{_fmt_grid_num(cutoff)}"
     )
+
+
+def _build_param_slug_hn_ca(
+    *,
+    h_min: float,
+    h_max: float,
+    h_step: float,
+    n_min: float,
+    n_max: float,
+    n_step: float,
+    ca_min: float,
+    ca_max: float,
+    ca_step: float,
+    cutoff: float,
+) -> str:
+    return (
+        f"H_{_fmt_grid_num(h_min)}_{_fmt_grid_num(h_max)}_{_fmt_grid_num(h_step)}__"
+        f"N_{_fmt_grid_num(n_min)}_{_fmt_grid_num(n_max)}_{_fmt_grid_num(n_step)}__"
+        f"CA_{_fmt_grid_num(ca_min)}_{_fmt_grid_num(ca_max)}_{_fmt_grid_num(ca_step)}__"
+        f"C_{_fmt_grid_num(cutoff)}"
+    )
+
+
+def save_grid_csv_3d(
+    output_csv: str,
+    *,
+    h_min: float,
+    h_max: float,
+    h_step: float,
+    n_min: float,
+    n_max: float,
+    n_step: float,
+    ca_min: float,
+    ca_max: float,
+    ca_step: float,
+    cutoff: float,
+    best_h_offset: float,
+    best_n_offset: float,
+    best_ca_offset: float,
+    best_count: int,
+) -> None:
+    """Record Eqn. 2 H/N/CA grid bounds and the chosen optimum (not the full count volume)."""
+    _ensure_dir(os.path.dirname(output_csv))
+    with open(output_csv, "w") as f:
+        f.write(f"# h_min,{h_min}\n")
+        f.write(f"# h_max,{h_max}\n")
+        f.write(f"# h_step,{h_step}\n")
+        f.write(f"# n_min,{n_min}\n")
+        f.write(f"# n_max,{n_max}\n")
+        f.write(f"# n_step,{n_step}\n")
+        f.write(f"# ca_min,{ca_min}\n")
+        f.write(f"# ca_max,{ca_max}\n")
+        f.write(f"# ca_step,{ca_step}\n")
+        f.write(f"# cutoff,{cutoff}\n")
+        f.write(f"best_h_offset,{best_h_offset}\n")
+        f.write(f"best_n_offset,{best_n_offset}\n")
+        f.write(f"best_ca_offset,{best_ca_offset}\n")
+        f.write(f"best_count,{best_count}\n")
 
 
 def _ensure_dir(path: str) -> None:
@@ -2366,6 +2427,38 @@ def compute_csp_from_aligned_sequences_ca(
                 h_offset = float(grid_result["best_h_offset"])  # type: ignore
                 n_offset = float(grid_result["best_n_offset"])  # type: ignore
                 ca_offset = float(grid_result["best_ca_offset"])  # type: ignore
+                if bool(getattr(cfg, "cache_results", True)) and target_id:
+                    output_base_dir = output_root or paths.outputs_dir
+                    out_dir = os.path.join(output_base_dir, target_id)
+                    slug = _build_param_slug_hn_ca(
+                        h_min=h_min,
+                        h_max=h_max,
+                        h_step=h_step,
+                        n_min=n_min,
+                        n_max=n_max,
+                        n_step=n_step,
+                        ca_min=ca_min,
+                        ca_max=ca_max,
+                        ca_step=ca_step,
+                        cutoff=float(gs_cutoff),
+                    )
+                    save_grid_csv_3d(
+                        os.path.join(out_dir, f"offset_grid_{slug}.csv"),
+                        h_min=h_min,
+                        h_max=h_max,
+                        h_step=h_step,
+                        n_min=n_min,
+                        n_max=n_max,
+                        n_step=n_step,
+                        ca_min=ca_min,
+                        ca_max=ca_max,
+                        ca_step=ca_step,
+                        cutoff=float(gs_cutoff),
+                        best_h_offset=h_offset,
+                        best_n_offset=n_offset,
+                        best_ca_offset=ca_offset,
+                        best_count=int(grid_result["best_count"]),  # type: ignore
+                    )
                 if _verbose:
                     print(
                         f"[CSP-CA] Grid best offsets: "

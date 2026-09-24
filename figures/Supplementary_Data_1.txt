@@ -1,0 +1,10 @@
+Supplementary Data 1. Chemical-shift offset grid for Figure 1A.
+
+This table is the data behind the Figure 1A heatmap for holo PDB 7JQ8 (apo BMRB 30782, holo BMRB 30786). Each row is one searched pair of backbone amide 1H and 15N referencing offsets. Figure 1B, the classification key, is not in this file.
+
+Columns:
+- h_offset_ppm: 1H offset applied to the holo shifts (ppm).
+- n_offset_ppm: 15N offset applied to the holo shifts (ppm).
+- n_aligned_peaks: number of apo/holo peaks that agree within the 0.05 ppm cutoff at that offset pair.
+
+Comment lines above the header record the source grid CSV, the PDB and BMRB identifiers, the cutoff, and the offset that aligns the most peaks (best_h_offset -0.02 ppm, best_n_offset 0.25 ppm, best_count 39).

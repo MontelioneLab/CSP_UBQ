@@ -25,8 +25,6 @@ TOC_MASTER = "si_toc"
 TOC_OUT = "SI_TOC.pdf"
 TOC_COMBINED_MASTER = "si_toc_combined"
 TOC_COMBINED_OUT = "SI_TOC_combined.pdf"
-TITLE_MASTER = "si_title"
-TITLE_OUT = "SI_title.pdf"
 SUPP_TEXT_MASTER = "si_supplementary_text"
 SUPP_TEXT_COMBINED_MASTER = "si_supplementary_text_combined"
 SUPP_TEXT_COMBINED_OUT = "Supplementary Text combined.pdf"
@@ -53,7 +51,7 @@ MERGED = "SI merged.pdf"
 # C-term pages are S9–S18 then PDB as S19 (insert index 10).
 DEFAULT_SF19_PAGE_INDEX = 10
 DEFAULT_SF19_INSERT_INDEX = 10
-# Compiled title page replaces N-term page 0. N-term page 1 = stale TOC (dropped);
+# First page of SI N term.pdf is the title slide. Page 1 is a blank/stale page (dropped);
 # pages 2+ = leftover narrative if present.
 N_TERM_TITLE_PAGES = 1
 N_TERM_DROP_AFTER_TITLE = 1
@@ -307,13 +305,12 @@ def _merge_n_term_with_toc(
     toc_out_name: str = TOC_OUT,
     supp_text: Path | None = None,
 ) -> list:
-    """Return pages: compiled title + TOC + Supplementary Text + leftover N-term narrative."""
+    """Return pages: SI N term title + TOC + Supplementary Text + leftover N-term narrative."""
     from pypdf import PdfReader
 
-    print(f"[SI PDF] Compiling {TITLE_MASTER}.tex -> {TITLE_OUT}")
-    title_built = _compile_tex(TITLE_MASTER, tex_dir)
-    title_dest = si_dir / TITLE_OUT
-    shutil.copy2(title_built, title_dest)
+    n_term = si_dir / N_TERM
+    if not n_term.is_file():
+        raise FileNotFoundError(f"Missing title PDF: {n_term}")
 
     if supp_text is None:
         print(f"[SI PDF] Compiling {SUPP_TEXT_MASTER}.tex -> {SUPPLEMENTARY_TEXT}")
@@ -328,24 +325,22 @@ def _merge_n_term_with_toc(
     toc_dest = si_dir / toc_out_name
     shutil.copy2(toc_built, toc_dest)
 
-    n_term = si_dir / N_TERM
     toc_reader = PdfReader(str(toc_dest))
     text_reader = PdfReader(str(supp_text))
-    title_reader = PdfReader(str(title_dest))
-    pages = list(title_reader.pages)
+    n_reader = PdfReader(str(n_term))
+    if len(n_reader.pages) < N_TERM_TITLE_PAGES:
+        raise ValueError(f"{n_term.name} has no title page")
+    pages = list(n_reader.pages[:N_TERM_TITLE_PAGES])
     pages.extend(toc_reader.pages)
     pages.extend(text_reader.pages)
-    leftover_end = "none"
-    if n_term.is_file():
-        n_reader = PdfReader(str(n_term))
-        start = N_TERM_TITLE_PAGES + N_TERM_DROP_AFTER_TITLE
-        for i in range(start, len(n_reader.pages)):
-            pages.append(n_reader.pages[i])
-        leftover_end = (
-            f"{start + 1}-{len(n_reader.pages)}" if len(n_reader.pages) > start else "none"
-        )
+    start = N_TERM_TITLE_PAGES + N_TERM_DROP_AFTER_TITLE
+    for i in range(start, len(n_reader.pages)):
+        pages.append(n_reader.pages[i])
+    leftover_end = (
+        f"{start + 1}-{len(n_reader.pages)}" if len(n_reader.pages) > start else "none"
+    )
     print(
-        f"[SI PDF] Title splice: compiled {TITLE_OUT} ({len(title_reader.pages)} p), "
+        f"[SI PDF] Title splice: {n_term.name} title ({N_TERM_TITLE_PAGES} p), "
         f"insert TOC ({len(toc_reader.pages)} p), "
         f"insert {supp_text.name} ({len(text_reader.pages)} p), "
         f"keep N-term leftover pages {leftover_end}"

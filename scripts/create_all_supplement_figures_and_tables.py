@@ -6,8 +6,8 @@ SI figure generators (one entry point per SI Fig. S1–S26):
   - S1–S7:  create_si_figs_s1_s9.py
   - S8:     create_si_st9_fig_s8_dissimilar_conditions.py
   - S9:     create_si_fig_s9.py  (wraps create_fig_3.py; same-author subset)
-  - S10:    create_si_fig_s10.py  (HA/CA confusion histograms)
-  - S11:    create_si_fig_s11.py  (CA-inclusive confusion histograms)
+  - S10:    create_si_fig_s11.py  (CA-inclusive confusion histograms)
+  - S11:    create_si_fig_s10.py  (HA/CA confusion histograms)
   - S12:    create_si_fig_s12.py
   - S13:    create_si_fig_s13.py
   - S14:    create_si_fig_s14.py

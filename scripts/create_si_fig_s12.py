@@ -12,7 +12,7 @@ the standalone 1D F1 boxplot: among resolved pipeline directories,
 ``target_basenames_passing_ca_shift_coverage`` retains only outputs whose
 ``1d_analysis.csv`` has both ``CA_apo`` and ``CA_holo`` on strictly more than
 ``--min-ca-coverage`` of rows (default
-``DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE`` = 0.5). Same gate as SI Fig. S11 / S15 /
+``DEFAULT_MIN_CA_SHIFT_ROW_COVERAGE`` = 0.5). Same gate as SI Fig. S10 / S15 /
 the standalone 1D F1 boxplot. CA-inclusive vs N/H F1 scores are collected on that subset.
 
 Default targets list: CSP_UBQ_ph0.5_temp5C.csv (buffer-filtered subset). Override with --targets-csv.

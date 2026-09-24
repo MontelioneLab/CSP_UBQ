@@ -609,11 +609,11 @@ class TestCompute1dMetricsForTarget:
         with open(csp_path, "w", newline="") as f:
             w = csv.writer(f)
             w.writerow(["apo_bmrb", "holo_bmrb", "holo_pdb", "chain", "apo_resi", "apo_aa", "holo_resi", "holo_aa",
-                        "H_apo", "N_apo", "CA_apo", "H_holo", "N_holo", "CA_holo",
-                        "H_offset", "N_offset", "CA_offset", "dH", "dN", "csp_A", "significant"])
+                        "H_apo", "N_apo", "H_holo", "N_holo", "H_holo_original", "N_holo_original",
+                        "H_offset", "N_offset", "dH", "dN", "csp_A", "significant"])
             w.writerow(["18251", "4700", "1cf4", "A", "1", "M", "1", "M",
-                        "8.41", "122.0", "55.6", "8.26", "115.7", "55.8",
-                        "-0.05", "1.1", "0", "0.04", "-1.5", "0.31", "1"])
+                        "8.41", "122.0", "8.26", "115.7", "8.46", "122.10",
+                        "-0.05", "1.1", "0.04", "-1.5", "0.31", "1"])
 
         compute_1d_metrics_for_target(Path(temp_dir))
 
@@ -622,7 +622,15 @@ class TestCompute1dMetricsForTarget:
         with open(out_path, "r") as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-        assert len(rows) >= 1
+        assert len(rows) == 1
+        row = rows[0]
+        assert row["H_holo_original"] == "8.4600"
+        assert row["H_offset"] == "-0.0100"
+        assert row["H_holo"] == "8.4500"
+        assert row["CSP_H_1d"] == "0.0400"
+        assert row["csp_H_1d_significant"] == "False"
+        assert (Path(temp_dir) / "offset_grid_1d_H_-0.2_0.2_0.01__C_0.05.csv").exists()
+        assert row["N_offset"] != "1.1"
 
 
 # --- 3. Mocked Network Tests ---

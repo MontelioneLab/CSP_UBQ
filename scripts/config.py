@@ -111,10 +111,10 @@ class Referencing:
     grid_n_max: float = 1.5
     grid_n_step: float = 0.05
 
-    # CA grid search parameters (scaled similarly to N range)
-    grid_ca_min: float = -6.0
-    grid_ca_max: float = 6.0
-    grid_ca_step: float = 0.2
+    # CA grid search parameters
+    grid_ca_min: float = -2.0
+    grid_ca_max: float = 2.0
+    grid_ca_step: float = 0.05
 
     # CSP cutoff used during grid search (count CSP < cutoff)
     grid_cutoff: float = 0.05
