@@ -16,16 +16,15 @@ color tp_color, structure and chain W and resi 478
 color tp_color, structure and chain W and resi 483
 color tp_color, structure and chain W and resi 485
 color tp_color, structure and chain W and resi 487
-# FP (Sig. CSP -- Allosteric): 8 residues
+# FP (Sig. CSP -- Allosteric): 7 residues
 color fp_color, structure and chain W and resi 465
 color fp_color, structure and chain W and resi 467
-color fp_color, structure and chain W and resi 471
 color fp_color, structure and chain W and resi 477
 color fp_color, structure and chain W and resi 479
 color fp_color, structure and chain W and resi 488
 color fp_color, structure and chain W and resi 489
 color fp_color, structure and chain W and resi 494
-# TN (low CSP -- Allosteric): 18 residues
+# TN (low CSP -- Allosteric): 19 residues
 color tn_color, structure and chain W and resi 458
 color tn_color, structure and chain W and resi 459
 color tn_color, structure and chain W and resi 461
@@ -33,6 +32,7 @@ color tn_color, structure and chain W and resi 464
 color tn_color, structure and chain W and resi 466
 color tn_color, structure and chain W and resi 468
 color tn_color, structure and chain W and resi 469
+color tn_color, structure and chain W and resi 471
 color tn_color, structure and chain W and resi 472
 color tn_color, structure and chain W and resi 473
 color tn_color, structure and chain W and resi 474
@@ -60,8 +60,8 @@ set cartoon_ring_mode, 1
 # Receptor chain: W
 # Ligand chain: B
 # TP (Sig. CSP in Union Site): 6
-# FP (Sig. CSP -- Allosteric): 8
-# TN (low CSP -- Allosteric): 18
+# FP (Sig. CSP -- Allosteric): 7
+# TN (low CSP -- Allosteric): 19
 # FN (low CSP in Union Site): 1
 # Residues without CSP data: 17
 # Structure colored by CSP classification (TP/FP/TN/FN)

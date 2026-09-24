@@ -9,18 +9,20 @@ set_color tp_color, [0.1804, 0.8000, 0.4431]
 set_color tn_color, [0.2039, 0.5961, 0.8588]
 set_color fp_color, [0.6078, 0.3490, 0.7137]
 set_color fn_color, [0.9529, 0.6118, 0.0706]
-# TP (Sig. CSP in Binding Site): 7 residues
+# TP (Sig. CSP in Binding Site): 8 residues
 color tp_color, structure and chain A and resi 470
 color tp_color, structure and chain A and resi 471
 color tp_color, structure and chain A and resi 474
+color tp_color, structure and chain A and resi 478
 color tp_color, structure and chain A and resi 490
 color tp_color, structure and chain A and resi 493
 color tp_color, structure and chain A and resi 494
 color tp_color, structure and chain A and resi 498
-# FP (Sig. CSP -- Allosteric): 13 residues
+# FP (Sig. CSP -- Allosteric): 14 residues
 color fp_color, structure and chain A and resi 452
 color fp_color, structure and chain A and resi 454
 color fp_color, structure and chain A and resi 472
+color fp_color, structure and chain A and resi 475
 color fp_color, structure and chain A and resi 476
 color fp_color, structure and chain A and resi 477
 color fp_color, structure and chain A and resi 482
@@ -31,7 +33,7 @@ color fp_color, structure and chain A and resi 492
 color fp_color, structure and chain A and resi 495
 color fp_color, structure and chain A and resi 496
 color fp_color, structure and chain A and resi 512
-# TN (low CSP -- Allosteric): 35 residues
+# TN (low CSP -- Allosteric): 34 residues
 color tn_color, structure and chain A and resi 453
 color tn_color, structure and chain A and resi 455
 color tn_color, structure and chain A and resi 456
@@ -48,7 +50,6 @@ color tn_color, structure and chain A and resi 466
 color tn_color, structure and chain A and resi 468
 color tn_color, structure and chain A and resi 469
 color tn_color, structure and chain A and resi 473
-color tn_color, structure and chain A and resi 475
 color tn_color, structure and chain A and resi 484
 color tn_color, structure and chain A and resi 487
 color tn_color, structure and chain A and resi 488
@@ -67,8 +68,7 @@ color tn_color, structure and chain A and resi 514
 color tn_color, structure and chain A and resi 515
 color tn_color, structure and chain A and resi 516
 color tn_color, structure and chain A and resi 517
-# FN (low CSP in Binding Site): 5 residues
-color fn_color, structure and chain A and resi 478
+# FN (low CSP in Binding Site): 4 residues
 color fn_color, structure and chain A and resi 497
 color fn_color, structure and chain A and resi 501
 color fn_color, structure and chain A and resi 504
@@ -86,10 +86,10 @@ set cartoon_ring_mode, 1
 # CSP Classification Analysis Summary:
 # Receptor chain: A
 # Ligand chain: B
-# TP (Sig. CSP in Union Site): 7
-# FP (Sig. CSP -- Allosteric): 13
-# TN (low CSP -- Allosteric): 35
-# FN (low CSP in Union Site): 5
+# TP (Sig. CSP in Union Site): 8
+# FP (Sig. CSP -- Allosteric): 14
+# TN (low CSP -- Allosteric): 34
+# FN (low CSP in Union Site): 4
 # Residues without CSP data: 7
 # Structure colored by CSP classification (TP/FP/TN/FN)
 # Modified PDB file: /Users/tiburon/Desktop/GTM_Research/01_Active_Projects/new_CSP_UBQ/CSP_UBQ/outputs/1ONV_27288/1ONV_csp.pdb

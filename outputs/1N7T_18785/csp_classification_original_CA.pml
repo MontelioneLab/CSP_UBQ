@@ -22,7 +22,7 @@ color tp_color, structure and chain A and resi 50
 color tp_color, structure and chain A and resi 51
 color tp_color, structure and chain A and resi 79
 color tp_color, structure and chain A and resi 87
-# FP (Sig. CSP -- Allosteric): 24 residues
+# FP (Sig. CSP -- Allosteric): 23 residues
 color fp_color, structure and chain A and resi 6
 color fp_color, structure and chain A and resi 7
 color fp_color, structure and chain A and resi 19
@@ -40,14 +40,13 @@ color fp_color, structure and chain A and resi 47
 color fp_color, structure and chain A and resi 56
 color fp_color, structure and chain A and resi 57
 color fp_color, structure and chain A and resi 63
-color fp_color, structure and chain A and resi 66
 color fp_color, structure and chain A and resi 80
 color fp_color, structure and chain A and resi 82
 color fp_color, structure and chain A and resi 84
 color fp_color, structure and chain A and resi 85
 color fp_color, structure and chain A and resi 90
 color fp_color, structure and chain A and resi 93
-# TN (low CSP -- Allosteric): 54 residues
+# TN (low CSP -- Allosteric): 55 residues
 color tn_color, structure and chain A and resi 8
 color tn_color, structure and chain A and resi 9
 color tn_color, structure and chain A and resi 10
@@ -74,6 +73,7 @@ color tn_color, structure and chain A and resi 60
 color tn_color, structure and chain A and resi 61
 color tn_color, structure and chain A and resi 64
 color tn_color, structure and chain A and resi 65
+color tn_color, structure and chain A and resi 66
 color tn_color, structure and chain A and resi 67
 color tn_color, structure and chain A and resi 68
 color tn_color, structure and chain A and resi 69
@@ -119,8 +119,8 @@ set cartoon_ring_mode, 1
 # Receptor chain: A
 # Ligand chain: B
 # TP (Sig. CSP in Union Site): 12
-# FP (Sig. CSP -- Allosteric): 24
-# TN (low CSP -- Allosteric): 54
+# FP (Sig. CSP -- Allosteric): 23
+# TN (low CSP -- Allosteric): 55
 # FN (low CSP in Union Site): 2
 # Residues without CSP data: 11
 # Structure colored by CSP classification (TP/FP/TN/FN)
