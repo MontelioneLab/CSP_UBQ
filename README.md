@@ -1,4 +1,4 @@
-# CSPdb — GitHub Repository for "Allosteric Protein Chemical Shift Perturbations are Ubiquitous"
+# CSPdb — GitHub Repository for "Distal Chemical Shift Perturbations Reveal That Ligand Induced Reshaping of Protein Conformational Landscapes is Ubiquitous"
 
 This repository hosts analysis scripts and figures related to the publication:
 
