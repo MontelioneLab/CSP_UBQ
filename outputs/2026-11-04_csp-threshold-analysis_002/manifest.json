@@ -1,0 +1,886 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-04T11:05:31.313776-05:00",
+  "run_id": "2026-11-04_csp-threshold-analysis_002",
+  "predecessor": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2026-11-04_csp-threshold-analysis_001",
+  "source_outputs_dir": "/Users/tiburon/Code/projects/CSP_UBQ/outputs",
+  "git_head": "6526085cdd34e644cf5880d6eec46524bf7d8371",
+  "git_dirty_at_analysis": true,
+  "target_selection": {
+    "path": "/Users/tiburon/Code/projects/CSP_UBQ/data/CSP_UBQ_ph0.5_temp5C.csv",
+    "sha256": "401430d0ddaf5c6c02a5c3074a54505a2cd1a1ea9ea01e5bfd2f8e0fae900b7e"
+  },
+  "n_targets": 135,
+  "n_eligible_residues": 12267,
+  "exclusion_counts": {
+    "eligible": 12267,
+    "missing_or_nonfinite_csp": 522,
+    "unknown_structural_label": 103,
+    "extreme_csp_z": 1
+  },
+  "threshold_config": {
+    "outlier_z_score": 3.0,
+    "max_outlier_iterations": 10,
+    "max_outlier_fraction": 0.2,
+    "significance_z_score": 0.0,
+    "max_classification_csp_z": 100.0,
+    "absolute_cutoff": null,
+    "top_10_percentile_fraction": 0.1,
+    "top_5_percentile_fraction": 0.05,
+    "cutoff_03_ppm": 0.03,
+    "cutoff_05_ppm": 0.05,
+    "cutoff_10_ppm": 0.1
+  },
+  "bootstrap_replicates": 2000,
+  "seed": 271828,
+  "bootstrap_unit": "apo/holo target pair; repeated receptor families are not independent clusters",
+  "intervals": "pointwise percentile 95%; AUC scalar percentile 95%; whole-target bootstrap",
+  "score_modes": {
+    "absolute_ppm": "csp_A",
+    "relative": "csp_A / frozen reconstructed primary cutoff"
+  },
+  "baseline": "saved significant flags, with the same fixed eligibility and structural labels",
+  "rounding_note": "Saved CSPs are rounded to four decimals. Boundary disagreements are exported, never silently corrected.",
+  "macro_note": "Mean target AUC is exact; mean ROC is interpolated at 1001 FPRs with upper vertical endpoints.",
+  "sources": [
+    {
+      "target_id": "1D5G_34688",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1D5G_34688/master_alignment.csv",
+      "sha256": "d7bfbcab50b95bce67694aa54221bcab416e00ccff7911fa0bdade578691de6e",
+      "snapshot_path": "inputs/1D5G_34688/master_alignment.csv"
+    },
+    {
+      "target_id": "1R8U_6268",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1R8U_6268/master_alignment.csv",
+      "sha256": "98ad62f51ce0ce07f82e78792c5129fafae11eb0988defdafb75610a6cbd941a",
+      "snapshot_path": "inputs/1R8U_6268/master_alignment.csv"
+    },
+    {
+      "target_id": "1SY9_51289",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1SY9_51289/master_alignment.csv",
+      "sha256": "ff53d1ae10d73603a9c45a1fcb2b3e7e4eff9a6f191d1f58453e41c06d2951fe",
+      "snapshot_path": "inputs/1SY9_51289/master_alignment.csv"
+    },
+    {
+      "target_id": "1VJ6_5131",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1VJ6_5131/master_alignment.csv",
+      "sha256": "c43ef170dc9ff7207510a416ad1bfb80ca38be64732ff7fee6f78035f7d93011",
+      "snapshot_path": "inputs/1VJ6_5131/master_alignment.csv"
+    },
+    {
+      "target_id": "1WA7_6261",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1WA7_6261/master_alignment.csv",
+      "sha256": "f1ddec864265d2ab51f3577c05e6edb23819797aac7ed53dcfea07c32b8d8fe3",
+      "snapshot_path": "inputs/1WA7_6261/master_alignment.csv"
+    },
+    {
+      "target_id": "2HUG_6592",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2HUG_6592/master_alignment.csv",
+      "sha256": "2e8d03254bc857110c58293ae8782eaed8507dc3d08635ecaa6a75aad9232ce4",
+      "snapshot_path": "inputs/2HUG_6592/master_alignment.csv"
+    },
+    {
+      "target_id": "2JW1_15503",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2JW1_15503/master_alignment.csv",
+      "sha256": "341f8a6a5c1e72cefaae30c59248a31303816c8cb2a5c1b8bf29a7efb1546e75",
+      "snapshot_path": "inputs/2JW1_15503/master_alignment.csv"
+    },
+    {
+      "target_id": "2JZI_51289",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2JZI_51289/master_alignment.csv",
+      "sha256": "a145142cdc68c836466ffcc93c0b3fe7fe5dfe8e5b6af3bb2bf14b0902a526fd",
+      "snapshot_path": "inputs/2JZI_51289/master_alignment.csv"
+    },
+    {
+      "target_id": "2K7L_27288",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2K7L_27288/master_alignment.csv",
+      "sha256": "8f5046d1fffa3996206eab43b7bb0e86618a92f72d80e8c969abe3af90b9c333",
+      "snapshot_path": "inputs/2K7L_27288/master_alignment.csv"
+    },
+    {
+      "target_id": "2KHS_16585",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KHS_16585/master_alignment.csv",
+      "sha256": "e72754b30a4f196273f9227e3fdb4dec96e0793174c4f97cb9bb97de9b782c59",
+      "snapshot_path": "inputs/2KHS_16585/master_alignment.csv"
+    },
+    {
+      "target_id": "2L3R_30703",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2L3R_30703/master_alignment.csv",
+      "sha256": "99b40664ff10a66a2d3c4f2b74c36e998bcfd7c73f33b5c11eb8678022019e1f",
+      "snapshot_path": "inputs/2L3R_30703/master_alignment.csv"
+    },
+    {
+      "target_id": "2L6E_16555",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2L6E_16555/master_alignment.csv",
+      "sha256": "1a506946f8671329285f42a1e56f14791228a064448a3b96853eaec28d340cbe",
+      "snapshot_path": "inputs/2L6E_16555/master_alignment.csv"
+    },
+    {
+      "target_id": "2L75_5555",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2L75_5555/master_alignment.csv",
+      "sha256": "6a5ad5844b2290b44c8be8af623918234bb6e7648210b82d4adca6c4dc1e386a",
+      "snapshot_path": "inputs/2L75_5555/master_alignment.csv"
+    },
+    {
+      "target_id": "2LGF_51289",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LGF_51289/master_alignment.csv",
+      "sha256": "14657f76cfc4a24773e91d7df272a0149af28c7d6114198bf1fcca71501039ff",
+      "snapshot_path": "inputs/2LGF_51289/master_alignment.csv"
+    },
+    {
+      "target_id": "2LGG_17813",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LGG_17813/master_alignment.csv",
+      "sha256": "f1f39d8f561526b18a08db815104a412b9a7aec168c97faf644a703eeb782e34",
+      "snapshot_path": "inputs/2LGG_17813/master_alignment.csv"
+    },
+    {
+      "target_id": "2LGK_17813",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LGK_17813/master_alignment.csv",
+      "sha256": "2703663f1a9fee03d3eb6920e26fd52df1a040a588322aecf498573bbbdcd22a",
+      "snapshot_path": "inputs/2LGK_17813/master_alignment.csv"
+    },
+    {
+      "target_id": "2LSK_18455",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LSK_18455/master_alignment.csv",
+      "sha256": "0306a02bd959f5e2a1782d092bc046f227f491c1fb6e7c46b513762f5caa9c2a",
+      "snapshot_path": "inputs/2LSK_18455/master_alignment.csv"
+    },
+    {
+      "target_id": "2LSP_15057",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LSP_15057/master_alignment.csv",
+      "sha256": "a7c89fd35845cc3973ddd1ad0d6957ada9846e642e0a90cfdd4f9c3036758b71",
+      "snapshot_path": "inputs/2LSP_15057/master_alignment.csv"
+    },
+    {
+      "target_id": "2LVM_5878",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LVM_5878/master_alignment.csv",
+      "sha256": "9641bd313ea574525bf0f1417355b9d874edf8a15676837a067344a98c1c9968",
+      "snapshot_path": "inputs/2LVM_5878/master_alignment.csv"
+    },
+    {
+      "target_id": "2M0J_51289",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2M0J_51289/master_alignment.csv",
+      "sha256": "4136a923be3d5b91f53bfec16516b48859a239d69eecca445bedbdac4744fc53",
+      "snapshot_path": "inputs/2M0J_51289/master_alignment.csv"
+    },
+    {
+      "target_id": "2M0K_51289",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2M0K_51289/master_alignment.csv",
+      "sha256": "3869c5b7a88f51ff2a26400dd69105c86dfc4d2171b9fd8c35e9d8fd179a6689",
+      "snapshot_path": "inputs/2M0K_51289/master_alignment.csv"
+    },
+    {
+      "target_id": "2MES_51289",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MES_51289/master_alignment.csv",
+      "sha256": "5cfcca12342ae33ef24a13c0f8cd10a972d9cb60d73550f3eb99b26baf1e2b9b",
+      "snapshot_path": "inputs/2MES_51289/master_alignment.csv"
+    },
+    {
+      "target_id": "2MJV_15057",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MJV_15057/master_alignment.csv",
+      "sha256": "96374ced56813bfd90c0d0e65418faf645fc1d9d8af7b0155c2456425285f6b5",
+      "snapshot_path": "inputs/2MJV_15057/master_alignment.csv"
+    },
+    {
+      "target_id": "2MUR_17769",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MUR_17769/master_alignment.csv",
+      "sha256": "c8d1a56492939bbca93af608d22e73bc39b7feaec41f5a659d2fc98f371125b3",
+      "snapshot_path": "inputs/2MUR_17769/master_alignment.csv"
+    },
+    {
+      "target_id": "2MWO_5878",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MWO_5878/master_alignment.csv",
+      "sha256": "a7c807b459d4513acff36c9b07a579e2d082be4c1b53c492b6d8740fcd5b9bd7",
+      "snapshot_path": "inputs/2MWO_5878/master_alignment.csv"
+    },
+    {
+      "target_id": "2MWP_5878",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MWP_5878/master_alignment.csv",
+      "sha256": "b84297a802d9bdf78c0236f14b2e149f581d5b6e61646cb9ab63ef11e0945b66",
+      "snapshot_path": "inputs/2MWP_5878/master_alignment.csv"
+    },
+    {
+      "target_id": "2N1G_18455",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2N1G_18455/master_alignment.csv",
+      "sha256": "af673441c7107d3d50c4efb13bd62fd9f414a8835cf0a74b4b728c9a7fe1c0a2",
+      "snapshot_path": "inputs/2N1G_18455/master_alignment.csv"
+    },
+    {
+      "target_id": "2N9X_5958",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2N9X_5958/master_alignment.csv",
+      "sha256": "7120609f007d6a96c79440c75a5d7db94270bad6301f002c02881cc8618729a3",
+      "snapshot_path": "inputs/2N9X_5958/master_alignment.csv"
+    },
+    {
+      "target_id": "2NCZ_15125",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2NCZ_15125/master_alignment.csv",
+      "sha256": "b8eae04693f1c6c872b325cd8fecfe598f964ccce9b8f755e02bce52060a39be",
+      "snapshot_path": "inputs/2NCZ_15125/master_alignment.csv"
+    },
+    {
+      "target_id": "2ND0_15125",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2ND0_15125/master_alignment.csv",
+      "sha256": "69b88022415f5f5a34dab97d52df0e3edc66a57c1275d7434de1956ae2516e35",
+      "snapshot_path": "inputs/2ND0_15125/master_alignment.csv"
+    },
+    {
+      "target_id": "2ND1_15125",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2ND1_15125/master_alignment.csv",
+      "sha256": "287eeba23f6e4a0da27b953faaaf469e035c232cbc60cc3efef169c803b5a2d0",
+      "snapshot_path": "inputs/2ND1_15125/master_alignment.csv"
+    },
+    {
+      "target_id": "2NMB_4683",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2NMB_4683/master_alignment.csv",
+      "sha256": "677aac929f1736e391eda543bb0cc4a55790e9b75635cc26b3fc124dd466bce7",
+      "snapshot_path": "inputs/2NMB_4683/master_alignment.csv"
+    },
+    {
+      "target_id": "2OJ2_4122",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2OJ2_4122/master_alignment.csv",
+      "sha256": "7a7327d73457e330be167e268d2ac968c73b2ebc6d93a82e81cf2b7acefdb27c",
+      "snapshot_path": "inputs/2OJ2_4122/master_alignment.csv"
+    },
+    {
+      "target_id": "5J8H_51289",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/5J8H_51289/master_alignment.csv",
+      "sha256": "fafd9ae9a8ce515ae415039a00f880aeaf758b18be74b33d3e5bfa4b1efe1ccd",
+      "snapshot_path": "inputs/5J8H_51289/master_alignment.csv"
+    },
+    {
+      "target_id": "5OEO_51289",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/5OEO_51289/master_alignment.csv",
+      "sha256": "ea4318e651d4678738383aaa1d923cf75f15510dab313d44b77f6a65287b8dae",
+      "snapshot_path": "inputs/5OEO_51289/master_alignment.csv"
+    },
+    {
+      "target_id": "5VF0_17769",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/5VF0_17769/master_alignment.csv",
+      "sha256": "3107cae5cc8979a0b7b9516d2ee932bc13e41bba96c205f3db8d802dc1551589",
+      "snapshot_path": "inputs/5VF0_17769/master_alignment.csv"
+    },
+    {
+      "target_id": "6BGG_30782",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6BGG_30782/master_alignment.csv",
+      "sha256": "1b11dc115a90a28dd9d820d3970254976eb1d504f7bb4c16608dd3956efdc16c",
+      "snapshot_path": "inputs/6BGG_30782/master_alignment.csv"
+    },
+    {
+      "target_id": "6BNH_15125",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6BNH_15125/master_alignment.csv",
+      "sha256": "9a578a65748998f1a3202e3ed2d160683a2ebac38d505ffcb9ca1e45514bafe9",
+      "snapshot_path": "inputs/6BNH_15125/master_alignment.csv"
+    },
+    {
+      "target_id": "6H8C_18827",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6H8C_18827/master_alignment.csv",
+      "sha256": "73d4bdf33cca6498fd182377dcc232e58d497c8bd517b0cb6b6f4b68a051ae58",
+      "snapshot_path": "inputs/6H8C_18827/master_alignment.csv"
+    },
+    {
+      "target_id": "6R5G_28070",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6R5G_28070/master_alignment.csv",
+      "sha256": "89c0a56eef4438067b6bf221bcac7086a89461a5c54686bf25d22a26c9b8821e",
+      "snapshot_path": "inputs/6R5G_28070/master_alignment.csv"
+    },
+    {
+      "target_id": "7JYZ_30782",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/7JYZ_30782/master_alignment.csv",
+      "sha256": "c3930b4ce691c0d144d9521547827bed2352b4ae07d573e5784a83622f05c969",
+      "snapshot_path": "inputs/7JYZ_30782/master_alignment.csv"
+    },
+    {
+      "target_id": "7JQ8_30782",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/7JQ8_30782/master_alignment.csv",
+      "sha256": "bf16adeac88dc6c42949826a81db8b65308dd8fa51f625abd92f39065bf0eecd",
+      "snapshot_path": "inputs/7JQ8_30782/master_alignment.csv"
+    },
+    {
+      "target_id": "7JYN_30782",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/7JYN_30782/master_alignment.csv",
+      "sha256": "24ea7f1656a62d86d514139b6dc1a9b96efe1cd9fc212aa6c9324f3f805ff9eb",
+      "snapshot_path": "inputs/7JYN_30782/master_alignment.csv"
+    },
+    {
+      "target_id": "2N55_52209",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2N55_52209/master_alignment.csv",
+      "sha256": "cccfb38f37bec24b7b95ebb855d8923fbaa53de0112589e85cc996ef4a3a4c41",
+      "snapshot_path": "inputs/2N55_52209/master_alignment.csv"
+    },
+    {
+      "target_id": "2M0U_18824",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2M0U_18824/master_alignment.csv",
+      "sha256": "71af0a68b6b9b10ef540557ea9ff9dd5789bb764da4c483d80c5cf7a2ea9a71a",
+      "snapshot_path": "inputs/2M0U_18824/master_alignment.csv"
+    },
+    {
+      "target_id": "2FIN_6809",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2FIN_6809/master_alignment.csv",
+      "sha256": "f33070237746d9314baa29c1727e13685f6bc1b839b03fb8333a09b1ff112fb2",
+      "snapshot_path": "inputs/2FIN_6809/master_alignment.csv"
+    },
+    {
+      "target_id": "2I94_5332",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2I94_5332/master_alignment.csv",
+      "sha256": "5c6d987357ff8747b1322eb5f31262efaade6ddf546dbab074dda303f76eaf52",
+      "snapshot_path": "inputs/2I94_5332/master_alignment.csv"
+    },
+    {
+      "target_id": "7SFT_36097",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/7SFT_36097/master_alignment.csv",
+      "sha256": "c070fd8b0538ba7b6108816c4ee0c01e8060670bf4d02d8725cc17d141868031",
+      "snapshot_path": "inputs/7SFT_36097/master_alignment.csv"
+    },
+    {
+      "target_id": "2L29_17128",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2L29_17128/master_alignment.csv",
+      "sha256": "3d82061eeeb60dc72ba42020de1b974eadc46b85d24196c351c3b021948e7ae1",
+      "snapshot_path": "inputs/2L29_17128/master_alignment.csv"
+    },
+    {
+      "target_id": "2ROL_15710",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2ROL_15710/master_alignment.csv",
+      "sha256": "b031942a31257a1b6b7b496a5d74172c4f89823ae7e44be501a9a93e43176a0a",
+      "snapshot_path": "inputs/2ROL_15710/master_alignment.csv"
+    },
+    {
+      "target_id": "6FDT_19757",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6FDT_19757/master_alignment.csv",
+      "sha256": "659049adfaacc204e9afb38871166c1859ce0648b7efeae6e9974b1852c8e201",
+      "snapshot_path": "inputs/6FDT_19757/master_alignment.csv"
+    },
+    {
+      "target_id": "2PLD_5318",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2PLD_5318/master_alignment.csv",
+      "sha256": "49e86bd5a1839b84e6bd3da825c5cbf675f09f3b3f41bab0ec4405173b362500",
+      "snapshot_path": "inputs/2PLD_5318/master_alignment.csv"
+    },
+    {
+      "target_id": "1H8B_17627",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1H8B_17627/master_alignment.csv",
+      "sha256": "c628c1028d6dbd70bd9576d1b3882fe8b578d0c94ea52ce11b4a89a0536ab449",
+      "snapshot_path": "inputs/1H8B_17627/master_alignment.csv"
+    },
+    {
+      "target_id": "2N8T_25866",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2N8T_25866/master_alignment.csv",
+      "sha256": "1ad7c9bc3064771e6bd5bf0a24a840646ce89e40bea289bd4e6a20566784e620",
+      "snapshot_path": "inputs/2N8T_25866/master_alignment.csv"
+    },
+    {
+      "target_id": "2K8F_34231",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2K8F_34231/master_alignment.csv",
+      "sha256": "ad8885a4cd4fc4394f67247ba6300d5c89f68a5ff2590260e0a1a640f07387b2",
+      "snapshot_path": "inputs/2K8F_34231/master_alignment.csv"
+    },
+    {
+      "target_id": "2M5B_50942",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2M5B_50942/master_alignment.csv",
+      "sha256": "ce923fead1f5dea812c84efdc1ef1112d0070850172d9b4a986c26209d4f65b9",
+      "snapshot_path": "inputs/2M5B_50942/master_alignment.csv"
+    },
+    {
+      "target_id": "5U5S_50149",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/5U5S_50149/master_alignment.csv",
+      "sha256": "f1ba3b994bd86e5973f8ad8f5a8298d4cff2ffaf9ddb85e6909312cc4ed84bb7",
+      "snapshot_path": "inputs/5U5S_50149/master_alignment.csv"
+    },
+    {
+      "target_id": "1DDM_4683",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1DDM_4683/master_alignment.csv",
+      "sha256": "36047683872946fd67aa08bbec61041e28cf31a692ffeac0ebc441f7323b9f11",
+      "snapshot_path": "inputs/1DDM_4683/master_alignment.csv"
+    },
+    {
+      "target_id": "1PD7_6899",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1PD7_6899/master_alignment.csv",
+      "sha256": "9c581bd84615bede47aa7d30e4282f3a11707651dc6a41e21907c060f628251e",
+      "snapshot_path": "inputs/1PD7_6899/master_alignment.csv"
+    },
+    {
+      "target_id": "1KLQ_52275",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1KLQ_52275/master_alignment.csv",
+      "sha256": "a3c5df86a73ee1ce17f4a97fa071a98bf32a4e87984e4a8bf4f5e0c6d3a81ee1",
+      "snapshot_path": "inputs/1KLQ_52275/master_alignment.csv"
+    },
+    {
+      "target_id": "1N7T_18785",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1N7T_18785/master_alignment.csv",
+      "sha256": "0d83fd9c02d9a459f7a96abdb4846bb93c0935bb1198cbe07a3233de7c93eafc",
+      "snapshot_path": "inputs/1N7T_18785/master_alignment.csv"
+    },
+    {
+      "target_id": "1ONV_27288",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1ONV_27288/master_alignment.csv",
+      "sha256": "e3532c2346629a4d533a11a6f6dd0bd9cbc32afb84590235048f3b421dde4eb5",
+      "snapshot_path": "inputs/1ONV_27288/master_alignment.csv"
+    },
+    {
+      "target_id": "1YWI_6558",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/1YWI_6558/master_alignment.csv",
+      "sha256": "69d58fecc66a890f8b698ece7fcbfd84ec9a87f28df2fb5961aeb10c978a69c0",
+      "snapshot_path": "inputs/1YWI_6558/master_alignment.csv"
+    },
+    {
+      "target_id": "2B0F_5659",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2B0F_5659/master_alignment.csv",
+      "sha256": "093968c3996a3b5c23474b52aa8a517df05993e8d60383fe6d0c19fc9021ffaf",
+      "snapshot_path": "inputs/2B0F_5659/master_alignment.csv"
+    },
+    {
+      "target_id": "2BN5_6691",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2BN5_6691/master_alignment.csv",
+      "sha256": "ef302eba9f434e6b7453adca38380196e11ad3893ae0e0f5474abd2e4854df35",
+      "snapshot_path": "inputs/2BN5_6691/master_alignment.csv"
+    },
+    {
+      "target_id": "2CZY_27227",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2CZY_27227/master_alignment.csv",
+      "sha256": "15e1fb06edde9a7bb0d7d9bc3dbb80f29227de88da80242d1d3d6b59978b19e8",
+      "snapshot_path": "inputs/2CZY_27227/master_alignment.csv"
+    },
+    {
+      "target_id": "2FFK_6809",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2FFK_6809/master_alignment.csv",
+      "sha256": "6c45a14f0b6381a444449010805bd2f0163fa96e9323fc6b8142be52e93bada1",
+      "snapshot_path": "inputs/2FFK_6809/master_alignment.csv"
+    },
+    {
+      "target_id": "2G35_15792",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2G35_15792/master_alignment.csv",
+      "sha256": "dde2112c399b694e26effefe760660121ccca0f419efaca7b30185f89e78c107",
+      "snapshot_path": "inputs/2G35_15792/master_alignment.csv"
+    },
+    {
+      "target_id": "2JMF_6262",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2JMF_6262/master_alignment.csv",
+      "sha256": "3ab412c8b04d74e82002bf4338cb3fdd1456ccfb8de6ca7e136958fa3c6c0c68",
+      "snapshot_path": "inputs/2JMF_6262/master_alignment.csv"
+    },
+    {
+      "target_id": "2JMX_6564",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2JMX_6564/master_alignment.csv",
+      "sha256": "2bf586a97d4bd504a1c850bd37e3cf242cf4c8f2ede9bd270208add996a0384c",
+      "snapshot_path": "inputs/2JMX_6564/master_alignment.csv"
+    },
+    {
+      "target_id": "2JXC_4184",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2JXC_4184/master_alignment.csv",
+      "sha256": "24efa3445b4f48b7fae5956296f9a932e537c33d0da9e277b62dac1a58f99bae",
+      "snapshot_path": "inputs/2JXC_4184/master_alignment.csv"
+    },
+    {
+      "target_id": "2K17_15670",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2K17_15670/master_alignment.csv",
+      "sha256": "358f36b6e260525bf6ae2d4553c5f514685ddb746a174b9ed645edcbbba98a44",
+      "snapshot_path": "inputs/2K17_15670/master_alignment.csv"
+    },
+    {
+      "target_id": "2KOH_27205",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KOH_27205/master_alignment.csv",
+      "sha256": "cb7fee0e936627f9f6dfb9962dc9220bec8ab4f04e164458635e46d4bfbe9710",
+      "snapshot_path": "inputs/2KOH_27205/master_alignment.csv"
+    },
+    {
+      "target_id": "2K6Q_5958",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2K6Q_5958/master_alignment.csv",
+      "sha256": "96a75f81dcc4b404856aa810aaf3fb96506feaa970c393bf7e32594db1891efd",
+      "snapshot_path": "inputs/2K6Q_5958/master_alignment.csv"
+    },
+    {
+      "target_id": "2KC8_16066",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KC8_16066/master_alignment.csv",
+      "sha256": "24f740c057cf616c1d0a7cf6d9cb17dfad8036279185f6a1ee5d6838c642ede4",
+      "snapshot_path": "inputs/2KC8_16066/master_alignment.csv"
+    },
+    {
+      "target_id": "2KGI_16209",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KGI_16209/master_alignment.csv",
+      "sha256": "e5e6c7d136e131e8d8c36fe6a95dd376386d8b1a265406f259c965ebfde46f0e",
+      "snapshot_path": "inputs/2KGI_16209/master_alignment.csv"
+    },
+    {
+      "target_id": "2KPL_6911",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KPL_6911/master_alignment.csv",
+      "sha256": "d813838e2639cf5142534e9868f7c10f11f62c3bfcf721530d196cf4d35bae86",
+      "snapshot_path": "inputs/2KPL_6911/master_alignment.csv"
+    },
+    {
+      "target_id": "2KSP_15279",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KSP_15279/master_alignment.csv",
+      "sha256": "2a97ae2e9b1cfd6920f0ff4bd4d2b3796654f3154a9c23f4b721dcc625a81fb5",
+      "snapshot_path": "inputs/2KSP_15279/master_alignment.csv"
+    },
+    {
+      "target_id": "2KTB_51472",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KTB_51472/master_alignment.csv",
+      "sha256": "c299dbc0e6df3f62b7c5816ab395abe28e45ced29e4ecc8aaf28908c94fd1957",
+      "snapshot_path": "inputs/2KTB_51472/master_alignment.csv"
+    },
+    {
+      "target_id": "2KVM_15674",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KVM_15674/master_alignment.csv",
+      "sha256": "1ed08854b216c9504fd701e043e8fa4bb6de61443b28cf7cf028e09d53a31e9a",
+      "snapshot_path": "inputs/2KVM_15674/master_alignment.csv"
+    },
+    {
+      "target_id": "2KYL_15972",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KYL_15972/master_alignment.csv",
+      "sha256": "6414549c7e660f3fa7b2697275d3a28f121ca0112d2abd6de20895fc0a3d01a6",
+      "snapshot_path": "inputs/2KYL_15972/master_alignment.csv"
+    },
+    {
+      "target_id": "2KZU_17018",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KZU_17018/master_alignment.csv",
+      "sha256": "c7270332a02f8188b39889128697c20943b254e24d5f871ff1229e2b437f9256",
+      "snapshot_path": "inputs/2KZU_17018/master_alignment.csv"
+    },
+    {
+      "target_id": "2L0Y_15763",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2L0Y_15763/master_alignment.csv",
+      "sha256": "08a3bc351e5f146193d814533d2eea016bc34779306df8524ff4ec48a30182f8",
+      "snapshot_path": "inputs/2L0Y_15763/master_alignment.csv"
+    },
+    {
+      "target_id": "2L4T_17254",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2L4T_17254/master_alignment.csv",
+      "sha256": "d1b7a601c3128a7cc18634400cfad515ae965f2c05a55fe84b89d0bb6d1580c4",
+      "snapshot_path": "inputs/2L4T_17254/master_alignment.csv"
+    },
+    {
+      "target_id": "2L5E_50148",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2L5E_50148/master_alignment.csv",
+      "sha256": "346bc62899e4d7ba63149ecb71a04c75a085c3166cf843c47ac0eafe77846224",
+      "snapshot_path": "inputs/2L5E_50148/master_alignment.csv"
+    },
+    {
+      "target_id": "2LBM_15001",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LBM_15001/master_alignment.csv",
+      "sha256": "1c2483023dd427f386a9e0241741c2ca385cc3ce8f2393d990e7870e040509fa",
+      "snapshot_path": "inputs/2LBM_15001/master_alignment.csv"
+    },
+    {
+      "target_id": "2LE8_16396",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LE8_16396/master_alignment.csv",
+      "sha256": "d67894ce17f38c149565ccddb3986747b80b51aba64d27b55113b0a718782c05",
+      "snapshot_path": "inputs/2LE8_16396/master_alignment.csv"
+    },
+    {
+      "target_id": "2LI5_16835",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LI5_16835/master_alignment.csv",
+      "sha256": "a689502e0e9c392b0c5b1837c8b9ff1e1e1ea9c35a3521a1268affc284bc0246",
+      "snapshot_path": "inputs/2LI5_16835/master_alignment.csv"
+    },
+    {
+      "target_id": "2LOZ_10318",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LOZ_10318/master_alignment.csv",
+      "sha256": "7081180035c076f80f6d330b692ebe21a78f09704caa24581bd72916ec887fb3",
+      "snapshot_path": "inputs/2LOZ_10318/master_alignment.csv"
+    },
+    {
+      "target_id": "2LP0_25142",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LP0_25142/master_alignment.csv",
+      "sha256": "01bf281531381d9535a6c2fa5ea1002daafaca3a834e756c07d9825c0f4146cc",
+      "snapshot_path": "inputs/2LP0_25142/master_alignment.csv"
+    },
+    {
+      "target_id": "2LP8_18250",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LP8_18250/master_alignment.csv",
+      "sha256": "badb806f14cd97f0b1ed9a0a93ea418b875fe868ac10f200facd2446ab910446",
+      "snapshot_path": "inputs/2LP8_18250/master_alignment.csv"
+    },
+    {
+      "target_id": "2LXM_18681",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LXM_18681/master_alignment.csv",
+      "sha256": "609c57034837ecd2c022cf7850a37a1c522fbe537e9f7c4f7cea461d9fa3d840",
+      "snapshot_path": "inputs/2LXM_18681/master_alignment.csv"
+    },
+    {
+      "target_id": "2LXS_6095",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LXS_6095/master_alignment.csv",
+      "sha256": "88287f5d735793d0703c10e73e2b2f0e9193b2044a268bd6535c440a65d190c0",
+      "snapshot_path": "inputs/2LXS_6095/master_alignment.csv"
+    },
+    {
+      "target_id": "2MC6_19428",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MC6_19428/master_alignment.csv",
+      "sha256": "81ef2910102c726cc2a478d46b13ed9ccad12e6356a2f72f6051ccfa736918ad",
+      "snapshot_path": "inputs/2MC6_19428/master_alignment.csv"
+    },
+    {
+      "target_id": "2MNZ_19913",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MNZ_19913/master_alignment.csv",
+      "sha256": "46196987d54385b9428d1893b0ae12d364537e9c1815ca4b02344e1716c4bf2a",
+      "snapshot_path": "inputs/2MNZ_19913/master_alignment.csv"
+    },
+    {
+      "target_id": "2MOW_17173",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MOW_17173/master_alignment.csv",
+      "sha256": "4e1f0ab1307430d4b360cf712c5862ac8169aa56772a52ff0d02644e0066ffc0",
+      "snapshot_path": "inputs/2MOW_17173/master_alignment.csv"
+    },
+    {
+      "target_id": "2N3A_34537",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2N3A_34537/master_alignment.csv",
+      "sha256": "f4bdb24af061e99414fa2541e755af7fdf9ff2bee355d1c109d541cfdca2c649",
+      "snapshot_path": "inputs/2N3A_34537/master_alignment.csv"
+    },
+    {
+      "target_id": "2N3K_15125",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2N3K_15125/master_alignment.csv",
+      "sha256": "30609e298dfa83208021bd921812d49931d86375f028154363141551e0133ad9",
+      "snapshot_path": "inputs/2N3K_15125/master_alignment.csv"
+    },
+    {
+      "target_id": "2ROZ_10235",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2ROZ_10235/master_alignment.csv",
+      "sha256": "3f04c555cbb9e568031ef4516ab21c8aa18aa746f8dd0855e42786b0a14be476",
+      "snapshot_path": "inputs/2ROZ_10235/master_alignment.csv"
+    },
+    {
+      "target_id": "2RQG_4915",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2RQG_4915/master_alignment.csv",
+      "sha256": "17a5835dd8711ec0e43eb9361eda7b8ea664d5e84404625ae3f802b31a7f5dbd",
+      "snapshot_path": "inputs/2RQG_4915/master_alignment.csv"
+    },
+    {
+      "target_id": "2RR4_11362",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2RR4_11362/master_alignment.csv",
+      "sha256": "f34adb9a30b52e0373147308a7c0276100436d54e8cdf8a493cd21f5c0cd1d88",
+      "snapshot_path": "inputs/2RR4_11362/master_alignment.csv"
+    },
+    {
+      "target_id": "2RUI_16811",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2RUI_16811/master_alignment.csv",
+      "sha256": "a03a746b69aabe283e412b148ed3d37755c8ed025edc36d5ffe76b45cca1d64f",
+      "snapshot_path": "inputs/2RUI_16811/master_alignment.csv"
+    },
+    {
+      "target_id": "2YKA_16697",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2YKA_16697/master_alignment.csv",
+      "sha256": "3feb67b1af5bca4d66135859b74c46c7f8490dc11ab536c337e2ca7ba5e5e2b8",
+      "snapshot_path": "inputs/2YKA_16697/master_alignment.csv"
+    },
+    {
+      "target_id": "2YS5_11095",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2YS5_11095/master_alignment.csv",
+      "sha256": "0b86c12cf344b9cb55875dd0f763df7661b4c49102f76348c45148012b993343",
+      "snapshot_path": "inputs/2YS5_11095/master_alignment.csv"
+    },
+    {
+      "target_id": "5I22_4871",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/5I22_4871/master_alignment.csv",
+      "sha256": "59253184f8a65abdf152bd69e14b9dd281f67c72efea87ec124b573a2f849663",
+      "snapshot_path": "inputs/5I22_4871/master_alignment.csv"
+    },
+    {
+      "target_id": "5MF9_34068",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/5MF9_34068/master_alignment.csv",
+      "sha256": "f9c947a236cdadbb363c0d2fac82722a1f660e0c045c3edeebe9662517a24717",
+      "snapshot_path": "inputs/5MF9_34068/master_alignment.csv"
+    },
+    {
+      "target_id": "6E5N_25544",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6E5N_25544/master_alignment.csv",
+      "sha256": "b602c9008e0662b72f423d4537f086ef8c3895c6a252ccab368763e2c2a56c5c",
+      "snapshot_path": "inputs/6E5N_25544/master_alignment.csv"
+    },
+    {
+      "target_id": "6FDP_19757",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6FDP_19757/master_alignment.csv",
+      "sha256": "a8276000946261d04d3be1f5b277f179b4dcda3e937d2f1a31b41c2c893d6d6c",
+      "snapshot_path": "inputs/6FDP_19757/master_alignment.csv"
+    },
+    {
+      "target_id": "6G04_34247",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6G04_34247/master_alignment.csv",
+      "sha256": "fd0395b4111477cafc01fb0b156653e514ee58b35b24ed8e446bdf30be83e21d",
+      "snapshot_path": "inputs/6G04_34247/master_alignment.csv"
+    },
+    {
+      "target_id": "6GC3_17173",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6GC3_17173/master_alignment.csv",
+      "sha256": "3818ae1b5b82f66c378d1c2e726392840acf835cd20bdd9548016690dcf9d62d",
+      "snapshot_path": "inputs/6GC3_17173/master_alignment.csv"
+    },
+    {
+      "target_id": "6QXZ_27250",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6QXZ_27250/master_alignment.csv",
+      "sha256": "121282019f60d2269c61967b8e0b279eef42eea519ba40844bbecdd0dbed2abe",
+      "snapshot_path": "inputs/6QXZ_27250/master_alignment.csv"
+    },
+    {
+      "target_id": "6RH6_34394",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6RH6_34394/master_alignment.csv",
+      "sha256": "990a815fbfb1a64e02f04609bf258da8a2bfdf1f769b9c13988a98bb380c73ff",
+      "snapshot_path": "inputs/6RH6_34394/master_alignment.csv"
+    },
+    {
+      "target_id": "7KLR_30808",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/7KLR_30808/master_alignment.csv",
+      "sha256": "6ddd9a398ed992a457fe12b26543b66a4c7432808196a8d41f9b02ab91442677",
+      "snapshot_path": "inputs/7KLR_30808/master_alignment.csv"
+    },
+    {
+      "target_id": "7PKU_50446",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/7PKU_50446/master_alignment.csv",
+      "sha256": "bc7bf35144c53193810640c7880f4d91b87794a107fdbb95b93dc20bfa781b7c",
+      "snapshot_path": "inputs/7PKU_50446/master_alignment.csv"
+    },
+    {
+      "target_id": "7S5J_30926",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/7S5J_30926/master_alignment.csv",
+      "sha256": "147a1a0f52439f3123ef706fe96372157eddb198addb1918774ca936a3a942c6",
+      "snapshot_path": "inputs/7S5J_30926/master_alignment.csv"
+    },
+    {
+      "target_id": "8SG2_27579",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/8SG2_27579/master_alignment.csv",
+      "sha256": "e9462eedd502a0de8374ca0256bc1ba094fa0c26c5c6ae3cc6e2fe598519a38f",
+      "snapshot_path": "inputs/8SG2_27579/master_alignment.csv"
+    },
+    {
+      "target_id": "2MUR_25229",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MUR_25229/master_alignment.csv",
+      "sha256": "de0c785c053a43e100025ce07e0fa4f6c2cc7e02d31d8af95c367ab2fceb5f20",
+      "snapshot_path": "inputs/2MUR_25229/master_alignment.csv"
+    },
+    {
+      "target_id": "2KWI_15524",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2KWI_15524/master_alignment.csv",
+      "sha256": "e5e3e4abab257424e26afff8e499d9a9759bb3ee874da974ed6918b0807c8e2b",
+      "snapshot_path": "inputs/2KWI_15524/master_alignment.csv"
+    },
+    {
+      "target_id": "9R3Y_26643",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/9R3Y_26643/master_alignment.csv",
+      "sha256": "2e93f49dbcb7b88c340a134ac4473a11890d1a86b2b8f790fc55613ec73f6459",
+      "snapshot_path": "inputs/9R3Y_26643/master_alignment.csv"
+    },
+    {
+      "target_id": "2IPA_6075",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2IPA_6075/master_alignment.csv",
+      "sha256": "7833de75cce33e8c762c944a4e0037909a8134511d9438e44e8f129b394cc1a8",
+      "snapshot_path": "inputs/2IPA_6075/master_alignment.csv"
+    },
+    {
+      "target_id": "2K6D_52081",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2K6D_52081/master_alignment.csv",
+      "sha256": "c43e8a6cff1335e8cb42f5ce87739c2c1ccd4d9e7c23486b34ac78a090aa6623",
+      "snapshot_path": "inputs/2K6D_52081/master_alignment.csv"
+    },
+    {
+      "target_id": "2K7A_5461",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2K7A_5461/master_alignment.csv",
+      "sha256": "389477cdf55bf989c2a4ca8610ac8c145f9aa60b2a865c1aadc6a6635d2018e6",
+      "snapshot_path": "inputs/2K7A_5461/master_alignment.csv"
+    },
+    {
+      "target_id": "2LVO_18581",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2LVO_18581/master_alignment.csv",
+      "sha256": "d0ae4fdd1ec3c7cf12eac1a7eb7af4d97e4e2f836c61d598387903d653d0976d",
+      "snapshot_path": "inputs/2LVO_18581/master_alignment.csv"
+    },
+    {
+      "target_id": "2M0G_18802",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2M0G_18802/master_alignment.csv",
+      "sha256": "29d0e0bd769bdb9cf43118caac896cb75eafbd83b44356bfe4ff71f0a2999e4c",
+      "snapshot_path": "inputs/2M0G_18802/master_alignment.csv"
+    },
+    {
+      "target_id": "2M0G_19034",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2M0G_19034/master_alignment.csv",
+      "sha256": "dc105f882111fb228fee1af308c528baef1293ccfa36dcea4ff99988edff32f0",
+      "snapshot_path": "inputs/2M0G_19034/master_alignment.csv"
+    },
+    {
+      "target_id": "2MCN_16641",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2MCN_16641/master_alignment.csv",
+      "sha256": "fd71637f9218d4e4fb4d556fd0dd8a22c0e3e4b68b9629be64baf8e7e5367408",
+      "snapshot_path": "inputs/2MCN_16641/master_alignment.csv"
+    },
+    {
+      "target_id": "2N80_25883",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2N80_25883/master_alignment.csv",
+      "sha256": "3d311aa0c234a7c86b2f9d2b7d303299bff9f00a2d738af63bc0641de1ad3501",
+      "snapshot_path": "inputs/2N80_25883/master_alignment.csv"
+    },
+    {
+      "target_id": "2N9P_25913",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2N9P_25913/master_alignment.csv",
+      "sha256": "5cbee222788546cddb448ee3eedd461d70d077967afa490d718509fcbcf75c4e",
+      "snapshot_path": "inputs/2N9P_25913/master_alignment.csv"
+    },
+    {
+      "target_id": "6IVU_36220",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6IVU_36220/master_alignment.csv",
+      "sha256": "25bcf6faa5d6857b9804cc2ab07e8c10dea63d2e87a959c81bbccbc19b2e653a",
+      "snapshot_path": "inputs/6IVU_36220/master_alignment.csv"
+    },
+    {
+      "target_id": "6OQJ_30599",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6OQJ_30599/master_alignment.csv",
+      "sha256": "c68504ee4fb8fe554720bfbcdd14386f5909d007ec9c21974426dd26da860112",
+      "snapshot_path": "inputs/6OQJ_30599/master_alignment.csv"
+    },
+    {
+      "target_id": "6U19_16620",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6U19_16620/master_alignment.csv",
+      "sha256": "3e1aa5d5bb1b8f41a4256bd923b276d4709131b2356321b9a458ce2099c619bc",
+      "snapshot_path": "inputs/6U19_16620/master_alignment.csv"
+    },
+    {
+      "target_id": "6U4N_17827",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/6U4N_17827/master_alignment.csv",
+      "sha256": "3149a1dbdf2d2a8f5f5d8eaabc076085fd581f3ffd3f2ff582344050a9077096",
+      "snapshot_path": "inputs/6U4N_17827/master_alignment.csv"
+    },
+    {
+      "target_id": "7X5C_51441",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/7X5C_51441/master_alignment.csv",
+      "sha256": "480cc66116f0eb12bff0fd5718b7ba56f96aeda22a57a42305348d3150421a17",
+      "snapshot_path": "inputs/7X5C_51441/master_alignment.csv"
+    },
+    {
+      "target_id": "9C5E_18642",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/9C5E_18642/master_alignment.csv",
+      "sha256": "6864cac0e2ef0362b681934a3dda3d6188dc55889accf0efc7d7c02ba29ee6fa",
+      "snapshot_path": "inputs/9C5E_18642/master_alignment.csv"
+    },
+    {
+      "target_id": "9QLM_15670",
+      "path": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/9QLM_15670/master_alignment.csv",
+      "sha256": "f114390d725d30576f5ecc009ef1990633ab5211b97a6374825fcbcca4c38fe7",
+      "snapshot_path": "inputs/9QLM_15670/master_alignment.csv"
+    }
+  ],
+  "source_sha256": {
+    "scripts/analyze_csp_thresholds.py": "3f1039f2264107aa15c924dd233c6b52d5bbc246aff8dd556f35393d3bcf361e",
+    "scripts/config.py": "f048ab4c01ff52bf4e920b50ec4edab4e97dc1f2e46c0f1d629c7b8578298eab",
+    "scripts/csp.py": "485a67f8de85cf0aa33f1b624438660bdd77c28f93f5e330ffba46075719d8d4",
+    "scripts/merge_csv.py": "b60662a8eb9ff8f2820608b9d3f80e10b3200902164570fae420bae85246b4eb",
+    "scripts/target_resolution.py": "716cd64500debee3d1f48c9cd158b8f4d28a730edd56b6e0b1c40b7290b0ba16"
+  },
+  "python": "3.12.2",
+  "versions": {
+    "numpy": "2.3.4",
+    "scipy": "1.15.2",
+    "pandas": "3.0.3",
+    "matplotlib": "3.10.0",
+    "seaborn": "0.13.2"
+  },
+  "data_sha256": {
+    "CSP_UBQ_ph0.5_temp5C.csv": "401430d0ddaf5c6c02a5c3074a54505a2cd1a1ea9ea01e5bfd2f8e0fae900b7e",
+    "aggregate_metrics.csv": "896f1153efc4516fc7e0c10d9a4e141f64ad3b90671bb718f174b5e66a0c51a0",
+    "bootstrap_auc.csv": "0187ef9a3deb2f665a07e137611785150e0a2d132dbcf57dde56f1ad90e027d4",
+    "intensity_summary.csv": "f1d9b482a43e7704d3a3df6f4a9a9d234d4f7532763ca651790e19fb6c95aee0",
+    "macro_roc.csv": "07b1044cd9d2dbc7fc68b04a8bff64d1de724372d4db4f268bb8034450e5826d",
+    "residue_eligibility.csv": "8ab938af0caf4d5f238d068841a2a09685ecc8d0bfc96fa0e3d3a608b3144129",
+    "roc_curves.csv": "0eacdbc0166e8344f4bdf5649775633fd95cbe5d9cd075db995ef0c53d402554",
+    "target_summary.csv": "4e1e6dc56e1d2d0560d3391e2b23d9e68c181538524ec9d25f6e2b8d07ea3471",
+    "threshold_bootstrap_bands.csv": "01e39218399bb83d984ac285c78b44ea8a06ec68c25d822071b7c7ee5baaa11d",
+    "threshold_operating_points.csv": "f050a1da9cbb39dee39cbfcc14b40aa4e99928dfbb7b0e0ec4c0701e05cf4f60",
+    "undefined_auc_targets.csv": "458a6b9baa1700c757a615036356bad19320a7de6e8f54034db8706264ff1b61",
+    "violin_residues.csv": "9ef05b0c00bbc2373f56a1ff5d9fa4f7eea76eb60775cc58a651db0390277026"
+  }
+}

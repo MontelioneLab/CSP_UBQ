@@ -1,0 +1,58 @@
+{
+  "created_at": "2026-11-04T11:58:57.953992-05:00",
+  "signature": {
+    "analysis_manifest_sha256": "e73c6bcdfbd4f3240e9411e03c6db8a72980583c1ecafe3eabac52c59e1d9328",
+    "exporter_sha256": "89808adde315dbe77fa1fc057be284999d1d50ad2ca51903ed79831d4d9102a0",
+    "style_source_sha256": "f389a9c097e41250124f27a5bdb5b1a2f061039751b7da72a6039b7a9fcb8978",
+    "export_id": "2026-11-04_csp-roc_001",
+    "dpi": 300,
+    "predecessor_export": null,
+    "target_id": "2KPL_6911",
+    "master_alignment_sha256": "d813838e2639cf5142534e9868f7c10f11f62c3bfcf721530d196cf4d35bae86"
+  },
+  "analysis_dir": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2026-11-04_csp-threshold-analysis_002",
+  "summary": {
+    "target_id": "2KPL_6911",
+    "holo_pdb": "2KPL",
+    "apo_bmrb": 6911,
+    "holo_bmrb": 16559,
+    "n_rows": 98,
+    "n_recorded_csp": 88,
+    "n_eligible": 88,
+    "cleaned_mean_ppm": 0.09347,
+    "cleaned_sd_ppm": 0.0864776190699,
+    "primary_cutoff_ppm": 0.09347,
+    "n_cutoff_estimation_outliers": 8,
+    "cutoff_boundary_disagreements": 0,
+    "n_missing_or_nonfinite_csp": 10,
+    "n_negative_csp": 0,
+    "n_proline": 0,
+    "n_extreme_csp_z": 0,
+    "n_missing_baseline_mask": 0,
+    "n_unknown_structural_label": 0,
+    "auc": 0.77899543379,
+    "n_positive": 15,
+    "n_negative": 73,
+    "baseline_tp": 12,
+    "baseline_fp": 26,
+    "baseline_tn": 47,
+    "baseline_fn": 3,
+    "baseline_tpr": 0.8,
+    "baseline_fpr": 0.356164383562,
+    "baseline_specificity": 0.643835616438,
+    "baseline_precision": 0.315789473684,
+    "baseline_fdr": 0.684210526316,
+    "baseline_tp_fp_ratio": 0.461538461538
+  },
+  "curve": "inclusive CSP >= threshold; grouped ties; frozen eligibility and structural union",
+  "score_modes": {
+    "absolute_ppm": "HN CSP magnitude in ppm",
+    "relative": "CSP / frozen target-specific primary cutoff"
+  },
+  "baseline": "saved primary significant flags; rounding disagreements retained in source analysis",
+  "artifacts": {
+    "roc_curve.csv": "bec8f4a3b900e3702ba1047da06c53b145552dfec194f64b503d0bf2efbc34ad",
+    "roc_curve.pdf": "8c4fa2d38fc6d9c31331832bbe4eae0e138f83693c1e2a3df18eef1c8d953b9b",
+    "roc_curve.png": "8cef31ea849759f8f623a5f3981b9f4ee5511f4962553f42cf7bf7d327071aa7"
+  }
+}

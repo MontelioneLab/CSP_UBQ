@@ -103,29 +103,7 @@ $100\times\mathrm{FP}/(\mathrm{TP}+\mathrm{FP})$ among significant CSPs.
 This figure shows per-target false positive rates across four subsets, and reveals there are minimal differences between these four subsets.}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.72\linewidth]{SF17_csp_vs_distance_panels.png}
-\captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S17. Chemical-shift perturbations as a function of
-interchain distance.}
-\textbf{A.} Residue-pooled
-$P(\text{significant CSP}\mid\text{minimum interchain }C_\alpha\text{--}C_\alpha\text{ distance})$
-for buffer-similar systems ($n=135$ from
-\texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} with pipeline outputs) under the primary cutoff
-$\max(\text{cleaned mean},\,0.05\,\mathrm{ppm})$.
-Bar height is the fraction of residues with a recorded HN CSP that are called
-significant in each 1\,\AA{} distance bin; stacks partition those significant
-CSPs by cleaned-mean $z$-score
-($0\leq z<1$, $1\leq z<2$, $2\leq z<3$, $z\geq 3$).
-Close to the interface the significant fraction is high and enriched in large
-$z$, then declines toward a lower baseline at longer range.
-\textbf{B.} Per-residue CSP $z$-score versus nearest interchain any-atom
-distance for the same $n=135$ set (same primary significance definition), colored by confusion-matrix
-class (TP/FP/TN/FN) relative to the structural binding-site mask.
-Dashed lines mark $z=3$ and $d=10$\,\AA{}; the annotation counts false positives
-with $d>10$\,\AA{} and $z>3$.}
-\end{figure}
+\input{si_fig_s17}
 
 \begin{figure}[H]
 \centering
@@ -247,7 +225,7 @@ fixed cutoffs \textbf{0.03}, \textbf{0.05}, and \textbf{0.10\,ppm};
 \textbf{raw mean}, \textbf{raw mean $+1$ SD}, and \textbf{raw mean $+2$ SD}
 (no outlier removal);
 and \textbf{cleaned mean} without the 0.05\,ppm floor.
-This figure reveals our results are relatively stable if we use other reasonable thresholds of what is considered a significant CSP. Some thresholds from this figure we determine are too high (e.g.\ Raw mean + 1 SD, Raw mean + 2 SD, Top 10\%, Top 5\%) which results in less distal CSPs than is expected from the other thresholding approaches.}
+This figure reveals our results are relatively stable if we use other reasonable thresholds of what is considered a significant CSP. Some thresholds from this figure we determine are too high (e.g.\ Raw mean + 1 SD, Raw mean + 2 SD, Top 10\%, Top 5\%) which results in less distal CSPs than is expected from the other thresholding approaches. SI Fig.\ S17C shows the continuous ROC analysis, and SI Fig.\ S17D shows the significant-CSP magnitude distributions.}
 \end{figure}
 
 \begin{figure}[H]

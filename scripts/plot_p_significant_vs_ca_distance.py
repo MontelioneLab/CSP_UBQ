@@ -221,22 +221,11 @@ def compute_stacked_bin_probabilities(
     return pd.DataFrame(rows)
 
 
-def plot_p_significant_vs_distance(
-    bin_df: pd.DataFrame,
-    out_path: Path,
-    *,
-    n_residues: int,
-    n_targets: int,
-    significant_column: str,
-    bin_width: float,
-    dpi: int = 300,
-    fig_width: float = 10.0,
-    fig_height: float = 5.5,
-) -> None:
+def draw_stacked_bin_probabilities(ax, bin_df: pd.DataFrame, *, bin_width: float) -> None:
+    """Draw the stacked distance-bin probabilities on an existing axes."""
     if bin_df.empty:
         raise ValueError("No non-empty distance bins to plot.")
 
-    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     bottoms = np.zeros(len(bin_df), dtype=float)
     x = bin_df["bin_left"].to_numpy(dtype=float)
     width = bin_width * 0.95
@@ -258,13 +247,29 @@ def plot_p_significant_vs_distance(
         bottoms = bottoms + heights
 
     total_pct = bottoms
-    ax.set_xlabel(DISTANCE_XLABEL, fontsize=14)
-    ax.set_ylabel(PROB_YLABEL, fontsize=14)
     y_max = float(total_pct.max()) if total_pct.size else 0.0
     ax.set_ylim(0.0, min(100.0, y_max * 1.15 + 2.0))
     ax.set_xlim(0.0, float(bin_df["bin_right"].max()))
-    ax.tick_params(axis="both", labelsize=12)
     ax.grid(True, axis="y", alpha=0.35, linestyle="--", linewidth=0.6)
+
+
+def plot_p_significant_vs_distance(
+    bin_df: pd.DataFrame,
+    out_path: Path,
+    *,
+    n_residues: int,
+    n_targets: int,
+    significant_column: str,
+    bin_width: float,
+    dpi: int = 300,
+    fig_width: float = 10.0,
+    fig_height: float = 5.5,
+) -> None:
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
+    draw_stacked_bin_probabilities(ax, bin_df, bin_width=bin_width)
+    ax.set_xlabel(DISTANCE_XLABEL, fontsize=14)
+    ax.set_ylabel(PROB_YLABEL, fontsize=14)
+    ax.tick_params(axis="both", labelsize=12)
     ax.legend(title="Significant CSP z-score", fontsize=10, title_fontsize=11, loc="best")
     ax.set_title(
         f"Pooled over {n_targets} targets, {n_residues} residues "

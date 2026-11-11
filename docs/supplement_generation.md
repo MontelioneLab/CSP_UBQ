@@ -52,7 +52,7 @@ Optional: `--stop-on-error` exits on the first failing sub-script (default: cont
 | S14 | `scripts/create_si_fig_s14.py` |
 | S15 | `scripts/create_si_fig_s15.py` |
 | S16 | `scripts/create_si_fig_s16.py` (FP/(TP+FP) distributions) |
-| S17 | `scripts/create_si_fig_s17.py` (CSP vs distance panels) |
+| S17 | `scripts/create_si_fig_s17_combined.py` (distance, ROC, and pooled TP/FP magnitudes) |
 | S18 | `scripts/create_si_fig_s18.py` (2FIN case-study z panel) |
 | S19 | `scripts/create_si_fig_s19.py` (static PDB search screenshot) |
 | S20 | `scripts/create_si_fig_s20.py` (buffer threshold sweep) |
@@ -65,6 +65,79 @@ Optional: `--stop-on-error` exits on the first failing sub-script (default: cont
 
 The wrapper invokes each of these in order before compiling/merging the SI PDF.
 
+### S17 and per-target ROC exports
+
+SI Fig. S17 places the CSP distance plots in A and B, the ROC in C, and the pooled
+significant-CSP magnitude violins in D. S24 cross-references S17C and S17D.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python -B scripts/create_si_fig_s17_combined.py \
+  --analysis-dir outputs/2026-11-04_csp-threshold-analysis_002 \
+  --output figures/SF17_csp_distance_and_binding_site.pdf
+```
+
+The vector figure uses the frozen input tables for A and B and the frozen
+threshold results for C and D. The shared LaTeX figure block and caption are in
+`SI_documents/tex/si_fig_s17.tex`.
+
+Each of the 135 selected targets also has its own ROC files within its existing
+target output directory. Generate or verify them independently with:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python -B scripts/export_target_roc_curves.py \
+  --analysis-dir outputs/2026-11-04_csp-threshold-analysis_002 \
+  --outputs-dir outputs --export-id 2026-11-04_csp-roc_001
+```
+
+For example, `outputs/1D5G_34688/2026-11-04_csp-roc_001/` contains
+`roc_curve.pdf`, `roc_curve.png` (300 dpi), `roc_curve.csv` (absolute and relative
+thresholds), and `provenance.json`. Plots show target-specific AUC, class sizes,
+the saved primary operating point, primary cutoff, and baseline TP/FP/TN/FN.
+The ROC geometry and AUC are identical under positive per-target score scaling.
+The run-level `outputs/2026-11-04_csp-roc_001/index.csv` links every export;
+its manifest archives renderer source and hashes. The original index records
+paths from the generating machine. In another checkout, use the target ID and
+export ID to locate the same files under the local `outputs/` directory. New
+indexes record paths relative to the outputs directory. All current target
+master tables must match the frozen analysis before files are written. Completed
+exports are verified against their archived renderer and reused without writes.
+Link new versions with `--predecessor-export` and a new `--export-id`.
+The SI wrapper performs this step using `--target-roc-export-id` (default above).
+
+The publication snapshot is `outputs/2026-11-04_csp-threshold-analysis_002/`,
+linked to the initial calculation `_001`. Snapshot `_002` additionally archives
+the exact 135 input master tables; the scientific settings and results agree.
+To create a new analysis and render the original full overview and atlas without
+any pipeline rerun:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python -B scripts/create_si_fig_s27.py \
+  --targets-csv data/CSP_UBQ_ph0.5_temp5C.csv --outputs-dir outputs --layout full
+```
+
+The default creates a date-first, numbered run using America/New_York and writes
+figures inside that run. Explicit `--analysis-dir` reuses a verified snapshot;
+if the directory is absent it is created. `--bootstrap` and `--seed` apply only
+when creating a run. For changed inputs/settings, choose a new directory and pass
+`--predecessor outputs/2026-11-04_csp-threshold-analysis_002`.
+
+Run contents: residue eligibility and violin source rows, target summaries,
+absolute/relative ROC curves, equal-target mean ROC and uncertainty bands,
+operating points, intensity summaries, aggregate AUCs and bootstrap replicates,
+target selection, manifest, exact input tables, and source snapshots. Under `figures/` are vector
+`SF27_csp_roc_intensity.pdf`/`.svg`, a 600-dpi PNG, `S27_caption.txt`, an indexed
+35-page `per_target_roc_violin_atlas.pdf` (all 135 targets), and a figure manifest.
+
+`--figures-dir` chooses a different **new** figure directory for a rendering.
+`--publish-dir figures` additionally adds the selected canonical PDF/PNG/SVG assets for
+LaTeX. Publishing refuses to overwrite a different existing asset. Complete,
+unchanged analysis/figure snapshots can be reused; altered inputs or files fail
+validation instead of silently reusing stale results.
+
+The full SI wrapper defaults to the publication analysis snapshot (override with
+`--s27-analysis-dir`) when rendering S17 and exporting the per-target ROC curves.
+The S27 and S28 files are archived figure versions.
+
 ## What it does
 
 1. Regenerates SI figure/table assets into `figures/` (`SF*.png`, `ST*.tex`, `SE*.png`).
@@ -72,11 +145,11 @@ The wrapper invokes each of these in order before compiling/merging the SI PDF.
 3. Merges PDFs in this order into `SI_documents/SI merged.pdf` (and copies `SI_merged.pdf` at the repo root):
 
 ```text
-SI N term.pdf (title)
+SI N Term.pdf (title)
 → SI_TOC.pdf (from tex/si_toc.tex)
 → Supplementary Text.pdf
 → CSP_UBQ_SUPPL_TABLES.pdf   (from tex/main.tex → ST1–ST9)
-→ SI C term.pdf
+→ SI C Term.pdf
 ```
 
 4. Builds `Supplemental_Information.pdf` (`scripts/build_si_merged_pdf.py --combined`) with a combined TOC/SI Text and `All_Case_Studies.pdf` appended after the References. `SI_merged.pdf` is left unchanged by that flag.
@@ -89,7 +162,7 @@ Compile the tables portion alone:
 cd SI_documents/tex && latexmk -pdf -interaction=nonstopmode main.tex
 ```
 
-`SI N term.pdf` title page is kept; its stale TOC page is replaced by a compiled
+`SI N Term.pdf` title page is kept; its stale TOC page is replaced by a compiled
 `SI_documents/tex/si_toc.tex` listing Tables S1–S9, Figs S1–S26, and Equations S1–S3.
 `SI_documents/Supplementary Text.pdf` is inserted immediately after that TOC.
 The C term is rebuilt from regenerated SF9–SF26 (and SE1–SE3) figures. SF19 is
@@ -107,11 +180,9 @@ SI Fig. S23 uses the primary cutoff
 `max(cleaned mean, 0.05 ppm)` on the pH/temp-matched list ($n=135$ with pipeline
 outputs; mean $0.0804$ ppm, matching README Methods). S13/S14 use the rematch-excluded
 pH/temp-matched list (`ph05_n137_targets.csv`, $n=136$).
-SI Fig. S17 is composed by `scripts/create_si_fig_s17_csp_vs_distance.py` from
-`p_significant_vs_ca_distance_ph05.png` (panel a) and the atom–atom
-`max(0.05 ppm, cleaned mean)` CSP-$z$ scatter (panel b; bottom-left of the
-CA vs any-atom $2\times 2$). Both source panels use
-`data/CSP_UBQ_ph0.5_temp5C.csv` resolved to pipeline outputs ($n=135$).
+SI Fig. S17A shows distance-binned significant CSP fractions and S17B shows the
+atom–atom CSP-$z$ scatter for the primary rule. Both distance panels use the same
+pH/temp-matched targets ($n=135$) as S17C and S17D.
 SI Fig. S18 copies the case-study z panel from
 `outputs/2FIN_6809/2FIN_case_study_z.png`.
 SI Fig. S22 uses the precomputed terminal-anchor vs global-offset panel
@@ -155,12 +226,15 @@ Panels: A 52080/52079, B 28070/28071, C 34000/34001, D 34394/6354, E 17769/51725
   Order:
 
   ```text
-  SI N term.pdf (title)
+  SI N Term.pdf (title)
   → SI_TOC_combined.pdf (from tex/si_toc_combined.tex; adds References + All Case Studies)
   → Supplementary Text combined.pdf (from tex/si_supplementary_text_combined.tex)
   → CSP_UBQ_SUPPL_TABLES.pdf
-  → SI C term.pdf
+  → SI C Term.pdf
   → All_Case_Studies.pdf
   ```
 
   Writes `SI_documents/Supplemental_Information.pdf` and copies `Supplemental_Information.pdf` at the repo root. The combined SI Text states that the 243 case studies are appended after the References rather than provided as a separate file.
+
+  The PDFs preceding the S17 update are archived in
+  `SI_documents/2026-11-11_si-pdf-backup_001/`.

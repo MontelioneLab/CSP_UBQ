@@ -193,6 +193,15 @@ Per processed entry, under `outputs/{HOLO_PDB}_{apo_bmrb}/` (uppercase PDB ID an
 ### Visualizations
 
 - `color_csp_mask.pml`, `color_occlusion.pml`, and other `.pml` / plots as produced by the run  
+- Post-processed ROC exports for the 135 pH/temp-matched targets are in each
+  target's `2026-11-04_csp-roc_001/` subdirectory: vector `roc_curve.pdf`,
+  300-dpi `roc_curve.png`, `roc_curve.csv` with both absolute-ppm and normalized
+  thresholds, and `provenance.json` containing target AUC/counts and source hashes.
+  Curves use all eligible CSPs and the fixed structural binding-site union;
+  the star uses the saved primary significance masks. These are generated from
+  the frozen analysis by `scripts/export_target_roc_curves.py`, without rerunning
+  the pipeline. The run-level `outputs/2026-11-04_csp-roc_001/index.csv` lists all
+  135 exports. Existing exports are verified and reused, never overwritten.
 
 ### Parsed data
 

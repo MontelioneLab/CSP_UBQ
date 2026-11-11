@@ -1,0 +1,62 @@
+{
+  "created_at": "2026-11-11T14:22:43.252032-05:00",
+  "threshold_analysis": "../2026-11-04_csp-threshold-analysis_002",
+  "threshold_analysis_manifest_sha256": "e73c6bcdfbd4f3240e9411e03c6db8a72980583c1ecafe3eabac52c59e1d9328",
+  "violin_residues_sha256": "9ef05b0c00bbc2373f56a1ff5d9fa4f7eea76eb60775cc58a651db0390277026",
+  "source_sha256": "4eacaee75c651ed113809431930f91bcffc682faca229b606a51de765d1f6e45",
+  "numpy_version": "2.3.4",
+  "n_targets": 135,
+  "n_targets_with_both_classes": 134,
+  "log_spaced_range_ppm": [
+    0.05,
+    2.106
+  ],
+  "pseudocount_per_bin": 0.5,
+  "null": "Shuffle TP/FP labels within targets, holding per-target class counts fixed.",
+  "groups": {
+    "FP": {
+      "n": 3023,
+      "mean_ppm": 0.19655471386040357,
+      "sample_sd_ppm": 0.18304680032343051,
+      "median_ppm": 0.1349
+    },
+    "TP": {
+      "n": 1331,
+      "mean_ppm": 0.2549273478587528,
+      "sample_sd_ppm": 0.22938658636330933,
+      "median_ppm": 0.1907
+    }
+  },
+  "primary": {
+    "n_bins": 20,
+    "permutations": 99999,
+    "seed": 20261111,
+    "tp_to_fp_nats": 0.09798430408163104,
+    "fp_to_tp_nats": 0.0902331388837745,
+    "symmetric_kl_nats": 0.09410872148270277,
+    "exceedances": 0,
+    "permutation_p": 1e-05
+  },
+  "bin_sensitivity": [
+    {
+      "n_bins": 12,
+      "permutations": 9999,
+      "seed": 20261112,
+      "tp_to_fp_nats": 0.08965597801539874,
+      "fp_to_tp_nats": 0.08678841058613576,
+      "symmetric_kl_nats": 0.08822219430076725,
+      "exceedances": 0,
+      "permutation_p": 0.0001
+    },
+    {
+      "n_bins": 30,
+      "permutations": 9999,
+      "seed": 20261113,
+      "tp_to_fp_nats": 0.10114163629801122,
+      "fp_to_tp_nats": 0.09800651918002637,
+      "symmetric_kl_nats": 0.0995740777390188,
+      "exceedances": 0,
+      "permutation_p": 0.0001
+    }
+  ]
+}

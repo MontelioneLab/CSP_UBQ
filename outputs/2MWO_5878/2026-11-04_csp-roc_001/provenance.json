@@ -1,0 +1,58 @@
+{
+  "created_at": "2026-11-04T11:58:50.597990-05:00",
+  "signature": {
+    "analysis_manifest_sha256": "e73c6bcdfbd4f3240e9411e03c6db8a72980583c1ecafe3eabac52c59e1d9328",
+    "exporter_sha256": "89808adde315dbe77fa1fc057be284999d1d50ad2ca51903ed79831d4d9102a0",
+    "style_source_sha256": "f389a9c097e41250124f27a5bdb5b1a2f061039751b7da72a6039b7a9fcb8978",
+    "export_id": "2026-11-04_csp-roc_001",
+    "dpi": 300,
+    "predecessor_export": null,
+    "target_id": "2MWO_5878",
+    "master_alignment_sha256": "a7c807b459d4513acff36c9b07a579e2d082be4c1b53c492b6d8740fcd5b9bd7"
+  },
+  "analysis_dir": "/Users/tiburon/Code/projects/CSP_UBQ/outputs/2026-11-04_csp-threshold-analysis_002",
+  "summary": {
+    "target_id": "2MWO_5878",
+    "holo_pdb": "2MWO",
+    "apo_bmrb": 5878,
+    "holo_bmrb": 25347,
+    "n_rows": 116,
+    "n_recorded_csp": 107,
+    "n_eligible": 107,
+    "cleaned_mean_ppm": 0.0466168421053,
+    "cleaned_sd_ppm": 0.0300130135025,
+    "primary_cutoff_ppm": 0.05,
+    "n_cutoff_estimation_outliers": 12,
+    "cutoff_boundary_disagreements": 0,
+    "n_missing_or_nonfinite_csp": 9,
+    "n_negative_csp": 0,
+    "n_proline": 0,
+    "n_extreme_csp_z": 0,
+    "n_missing_baseline_mask": 0,
+    "n_unknown_structural_label": 0,
+    "auc": 0.839002267574,
+    "n_positive": 9,
+    "n_negative": 98,
+    "baseline_tp": 8,
+    "baseline_fp": 36,
+    "baseline_tn": 62,
+    "baseline_fn": 1,
+    "baseline_tpr": 0.888888888889,
+    "baseline_fpr": 0.367346938776,
+    "baseline_specificity": 0.632653061224,
+    "baseline_precision": 0.181818181818,
+    "baseline_fdr": 0.818181818182,
+    "baseline_tp_fp_ratio": 0.222222222222
+  },
+  "curve": "inclusive CSP >= threshold; grouped ties; frozen eligibility and structural union",
+  "score_modes": {
+    "absolute_ppm": "HN CSP magnitude in ppm",
+    "relative": "CSP / frozen target-specific primary cutoff"
+  },
+  "baseline": "saved primary significant flags; rounding disagreements retained in source analysis",
+  "artifacts": {
+    "roc_curve.csv": "d3ef0a7c220f97746bf444efc9001d1704dac6ddbef27488d416799773f95ecc",
+    "roc_curve.pdf": "d66d3ce1d28fad5001d3571fda113d4151d0e530aa95f685c627f26c2f192cde",
+    "roc_curve.png": "428bc4e42c776a6fa62a6f36aa5036b6dd2e6e742e6ddc7731cca8b5045a65e4"
+  }
+}

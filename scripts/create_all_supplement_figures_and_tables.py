@@ -13,7 +13,7 @@ SI figure generators (one entry point per SI Fig. S1–S26):
   - S14:    create_si_fig_s14.py
   - S15:    create_si_fig_s15.py
   - S16:    create_si_fig_s16.py  (wraps create_si_fig_s16_fp_percent.py)
-  - S17:    create_si_fig_s17.py  (wraps create_si_fig_s17_csp_vs_distance.py)
+  - S17:    create_si_fig_s17_combined.py  (distance, ROC, and pooled TP/FP intensities)
   - S18:    create_si_fig_s18.py  (2FIN case-study z panel)
   - S19:    create_si_fig_s19.py  (static PDB search screenshot)
   - S20:    create_si_fig_s20.py  (buffer threshold sweep)
@@ -23,6 +23,7 @@ SI figure generators (one entry point per SI Fig. S1–S26):
   - S24:    create_si_fig_s24.py  (wraps create_fig_3_thresholds.py)
   - S25:    create_si_fig_s25.py  (apo–apo controls S25A–E)
   - S26:    create_si_fig_s26.py  (F1 vs MCC)
+  - Per-target ROC PDFs/PNGs/tables: export_target_roc_curves.py
 
 Also: SI Table S1 (create_si_table_s1.py), ST2–ST8 LaTeX
 (create_custom_selection_latex_tables.py), equations S1–S3
@@ -79,6 +80,17 @@ def main() -> int:
         help="CSP_UBQ.csv path (default: data/CSP_UBQ.csv).",
     )
     parser.add_argument(
+        "--s27-analysis-dir",
+        type=Path,
+        help="Frozen CSP threshold analysis for S17 and per-target ROC exports "
+             "(default: <outputs-dir>/2026-11-04_csp-threshold-analysis_002).",
+    )
+    parser.add_argument(
+        "--target-roc-export-id",
+        default="2026-11-04_csp-roc_001",
+        help="Immutable per-target ROC export version (default: 2026-11-04_csp-roc_001).",
+    )
+    parser.add_argument(
         "--stop-on-error",
         action="store_true",
         help="Stop on first script failure (default: continue).",
@@ -92,6 +104,7 @@ def main() -> int:
 
     confusion_csv = str(Path(outputs) / "confusion_matrix_per_system.csv")
     ph05 = "data/CSP_UBQ_ph0.5_temp5C.csv"
+    threshold_run = str(args.s27_analysis_dir or Path(outputs) / "2026-11-04_csp-threshold-analysis_002")
     # Figure 3 / S13 / S14: original pH/temp-matched n=136 (excludes rematch pairs)
     ph05_n137 = str(Path(outputs) / "ph05_n137_targets.csv")
     if not Path(ph05_n137).is_file():
@@ -207,8 +220,9 @@ def main() -> int:
             ],
         ),
         (
-            "create_si_fig_s17.py",
-            ["--output", str(Path(figures) / "SF17_csp_vs_distance_panels.png")],
+            "create_si_fig_s17_combined.py",
+            ["--analysis-dir", threshold_run,
+             "--output", str(Path(figures) / "SF17_csp_distance_and_binding_site.pdf")],
         ),
         (
             "create_si_fig_s18.py",
@@ -287,6 +301,11 @@ def main() -> int:
                 "--targets-csv",
                 ph05,
             ],
+        ),
+        (
+            "export_target_roc_curves.py",
+            ["--analysis-dir", threshold_run, "--outputs-dir", outputs,
+             "--export-id", args.target_roc_export_id],
         ),
         ("create_custom_selection_latex_tables.py", ["--figures-dir", figures]),
         (

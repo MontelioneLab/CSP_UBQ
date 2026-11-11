@@ -211,6 +211,7 @@ def _draw_csp_z_vs_distance_scatter(
     marker_size: float = 28,
     annotate_fp_quadrant: bool = True,
     fp_text_fontsize: float = 14,
+    compact_legend: bool = False,
 ) -> None:
     """Draw CSP z vs distance scatter onto an existing axes."""
     for cls in _VALID_CLASSES:
@@ -225,7 +226,7 @@ def _draw_csp_z_vs_distance_scatter(
             alpha=0.55,
             edgecolors="none",
             s=marker_size,
-            label=classification_legend_label(cls, len(xs)),
+            label=f"{cls} ({len(xs):,})" if compact_legend else classification_legend_label(cls, len(xs)),
             zorder=3 if cls in ("TP", "FP") else 2,
         )
 
@@ -237,7 +238,7 @@ def _draw_csp_z_vs_distance_scatter(
     if title:
         ax.set_title(title, fontsize=title_fontsize, fontweight="bold")
     ax.grid(True, alpha=0.3, linestyle="--", linewidth=0.5)
-    ax.legend(loc="best", framealpha=0.9, fontsize=legend_fontsize)
+    ax.legend(loc="best", framealpha=0.9, fontsize=legend_fontsize, ncols=2 if compact_legend else 1)
 
     if annotate_fp_quadrant:
         fp_n = _fp_quadrant_count(points)

@@ -40,8 +40,8 @@ TABLE_MASTERS: list[tuple[str, str]] = [
 ]
 
 C_TERM_MASTER = "si_c_term_figures"
-C_TERM_OUT = "SI C term.pdf"
-N_TERM = "SI N term.pdf"
+C_TERM_OUT = "SI C Term.pdf"
+N_TERM = "SI N Term.pdf"
 SUPPLEMENTARY_TEXT = "Supplementary Text.pdf"
 REFERENCES = "SI_C_term_references.pdf"
 REFERENCES_MASTER = "si_references"
@@ -513,7 +513,7 @@ def main() -> int:
     ap.add_argument(
         "--skip-c-term",
         action="store_true",
-        help="Reuse existing SI C term.pdf instead of rebuilding from figures.",
+        help=f"Reuse existing {C_TERM_OUT} instead of rebuilding from figures.",
     )
     ap.add_argument(
         "--chunk-tables",
