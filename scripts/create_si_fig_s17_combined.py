@@ -84,7 +84,7 @@ def render(analysis_dir: Path, output: Path, *, intensity_scale: str = "linear")
         _load(analysis_dir, "aggregate_metrics.csv"), _load(analysis_dir, "target_summary.csv"),
     )
     draw_pooled_intensity(ax_d, _load(analysis_dir, "violin_residues.csv"))
-    ax_d.set_xticks([0, 1], ["TP\nBinding site", "FP\nDistal"])
+    ax_d.set_xticks([0, 1], ["TP\nBinding site", "FP\nNon-local"])
     if intensity_scale == "linear":
         ax_d.set(yscale="linear", ylim=(0, 2.5))
         ax_d.set_yticks([0, 0.5, 1, 1.5, 2, 2.5], ["0", "0.5", "1", "1.5", "2", "2.5"])
