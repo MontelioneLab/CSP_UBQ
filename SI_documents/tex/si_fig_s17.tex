@@ -21,19 +21,18 @@ negatives (TN), and false negatives (FN) relative to the structural binding-site
 definition. Dashed lines mark $z=3$ and $d=10$\,\AA{}. The annotation counts
 plotted FPs exceeding both thresholds.
 \textbf{C.}~Receiver operating characteristic (ROC) curves across HN CSP
-thresholds for 12,267 eligible residues. The analysis includes all eligible
-residues, regardless of CSP significance (TPs, FPs, FNs, and TNs), with
-structurally defined binding-site residues treated as positives and non-local
-residues as negatives. The
-true-positive rate ($\mathrm{TP}/[\mathrm{TP}+\mathrm{FN}]$) and false-positive
-rate ($\mathrm{FP}/[\mathrm{FP}+\mathrm{TN}]$) are calculated as the CSP
+thresholds for all 12,267 eligible residues, regardless of CSP significance.
+Different than the rest of the study, for this ROC curve, binding-site
+residues form the positive reference class and non-local residues form the
+negative class. The true-positive rate [$\mathrm{TP}/(\mathrm{TP}+\mathrm{FN})$]
+and false-positive rate [$\mathrm{FP}/(\mathrm{FP}+\mathrm{TN})$] are calculated as the CSP
 threshold is varied. Gray curves show individual targets,
 blue shows the pooled ROC using CSP divided by the target-specific cutoff, and
 the black dashed curve shows the equal-target mean ROC. The pooled area under
 the curve (AUC) is 0.704 (95\% CI 0.682--0.728), and the mean per-target AUC is
 0.728 (95\% CI 0.707--0.750). The pooled AUC means that an eligible binding-site
-residue drawn at random ranks higher by normalized CSP than an eligible non-local
-residue drawn at random about 70\% of the time, counting ties as half.
+residue drawn at random has a larger normalized CSP magnitude than an eligible
+non-local residue drawn at random about 70\% of the time, counting ties as half.
 The band shows the pointwise 95\% interval for the mean ROC. The gray diagonal
 indicates chance ranking. The star marks the pooled true-positive and
 false-positive rates obtained using the original target-specific CSP
@@ -44,6 +43,6 @@ primary rule, pooled across targets. Scott-bandwidth kernel densities are
 estimated and normalized to equal area in $\log_{10}$ CSP space and bounded by
 the observed ranges. White dots mark medians and black bars mark interquartile
 ranges. The y-axis is \sseventeenaxisscale{} (ppm). The symmetric
-Kullback--Leibler divergence was 0.0941 nats (20 shared log-spaced bins, 0.5 pseudocount per bin),
-with $p=1.0\times10^{-5}$ from 99,999 within-target label permutations.}
+Kullback--Leibler divergence test gave $p=1.0\times10^{-5}$ using 99,999
+within-target label permutations.}
 \end{figure}
