@@ -181,7 +181,8 @@ SI Fig. S23 uses the primary cutoff
 outputs; mean $0.0804$ ppm, matching README Methods). S13/S14 use the rematch-excluded
 pH/temp-matched list (`ph05_n137_targets.csv`, $n=136$).
 SI Fig. S17A shows distance-binned significant CSP fractions and S17B shows the
-atom–atom CSP-$z$ scatter for the primary rule. Both distance panels use the same
+CSP-$z$ scatter for the primary rule. Both panels use minimum interchain
+Cα–Cα distance over 0–40 Å and the same
 pH/temp-matched targets ($n=135$) as S17C and S17D.
 SI Fig. S18 copies the case-study z panel from
 `outputs/2FIN_6809/2FIN_case_study_z.png`.

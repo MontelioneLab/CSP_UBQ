@@ -282,7 +282,11 @@ def create_si_panels(analysis_dir, output_dir, manifest):
         f"ROC curves for {len(summary)} pH/temperature-matched apo/holo targets "
         f"({manifest['n_eligible_residues']:,} eligible residues) were obtained by varying the HN CSP significance "
         "threshold while keeping structural binding-site labels and residue eligibility fixed. "
-        "Gray lines show individual targets. The blue curve pools all eligible residues using CSP divided "
+        "The ROC analysis includes all eligible residues, regardless of CSP significance. "
+        "Structurally defined binding-site residues are treated as positives and non-local residues as negatives. "
+        "The true-positive rate (TP/[TP+FN]) and false-positive rate (FP/[FP+TN]) are calculated "
+        "as the CSP threshold is varied. Gray lines show individual targets. "
+        "The blue curve pools all eligible residues using CSP divided "
         "by the target-specific primary cutoff, max(cleaned mean CSP, 0.05 ppm). The black dashed curve "
         "is the equal-target mean ROC on a common false-positive-rate grid; mean AUC is the arithmetic "
         f"mean of the {len(summary)} individual target AUCs. Pooled AUC is {pooled.auc:.3f} "
@@ -290,7 +294,8 @@ def create_si_panels(analysis_dir, output_dir, manifest):
         f"(95% CI {mean.ci_low:.3f}-{mean.ci_high:.3f}). The shaded band is the pointwise 95% interval "
         f"for the mean ROC; intervals use {manifest['bootstrap_replicates']:,} whole-target bootstrap "
         "replicates. Related receptor families may remain correlated. The gray diagonal indicates chance "
-        "ranking; the star marks the pooled operating point from saved primary significance masks. "
+        "ranking. The star marks the pooled true-positive and false-positive rates obtained using "
+        "the original target-specific CSP significance thresholds. "
         "Residues lacking valid CSPs or structural labels and the extreme CSP-z outlier (z > 100) are excluded."
     )
     fig, ax = plt.subplots(figsize=(4.4, 5.1))

@@ -19,7 +19,7 @@ from scripts.create_si_fig_s27 import (
     validate_analysis,
 )
 from scripts.plot_csp_z_vs_ca_distance import (
-    ANY_ATOM_DISTANCE_XLABEL,
+    CA_DISTANCE_COLUMN,
     _draw_csp_z_vs_distance_scatter,
     collect_points_from_master_csv,
 )
@@ -56,7 +56,10 @@ def render(analysis_dir: Path, output: Path, *, intensity_scale: str = "linear")
     points = [
         point
         for source in sorted(sources, key=lambda entry: entry["target_id"])
-        for point in collect_points_from_master_csv(str(analysis_dir / source["snapshot_path"]))
+        for point in collect_points_from_master_csv(
+            str(analysis_dir / source["snapshot_path"]), distance_column=CA_DISTANCE_COLUMN,
+        )
+        if 0 <= point[0] <= DEFAULT_MAX_DISTANCE_A
     ]
 
     set_style()
@@ -69,9 +72,12 @@ def render(analysis_dir: Path, output: Path, *, intensity_scale: str = "linear")
     ax_a.legend(loc="upper right", title="Significant CSP z-score", title_fontsize=7)
 
     _draw_csp_z_vs_distance_scatter(
-        ax_b, points, xlabel=ANY_ATOM_DISTANCE_XLABEL, legend_fontsize=6.5,
+        ax_b, points, xlabel=DISTANCE_XLABEL, legend_fontsize=6.5,
         label_fontsize=8.5, marker_size=6, fp_text_fontsize=7, compact_legend=True,
     )
+    ax_b.set_xlim(ax_a.get_xlim())
+    ax_b.set_xticks(ax_a.get_xticks())
+    ax_b.get_legend().set_loc("center right")
 
     draw_roc(
         ax_c, _load(analysis_dir, "roc_curves.csv"), _load(analysis_dir, "macro_roc.csv"),
