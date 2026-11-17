@@ -6,7 +6,7 @@
 \centering
 \includegraphics[width=0.85\linewidth]{SF9_figure_3_combined_same_author_list.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S9. Figure~3 histograms for the same-author/same-study subset.}
+\caption{\textbf{SI Fig. S9. Confusion Matrix Histograms for the same-author/same-study subset.}
 Targets are the curated pairs in
 \texttt{CSP\_UBQ\_ph0.5\_temp5C\_same\_author\_list.csv}
 ($n=32$ with pipeline outputs of 33 curated pairs): buffer-similar apo/holo systems that share a study or last author
@@ -20,7 +20,7 @@ This figure reports results on a very high-fidelity subset, and the results are 
 \centering
 \includegraphics[width=\linewidth]{SF11_ca_inclusive.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S10. Confusion histograms calculated with Eqn.\ 2} for the
+\caption{\textbf{SI Fig. S10. Confusion Matrix Histograms calculated with Eqn.\ 2} for the
 $n=121$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
 with CA row coverage $>50\%$.
 These results are very similar to CSPs calculated using SI Equation~S1. 72.2\% of CSPs using SI Equation~S2 are distant from the binding site compared to 69.4\% using SI Equation~S1.}
@@ -30,7 +30,7 @@ These results are very similar to CSPs calculated using SI Equation~S1. 72.2\% o
 \centering
 \includegraphics[width=\linewidth]{SF10_ha_ca.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S11. Confusion histograms calculated with Eqn.\ 3} for the
+\caption{\textbf{SI Fig. S11. Confusion Matrix Histograms calculated with Eqn.\ 3} for the
 buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} that also have
 H$\alpha$ and C$\alpha$ shifts in both apo and holo experiments ($n=101$).
 These results are very similar to CSPs calculated using SI Equation~S1. 72.2\% of CSPs using SI Equation~S3 are distant from the binding site compared to 69.4\% using SI Equation~S1.}
@@ -52,7 +52,7 @@ The F1 scores here demonstrate that per-target there are very few differences in
 \centering
 \includegraphics[width=\linewidth]{SF13_nn_distance.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S13. Confusion histograms by closest interchain N--N distance}
+\caption{\textbf{SI Fig. S13. Confusion Matrix Histograms by closest interchain N--N distance}
 ($n=135$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
 with pipeline outputs).}
 \end{figure}
@@ -61,7 +61,7 @@ with pipeline outputs).}
 \centering
 \includegraphics[width=\linewidth]{SF14_any_atom_distance.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S14. Confusion histograms by closest interchain any-atom distance}
+\caption{\textbf{SI Fig. S14. Confusion Matrix Histograms by closest interchain any-atom distance}
 ($n=135$ buffer-similar systems from \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv}
 with pipeline outputs).}
 \end{figure}
@@ -125,10 +125,12 @@ gray; ligands are colored cyan.
 \textbf{F.} CSP $z$ versus nearest interchain atom--atom distance.
 Dashed lines mark $z=3$ and $d=10$\,\AA{}; the annotation counts false
 positives with $d>10$\,\AA{} and $z>3$.
-This plot shows monotonic decay of CSPs with increasing nearest interchain
+This plot shows an overall decrease in CSP magnitude with increasing nearest interchain
 atom--atom distance.
 Residues in a set of $\beta$ sheets further away from the ligand with
-significant shifts have lower CSPs than those closer to the binding site.}
+significant shifts have lower CSPs than those closer to the binding site.
+There are also some missing shifts in the binding site, which suggests other
+significant perturbations at the binding site.}
 \end{figure}
 
 % SF19 is a static PDB Advanced Search screenshot (no generator).
@@ -212,7 +214,7 @@ This figure shows our mean CSP threshold is 0.08 ppm, corresponding to $\sim$50 
 \centering
 \includegraphics[width=\linewidth]{SF24_figure_3_thresholds.png}
 \captionsetup{labelformat=empty}
-\caption{\textbf{SI Fig. S24. Figure~3-style CA-distance histograms under alternate HN CSP
+\caption{\textbf{SI Fig. S24. Confusion Matrix Histograms by CA distance under alternate HN CSP
 significance thresholds} ($n=135$ buffer-similar systems from
 \texttt{CSP\_UBQ\_ph0.5\_temp5C.csv} with pipeline outputs).
 Each column is a 3a (TP/FP among significant CSPs) $|$ 3b (full confusion) pair.
